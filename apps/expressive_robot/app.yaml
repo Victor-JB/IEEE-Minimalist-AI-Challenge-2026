@@ -1,0 +1,3 @@
+name: Expressive Robot
+icon: 🤖
+description: Face tracking and expressive motion for a 6-DOF robot. Python plans joint targets; the sketch eases the servos toward them.
