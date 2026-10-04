@@ -36,3 +36,5 @@
 
 __pycache__/
 sim/build/
+adding_emotion.txt
+infer_out_on_arduino.log
