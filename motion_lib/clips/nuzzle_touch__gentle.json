@@ -1,0 +1,159 @@
+{
+  "name": "nuzzle_touch",
+  "variant": "gentle",
+  "description": "Leans in and gently rubs the head side to side.",
+  "tags": {
+    "category": "emotion",
+    "family": "proxemics-static",
+    "valence": 0.8,
+    "arousal": 0.3
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.0,
+      "joints": {
+        "shoulder_pitch": 14.0,
+        "elbow_pitch": -2.0,
+        "wrist_pitch": 10.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.0,
+      "joints": {
+        "head_roll": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.5,
+      "joints": {
+        "head_roll": 6.0,
+        "wrist_yaw": 4.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.0,
+      "joints": {
+        "head_roll": -6.0,
+        "wrist_yaw": -4.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.5,
+      "joints": {
+        "head_roll": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.9,
+      "joints": {
+        "shoulder_pitch": 14.0,
+        "elbow_pitch": -2.0,
+        "wrist_pitch": 10.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 3.9,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [
+    {
+      "t": 0.8,
+      "light": 0.6
+    },
+    {
+      "t": 3.9,
+      "light": 1.0
+    }
+  ],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.5
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 3.9,
+  "validation": {
+    "status": "PASS",
+    "notes": [],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 34.5,
+    "peak_torque_nm": {
+      "base_yaw": 0.005,
+      "shoulder_pitch": 0.659,
+      "elbow_pitch": 0.485,
+      "wrist_pitch": 0.216,
+      "wrist_yaw": 0.201,
+      "head_roll": 0.301
+    }
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "name": "approach_object",
+  "variant": "eager",
+  "description": "Looks and moves in quickly with a small overshoot. Ends leaned in.",
+  "tags": {
+    "category": "intention",
+    "family": "proxemics-dynamic",
+    "valence": 0.5,
+    "arousal": 0.6
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.35,
+      "joints": {
+        "wrist_pitch": 8.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.1,
+      "joints": {
+        "shoulder_pitch": 20.0,
+        "elbow_pitch": -9.0,
+        "wrist_pitch": 11.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.4,
+      "joints": {
+        "shoulder_pitch": 18.0,
+        "elbow_pitch": -8.0,
+        "wrist_pitch": 10.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.5
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": false,
+  "end_offset": {
+    "shoulder_pitch": 18,
+    "elbow_pitch": -8,
+    "wrist_pitch": 10
+  },
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 1.4,
+  "validation": {
+    "status": "PASS",
+    "notes": [],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 42.7,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.687,
+      "elbow_pitch": 0.553,
+      "wrist_pitch": 0.364,
+      "wrist_yaw": 0.0,
+      "head_roll": 0.0
+    }
+  }
+}

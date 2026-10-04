@@ -11,6 +11,10 @@ name = "expressive_robot"
 [motion]
 max_speed_deg_s = 120  # per-joint speed limit used by the sketch and the sim
 control_hz = 50        # how often the sketch updates the servos
+# Limits motion_lib/validate.py checks clips against. TODO: measure on the real servos.
+max_accel_deg_s2 = 2500
+max_jerk_deg_s3 = 100000
+limit_margin_deg = 3   # clips must stay this far inside every joint range
 
 [defaults]  # applies to every [[joint]] unless the joint overrides it
 mass = 0.05       # kg of the link this joint moves (until the next joint)

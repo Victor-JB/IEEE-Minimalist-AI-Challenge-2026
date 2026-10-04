@@ -1,0 +1,193 @@
+{
+  "name": "go_to_sleep",
+  "variant": "drowsy",
+  "description": "Head nods off, catches itself, then sinks into sleep as the light fades.",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-spatial",
+    "valence": 0.1,
+    "arousal": 0.0
+  },
+  "mode": "absolute",
+  "joint_mask": [
+    "base_yaw",
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -8.0,
+        "elbow_pitch": 70.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.1,
+      "joints": {
+        "wrist_pitch": -50.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.4,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.5,
+      "joints": {
+        "wrist_pitch": -56.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 2.4,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -7.0,
+        "elbow_pitch": 76.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.5,
+      "joints": {
+        "wrist_pitch": -46.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 4.2,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -30.0,
+        "elbow_pitch": 110.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 4.3,
+      "joints": {
+        "wrist_pitch": -35.0,
+        "head_roll": 8.0,
+        "base_yaw": 0,
+        "shoulder_pitch": -30,
+        "elbow_pitch": 110,
+        "wrist_yaw": 0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [
+    {
+      "t": 2.4,
+      "light": 0.5
+    },
+    {
+      "t": 4.2,
+      "light": 0.0
+    }
+  ],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.5
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": -10.0,
+    "elbow_pitch": 70.0,
+    "wrist_pitch": -60.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  },
+  "exit_pose": {
+    "base_yaw": 0,
+    "shoulder_pitch": -30,
+    "elbow_pitch": 110,
+    "wrist_pitch": -35,
+    "wrist_yaw": 0,
+    "head_roll": 8
+  },
+  "returns_to_start": false,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 4.3,
+  "validation": {
+    "status": "PASS",
+    "notes": [],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 35.4,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.514,
+      "elbow_pitch": 0.542,
+      "wrist_pitch": 0.265,
+      "wrist_yaw": 0.008,
+      "head_roll": 0.068
+    }
+  }
+}

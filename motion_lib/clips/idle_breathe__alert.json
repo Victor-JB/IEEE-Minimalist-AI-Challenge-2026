@@ -1,0 +1,132 @@
+{
+  "name": "idle_breathe",
+  "variant": "alert",
+  "description": "Quicker breathing with a slow gaze drift (6 s loop).",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-temporal",
+    "valence": 0.2,
+    "arousal": 0.3
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.4,
+      "joints": {
+        "elbow_pitch": 2.0,
+        "wrist_pitch": -2.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.0,
+      "joints": {
+        "wrist_yaw": 3.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.0,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 4.4,
+      "joints": {
+        "elbow_pitch": 2.0,
+        "wrist_pitch": -2.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 4.5,
+      "joints": {
+        "wrist_yaw": -2.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 6.0,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.5
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": true,
+  "duration_nominal": 6.0,
+  "validation": {
+    "status": "PASS",
+    "notes": [],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 2.9,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.233,
+      "elbow_pitch": 0.361,
+      "wrist_pitch": 0.023,
+      "wrist_yaw": 0.025,
+      "head_roll": 0.0
+    }
+  }
+}

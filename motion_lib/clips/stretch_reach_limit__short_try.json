@@ -1,0 +1,228 @@
+{
+  "name": "stretch_reach_limit",
+  "variant": "short_try",
+  "description": "Reaches as far as it can, strains twice, gives up with a droop, returns home.",
+  "tags": {
+    "category": "intention",
+    "family": "proxemics-dynamic",
+    "valence": -0.2,
+    "arousal": 0.6
+  },
+  "mode": "absolute",
+  "joint_mask": [
+    "base_yaw",
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.2,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -13.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -57.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.6,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 75.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": -35.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.9,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 79.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": -39.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.2,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 76.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": -36.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.5,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 79.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": -39.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.8,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 76.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": -36.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.1,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 75.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": -35.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 4.1,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 55.0,
+        "elbow_pitch": 20.0,
+        "wrist_pitch": 20.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 8.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 4.6,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 55.0,
+        "elbow_pitch": 20.0,
+        "wrist_pitch": 20.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 8.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 6.2,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.0
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        1.0,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": -10.0,
+    "elbow_pitch": 70.0,
+    "wrist_pitch": -60.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  },
+  "exit_pose": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": -10.0,
+    "elbow_pitch": 70.0,
+    "wrist_pitch": -60.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  },
+  "returns_to_start": false,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 6.2,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1: shoulder_pitch reaches 123.5 (limit 90 - 3 margin)",
+      "time_scale min 0.5 -> 1: velocity 236 deg/s on shoulder_pitch > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 117.8,
+    "peak_torque_nm": {
+      "base_yaw": 0.002,
+      "shoulder_pitch": 1.598,
+      "elbow_pitch": 1.255,
+      "wrist_pitch": 0.993,
+      "wrist_yaw": 0.011,
+      "head_roll": 0.129
+    }
+  }
+}

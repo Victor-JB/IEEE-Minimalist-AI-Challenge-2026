@@ -1,0 +1,110 @@
+{
+  "name": "home",
+  "variant": "brisk",
+  "description": "Quicker return to home. Plays from any pose; far starts may need a larger time_scale.",
+  "tags": {
+    "category": "intention",
+    "family": "proxemics-dynamic",
+    "valence": 0.0,
+    "arousal": 0.4
+  },
+  "mode": "absolute",
+  "joint_mask": [
+    "base_yaw",
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.5,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        1.0,
+        1.0
+      ],
+      "authored_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": -10.0,
+    "elbow_pitch": 70.0,
+    "wrist_pitch": -60.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  },
+  "returns_to_start": false,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 1.5,
+  "validation": {
+    "status": "PASS",
+    "notes": [],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 0.0,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.226,
+      "elbow_pitch": 0.336,
+      "wrist_pitch": 0.0,
+      "wrist_yaw": 0.0,
+      "head_roll": 0.0
+    }
+  }
+}

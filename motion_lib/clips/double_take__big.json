@@ -1,0 +1,179 @@
+{
+  "name": "double_take",
+  "variant": "big",
+  "description": "Second look snaps harder: the body rises and turns to follow.",
+  "tags": {
+    "category": "attention",
+    "family": "kinesics-temporal",
+    "valence": 0.1,
+    "arousal": 0.8
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "base_yaw",
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.5,
+      "joints": {
+        "wrist_yaw": 20.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.95,
+      "joints": {
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.25,
+      "joints": {
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.6,
+      "joints": {
+        "wrist_yaw": 22.0,
+        "base_yaw": 0.0,
+        "shoulder_pitch": -4.0,
+        "elbow_pitch": -4.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 1.65,
+      "joints": {
+        "wrist_pitch": -6.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.85,
+      "joints": {
+        "base_yaw": 8.0,
+        "wrist_yaw": 16.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.6,
+      "joints": {
+        "base_yaw": 8.0,
+        "wrist_yaw": 16.0,
+        "shoulder_pitch": -4.0,
+        "elbow_pitch": -4.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.65,
+      "joints": {
+        "wrist_pitch": -6.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 3.4,
+      "joints": {
+        "base_yaw": 0.0,
+        "wrist_yaw": 0.0,
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 3.45,
+      "joints": {
+        "wrist_pitch": 0.0,
+        "base_yaw": 0.0,
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.0
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        1.0,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 3.45,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1: velocity 176 deg/s on wrist_yaw > 120",
+      "time_scale min 0.5 -> 1: velocity 233 deg/s on wrist_yaw > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 117.4,
+    "peak_torque_nm": {
+      "base_yaw": 0.515,
+      "shoulder_pitch": 0.244,
+      "elbow_pitch": 0.356,
+      "wrist_pitch": 0.15,
+      "wrist_yaw": 1.019,
+      "head_roll": 0.008
+    }
+  }
+}

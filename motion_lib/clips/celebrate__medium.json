@@ -1,0 +1,229 @@
+{
+  "name": "celebrate",
+  "variant": "medium",
+  "description": "Crouch, spring up tall looking up, head and base wiggle, light flashes.",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-temporal",
+    "valence": 1.0,
+    "arousal": 0.9
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "base_yaw",
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.25,
+      "joints": {
+        "shoulder_pitch": -2.0,
+        "elbow_pitch": 8.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.31,
+      "joints": {
+        "wrist_pitch": -6.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 0.7,
+      "joints": {
+        "shoulder_pitch": -6.0,
+        "elbow_pitch": -18.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 0.7,
+      "joints": {
+        "head_roll": 0.0,
+        "base_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.76,
+      "joints": {
+        "wrist_pitch": 14.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.0,
+      "joints": {
+        "head_roll": 10.0,
+        "base_yaw": 6.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.3,
+      "joints": {
+        "head_roll": -10.0,
+        "base_yaw": -6.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.6,
+      "joints": {
+        "head_roll": 10.0,
+        "base_yaw": 6.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.9,
+      "joints": {
+        "head_roll": -10.0,
+        "base_yaw": -6.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.3,
+      "joints": {
+        "head_roll": 0.0,
+        "base_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.3,
+      "joints": {
+        "shoulder_pitch": -6.0,
+        "elbow_pitch": -18.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.36,
+      "joints": {
+        "wrist_pitch": 14.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 3.1,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 3.16,
+      "joints": {
+        "wrist_pitch": 0.0,
+        "base_yaw": 0.0,
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [
+    {
+      "t": 0.7,
+      "light": 1.0
+    },
+    {
+      "t": 1.0,
+      "light": 0.5
+    },
+    {
+      "t": 1.3,
+      "light": 1.0
+    },
+    {
+      "t": 1.6,
+      "light": 0.5
+    },
+    {
+      "t": 2.3,
+      "light": 1.0
+    }
+  ],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.05
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.95,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 3.16,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1.05: velocity 162 deg/s on elbow_pitch > 120",
+      "time_scale min 0.5 -> 0.95: velocity 214 deg/s on elbow_pitch > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 108.1,
+    "peak_torque_nm": {
+      "base_yaw": 0.519,
+      "shoulder_pitch": 0.465,
+      "elbow_pitch": 1.223,
+      "wrist_pitch": 0.807,
+      "wrist_yaw": 0.002,
+      "head_roll": 0.867
+    }
+  }
+}

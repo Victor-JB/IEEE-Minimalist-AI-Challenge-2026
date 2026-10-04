@@ -1,0 +1,163 @@
+{
+  "name": "nod_yes",
+  "variant": "medium",
+  "description": "Two decaying nods with a small upward anticipation.",
+  "tags": {
+    "category": "attitude",
+    "family": "kinesics-spatial",
+    "valence": 0.6,
+    "arousal": 0.4
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "wrist_pitch"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.15,
+      "joints": {
+        "wrist_pitch": -3.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.45,
+      "joints": {
+        "wrist_pitch": 15.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 0.51,
+      "joints": {
+        "shoulder_pitch": 2.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 0.75,
+      "joints": {
+        "wrist_pitch": 1.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.81,
+      "joints": {
+        "shoulder_pitch": 0.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.0,
+      "joints": {
+        "wrist_pitch": 10.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.06,
+      "joints": {
+        "shoulder_pitch": 1.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.3,
+      "joints": {
+        "wrist_pitch": -1.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.36,
+      "joints": {
+        "shoulder_pitch": 0.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.55,
+      "joints": {
+        "wrist_pitch": 0.0,
+        "shoulder_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.0
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        1.0,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 1.55,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1.05: velocity 167 deg/s on wrist_pitch > 120",
+      "time_scale min 0.5 -> 0.95: velocity 222 deg/s on wrist_pitch > 120",
+      "corner: amplitude max -> 1 with time_scale min -> 1: velocity 124 deg/s on wrist_pitch > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 111.2,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.47,
+      "elbow_pitch": 0.499,
+      "wrist_pitch": 0.939,
+      "wrist_yaw": 0.0,
+      "head_roll": 0.0
+    }
+  }
+}

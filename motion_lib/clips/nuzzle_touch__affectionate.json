@@ -1,0 +1,175 @@
+{
+  "name": "nuzzle_touch",
+  "variant": "affectionate",
+  "description": "Deeper lean, more rubs, dimmer light.",
+  "tags": {
+    "category": "emotion",
+    "family": "proxemics-static",
+    "valence": 0.9,
+    "arousal": 0.4
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.0,
+      "joints": {
+        "shoulder_pitch": 16.0,
+        "elbow_pitch": -2.0,
+        "wrist_pitch": 10.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.0,
+      "joints": {
+        "head_roll": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.45,
+      "joints": {
+        "head_roll": 6.0,
+        "wrist_yaw": 4.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.9,
+      "joints": {
+        "head_roll": -6.0,
+        "wrist_yaw": -4.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.35,
+      "joints": {
+        "head_roll": 6.0,
+        "wrist_yaw": 4.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.8,
+      "joints": {
+        "head_roll": -6.0,
+        "wrist_yaw": -4.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.3,
+      "joints": {
+        "head_roll": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 3.7,
+      "joints": {
+        "shoulder_pitch": 16.0,
+        "elbow_pitch": -2.0,
+        "wrist_pitch": 10.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 4.7,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [
+    {
+      "t": 0.8,
+      "light": 0.5
+    },
+    {
+      "t": 4.7,
+      "light": 1.0
+    }
+  ],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.5
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 4.7,
+  "validation": {
+    "status": "PASS",
+    "notes": [],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 40.0,
+    "peak_torque_nm": {
+      "base_yaw": 0.008,
+      "shoulder_pitch": 0.717,
+      "elbow_pitch": 0.499,
+      "wrist_pitch": 0.222,
+      "wrist_yaw": 0.232,
+      "head_roll": 0.349
+    }
+  }
+}

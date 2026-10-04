@@ -1,0 +1,202 @@
+{
+  "name": "tail_wag",
+  "variant": "big",
+  "description": "Bigger, longer wag with a slight lean in.",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-spatial",
+    "valence": 0.8,
+    "arousal": 0.7
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "base_yaw",
+    "shoulder_pitch",
+    "wrist_yaw"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.3,
+      "joints": {
+        "base_yaw": 10.0,
+        "shoulder_pitch": 3.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 0.36,
+      "joints": {
+        "wrist_yaw": -6.0
+      },
+      "ease": "cubic",
+      "peak": false
+    },
+    {
+      "t": 0.6,
+      "joints": {
+        "base_yaw": -10.0,
+        "shoulder_pitch": 3.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 0.66,
+      "joints": {
+        "wrist_yaw": 6.0
+      },
+      "ease": "cubic",
+      "peak": false
+    },
+    {
+      "t": 0.9,
+      "joints": {
+        "base_yaw": 10.0,
+        "shoulder_pitch": 3.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 0.96,
+      "joints": {
+        "wrist_yaw": -6.0
+      },
+      "ease": "cubic",
+      "peak": false
+    },
+    {
+      "t": 1.2,
+      "joints": {
+        "base_yaw": -10.0,
+        "shoulder_pitch": 3.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.26,
+      "joints": {
+        "wrist_yaw": 6.0
+      },
+      "ease": "cubic",
+      "peak": false
+    },
+    {
+      "t": 1.5,
+      "joints": {
+        "base_yaw": 10.0,
+        "shoulder_pitch": 3.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.56,
+      "joints": {
+        "wrist_yaw": -6.0
+      },
+      "ease": "cubic",
+      "peak": false
+    },
+    {
+      "t": 1.8,
+      "joints": {
+        "base_yaw": -10.0,
+        "shoulder_pitch": 3.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.86,
+      "joints": {
+        "wrist_yaw": 6.0
+      },
+      "ease": "cubic",
+      "peak": false
+    },
+    {
+      "t": 2.25,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.31,
+      "joints": {
+        "wrist_yaw": 0.0,
+        "base_yaw": 0.0,
+        "shoulder_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.05
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.95,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 2.31,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1.15: velocity 150 deg/s on base_yaw > 120",
+      "time_scale min 0.5 -> 0.85: velocity 198 deg/s on base_yaw > 120",
+      "corner: amplitude max -> 1.05 with time_scale min -> 0.95: velocity 135 deg/s on base_yaw > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 99.9,
+    "peak_torque_nm": {
+      "base_yaw": 0.869,
+      "shoulder_pitch": 0.391,
+      "elbow_pitch": 0.384,
+      "wrist_pitch": 0.024,
+      "wrist_yaw": 0.52,
+      "head_roll": 0.016
+    }
+  }
+}

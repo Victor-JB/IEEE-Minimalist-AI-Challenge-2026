@@ -1,0 +1,194 @@
+{
+  "name": "wake_up",
+  "variant": "quick_bright",
+  "description": "Springs up past home, settles, quick head shake.",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-spatial",
+    "valence": 0.6,
+    "arousal": 0.7
+  },
+  "mode": "absolute",
+  "joint_mask": [
+    "base_yaw",
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -30.0,
+        "elbow_pitch": 110.0,
+        "wrist_pitch": -35.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 8.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.25,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -30.0,
+        "elbow_pitch": 113.0,
+        "wrist_pitch": -37.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 8.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.15,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -8.0,
+        "elbow_pitch": 62.0,
+        "wrist_pitch": -54.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.45,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.65,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": 6.0,
+        "head_roll": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.85,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": -6.0,
+        "head_roll": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.15,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [
+    {
+      "t": 0.0,
+      "light": 0.0
+    },
+    {
+      "t": 0.8,
+      "light": 0.6
+    },
+    {
+      "t": 1.15,
+      "light": 1.0
+    }
+  ],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.1
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        1.0,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": {
+    "base_yaw": 0,
+    "shoulder_pitch": -30,
+    "elbow_pitch": 110,
+    "wrist_pitch": -35,
+    "wrist_yaw": 0,
+    "head_roll": 8
+  },
+  "exit_pose": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": -10.0,
+    "elbow_pitch": 70.0,
+    "wrist_pitch": -60.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  },
+  "returns_to_start": false,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 2.15,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1.15: velocity 142 deg/s on elbow_pitch > 120",
+      "time_scale min 0.5 -> 0.95: velocity 212 deg/s on elbow_pitch > 120",
+      "corner: amplitude max -> 1.1 with time_scale min -> 1: velocity 123 deg/s on elbow_pitch > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 106.1,
+    "peak_torque_nm": {
+      "base_yaw": 0.003,
+      "shoulder_pitch": 0.339,
+      "elbow_pitch": 1.384,
+      "wrist_pitch": 0.413,
+      "wrist_yaw": 0.745,
+      "head_roll": 0.15
+    }
+  }
+}

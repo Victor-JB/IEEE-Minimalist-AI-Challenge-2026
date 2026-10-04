@@ -1,0 +1,132 @@
+{
+  "name": "avoid_object",
+  "variant": "mild",
+  "description": "Pulls back, then turns the head away. Ends turned away.",
+  "tags": {
+    "category": "intention",
+    "family": "proxemics-dynamic",
+    "valence": -0.3,
+    "arousal": 0.4
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "base_yaw",
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.6,
+      "joints": {
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 8.0,
+        "wrist_pitch": 2.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.6,
+      "joints": {
+        "wrist_yaw": 0.0,
+        "base_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.3,
+      "joints": {
+        "wrist_yaw": -22.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.5,
+      "joints": {
+        "base_yaw": -6.0,
+        "shoulder_pitch": -10,
+        "elbow_pitch": 8,
+        "wrist_pitch": 2,
+        "wrist_yaw": -22
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.4
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.6,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": false,
+  "end_offset": {
+    "shoulder_pitch": -10,
+    "elbow_pitch": 8,
+    "wrist_pitch": 2,
+    "wrist_yaw": -22,
+    "base_yaw": -6
+  },
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 1.5,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "corner: amplitude max -> 1.4 with time_scale min -> 0.6: velocity 149 deg/s on wrist_yaw > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 58.9,
+    "peak_torque_nm": {
+      "base_yaw": 0.109,
+      "shoulder_pitch": 0.46,
+      "elbow_pitch": 0.338,
+      "wrist_pitch": 0.056,
+      "wrist_yaw": 0.513,
+      "head_roll": 0.0
+    }
+  }
+}

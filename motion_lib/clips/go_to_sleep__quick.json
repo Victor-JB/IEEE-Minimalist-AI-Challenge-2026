@@ -1,0 +1,140 @@
+{
+  "name": "go_to_sleep",
+  "variant": "quick",
+  "description": "Straight down into the sleep pose.",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-spatial",
+    "valence": 0.1,
+    "arousal": 0.1
+  },
+  "mode": "absolute",
+  "joint_mask": [
+    "base_yaw",
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.6,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -30.0,
+        "elbow_pitch": 113.0,
+        "wrist_pitch": -38.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 8.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -30.0,
+        "elbow_pitch": 110.0,
+        "wrist_pitch": -35.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 8.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [
+    {
+      "t": 0.5,
+      "light": 0.5
+    },
+    {
+      "t": 2.0,
+      "light": 0.0
+    }
+  ],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.3
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": -10.0,
+    "elbow_pitch": 70.0,
+    "wrist_pitch": -60.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  },
+  "exit_pose": {
+    "base_yaw": 0,
+    "shoulder_pitch": -30,
+    "elbow_pitch": 110,
+    "wrist_pitch": -35,
+    "wrist_yaw": 0,
+    "head_roll": 8
+  },
+  "returns_to_start": false,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 2.0,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1.3: elbow_pitch reaches 118.5 (limit 120 - 3 margin)"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 50.4,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.441,
+      "elbow_pitch": 0.666,
+      "wrist_pitch": 0.159,
+      "wrist_yaw": 0.008,
+      "head_roll": 0.077
+    }
+  }
+}

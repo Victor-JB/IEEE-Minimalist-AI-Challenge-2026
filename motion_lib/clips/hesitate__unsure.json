@@ -1,0 +1,226 @@
+{
+  "name": "hesitate",
+  "variant": "unsure",
+  "description": "Two false starts, then a small retreat with a puzzled tilt.",
+  "tags": {
+    "category": "attitude",
+    "family": "kinesics-temporal",
+    "valence": -0.3,
+    "arousal": 0.4
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "wrist_pitch",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.4,
+      "joints": {
+        "shoulder_pitch": 6.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.46,
+      "joints": {
+        "wrist_pitch": -6.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 0.7,
+      "joints": {
+        "shoulder_pitch": 6.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.76,
+      "joints": {
+        "wrist_pitch": -6.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.05,
+      "joints": {
+        "shoulder_pitch": 1.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.11,
+      "joints": {
+        "wrist_pitch": -1.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.35,
+      "joints": {
+        "shoulder_pitch": 1.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.41,
+      "joints": {
+        "wrist_pitch": -1.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.75,
+      "joints": {
+        "shoulder_pitch": 8.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.81,
+      "joints": {
+        "wrist_pitch": -8.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 2.05,
+      "joints": {
+        "shoulder_pitch": 8.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.11,
+      "joints": {
+        "wrist_pitch": -8.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 2.5,
+      "joints": {
+        "shoulder_pitch": -2.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 2.56,
+      "joints": {
+        "wrist_pitch": -3.0,
+        "head_roll": 5.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 3.1,
+      "joints": {
+        "shoulder_pitch": -2.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 3.16,
+      "joints": {
+        "wrist_pitch": -3.0,
+        "head_roll": 5.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 3.8,
+      "joints": {
+        "shoulder_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 3.86,
+      "joints": {
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0,
+        "shoulder_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.45
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.55,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 3.86,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "corner: amplitude max -> 1.45 with time_scale min -> 0.55: velocity 123 deg/s on shoulder_pitch > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 41.6,
+    "peak_torque_nm": {
+      "base_yaw": 0.001,
+      "shoulder_pitch": 0.681,
+      "elbow_pitch": 0.421,
+      "wrist_pitch": 0.312,
+      "wrist_yaw": 0.002,
+      "head_roll": 0.12
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "home": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": -10.0,
+    "elbow_pitch": 70.0,
+    "wrist_pitch": -60.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  },
+  "sit": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": -30.0,
+    "elbow_pitch": 105.0,
+    "wrist_pitch": -75.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  },
+  "sleep": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": -30.0,
+    "elbow_pitch": 110.0,
+    "wrist_pitch": -35.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 8.0
+  },
+  "alert": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 40.0,
+    "wrist_pitch": -45.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  },
+  "reach": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": 75.0,
+    "elbow_pitch": 0.0,
+    "wrist_pitch": -35.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  }
+}

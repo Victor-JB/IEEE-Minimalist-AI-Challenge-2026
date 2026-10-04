@@ -1,0 +1,4 @@
+# PC-only tools: simulation (sim/), motion library (motion_lib/) and plots. Not needed on the board.
+-r requirements.txt
+mujoco>=3.2
+matplotlib>=3.8

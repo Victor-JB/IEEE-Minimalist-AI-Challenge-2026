@@ -1,0 +1,126 @@
+{
+  "name": "startle_recoil",
+  "variant": "small",
+  "description": "Quick pull back with the head up, freeze, slow return. No anticipation (reflex).",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-temporal",
+    "valence": -0.4,
+    "arousal": 0.9
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.17,
+      "joints": {
+        "shoulder_pitch": -8.8,
+        "elbow_pitch": -6.6,
+        "wrist_pitch": -6.6
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.37,
+      "joints": {
+        "shoulder_pitch": -8.0,
+        "elbow_pitch": -6.0,
+        "wrist_pitch": -6.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 0.87,
+      "joints": {
+        "shoulder_pitch": -8.0,
+        "elbow_pitch": -6.0,
+        "wrist_pitch": -6.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.07,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.15
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.95,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 2.07,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1.25: velocity 143 deg/s on shoulder_pitch > 120",
+      "time_scale min 0.5 -> 0.85: velocity 176 deg/s on shoulder_pitch > 120",
+      "corner: amplitude max -> 1.15 with time_scale min -> 0.95: velocity 141 deg/s on shoulder_pitch > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 95.5,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 1.834,
+      "elbow_pitch": 1.309,
+      "wrist_pitch": 0.746,
+      "wrist_yaw": 0.0,
+      "head_roll": 0.0
+    }
+  }
+}

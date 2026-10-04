@@ -1,0 +1,103 @@
+{
+  "name": "idle_breathe",
+  "variant": "calm",
+  "description": "Subtle 4 s breathing loop; the head stays level.",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-temporal",
+    "valence": 0.1,
+    "arousal": 0.1
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "elbow_pitch",
+    "wrist_pitch",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.8,
+      "joints": {
+        "elbow_pitch": 2.5,
+        "wrist_pitch": -2.5,
+        "head_roll": 0.8
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 4.0,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.5
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": true,
+  "duration_nominal": 4.0,
+  "validation": {
+    "status": "PASS",
+    "notes": [],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 2.6,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.234,
+      "elbow_pitch": 0.36,
+      "wrist_pitch": 0.023,
+      "wrist_yaw": 0.0,
+      "head_roll": 0.007
+    }
+  }
+}

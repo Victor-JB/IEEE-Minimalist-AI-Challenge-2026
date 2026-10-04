@@ -1,0 +1,151 @@
+{
+  "name": "sad_droop",
+  "variant": "deep",
+  "description": "Deep slow droop, light dims, long hold.",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-spatial",
+    "valence": -0.8,
+    "arousal": 0.1
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.0,
+      "joints": {
+        "shoulder_pitch": 10.0,
+        "elbow_pitch": 20.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 2.2,
+      "joints": {
+        "wrist_pitch": 16.0,
+        "head_roll": 10.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 4.0,
+      "joints": {
+        "shoulder_pitch": 10.0,
+        "elbow_pitch": 20.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 4.2,
+      "joints": {
+        "wrist_pitch": 16.0,
+        "head_roll": 10.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 5.8,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 6.0,
+      "joints": {
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0,
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [
+    {
+      "t": 0.3,
+      "light": 0.3
+    },
+    {
+      "t": 5.8,
+      "light": 1.0
+    }
+  ],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.5
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 6.0,
+  "validation": {
+    "status": "WARN",
+    "notes": [
+      "fails from 3/10 sampled start poses (first: start #4: elbow_pitch reaches 127.0 (limit 120 - 3 margin)); a selector must check headroom first"
+    ],
+    "sampled_start_failures": 3,
+    "peak_velocity_deg_s": 20.8,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.599,
+      "elbow_pitch": 0.684,
+      "wrist_pitch": 0.234,
+      "wrist_yaw": 0.01,
+      "head_roll": 0.097
+    }
+  }
+}

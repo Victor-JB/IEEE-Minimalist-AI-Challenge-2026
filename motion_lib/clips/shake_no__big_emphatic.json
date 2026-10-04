@@ -1,0 +1,155 @@
+{
+  "name": "shake_no",
+  "variant": "big_emphatic",
+  "description": "Leans in, then an emphatic shake that dies out.",
+  "tags": {
+    "category": "attitude",
+    "family": "kinesics-spatial",
+    "valence": -0.7,
+    "arousal": 0.7
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "wrist_pitch",
+    "wrist_yaw"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.1,
+      "joints": {
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.35,
+      "joints": {
+        "wrist_pitch": 6.0,
+        "shoulder_pitch": 3.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.52,
+      "joints": {
+        "wrist_yaw": 16.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 0.94,
+      "joints": {
+        "wrist_yaw": -12.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.36,
+      "joints": {
+        "wrist_yaw": 9.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.78,
+      "joints": {
+        "wrist_yaw": -6.75
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.2,
+      "joints": {
+        "wrist_yaw": 5.06
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.704,
+      "joints": {
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.904,
+      "joints": {
+        "wrist_pitch": 0.0,
+        "shoulder_pitch": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.15
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.95,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 2.904,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1.25: velocity 141 deg/s on wrist_yaw > 120",
+      "time_scale min 0.5 -> 0.85: velocity 188 deg/s on wrist_yaw > 120",
+      "corner: amplitude max -> 1.15 with time_scale min -> 0.95: velocity 138 deg/s on wrist_yaw > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 94.3,
+    "peak_torque_nm": {
+      "base_yaw": 0.002,
+      "shoulder_pitch": 0.362,
+      "elbow_pitch": 0.435,
+      "wrist_pitch": 0.267,
+      "wrist_yaw": 0.821,
+      "head_roll": 0.003
+    }
+  }
+}

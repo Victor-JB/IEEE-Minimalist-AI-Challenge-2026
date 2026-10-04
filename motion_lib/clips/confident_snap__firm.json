@@ -1,0 +1,113 @@
+{
+  "name": "confident_snap",
+  "variant": "firm",
+  "description": "A quick decisive downward nod that holds.",
+  "tags": {
+    "category": "attitude",
+    "family": "kinesics-temporal",
+    "valence": 0.5,
+    "arousal": 0.6
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "wrist_pitch"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "wrist_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.12,
+      "joints": {
+        "wrist_pitch": -3.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.33,
+      "joints": {
+        "wrist_pitch": 10.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 0.73,
+      "joints": {
+        "wrist_pitch": 10.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.13,
+      "joints": {
+        "wrist_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.0
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        1.0,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 1.13,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1: velocity 172 deg/s on wrist_pitch > 120",
+      "time_scale min 0.5 -> 1: velocity 226 deg/s on wrist_pitch > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 114.9,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.454,
+      "elbow_pitch": 0.483,
+      "wrist_pitch": 0.985,
+      "wrist_yaw": 0.0,
+      "head_roll": 0.0
+    }
+  }
+}

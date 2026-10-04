@@ -1,0 +1,130 @@
+{
+  "name": "shake_no",
+  "variant": "medium",
+  "description": "Two decaying shakes, head slightly lowered.",
+  "tags": {
+    "category": "attitude",
+    "family": "kinesics-spatial",
+    "valence": -0.5,
+    "arousal": 0.4
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "wrist_pitch",
+    "wrist_yaw"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.3,
+      "joints": {
+        "wrist_pitch": 4.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.38,
+      "joints": {
+        "wrist_yaw": 14.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 0.76,
+      "joints": {
+        "wrist_yaw": -11.2
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.14,
+      "joints": {
+        "wrist_yaw": 8.96
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.52,
+      "joints": {
+        "wrist_yaw": -7.17
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.976,
+      "joints": {
+        "wrist_yaw": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.15
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.95,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 1.976,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1.25: velocity 141 deg/s on wrist_yaw > 120",
+      "time_scale min 0.5 -> 0.85: velocity 187 deg/s on wrist_yaw > 120",
+      "corner: amplitude max -> 1.15 with time_scale min -> 0.95: velocity 138 deg/s on wrist_yaw > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 94.1,
+    "peak_torque_nm": {
+      "base_yaw": 0.002,
+      "shoulder_pitch": 0.271,
+      "elbow_pitch": 0.369,
+      "wrist_pitch": 0.21,
+      "wrist_yaw": 0.819,
+      "head_roll": 0.002
+    }
+  }
+}

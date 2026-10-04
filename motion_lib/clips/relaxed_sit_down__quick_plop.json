@@ -1,0 +1,189 @@
+{
+  "name": "relaxed_sit_down",
+  "variant": "quick_plop",
+  "description": "Drops into the sit pose, bounces once, settles.",
+  "tags": {
+    "category": "emotion",
+    "family": "proxemics-dynamic",
+    "valence": 0.5,
+    "arousal": 0.3
+  },
+  "mode": "absolute",
+  "joint_mask": [
+    "base_yaw",
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.15,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 66.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.23,
+      "joints": {
+        "wrist_pitch": -56.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 0.9,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -32.0,
+        "elbow_pitch": 111.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.98,
+      "joints": {
+        "wrist_pitch": -81.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.2,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -30.0,
+        "elbow_pitch": 103.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.28,
+      "joints": {
+        "wrist_pitch": -73.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.5,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -30.0,
+        "elbow_pitch": 105.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.58,
+      "joints": {
+        "wrist_pitch": -75.0,
+        "base_yaw": 0,
+        "shoulder_pitch": -30,
+        "elbow_pitch": 105,
+        "wrist_yaw": 0,
+        "head_roll": 0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.0
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        1.0,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": -10.0,
+    "elbow_pitch": 70.0,
+    "wrist_pitch": -60.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  },
+  "exit_pose": {
+    "base_yaw": 0,
+    "shoulder_pitch": -30,
+    "elbow_pitch": 105,
+    "wrist_pitch": -75,
+    "wrist_yaw": 0,
+    "head_roll": 0
+  },
+  "returns_to_start": false,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 1.58,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1.05: elbow_pitch reaches 121.5 (limit 120 - 3 margin)",
+      "time_scale min 0.5 -> 0.95: velocity 224 deg/s on elbow_pitch > 120",
+      "corner: amplitude max -> 1 with time_scale min -> 1: velocity 122 deg/s on elbow_pitch > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 112.4,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.653,
+      "elbow_pitch": 0.773,
+      "wrist_pitch": 0.561,
+      "wrist_yaw": 0.0,
+      "head_roll": 0.0
+    }
+  }
+}

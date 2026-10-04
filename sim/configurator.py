@@ -67,6 +67,9 @@ def load_config(path=CONFIG_PATH):
     cfg["joint"] = joints
     cfg.setdefault("motion", {}).setdefault("max_speed_deg_s", 120)
     cfg["motion"].setdefault("control_hz", 50)
+    cfg["motion"].setdefault("max_accel_deg_s2", 2500)
+    cfg["motion"].setdefault("max_jerk_deg_s3", 100000)
+    cfg["motion"].setdefault("limit_margin_deg", 3)
     return cfg
 
 
@@ -74,7 +77,10 @@ def fmt(values):
     return " ".join(f"{v:.6g}" for v in values)
 
 
-def build_mjcf(cfg):
+def build_mjcf(cfg, collisions=False):
+    """MuJoCo model. collisions=True turns on contacts between the solid parts (for
+    motion validation); the default model is kinematics-only for viewing."""
+    solid = {"contype": "1", "conaffinity": "1"} if collisions else {}
     root = ET.Element("mujoco", model=cfg.get("name", "robot"))
     ET.SubElement(root, "compiler", angle="radian", autolimits="true")
     ET.SubElement(root, "option", timestep="0.002")
@@ -94,13 +100,13 @@ def build_mjcf(cfg):
 
     world = ET.SubElement(root, "worldbody")
     ET.SubElement(world, "light", pos="0 -0.5 1.5", dir="0 0.3 -1", diffuse=".8 .8 .8")
-    ET.SubElement(world, "geom", name="floor", type="plane", size="1 1 0.01", material="grid")
+    ET.SubElement(world, "geom", name="floor", type="plane", size="1 1 0.01", material="grid", **solid)
 
     base = cfg.get("base", {})
     bw, bd, bh = base.get("size", [0.1, 0.1, 0.03])
     parent = ET.SubElement(world, "body", name="base")
     ET.SubElement(parent, "geom", type="box", size=fmt([bw / 2, bd / 2, bh / 2]),
-                  pos=fmt([0, 0, bh / 2]), mass=f"{base.get('mass', 0.5):g}", material="link")
+                  pos=fmt([0, 0, bh / 2]), mass=f"{base.get('mass', 0.5):g}", material="link", **solid)
     pos = [0, 0, bh]
 
     actuators = []
@@ -117,10 +123,10 @@ def build_mjcf(cfg):
 
         if math.dist(j["link"], [0, 0, 0]) > 1e-6:
             ET.SubElement(body, "geom", type="capsule", fromto=fmt([0, 0, 0] + j["link"]),
-                          size=f"{j['radius']:g}", mass=f"{j['mass']:g}", material="link")
+                          size=f"{j['radius']:g}", mass=f"{j['mass']:g}", material="link", **solid)
         else:  # joints stacked at the same point: a small sphere carries the mass
             ET.SubElement(body, "geom", type="sphere", size=f"{j['radius']:g}",
-                          mass=f"{j['mass']:g}", material="link")
+                          mass=f"{j['mass']:g}", material="link", **solid)
 
         actuator = {"name": j["name"], "joint": j["name"], "kp": f"{j['kp']:g}",
                     "ctrlrange": fmt(map(math.radians, j["range"]))}
@@ -134,10 +140,20 @@ def build_mjcf(cfg):
     hx, hy, hz = [s / 2 for s in head.get("size", [0.06, 0.08, 0.05])]
     head_body = ET.SubElement(parent, "body", name="head", pos=fmt([pos[0], pos[1], pos[2] + hz]))
     ET.SubElement(head_body, "geom", type="box", size=fmt([hx, hy, hz]),
-                  mass=f"{head.get('mass', 0.1):g}", material="head")
+                  mass=f"{head.get('mass', 0.1):g}", material="head", **solid)
     for side in (-1, 1):
         ET.SubElement(head_body, "geom", type="sphere", size=f"{min(hy, hz) * 0.18:g}",
                       pos=fmt([hx, side * hy * 0.45, hz * 0.25]), mass="0", material="eye")
+
+    if collisions:
+        # Neighbouring parts overlap at the joints in this simple model, so only check
+        # parts at least 3 links apart, plus everything against the floor except the base.
+        chain = ["base"] + [j["name"] for j in cfg["joint"]] + ["head"]
+        contact = ET.SubElement(root, "contact")
+        ET.SubElement(contact, "exclude", body1="world", body2="base")
+        for gap in (1, 2):
+            for a, b in zip(chain, chain[gap:]):
+                ET.SubElement(contact, "exclude", body1=a, body2=b)
 
     actuator_el = ET.SubElement(root, "actuator")
     for a in actuators:

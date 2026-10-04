@@ -1,0 +1,120 @@
+{
+  "name": "confident_snap",
+  "variant": "emphatic",
+  "description": "Decisive nod with the body committing forward.",
+  "tags": {
+    "category": "attitude",
+    "family": "kinesics-temporal",
+    "valence": 0.6,
+    "arousal": 0.7
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "wrist_pitch"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.12,
+      "joints": {
+        "wrist_pitch": -3.6,
+        "shoulder_pitch": -0.9
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.38,
+      "joints": {
+        "wrist_pitch": 12.0,
+        "shoulder_pitch": 3.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 0.88,
+      "joints": {
+        "wrist_pitch": 12.0,
+        "shoulder_pitch": 3.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.33,
+      "joints": {
+        "wrist_pitch": 0.0,
+        "shoulder_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.0
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        1.0,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 1.33,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1.05: velocity 168 deg/s on wrist_pitch > 120",
+      "time_scale min 0.5 -> 0.95: velocity 219 deg/s on wrist_pitch > 120",
+      "corner: amplitude max -> 1 with time_scale min -> 1: velocity 123 deg/s on wrist_pitch > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 112.1,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.551,
+      "elbow_pitch": 0.573,
+      "wrist_pitch": 0.963,
+      "wrist_yaw": 0.0,
+      "head_roll": 0.0
+    }
+  }
+}

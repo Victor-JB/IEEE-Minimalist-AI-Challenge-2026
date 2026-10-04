@@ -1,0 +1,134 @@
+{
+  "name": "curious_head_tilt",
+  "variant": "double",
+  "description": "Tilts one way, then the other, as if puzzling.",
+  "tags": {
+    "category": "attention",
+    "family": "proxemics-static",
+    "valence": 0.5,
+    "arousal": 0.5
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "wrist_pitch",
+    "wrist_yaw",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.5,
+      "joints": {
+        "head_roll": 16.0,
+        "wrist_pitch": -4.0,
+        "wrist_yaw": 4.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 1.1,
+      "joints": {
+        "head_roll": 16.0,
+        "wrist_pitch": -4.0,
+        "wrist_yaw": 4.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.85,
+      "joints": {
+        "head_roll": -14.0,
+        "wrist_pitch": -5.0,
+        "wrist_yaw": -4.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.45,
+      "joints": {
+        "head_roll": -14.0,
+        "wrist_pitch": -5.0,
+        "wrist_yaw": -4.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 3.1,
+      "joints": {
+        "head_roll": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.3
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.85,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 3.1,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "time_scale min 0.5 -> 0.65: velocity 149 deg/s on head_roll > 120",
+      "corner: amplitude max -> 1.3 with time_scale min -> 0.85: velocity 172 deg/s on head_roll > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 74.9,
+    "peak_torque_nm": {
+      "base_yaw": 0.004,
+      "shoulder_pitch": 0.235,
+      "elbow_pitch": 0.342,
+      "wrist_pitch": 0.136,
+      "wrist_yaw": 0.174,
+      "head_roll": 0.655
+    }
+  }
+}

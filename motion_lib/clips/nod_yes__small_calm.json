@@ -1,0 +1,125 @@
+{
+  "name": "nod_yes",
+  "variant": "small_calm",
+  "description": "One slow, gentle nod.",
+  "tags": {
+    "category": "attitude",
+    "family": "kinesics-spatial",
+    "valence": 0.5,
+    "arousal": 0.2
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "wrist_pitch"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.4,
+      "joints": {
+        "wrist_pitch": 12.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 0.46,
+      "joints": {
+        "shoulder_pitch": 1.5
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 0.8,
+      "joints": {
+        "wrist_pitch": -2.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.86,
+      "joints": {
+        "shoulder_pitch": 0.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 1.15,
+      "joints": {
+        "wrist_pitch": 0.0,
+        "shoulder_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.35
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.75,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 1.15,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "time_scale min 0.5 -> 0.6: velocity 128 deg/s on wrist_pitch > 120",
+      "corner: amplitude max -> 1.35 with time_scale min -> 0.75: velocity 161 deg/s on wrist_pitch > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 65.2,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.387,
+      "elbow_pitch": 0.435,
+      "wrist_pitch": 0.601,
+      "wrist_yaw": 0.0,
+      "head_roll": 0.0
+    }
+  }
+}

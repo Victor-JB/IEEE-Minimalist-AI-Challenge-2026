@@ -1,0 +1,292 @@
+{
+  "name": "dance_128",
+  "variant": "party",
+  "description": "128 BPM, 2-bar loop: bigger bob and sway plus head accents.",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-temporal",
+    "valence": 0.9,
+    "arousal": 0.9
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "base_yaw",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "base_yaw": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.234,
+      "joints": {
+        "elbow_pitch": 8.0,
+        "wrist_pitch": -8.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 0.469,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 0.703,
+      "joints": {
+        "elbow_pitch": 8.0,
+        "wrist_pitch": -8.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 0.938,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 0.938,
+      "joints": {
+        "base_yaw": 15.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 0.938,
+      "joints": {
+        "head_roll": -8.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.172,
+      "joints": {
+        "elbow_pitch": 8.0,
+        "wrist_pitch": -8.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.172,
+      "joints": {
+        "wrist_yaw": 10.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.406,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.641,
+      "joints": {
+        "elbow_pitch": 8.0,
+        "wrist_pitch": -8.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.641,
+      "joints": {
+        "wrist_yaw": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.875,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.875,
+      "joints": {
+        "base_yaw": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.875,
+      "joints": {
+        "head_roll": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.109,
+      "joints": {
+        "elbow_pitch": 8.0,
+        "wrist_pitch": -8.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.344,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.578,
+      "joints": {
+        "elbow_pitch": 8.0,
+        "wrist_pitch": -8.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.812,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.812,
+      "joints": {
+        "base_yaw": -15.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.812,
+      "joints": {
+        "head_roll": 8.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.047,
+      "joints": {
+        "elbow_pitch": 8.0,
+        "wrist_pitch": -8.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.047,
+      "joints": {
+        "wrist_yaw": -10.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.281,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.516,
+      "joints": {
+        "elbow_pitch": 8.0,
+        "wrist_pitch": -8.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.516,
+      "joints": {
+        "wrist_yaw": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.75,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "base_yaw": 0.0,
+        "head_roll": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "cubic"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.5
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        1.0,
+        1.0
+      ],
+      "authored_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": true,
+  "duration_nominal": 3.75,
+  "bpm": 128,
+  "beats": 8,
+  "validation": {
+    "status": "PASS",
+    "notes": [],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 51.2,
+    "peak_torque_nm": {
+      "base_yaw": 0.21,
+      "shoulder_pitch": 0.341,
+      "elbow_pitch": 0.803,
+      "wrist_pitch": 0.445,
+      "wrist_yaw": 0.258,
+      "head_roll": 0.117
+    }
+  }
+}

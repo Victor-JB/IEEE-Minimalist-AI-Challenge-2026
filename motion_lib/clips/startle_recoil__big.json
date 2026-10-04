@@ -1,0 +1,158 @@
+{
+  "name": "startle_recoil",
+  "variant": "big",
+  "description": "Bigger recoil, long freeze, then a cautious two-step return.",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-temporal",
+    "valence": -0.6,
+    "arousal": 1.0
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.22,
+      "joints": {
+        "shoulder_pitch": -13.2,
+        "elbow_pitch": -11.0,
+        "wrist_pitch": -13.2,
+        "head_roll": 6.6
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.47,
+      "joints": {
+        "shoulder_pitch": -12.0,
+        "elbow_pitch": -10.0,
+        "wrist_pitch": -12.0,
+        "head_roll": 6.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 1.25,
+      "joints": {
+        "shoulder_pitch": -12.0,
+        "elbow_pitch": -10.0,
+        "wrist_pitch": -12.0,
+        "head_roll": 6.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.95,
+      "joints": {
+        "shoulder_pitch": -5.0,
+        "elbow_pitch": -4.0,
+        "wrist_pitch": -5.0,
+        "head_roll": 2.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.35,
+      "joints": {
+        "shoulder_pitch": -5.0,
+        "elbow_pitch": -4.0,
+        "wrist_pitch": -5.0,
+        "head_roll": 2.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 3.4,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [
+    {
+      "t": 0.0,
+      "light": 1.0
+    }
+  ],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.0
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        1.0,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 3.4,
+  "validation": {
+    "status": "WARN",
+    "notes": [
+      "amplitude max 1.5 -> 1.05: velocity 168 deg/s on wrist_pitch > 120",
+      "time_scale min 0.5 -> 0.95: velocity 217 deg/s on wrist_pitch > 120",
+      "corner: amplitude max -> 1 with time_scale min -> 1: velocity 123 deg/s on shoulder_pitch > 120",
+      "fails from 4/10 sampled start poses (first: start #0: wrist_pitch reaches -90.2 (limit -90 + 3 margin)); a selector must check headroom first"
+    ],
+    "sampled_start_failures": 4,
+    "peak_velocity_deg_s": 111.9,
+    "peak_torque_nm": {
+      "base_yaw": 0.007,
+      "shoulder_pitch": 1.958,
+      "elbow_pitch": 1.446,
+      "wrist_pitch": 1.041,
+      "wrist_yaw": 0.016,
+      "head_roll": 0.475
+    }
+  }
+}

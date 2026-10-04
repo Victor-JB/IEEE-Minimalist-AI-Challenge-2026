@@ -1,0 +1,261 @@
+{
+  "name": "dance_90",
+  "variant": "groove",
+  "description": "90 BPM, 2-bar loop: off-beat bob, sway each bar, head tilts.",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-temporal",
+    "valence": 0.7,
+    "arousal": 0.6
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "base_yaw",
+    "elbow_pitch",
+    "wrist_pitch",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "base_yaw": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.333,
+      "joints": {
+        "elbow_pitch": 5.0,
+        "wrist_pitch": -5.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 0.667,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.0,
+      "joints": {
+        "elbow_pitch": 5.0,
+        "wrist_pitch": -5.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.333,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.333,
+      "joints": {
+        "base_yaw": 10.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.333,
+      "joints": {
+        "head_roll": -5.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 1.667,
+      "joints": {
+        "elbow_pitch": 5.0,
+        "wrist_pitch": -5.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.0,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.333,
+      "joints": {
+        "elbow_pitch": 5.0,
+        "wrist_pitch": -5.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.667,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.667,
+      "joints": {
+        "base_yaw": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 2.667,
+      "joints": {
+        "head_roll": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.0,
+      "joints": {
+        "elbow_pitch": 5.0,
+        "wrist_pitch": -5.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.333,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 3.667,
+      "joints": {
+        "elbow_pitch": 5.0,
+        "wrist_pitch": -5.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 4.0,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 4.0,
+      "joints": {
+        "base_yaw": -10.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 4.0,
+      "joints": {
+        "head_roll": 5.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 4.333,
+      "joints": {
+        "elbow_pitch": 5.0,
+        "wrist_pitch": -5.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 4.667,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 5.0,
+      "joints": {
+        "elbow_pitch": 5.0,
+        "wrist_pitch": -5.0
+      },
+      "ease": "cubic"
+    },
+    {
+      "t": 5.333,
+      "joints": {
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "base_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "cubic"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.5
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        1.0,
+        1.0
+      ],
+      "authored_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": true,
+  "duration_nominal": 5.333,
+  "bpm": 90,
+  "beats": 8,
+  "validation": {
+    "status": "PASS",
+    "notes": [],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 22.5,
+    "peak_torque_nm": {
+      "base_yaw": 0.098,
+      "shoulder_pitch": 0.272,
+      "elbow_pitch": 0.543,
+      "wrist_pitch": 0.196,
+      "wrist_yaw": 0.0,
+      "head_roll": 0.052
+    }
+  }
+}

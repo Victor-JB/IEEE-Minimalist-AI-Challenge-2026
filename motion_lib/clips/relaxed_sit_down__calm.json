@@ -1,0 +1,168 @@
+{
+  "name": "relaxed_sit_down",
+  "variant": "calm",
+  "description": "Slow settle from home into the sit pose with a little rise first.",
+  "tags": {
+    "category": "emotion",
+    "family": "proxemics-dynamic",
+    "valence": 0.4,
+    "arousal": 0.1
+  },
+  "mode": "absolute",
+  "joint_mask": [
+    "base_yaw",
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "wrist_yaw",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 70.0,
+        "wrist_pitch": -60.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.4,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -10.0,
+        "elbow_pitch": 67.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.52,
+      "joints": {
+        "wrist_pitch": -57.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 2.0,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -30.0,
+        "elbow_pitch": 109.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.12,
+      "joints": {
+        "wrist_pitch": -79.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 2.5,
+      "joints": {
+        "base_yaw": 0.0,
+        "shoulder_pitch": -30.0,
+        "elbow_pitch": 105.0,
+        "wrist_yaw": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.62,
+      "joints": {
+        "wrist_pitch": -75.0,
+        "base_yaw": 0,
+        "shoulder_pitch": -30,
+        "elbow_pitch": 105,
+        "wrist_yaw": 0,
+        "head_roll": 0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.45
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.55,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": {
+    "base_yaw": 0.0,
+    "shoulder_pitch": -10.0,
+    "elbow_pitch": 70.0,
+    "wrist_pitch": -60.0,
+    "wrist_yaw": 0.0,
+    "head_roll": 0.0
+  },
+  "exit_pose": {
+    "base_yaw": 0,
+    "shoulder_pitch": -30,
+    "elbow_pitch": 105,
+    "wrist_pitch": -75,
+    "wrist_yaw": 0,
+    "head_roll": 0
+  },
+  "returns_to_start": false,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 2.62,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "corner: amplitude max -> 1.45 with time_scale min -> 0.55: velocity 122 deg/s on elbow_pitch > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 49.2,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.373,
+      "elbow_pitch": 0.5,
+      "wrist_pitch": 0.237,
+      "wrist_yaw": 0.0,
+      "head_roll": 0.0
+    }
+  }
+}

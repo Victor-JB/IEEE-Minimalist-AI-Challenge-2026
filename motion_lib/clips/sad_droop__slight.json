@@ -1,0 +1,151 @@
+{
+  "name": "sad_droop",
+  "variant": "slight",
+  "description": "Head sinks and tilts slowly, holds, recovers.",
+  "tags": {
+    "category": "emotion",
+    "family": "kinesics-spatial",
+    "valence": -0.6,
+    "arousal": 0.2
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "elbow_pitch",
+    "wrist_pitch",
+    "head_roll"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.6,
+      "joints": {
+        "shoulder_pitch": 6.0,
+        "elbow_pitch": 12.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 1.75,
+      "joints": {
+        "wrist_pitch": 10.0,
+        "head_roll": 6.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 3.1,
+      "joints": {
+        "shoulder_pitch": 6.0,
+        "elbow_pitch": 12.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 3.25,
+      "joints": {
+        "wrist_pitch": 10.0,
+        "head_roll": 6.0
+      },
+      "ease": "ease_in_out",
+      "peak": false
+    },
+    {
+      "t": 4.5,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 4.65,
+      "joints": {
+        "wrist_pitch": 0.0,
+        "head_roll": 0.0,
+        "shoulder_pitch": 0.0,
+        "elbow_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [
+    {
+      "t": 0.3,
+      "light": 0.6
+    },
+    {
+      "t": 4.5,
+      "light": 1.0
+    }
+  ],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.5
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 4.65,
+  "validation": {
+    "status": "WARN",
+    "notes": [
+      "fails from 2/10 sampled start poses (first: start #4: elbow_pitch reaches 119.0 (limit 120 - 3 margin)); a selector must check headroom first"
+    ],
+    "sampled_start_failures": 2,
+    "peak_velocity_deg_s": 16.1,
+    "peak_torque_nm": {
+      "base_yaw": 0.0,
+      "shoulder_pitch": 0.484,
+      "elbow_pitch": 0.587,
+      "wrist_pitch": 0.17,
+      "wrist_yaw": 0.004,
+      "head_roll": 0.074
+    }
+  }
+}

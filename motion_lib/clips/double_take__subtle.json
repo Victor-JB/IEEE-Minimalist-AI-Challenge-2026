@@ -1,0 +1,137 @@
+{
+  "name": "double_take",
+  "variant": "subtle",
+  "description": "Casual glance away and back, then a quick second look.",
+  "tags": {
+    "category": "attention",
+    "family": "kinesics-temporal",
+    "valence": 0.1,
+    "arousal": 0.5
+  },
+  "mode": "additive",
+  "joint_mask": [
+    "shoulder_pitch",
+    "wrist_pitch",
+    "wrist_yaw"
+  ],
+  "keyframes": [
+    {
+      "t": 0.0,
+      "joints": {
+        "shoulder_pitch": 0.0,
+        "wrist_pitch": 0.0,
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.5,
+      "joints": {
+        "wrist_yaw": 18.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 0.95,
+      "joints": {
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.2,
+      "joints": {
+        "wrist_yaw": 0.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 1.55,
+      "joints": {
+        "wrist_yaw": 20.0,
+        "wrist_pitch": -4.0,
+        "shoulder_pitch": -2.0
+      },
+      "ease": "ease_in_out",
+      "peak": true
+    },
+    {
+      "t": 2.15,
+      "joints": {
+        "wrist_yaw": 20.0,
+        "wrist_pitch": -4.0,
+        "shoulder_pitch": -2.0
+      },
+      "ease": "ease_in_out"
+    },
+    {
+      "t": 2.85,
+      "joints": {
+        "wrist_yaw": 0.0,
+        "wrist_pitch": 0.0,
+        "shoulder_pitch": 0.0
+      },
+      "ease": "ease_in_out"
+    }
+  ],
+  "events": [],
+  "params": {
+    "amplitude": {
+      "default": 1.0,
+      "range": [
+        0.5,
+        1.05
+      ],
+      "authored_range": [
+        0.5,
+        1.5
+      ]
+    },
+    "time_scale": {
+      "default": 1.0,
+      "range": [
+        0.95,
+        2.0
+      ],
+      "authored_range": [
+        0.5,
+        2.0
+      ]
+    },
+    "hold": {
+      "default": 0.0,
+      "range": [
+        0.0,
+        1.0
+      ],
+      "authored_range": [
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "entry_pose": null,
+  "exit_pose": null,
+  "returns_to_start": true,
+  "end_offset": null,
+  "pose_tolerance_deg": 2.0,
+  "loopable": false,
+  "duration_nominal": 2.85,
+  "validation": {
+    "status": "PASS",
+    "notes": [
+      "amplitude max 1.5 -> 1.05: velocity 160 deg/s on wrist_yaw > 120",
+      "time_scale min 0.5 -> 0.95: velocity 212 deg/s on wrist_yaw > 120"
+    ],
+    "sampled_start_failures": 0,
+    "peak_velocity_deg_s": 106.7,
+    "peak_torque_nm": {
+      "base_yaw": 0.002,
+      "shoulder_pitch": 0.236,
+      "elbow_pitch": 0.344,
+      "wrist_pitch": 0.107,
+      "wrist_yaw": 0.924,
+      "head_roll": 0.003
+    }
+  }
+}
