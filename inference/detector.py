@@ -27,6 +27,24 @@ except ImportError:
     except ImportError:
         from tensorflow.lite import Interpreter
 
+try:
+    from perfstats import timed  # perf/perfstats.py; does nothing unless PERF=1
+except ImportError:  # perf/ not on the path (e.g. inside the App Lab container)
+
+    class timed:
+        def __init__(self, name):
+            pass
+
+        def __call__(self, func):
+            return func
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            pass
+
+
 MODEL_PATH = Path(__file__).parent / "face_det_lite-tflite-w8a8" / "face_det_lite.tflite"
 INPUT_W, INPUT_H = 640, 480
 STRIDE = 8  # input pixels per output cell (640 / 80)
@@ -64,13 +82,16 @@ class FaceDetector:
         self.input_index = self.interpreter.get_input_details()[0]["index"]
         self.outputs = {d["name"]: d for d in self.interpreter.get_output_details()}
 
+    @timed("detector.total")
     def detect(self, frame):
         """Run the full pipeline on a BGR frame and return a list of Detection."""
         tensor = self._preprocess(frame)
-        self.interpreter.set_tensor(self.input_index, tensor)
-        self.interpreter.invoke()
+        with timed("detector.invoke"):
+            self.interpreter.set_tensor(self.input_index, tensor)
+            self.interpreter.invoke()
         return self._postprocess()
 
+    @timed("detector.preprocess")
     def _preprocess(self, frame):
         gray = frame if frame.ndim == 2 else cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -92,6 +113,7 @@ class FaceDetector:
         q = self.interpreter.get_tensor(d["index"])[0]
         return (q.astype(np.float32) - zero_point) * scale
 
+    @timed("detector.postprocess")
     def _postprocess(self):
         heatmap = 1 / (1 + np.exp(-self._output("heatmap")[..., 0]))  # logits -> probability
         bbox = self._output("bbox")

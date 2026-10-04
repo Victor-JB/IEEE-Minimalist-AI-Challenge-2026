@@ -4,15 +4,21 @@
     python inference/main.py --camera /dev/video2  # another camera
     python inference/main.py --no-detect           # camera only
     python inference/main.py --headless            # no window, print detections
+    PERF=1 python inference/main.py --headless     # + timing/system report at exit (see perf/)
 """
 
 import argparse
+import sys
 import time
+from pathlib import Path
 
 import cv2
 
-from camera import Camera, FpsCounter, display_available
-from detector import FaceDetector
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "perf"))
+from perfstats import count, timed  # noqa: E402  (no-op unless PERF=1)
+
+from camera import Camera, FpsCounter, display_available  # noqa: E402
+from detector import FaceDetector  # noqa: E402
 
 
 def draw(frame, detections, fps, infer_ms):
@@ -42,16 +48,19 @@ def main():
     with Camera(args.camera) as cam:
         fps = FpsCounter()  # start after the (slow) camera open
         while True:
-            frame = cam.read()
+            with timed("camera.read"):
+                frame = cam.read()
             if frame is None:
                 print("Frame grab failed; is the camera unplugged?")
                 break
+            count("frames")
 
             detections, infer_ms = [], None
             if detector:
                 t0 = time.perf_counter()
                 detections = detector.detect(frame)
                 infer_ms = (time.perf_counter() - t0) * 1000
+                count("faces", len(detections))
             fps.tick()
 
             # TODO: pick a target face (e.g. largest box) and turn its center
@@ -64,9 +73,11 @@ def main():
                     last_print = time.perf_counter()
                 continue
 
-            draw(frame, detections, fps.fps, infer_ms)
-            cv2.imshow("face detection (q to quit)", frame)
-            if cv2.waitKey(1) & 0xFF == ord("q"):
+            with timed("display"):
+                draw(frame, detections, fps.fps, infer_ms)
+                cv2.imshow("face detection (q to quit)", frame)
+                key = cv2.waitKey(1) & 0xFF
+            if key == ord("q"):
                 break
     if not headless:
         cv2.destroyAllWindows()
