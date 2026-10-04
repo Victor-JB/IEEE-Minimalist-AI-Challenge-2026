@@ -6,14 +6,26 @@ Model I/O (see face_det_lite-tflite-w8a8/metadata.json):
     bbox      [1, 60, 80, 4]    distances (in cells) from the cell to the box's left, top, right, bottom
     landmark  [1, 60, 80, 10]   5 facial points per cell (decoding is still a TODO)
 All outputs are uint8-quantized: real = (q - zero_point) * scale.
+
+The model file is platform-independent; the same .tflite runs on Linux and Windows.
 """
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
 import cv2
 import numpy as np
-from ai_edge_litert.interpreter import Interpreter
+
+# LiteRT is the current TFLite runtime; fall back to the older packages so the
+# same code runs on boards that only have one of them installed.
+try:
+    from ai_edge_litert.interpreter import Interpreter
+except ImportError:
+    try:
+        from tflite_runtime.interpreter import Interpreter
+    except ImportError:
+        from tensorflow.lite import Interpreter
 
 MODEL_PATH = Path(__file__).parent / "face_det_lite-tflite-w8a8" / "face_det_lite.tflite"
 INPUT_W, INPUT_H = 640, 480
@@ -35,12 +47,19 @@ class Detection:
 
 
 class FaceDetector:
-    def __init__(self, model_path=MODEL_PATH, score_threshold=0.5, nms_threshold=0.4):
+    def __init__(
+        self,
+        model_path=MODEL_PATH,
+        score_threshold=0.5,
+        nms_threshold=0.4,
+        num_threads=os.cpu_count(),
+    ):
         self.score_threshold = score_threshold
         self.nms_threshold = nms_threshold
+        self.scale = 1.0  # frame pixels -> model pixels, set per frame by _preprocess
 
         # Load once; this is the slow part.
-        self.interpreter = Interpreter(model_path=str(model_path))
+        self.interpreter = Interpreter(model_path=str(model_path), num_threads=num_threads)
         self.interpreter.allocate_tensors()
         self.input_index = self.interpreter.get_input_details()[0]["index"]
         self.outputs = {d["name"]: d for d in self.interpreter.get_output_details()}
@@ -50,14 +69,22 @@ class FaceDetector:
         tensor = self._preprocess(frame)
         self.interpreter.set_tensor(self.input_index, tensor)
         self.interpreter.invoke()
-        return self._postprocess(frame.shape[1], frame.shape[0])
+        return self._postprocess()
 
     def _preprocess(self, frame):
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        if gray.shape != (INPUT_H, INPUT_W):
-            gray = cv2.resize(gray, (INPUT_W, INPUT_H))
+        gray = frame if frame.ndim == 2 else cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # Letterbox: shrink to fit 640x480 without stretching, pad the bottom/right
+        # with black. A 16:9 camera stretched to 4:3 would squash faces.
+        h, w = gray.shape
+        self.scale = min(INPUT_W / w, INPUT_H / h)
+        if self.scale != 1.0:
+            gray = cv2.resize(gray, (round(w * self.scale), round(h * self.scale)))
+        canvas = np.zeros((INPUT_H, INPUT_W), np.uint8)
+        canvas[: gray.shape[0], : gray.shape[1]] = gray
+
         # The model's input quantization (scale 1/255, zero point 0) means raw 0-255 pixels go in as-is.
-        return gray[np.newaxis, :, :, np.newaxis]
+        return canvas[np.newaxis, :, :, np.newaxis]
 
     def _output(self, name):
         d = self.outputs[name]
@@ -65,7 +92,7 @@ class FaceDetector:
         q = self.interpreter.get_tensor(d["index"])[0]
         return (q.astype(np.float32) - zero_point) * scale
 
-    def _postprocess(self, frame_w, frame_h):
+    def _postprocess(self):
         heatmap = 1 / (1 + np.exp(-self._output("heatmap")[..., 0]))  # logits -> probability
         bbox = self._output("bbox")
 
@@ -75,14 +102,14 @@ class FaceDetector:
         if len(xs) == 0:
             return []
 
-        sx, sy = frame_w / INPUT_W, frame_h / INPUT_H
+        # Cells -> model pixels (x STRIDE) -> frame pixels (/ scale). Padding is
+        # only on the bottom/right, so there is no offset to undo.
+        k = STRIDE / self.scale
         boxes, scores = [], []
         for cx, cy in zip(xs, ys):
             left, top, right, bottom = bbox[cy, cx]
-            x1 = (cx - left) * STRIDE * sx
-            y1 = (cy - top) * STRIDE * sy
-            x2 = (cx + right) * STRIDE * sx
-            y2 = (cy + bottom) * STRIDE * sy
+            x1, y1 = (cx - left) * k, (cy - top) * k
+            x2, y2 = (cx + right) * k, (cy + bottom) * k
             boxes.append([int(x1), int(y1), int(x2 - x1), int(y2 - y1)])
             scores.append(float(heatmap[cy, cx]))
 

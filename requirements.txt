@@ -1,3 +1,5 @@
-numpy==2.5.3
-opencv-python==5.0.0.93
-ai-edge-litert==2.2.0
+# Wheels exist for Windows x64 and Linux x86_64/aarch64 (glibc >= 2.27), Python 3.10+.
+# On a headless Linux box (no monitor), swap opencv-python for opencv-python-headless.
+numpy>=1.26
+opencv-python>=4.8
+ai-edge-litert>=2.0
