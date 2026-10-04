@@ -1,23 +1,20 @@
 // Expressive robot - MCU side (STM32U585).
 //
 // Python (Linux side) sends joint targets over the Bridge at ~20 Hz with
-//   Bridge.notify("set_joints", [j0, j1, j2, j3, j4, j5])   // integer degrees
+//   Bridge.notify("set_joints", [j0, j1, j2, j3, j4, j5])   // integer joint degrees
 // This sketch runs its own faster loop that eases each joint toward its target
 // with a speed limit, so motion stays smooth even if Python is slow or jittery.
 // If Python stops sending, the robot eases back to HOME.
+//
+// sim/view.py --demo runs a Python copy of this easing (ServoModel); keep them in sync.
 
 #include "Arduino_RouterBridge.h"
 #include <vector>
 
-const int NUM_JOINTS = 6;
+// NUM_JOINTS, JOINT_MIN/MAX, HOME, MAX_SPEED_DEG_S, CONTROL_PERIOD_MS.
+// Generated from sim/robot.toml by sim/configurator.py.
+#include "robot_config.h"
 
-// Per-joint limits and rest pose, in degrees. TODO: set from the CAD / real servos.
-const float JOINT_MIN[NUM_JOINTS] = {0, 0, 0, 0, 0, 0};
-const float JOINT_MAX[NUM_JOINTS] = {180, 180, 180, 180, 180, 180};
-const float HOME[NUM_JOINTS] = {90, 90, 90, 90, 90, 90};
-
-const unsigned long CONTROL_PERIOD_MS = 20;     // 50 Hz servo update
-const float MAX_SPEED_DEG_S = 120.0;            // per-joint speed limit
 const unsigned long COMMAND_TIMEOUT_MS = 1000;  // no command for this long -> go HOME
 const unsigned long STATUS_PERIOD_MS = 1000;
 
@@ -27,13 +24,17 @@ float current[NUM_JOINTS];
 volatile unsigned long lastCommandMs = 0;
 
 // TODO: drive the real servo (Servo library on a PWM pin, or a PCA9685 over I2C).
+// `degrees` is the joint angle (0 = straight pose); map it to the servo's own
+// range here, e.g. servoAngle = 90 + direction * degrees, per joint.
 void writeServo(int joint, float degrees) {
 }
 
 // Called by Python via Bridge.notify("set_joints", [...]).
 void set_joints(std::vector<int> degrees) {
     if (degrees.size() != NUM_JOINTS) {
-        Monitor.print("set_joints: expected 6 values, got ");
+        Monitor.print("set_joints: expected ");
+        Monitor.print(NUM_JOINTS);
+        Monitor.print(" values, got ");
         Monitor.println((int)degrees.size());
         return;
     }

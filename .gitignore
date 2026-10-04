@@ -35,3 +35,4 @@
 *.app
 
 __pycache__/
+sim/build/

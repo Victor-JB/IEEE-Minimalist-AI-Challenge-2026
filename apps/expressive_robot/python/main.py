@@ -10,13 +10,13 @@ import time
 
 from arduino.app_utils import *
 
-NUM_JOINTS = 6
-HOME = [90] * NUM_JOINTS  # keep in sync with HOME in sketch.ino
+from robot_config import HOME  # generated from sim/robot.toml
+
 SEND_HZ = 20
 
 
 def test_sweep(t):
-    """Swing joint 0 +/-30 degrees around HOME every 5 seconds."""
+    """Swing joint 0 (base yaw) +/-30 degrees around HOME every 5 seconds."""
     targets = list(HOME)
     targets[0] += 30 * math.sin(2 * math.pi * t / 5)
     return targets

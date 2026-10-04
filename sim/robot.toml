@@ -1,0 +1,82 @@
+# Robot description - the single source of truth for the sim, the sketch and the app.
+# After editing, run:  python sim/configurator.py   (sim/view.py also runs it for you)
+#
+# Units: meters, kilograms, degrees.
+# Frames: +z is up, +x is the robot's front (where the head's eyes face).
+# Joint angles are joint-space: 0 = the pose where every link points along its
+# `link` vector as written below. The sketch maps joint angles to servo commands.
+
+name = "expressive_robot"
+
+[motion]
+max_speed_deg_s = 120  # per-joint speed limit used by the sketch and the sim
+control_hz = 50        # how often the sketch updates the servos
+
+[defaults]  # applies to every [[joint]] unless the joint overrides it
+mass = 0.05       # kg of the link this joint moves (until the next joint)
+radius = 0.012    # link drawing thickness
+kp = 20.0         # sim actuator stiffness, N*m/rad
+damping = 0.5     # sim joint damping, N*m*s/rad
+armature = 0.001  # reflected rotor inertia; raise it for high-ratio gearboxes
+# max_torque = 1.5  # N*m; uncomment to cap actuator torque like a real motor
+
+[base]
+size = [0.12, 0.12, 0.04]  # full width, depth, height of the base box
+mass = 0.6
+
+# One [[joint]] per DOF, from the base outward. Each joint sits at the end of
+# the previous joint's link (the first one sits on top of the base).
+#   axis  - "x", "y", "z" or a vector like [0, 1, 1], in the parent link's frame
+#   link  - vector from this joint to the next joint (or to the head), in this joint's frame
+#   range - [min, max] joint angle; home - rest pose angle
+
+[[joint]]
+name = "base_yaw"
+axis = "z"
+range = [-120, 120]
+home = 0
+link = [0, 0, 0.04]
+mass = 0.10
+
+[[joint]]
+name = "shoulder_pitch"
+axis = "y"
+range = [-60, 90]
+home = -10
+link = [0, 0, 0.14]
+mass = 0.15
+
+[[joint]]
+name = "elbow_pitch"
+axis = "y"
+range = [-120, 120]
+home = 70
+link = [0, 0, 0.12]
+mass = 0.12
+
+[[joint]]
+name = "wrist_pitch"
+axis = "y"
+range = [-90, 90]
+home = -60
+link = [0, 0, 0.04]
+mass = 0.06
+
+[[joint]]
+name = "wrist_yaw"
+axis = "z"
+range = [-90, 90]
+home = 0
+link = [0, 0, 0.03]
+
+[[joint]]
+name = "head_roll"
+axis = "x"
+range = [-45, 45]
+home = 0
+link = [0, 0, 0.03]
+mass = 0.04
+
+[head]
+size = [0.07, 0.09, 0.06]  # full depth (x), width (y), height (z)
+mass = 0.12
