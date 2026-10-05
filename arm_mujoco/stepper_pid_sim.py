@@ -245,15 +245,18 @@ class Firmware:
             return plan(t), plan(t + dt)
         # stream: interpolate between the last two samples (one send period late), then a
         # critically damped 2nd-order filter, so the corners every 1/SEND_HZ don't shake the arm.
-        # Its speed and acceleration are capped at the joint limits: a safety net for any clip.
+        # Speed and acceleration stay within the joint limits, a safety net for any clip; when one
+        # joint is at its limit all joints slow down together, so the motion keeps its shape.
         s = min(max((t + dt - self.t_recv) * SEND_HZ, 0.0), 1.0)
         x = [a + (b - a) * s for a, b in zip(self.prev_target, self.target)]
         w = TWO_PI * STREAM_FILTER_HZ
         now = list(self.fp)
-        for k, j in enumerate(self.names):
-            acc = w * w * (x[k] - self.fp[k]) - 2 * w * self.fv[k]
-            acc = min(max(acc, -AMAX_DEG[j]), AMAX_DEG[j])
-            self.fv[k] = min(max(self.fv[k] + acc * dt, -VMAX_DEG[j]), VMAX_DEG[j])
+        acc = [w * w * (x[k] - self.fp[k]) - 2 * w * self.fv[k] for k in range(5)]
+        sa = min([1.0] + [AMAX_DEG[j] / abs(a) for j, a in zip(self.names, acc) if a])
+        vel = [v + a * sa * dt for v, a in zip(self.fv, acc)]
+        sv = min([1.0] + [VMAX_DEG[j] / abs(v) for j, v in zip(self.names, vel) if v])
+        for k in range(5):
+            self.fv[k] = vel[k] * sv
             self.fp[k] += self.fv[k] * dt
         return now, list(self.fp)
 
@@ -345,10 +348,13 @@ class Firmware:
 
 
 class Sim:
-    def __init__(self, controller='smooth', sensor='joint', scenario_name='step', xml=None, seed=1, pid=None):
-        self.sc = scenario(scenario_name)
-        self.controller, self.sensor, self.name = controller, sensor, scenario_name
-        self.m = m = mujoco.MjModel.from_xml_path(xml or os.path.join(HERE, 'robot_arm.xml'))
+    def __init__(self, controller='smooth', sensor='joint', scenario_name='step', xml=None, seed=1, pid=None,
+                 model=None, sc=None, warmup=None):
+        """model / sc / warmup let other scripts drive their own scene and motion (see drive())."""
+        self.sc = sc or scenario(scenario_name)
+        self.controller, self.sensor, self.name = controller, sensor, ('show' if sc else scenario_name)
+        self.warmup = WARMUP if warmup is None else warmup
+        self.m = m = model or mujoco.MjModel.from_xml_path(xml or os.path.join(HERE, 'robot_arm.xml'))
         self.d = mujoco.MjData(m)
         self.rng = np.random.default_rng(seed)
         self.qadr = [m.jnt_qposadr[m.joint(j).id] for j in STEPPERS + ['head_tilt']]
@@ -431,7 +437,7 @@ class Sim:
         self.read_n = max(1, int(round(I2C_READ_US * 1e-6 * SUBSTEP_HZ)))
         if self.sensor != 'none' and 4 * self.read_n >= self.loop_n:
             print(f'warning: 4 I2C reads ({4 * I2C_READ_US} us) do not fit in the {1e6 / LOOP_HZ:.0f} us loop')
-        self.t_off = -WARMUP
+        self.t_off = -self.warmup
         self.events = [] if sc['stream'] else list(sc['events'])
         self.next_send = 0.0
         self.log = []
@@ -575,6 +581,29 @@ class Sim:
         ref = self.last_ref
         self.log.append(dict(t=t, q=q, target=list(fw.target), ref=list(ref) if ref else None, cmd=cmd,
                              meas=list(fw.meas), slips=list(self.slips), tq=list(tq), ideal=ideal))
+
+
+DRIVES = {   # --drive names used by lamp_demo.py / elegnt_demo.py -> (controller, PID settings)
+    'pid': ('pid', {}),
+    'pid_tuned': ('pid', PID_TUNED),
+    'smooth': ('smooth', None),
+}
+
+
+def drive(model, ref_deg, duration, name='pid_tuned', sensor='joint'):
+    """Run an animation through the stepper drives: ref_deg(t) -> the 5 joint angles (deg) that
+    Linux streams to the MCU. Returns a Sim; call sim.step() instead of mujoco.mj_step(), it sets
+    the motor torques and the head servo and steps the model. sim.d is the MjData to use."""
+    ctl, pid = DRIVES[name]
+    sc = dict(stream=True, duration=duration, ref=ref_deg, push=None)
+    return Sim(ctl, sensor, model=model, sc=sc, warmup=0.0, pid=pid)
+
+
+def drive_overlay(sim, title):
+    """Viewer text: drive, sensor and lost steps per joint."""
+    lost = '  '.join(f'{j} {n}' for j, n in zip(STEPPERS, sim.slips))
+    return (mujoco.mjtFontScale.mjFONTSCALE_150, mujoco.mjtGridPos.mjGRID_TOPLEFT,
+            f'{title}\nsensor: {sim.sensor}\nlost steps: {lost}', '')
 
 
 # ---------------------------------------------------------------------- analysis

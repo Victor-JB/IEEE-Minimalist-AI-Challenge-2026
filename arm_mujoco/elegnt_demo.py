@@ -19,6 +19,11 @@ failure indication, remind water, social conversation and play music.
   python3  elegnt_demo.py --video elegnt.mp4          side-by-side video, all scenarios
   python3  elegnt_demo.py --report                    tracking/torque report, both gammas
   mjpython elegnt_demo.py --scenario water --gamma 1  live in the MuJoCo viewer
+
+  --drive pid | pid_tuned | smooth    play it through the simulated stepper drivers and STM32
+                                      loop of stepper_pid_sim.py instead of ideal motors
+  --sensor joint | motor | none       where the AS5600s are (with --drive)
+  --current 1.41 / --vbus 24          driver current (x rated) and supply voltage (with --drive)
 """
 import argparse
 import math
@@ -453,7 +458,7 @@ def sc_social(kin, g):
     s.look(USER_HEAD, reach=0.13, height=0.35, speed=0.5, E=True)
     s.user_say(11.0, 'Could you pass me that plant?', 2.2)
     s.at(13.2)
-    s.gaze_shift(PLANT_LOOK, reach=0.22, height=0.33, label='point at the plant')
+    s.gaze_shift(PLANT_LOOK, reach=0.20, height=0.35, label='point at the plant')   # >= 25 mm clear of the plant
     s.say('This one?', 1.8)
     s.nod(n=2, amp=0.10, freq=2.4)
     s.gaze_shift(USER_HEAD, reach=0.13, height=0.36, label='gaze back at user')
@@ -515,10 +520,11 @@ SCENARIOS = {'photo': sc_photo, 'project': sc_project, 'failure': sc_failure,
 
 # ------------------------------------------------------------------ simulation
 class Rig:
-    def __init__(self, xml, show):
+    def __init__(self, xml, show, drive='ideal', sensor='joint'):
         self.m = mujoco.MjModel.from_xml_string(xml)
         self.d = mujoco.MjData(self.m)
         self.show = show
+        self.sim = None
         m = self.m
         self.qadr = [m.jnt_qposadr[m.joint(j).id] for j in JOINTS]
         self.act = [m.actuator(a).id for a in ACTUATORS]
@@ -530,10 +536,22 @@ class Rig:
         self.limit = np.array([m.actuator_forcerange[a, 1] for a in self.act])
         self.light = m.light('lamp_light').id
         self.hand = m.body('user_hand').mocapid[0]
+        if drive != 'ideal':
+            # Linux streams the planned motion to the MCU, which drives the steppers (stepper_pid_sim.py)
+            import stepper_pid_sim
+            self.sim = stepper_pid_sim.drive(m, lambda t: np.degrees(show._q(max(t, 0.0))), show.end, drive, sensor)
+            self.d = self.sim.d
+            self.title = f'drive: {drive}'
         self.reset()
 
     def reset(self):
         m, d, q0 = self.m, self.d, self.show.q0
+        if self.sim:
+            self.sim.reset()
+            d.mocap_pos[self.hand] = self.show.hand_at(0.0)
+            m.light_active[self.light] = 1 if self.show.light_at(0.0) else 0
+            mujoco.mj_forward(m, d)
+            return
         mujoco.mj_resetData(m, d)
         full = dict(zip(JOINTS, q0))
         for jn, (src, k) in {'base_motor_shaft': ('yaw', -5), 'shoulder_motor_shaft': ('shoulder', 16),
@@ -558,6 +576,18 @@ class Rig:
         self.d.mocap_pos[self.hand] = self.show.hand_at(t)
         return q
 
+    def step(self):
+        """Advance one timestep (ideal motors or the simulated stepper drives); returns the plan."""
+        t = self.d.time
+        if not self.sim:
+            q = self.control(t)
+            mujoco.mj_step(self.m, self.d)
+            return q
+        self.m.light_active[self.light] = 1 if self.show.light_at(t) else 0
+        self.d.mocap_pos[self.hand] = self.show.hand_at(t)
+        _, self.tq = self.sim.step()
+        return self.show._q(t)
+
     def arm_q(self):
         return self.d.qpos[self.qadr].copy()
 
@@ -574,25 +604,37 @@ def robot_contacts(m, d):
 
 
 # ------------------------------------------------------------------ outputs
-def run_report(names, gammas, xray=False):
+def run_report(names, gammas, xray=False, drive='ideal', sensor='joint'):
     xml = scene_xml(xray)
     kin = LampKin(mujoco.MjModel.from_xml_string(xml))
+    if drive != 'ideal':
+        print(f'Through the simulated stepper drives ({drive}, sensor on {sensor}). Error vs the plan with the '
+              'stream delay removed; torque = motor torque / pull-out torque (steppers 0-3, head servo not included).')
     for name in names:
         for g in gammas:
             show = SCENARIOS[name](kin, g)
-            rig = Rig(xml, show); m, d = rig.m, rig.d
+            rig = Rig(xml, show, drive, sensor); m, d = rig.m, rig.d
             n = int(show.end / m.opt.timestep)
-            emax = np.zeros(5); fmax = np.zeros(5); contacts = set()
+            emax = np.zeros(5); fmax = np.zeros(5); contacts = set(); plan, real = [], []
             cup0 = d.xpos[m.body('cup').id].copy()
             for i in range(n):
-                q = rig.control(d.time)
-                mujoco.mj_step(m, d)
-                emax = np.maximum(emax, np.abs(np.degrees(rig.arm_q() - q)))
-                fmax = np.maximum(fmax, np.abs(d.actuator_force[rig.act]) / rig.limit)
+                q = rig.step()
+                if rig.sim:
+                    plan.append(q); real.append(rig.arm_q())
+                    fmax[:4] = np.maximum(fmax[:4], rig.tq)
+                else:
+                    emax = np.maximum(emax, np.abs(np.degrees(rig.arm_q() - q)))
+                    fmax = np.maximum(fmax, np.abs(d.actuator_force[rig.act]) / rig.limit)
                 contacts |= robot_contacts(m, d)
+            extra = ''
+            if rig.sim:
+                plan, real = np.degrees(plan), np.degrees(real)
+                best = min((np.abs(real[k:] - plan[:len(plan) - k]).max(), k) for k in range(0, 500, 10))
+                emax[:] = best[0]
+                extra = f'  delay {1000 * best[1] * m.opt.timestep:3.0f} ms  lost steps {rig.sim.slips}'
             cup = d.xpos[m.body('cup').id] - cup0
             print(f'{name:8s} gamma={g:.1f}  {show.end:5.1f}s  max err {emax.max():5.2f} deg  peak torque {100 * fmax.max():3.0f}% '
-                  f'(per joint {np.round(100 * fmax).astype(int).tolist()})  cup moved {1000 * np.linalg.norm(cup[:2]):5.1f} mm  '
+                  f'(per joint {np.round(100 * fmax).astype(int).tolist()})  cup moved {1000 * np.linalg.norm(cup[:2]):5.1f} mm{extra}  '
                   f'contacts: {sorted(contacts) if contacts else "none"}')
 
 
@@ -650,7 +692,7 @@ def _panel(img, show, t, label, W, H):
     return img
 
 
-def run_video(names, out, xray=False, fps=30, W=960, H=600):
+def run_video(names, out, xray=False, fps=30, W=960, H=600, drive='ideal', sensor='joint'):
     from PIL import Image, ImageDraw
     xml = scene_xml(xray)
     kin = LampKin(mujoco.MjModel.from_xml_string(xml))
@@ -673,7 +715,7 @@ def run_video(names, out, xray=False, fps=30, W=960, H=600):
     for name in names:
         F, E = SCENARIOS[name](kin, 0.0), SCENARIOS[name](kin, 1.0)
         card([(F.title, 48, (255, 255, 255)), (F.note, 24, (200, 210, 225))], 2.2)
-        rigs = [Rig(xml, F), Rig(xml, E)]
+        rigs = [Rig(xml, F, drive, sensor), Rig(xml, E, drive, sensor)]
         rends = [mujoco.Renderer(r.m, H, W) for r in rigs]
         cam = mujoco.MjvCamera(); cam.type = mujoco.mjtCamera.mjCAMERA_FREE
         cam.lookat[:] = [0.33, 0.0, 0.21]; cam.distance = 1.22; cam.azimuth = 112; cam.elevation = -13
@@ -683,8 +725,7 @@ def run_video(names, out, xray=False, fps=30, W=960, H=600):
             frames = []
             for rig, rend, show, lab in zip(rigs, rends, (F, E), ('FUNCTION-DRIVEN  (gamma = 0)', 'EXPRESSION-DRIVEN  (gamma = 1)')):
                 for _ in range(spf):
-                    rig.control(rig.d.time)
-                    mujoco.mj_step(rig.m, rig.d)
+                    rig.step()
                 rend.update_scene(rig.d, cam)
                 img = Image.fromarray(rend.render())
                 frames.append(np.asarray(_panel(img, show, rig.d.time, lab, W, H)))
@@ -697,20 +738,22 @@ def run_video(names, out, xray=False, fps=30, W=960, H=600):
     print(f'wrote {out}')
 
 
-def run_viewer(name, gamma, xray=False):
+def run_viewer(name, gamma, xray=False, drive='ideal', sensor='joint'):
     import mujoco.viewer
     xml = scene_xml(xray)
     kin = LampKin(mujoco.MjModel.from_xml_string(xml))
     show = SCENARIOS[name](kin, gamma)
-    rig = Rig(xml, show); m, d = rig.m, rig.d
+    rig = Rig(xml, show, drive, sensor); m, d = rig.m, rig.d
     with mujoco.viewer.launch_passive(m, d) as v:
         v.cam.lookat[:] = [0.33, 0.0, 0.21]; v.cam.distance = 1.22; v.cam.azimuth = 112; v.cam.elevation = -13
         while v.is_running():
             rig.reset(); t0 = time.time()
             while v.is_running() and d.time < show.end:
-                rig.control(d.time)
-                mujoco.mj_step(m, d)
+                rig.step()
                 if d.time > time.time() - t0:
+                    if rig.sim:
+                        import stepper_pid_sim
+                        v.set_texts(stepper_pid_sim.drive_overlay(rig.sim, rig.title))
                     v.sync(); time.sleep(max(0.0, d.time - (time.time() - t0)))
             time.sleep(0.8)
 
@@ -722,11 +765,20 @@ if __name__ == '__main__':
     ap.add_argument('--report', action='store_true')
     ap.add_argument('--video')
     ap.add_argument('--xray', action='store_true')
+    ap.add_argument('--drive', choices=['ideal', 'pid', 'pid_tuned', 'smooth'], default='ideal',
+                    help='ideal motors, or the simulated stepper drivers + STM32 loop with this controller')
+    ap.add_argument('--sensor', choices=['joint', 'motor', 'none'], default='joint', help='AS5600 placement (with --drive)')
+    ap.add_argument('--current', type=float, help='with --drive: driver peak current / rated (1.41 = TMC2209 at rated RMS)')
+    ap.add_argument('--vbus', type=float, help='with --drive: motor supply voltage')
     a = ap.parse_args()
+    if a.current or a.vbus:
+        import stepper_pid_sim
+        stepper_pid_sim.CURRENT = a.current or stepper_pid_sim.CURRENT
+        stepper_pid_sim.VBUS = a.vbus or stepper_pid_sim.VBUS
     names = list(SCENARIOS) if a.scenario == 'all' else [a.scenario]
     if a.report:
-        run_report(names, [0.0, a.gamma] if a.gamma > 0 else [0.0], a.xray)
+        run_report(names, [0.0, a.gamma] if a.gamma > 0 else [0.0], a.xray, a.drive, a.sensor)
     elif a.video:
-        run_video(names, a.video, a.xray)
+        run_video(names, a.video, a.xray, drive=a.drive, sensor=a.sensor)
     else:
-        run_viewer(names[0] if a.scenario != 'all' else 'social', a.gamma, a.xray)
+        run_viewer(names[0] if a.scenario != 'all' else 'social', a.gamma, a.xray, a.drive, a.sensor)

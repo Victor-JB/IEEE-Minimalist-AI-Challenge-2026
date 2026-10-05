@@ -59,6 +59,7 @@ pip install mujoco                          # once
 mjpython lamp_demo.py                       # live in the MuJoCo viewer (macOS needs mjpython)
 python3 lamp_demo.py --report               # tracking error and torque use per joint
 python3 lamp_demo.py --video out.mp4 --xray # render a video (needs ffmpeg)
+mjpython lamp_demo.py --drive smooth        # through the simulated steppers + STM32 loop (see below)
 ```
 
 Edit `POSE` and `SHOW` to choreograph your own moves.
@@ -121,6 +122,7 @@ The look-at solver aims the shade at real points (the user's head, the cup, the 
 python3  elegnt_demo.py --video elegnt.mp4          # side-by-side video (gamma 0 vs 1), all scenarios
 python3  elegnt_demo.py --report                    # tracking / torque / contacts / cup push
 mjpython elegnt_demo.py --scenario social --gamma 1 # live in the viewer (try --gamma 0.5)
+mjpython elegnt_demo.py --scenario water --drive pid_tuned   # through the simulated steppers (see below)
 ```
 
 ## Stepper drivers + STM32 loop (`stepper_pid_sim.py`)
@@ -187,6 +189,24 @@ What it shows:
   - **Calibration:** calibrate the joint AS5600s, since magnet misalignment (±0.4° assumed) is bigger than the sag of a stiff gearbox. One way: sweep each joint slowly with the motor (steps are accurate to ~0.01° at the joint) and store a correction table.
   - **With a PID on the sensor:** the motor shaft is the more stable place, because backlash inside a fast loop makes it hunt.
 - **Torque margin:** the shoulder is the weakest joint. In the show's leaning moves it reaches 107% of its pull-out torque with the driver current at rated (A4988/DRV8825 Vref). It reaches 92% with a TMC2209 set to the rated RMS current (`--current 1.41`).
+
+### Running the animations through the drives
+`lamp_demo.py` and `elegnt_demo.py` take `--drive pid | pid_tuned | smooth`. Instead of ideal motors, the animation is streamed from "Linux" at 20 Hz in whole degrees to the simulated STM32, which drives the steppers.
+- **`--sensor joint | motor | none`:** where the AS5600s are.
+- **`--current` / `--vbus`:** driver current (× rated) and supply voltage.
+- **Viewer overlay:** shows the drive, the sensor and lost steps per joint.
+- **`--report`:** prints the error against the plan, with the stream delay removed.
+
+| Animation | `--drive smooth` | `--drive pid_tuned` |
+|---|---|---|
+| lamp demo | 0.27° rms, 100 ms late, no lost steps | 2.6° rms, 220 ms late, no lost steps |
+| ELEGNT, every scenario at γ 0 and 1 except failure γ 1 | within 0.5–3° (9° in the gallery's startle), about 0.1 s late, no lost steps; the cup push still moves the cup 74 mm | 2–30° behind on fast gestures (0.2 s late), no lost steps |
+| ELEGNT failure, γ 1 | the shoulder can't hold the full stretch: steps lost, it drops onto the table | same |
+| ELEGNT failure, γ 1, `--current 1.41` | within 3.7°, no lost steps | within 16°, no lost steps |
+
+The failure gesture stretches the arm out horizontally and trembles. At the driver's rated current that is more than the shoulder can hold. A TMC2209 set to the rated RMS current (`--current 1.41`) handles it.
+
+The social scenario's "point at the plant" pose sits 2 cm higher and closer than before: the original passed within 0.1 mm of the plant, so any real-world delay made the shade hit it. It now clears it by 27 mm. (`elegnt.mp4` was rendered before this change.)
 
 ### Tuned settings
 Found by `tune_stepper.py` on this model with the default assumptions. Starting values, not final ones: re-run the tuner once you've measured your gearbox, driver current and supply.

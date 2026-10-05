@@ -8,6 +8,11 @@ The arm is driven the way real stepper firmware would drive it: every move is a 
   python3  lamp_demo.py --report      run the show headless and print how well it tracked
   python3  lamp_demo.py --video lamp.mp4 [--xray]   render a video (needs ffmpeg)
 
+  --drive pid | pid_tuned | smooth    play it through the simulated stepper drivers and STM32
+                                      loop of stepper_pid_sim.py instead of ideal motors
+  --sensor joint | motor | none       where the AS5600s are (with --drive)
+  --current 1.41 / --vbus 24          driver current (x rated) and supply voltage (with --drive)
+
 Requires:  pip install mujoco   (plus ffmpeg for --video)
 """
 import argparse
@@ -115,9 +120,10 @@ def reference(t):
 
 
 class Arm:
-    def __init__(self, xml):
+    def __init__(self, xml, drive='ideal', sensor='joint'):
         self.m = mujoco.MjModel.from_xml_path(xml)
         self.d = mujoco.MjData(self.m)
+        self.sim = None
         m = self.m
         self.qadr = [m.jnt_qposadr[m.joint(j).id] for j in JOINTS]
         self.act = [m.actuator(a).id for a in ACTUATORS]
@@ -132,10 +138,19 @@ class Arm:
         L = (kv + b) / kp
         self.lead = self.tc + L           # x velocity
         self.lead2 = self.tc * L          # x acceleration (the damping lead also passes through the setpoint filter)
+        if drive != 'ideal':
+            # Linux streams the show to the MCU, which drives the steppers (stepper_pid_sim.py)
+            import stepper_pid_sim
+            self.sim = stepper_pid_sim.drive(self.m, lambda t: np.degrees(reference(max(t, 0.0))[0]), DURATION, drive, sensor)
+            self.d = self.sim.d
+            self.title = f'drive: {drive}'
         self.reset()
 
     def reset(self):
         m, d = self.m, self.d
+        if self.sim:
+            self.sim.reset()
+            return
         mujoco.mj_resetData(m, d)
         # put every joint (incl. motor shafts and cam plates) on the coupled manifold at the start pose
         full = {'yaw': START[0], 'shoulder': START[1], 'elbow': START[2], 'wrist': START[3], 'head_tilt': START[4]}
@@ -159,13 +174,32 @@ class Arm:
         self.d.ctrl[self.act] = q + self.lead * qd + self.lead2 * qdd   # exact inverse of filter + damping
         return q
 
+    def step(self):
+        """Advance one timestep: ideal motors, or the simulated stepper drives."""
+        if self.sim:
+            self.sim.step()
+        else:
+            self.control(self.d.time)
+            mujoco.mj_step(self.m, self.d)
+
     def arm_q(self):
         return self.d.qpos[self.qadr].copy()
 
 
-def run_report(xml):
-    arm = Arm(xml)
+def run_report(xml, drive='ideal', sensor='joint'):
+    arm = Arm(xml, drive, sensor)
     m, d = arm.m, arm.d
+    if arm.sim:
+        import stepper_pid_sim as S
+        r = S.metrics(arm.sim.run())
+        print(f'Show length {DURATION:.1f} s through the simulated drives ({drive}, sensor on {sensor}), '
+              f'streamed from Linux at {S.SEND_HZ} Hz. Error vs the intended motion, constant delay '
+              f'({1000 * r["delay"]:.0f} ms) removed:')
+        for j in range(4):
+            print(f'{JOINTS[j]:10s} rms {r["rms"][j]:5.2f} deg  max {r["max"][j]:6.2f} deg  peak motor torque '
+                  f'{100 * r["tq_peak"][j]:4.0f}% of pull-out  lost steps {r["slips"][j]}')
+        print('contacts during the show: ' + (', '.join(f'{a}-{b}' for a, b in r['contacts']) if r['contacts'] else 'none'))
+        return
     n = int(DURATION / m.opt.timestep)
     err_max = np.zeros(5); err_sq = np.zeros(5); frc_max = np.zeros(5); sat_time = np.zeros(5)
     contacts = set()
@@ -189,8 +223,8 @@ def run_report(xml):
     print('contacts during the show: ' + (', '.join(f'{a}-{b}' for a, b in sorted(contacts)) if contacts else 'none'))
 
 
-def run_video(xml, out, fps=30, w=1280, h=720):
-    arm = Arm(xml)
+def run_video(xml, out, fps=30, w=1280, h=720, drive='ideal', sensor='joint'):
+    arm = Arm(xml, drive, sensor)
     m, d = arm.m, arm.d
     r = mujoco.Renderer(m, h, w)
     cam = mujoco.MjvCamera(); cam.type = mujoco.mjtCamera.mjCAMERA_FREE
@@ -206,8 +240,7 @@ def run_video(xml, out, fps=30, w=1280, h=720):
     nframes = int(DURATION * fps)
     for f in range(nframes):
         for _ in range(steps_per_frame):
-            arm.control(d.time)
-            mujoco.mj_step(m, d)
+            arm.step()
         r.update_scene(d, cam)
         frame = r.render()
         if Image is not None:
@@ -223,9 +256,9 @@ def run_video(xml, out, fps=30, w=1280, h=720):
     print(f'wrote {out} ({DURATION:.1f} s)')
 
 
-def run_viewer(xml):
+def run_viewer(xml, drive='ideal', sensor='joint'):
     import mujoco.viewer
-    arm = Arm(xml)
+    arm = Arm(xml, drive, sensor)
     m, d = arm.m, arm.d
     with mujoco.viewer.launch_passive(m, d) as v:
         v.cam.lookat[:] = [0.10, 0.0, 0.23]; v.cam.distance = 0.82; v.cam.azimuth = 150; v.cam.elevation = -10
@@ -233,9 +266,11 @@ def run_viewer(xml):
             arm.reset()
             t_wall = time.time()
             while v.is_running() and d.time < DURATION:
-                arm.control(d.time)
-                mujoco.mj_step(m, d)
+                arm.step()
                 if d.time > time.time() - t_wall:      # keep real time
+                    if arm.sim:
+                        import stepper_pid_sim
+                        v.set_texts(stepper_pid_sim.drive_overlay(arm.sim, arm.title))
                     v.sync()
                     time.sleep(max(0.0, d.time - (time.time() - t_wall)))
             time.sleep(0.5)
@@ -246,12 +281,21 @@ if __name__ == '__main__':
     ap.add_argument('--report', action='store_true')
     ap.add_argument('--video')
     ap.add_argument('--xray', action='store_true', help='use robot_arm_xray.xml (see-through shells)')
+    ap.add_argument('--drive', choices=['ideal', 'pid', 'pid_tuned', 'smooth'], default='ideal',
+                    help='ideal motors, or the simulated stepper drivers + STM32 loop with this controller')
+    ap.add_argument('--sensor', choices=['joint', 'motor', 'none'], default='joint', help='AS5600 placement (with --drive)')
+    ap.add_argument('--current', type=float, help='with --drive: driver peak current / rated (1.41 = TMC2209 at rated RMS)')
+    ap.add_argument('--vbus', type=float, help='with --drive: motor supply voltage')
     a = ap.parse_args()
+    if a.current or a.vbus:
+        import stepper_pid_sim
+        stepper_pid_sim.CURRENT = a.current or stepper_pid_sim.CURRENT
+        stepper_pid_sim.VBUS = a.vbus or stepper_pid_sim.VBUS
     xml = os.path.join(HERE, 'robot_arm_xray.xml' if a.xray else 'robot_arm.xml')
     os.chdir(HERE)
     if a.report:
-        run_report(xml)
+        run_report(xml, a.drive, a.sensor)
     elif a.video:
-        run_video(xml, a.video)
+        run_video(xml, a.video, drive=a.drive, sensor=a.sensor)
     else:
-        run_viewer(xml)
+        run_viewer(xml, a.drive, a.sensor)
