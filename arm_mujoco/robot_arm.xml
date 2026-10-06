@@ -87,7 +87,7 @@
     <light pos="-0.6 0.4 1.0" dir="0.4 -0.3 -1" diffuse="0.35 0.35 0.35" castshadow="false"/>
     <geom name="table" type="plane" size="1 1 0.02" material="floor" solref="0.004 1" solimp="0.95 0.99 0.001"/>
     <camera name="overview" pos="0.75 -0.75 0.55" xyaxes="0.707 0.707 0 -0.25 0.25 0.935"/>
-    <body name="base" pos="0 0 0.0490" quat="0.7071068 -0.7071068 0 0">
+    <body name="base" pos="0 0 0.0490" quat="0 0 -0.7071068 0.7071068">
       <geom class="solid" mesh="base_base_plate_underside_motor_bracket" pos="0 0 0" quat="1 0 0 0" material="pla_base" density="682.0"/>
       <geom class="visual" mesh="bearing_body1" pos="0 0.041 0" quat="0.7071068 -0.7071068 0 0" material="steel" density="7850"/>
       <geom class="visual" mesh="bearing_body1" pos="0 0.071 0" quat="0.7071068 -0.7071068 0 0" material="steel" density="7850"/>
@@ -119,7 +119,7 @@
         <geom class="visual" mesh="pin_body1" pos="0 0 0" quat="-0.2059662 0 0 0.9785591" material="steel" density="7850"/>
         <geom class="visual" mesh="pin_body1" pos="0 0 0" quat="0.7149129 0 0 -0.6992135" material="steel" density="7850"/>
         <body name="first_link" pos="0 0 0">
-          <joint name="shoulder" type="hinge" axis="0 0 1" armature="0.001382" damping="0.6519"/>
+          <joint name="shoulder" type="hinge" axis="0 0 -1" armature="0.001382" damping="0.6519"/>
           <geom class="shell" mesh="enclosuretop_body1" pos="0 0 0" quat="1 0 0 0" material="shell_first_link" density="682.0"/>
           <geom class="shell" mesh="enclosurebottom_body1" pos="0 0 0" quat="1 0 0 0" material="shell_first_link" density="682.0"/>
           <geom class="solid" mesh="stepper_body1" pos="0 -0.0705 0.015" quat="0 0 1 0" material="motor" mass="0.032321"/>
@@ -171,7 +171,7 @@
             </body>
           </body>
           <body name="second_link" pos="0 -0.185 0">
-            <joint name="elbow" type="hinge" axis="0 0 1" armature="0.001382" damping="0.6519"/>
+            <joint name="elbow" type="hinge" axis="0 0 -1" armature="0.001382" damping="0.6519"/>
             <geom class="shell" mesh="shelltop_body9" pos="0 -0.185 -0.0075" quat="0 0 0 1" material="shell_second_link" density="682.0"/>
             <geom class="shell" mesh="shelltop_body11" pos="0 -0.185 -0.0075" quat="0 0 0 1" material="shell_second_link" density="682.0"/>
             <geom class="solid" mesh="17hs4023_stepper_42x23_front_end_cap" pos="0 -0.0525 0.0075" quat="0 0 0 1" material="motor" mass="0.030710"/>
@@ -216,7 +216,7 @@
               </body>
             </body>
             <body name="head" pos="0 -0.185 0">
-              <joint name="wrist" type="hinge" axis="0 0 1" armature="0.000512" damping="0.2526"/>
+              <joint name="wrist" type="hinge" axis="0 0 -1" armature="0.000512" damping="0.2526"/>
               <geom class="solid" mesh="1stsegment_body1" pos="0 0 -0.0075" quat="0 0 0 1" material="pla_head" density="682.0"/>
               <geom class="solid" mesh="1stsegment_body2" pos="0 0 -0.0075" quat="0 0 0 1" material="pla_head" density="682.0"/>
               <geom class="visual" mesh="bearing_1_body1" pos="-0.0235 -0.045 0" quat="1 0 0 0" material="steel" density="7850"/>
@@ -241,7 +241,7 @@
               <geom class="visual" mesh="pin_body1" pos="0 0 -0.0075" quat="0.9785591 0 0 0.2059662" material="steel" density="7850"/>
               <geom class="visual" mesh="pin_body1" pos="0 0 -0.0075" quat="0.6992135 0 0 0.7149129" material="steel" density="7850"/>
               <body name="head_tilt" pos="0 -0.045 0">
-                <joint name="head_tilt" type="hinge" axis="1 0 0" range="-2.3562 2.3562"/>
+                <joint name="head_tilt" type="hinge" axis="-1 0 0" range="-2.3562 2.3562"/>
                 <geom class="solid" mesh="2nd_segments_body4" pos="-0.0005 0.045 -0.0075" quat="0 0 0 1" material="pla_head_tilt" density="682.0"/>
                 <geom class="visual" mesh="2nd_segments_body8" pos="-0.0005 0.045 -0.0075" quat="0 0 0 1" material="pla_head_tilt" density="0"/>
                 <geom class="visual" mesh="2nd_segments_body10" pos="-0.0005 0.045 -0.0075" quat="0 0 0 1" material="pla_head_tilt" density="0"/>
@@ -263,9 +263,9 @@
   </contact>
   <equality>
     <joint class="gear" name="base_gear_20T_100T" joint1="base_motor_shaft" joint2="yaw" polycoef="0 -5 0 0 0"/>
-    <joint class="gear" name="shoulder_cycloid_16to1" joint1="shoulder_motor_shaft" joint2="shoulder" polycoef="0 16 0 0 0"/>
-    <joint class="gear" name="elbow_cycloid_16to1" joint1="elbow_motor_shaft" joint2="elbow" polycoef="0 -16 0 0 0"/>
-    <joint class="gear" name="wrist_cycloid_16to1" joint1="wrist_motor_shaft" joint2="wrist" polycoef="0 -16 0 0 0"/>
+    <joint class="gear" name="shoulder_cycloid_16to1" joint1="shoulder_motor_shaft" joint2="shoulder" polycoef="0 -16 0 0 0"/>
+    <joint class="gear" name="elbow_cycloid_16to1" joint1="elbow_motor_shaft" joint2="elbow" polycoef="0 16 0 0 0"/>
+    <joint class="gear" name="wrist_cycloid_16to1" joint1="wrist_motor_shaft" joint2="wrist" polycoef="0 16 0 0 0"/>
     <joint class="gear" name="shoulder_plate_a_no_spin" joint1="shoulder_plate_a" joint2="shoulder_motor_shaft" polycoef="0 -1 0 0 0"/>
     <joint class="gear" name="shoulder_plate_b_no_spin" joint1="shoulder_plate_b" joint2="shoulder_motor_shaft" polycoef="0 -1 0 0 0"/>
     <joint class="gear" name="shoulder_plate_c_no_spin" joint1="shoulder_plate_c" joint2="shoulder_motor_shaft" polycoef="0 -1 0 0 0"/>
@@ -296,7 +296,7 @@
     <actuatorfrc name="head_servo_force" actuator="head_servo"/>
   </sensor>
   <keyframe>
-    <key name="home" qpos="-0 0 0 0 -0 -0 -0 -0 0 0 0 0 -0 0 0 0 0 0" ctrl="0 0 0 0 0" act="0 0 0 0"/>
-    <key name="reach" qpos="-3 0.6 -0.5 -8 8 8 8 -17.6 17.6 17.6 17.6 1.1 -9.6 9.6 9.6 9.6 0.6 -0.4" ctrl="0.6 -0.5 1.1 0.6 -0.4" act="0.6 -0.5 1.1 0.6"/>
+    <key name="home" qpos="-0 0 0 -0 0 0 0 0 -0 -0 -0 0 0 -0 -0 -0 0 0" ctrl="0 0 0 0 0" act="0 0 0 0"/>
+    <key name="reach" qpos="-3 0.6 -0.5 8 -8 -8 -8 17.6 -17.6 -17.6 -17.6 1.1 9.6 -9.6 -9.6 -9.6 0.6 -0.4" ctrl="0.6 -0.5 1.1 0.6 -0.4" act="0.6 -0.5 1.1 0.6"/>
   </keyframe>
 </mujoco>

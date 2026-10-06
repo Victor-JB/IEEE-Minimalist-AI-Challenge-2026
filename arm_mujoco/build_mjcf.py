@@ -31,7 +31,8 @@ SERVO_TORQUE = 1.96            # HPS-2027 stall torque, 20 kgf*cm at 7.4 V
 MOTOR40_ROTOR = 54e-7          # 54 g*cm^2 (typical 42x40)
 MOTOR23_ROTOR = 20e-7          # ~20 g*cm^2 (typical 42x23)
 
-# Transmissions: motor_shaft = RATIO * arm_joint (signs come from the mechanism)
+# Transmissions: motor_shaft = RATIO * arm_joint, for joints counted positive toward Fusion +X
+# (signs come from the mechanism; FRONT_IS_LONG_SIDE flips the arm joints' direction, see below)
 BASE_GEAR = -5.0               # 20T pinion -> 100T wheel (external mesh reverses)
 SHOULDER_GEAR = 16.0           # cycloid: 16 pins / 17-lobe plates, output reversed vs. input
 ELBOW_GEAR = -16.0             # (sign differs because the elbow/wrist housings are the parent link)
@@ -62,11 +63,19 @@ GEAR_SOLIMP = "0.95 0.99 0.001"
 
 # Link shells that hide the cycloidal drives. They are in geom group 1, so they can be
 # hidden in the viewer; robot_arm_xray.xml draws them at XRAY_ALPHA opacity.
+# The lamp's front is the base plate's long side (the yaw-motor end, Fusion -X): the arm bends
+# toward it, i.e. the other way round its output axles than Fusion's +X. The parts are exactly
+# as in Fusion. The whole robot is placed turned 180 deg about the vertical, so that this front is
+# world +X, and positive shoulder / elbow / wrist angles bend toward it (head tilt flips with them).
+# False = Fusion's layout, bending toward Fusion +X.
+FRONT_IS_LONG_SIDE = True
 SHELL_PARTS = ('EnclosureTop', 'EnclosureBottom', 'ShellTop')
 XRAY_ALPHA = 0.25
 # ------------------------------------------------------------------------------------
 
 PLA = PLA_SOLID * PLA_FILL_FRACTION
+ARM_SIGN = -1 if FRONT_IS_LONG_SIDE else 1     # arm joints counted the other way round their axles
+SHOULDER_GEAR, ELBOW_GEAR, WRIST_GEAR = (ARM_SIGN * g for g in (SHOULDER_GEAR, ELBOW_GEAR, WRIST_GEAR))
 
 COLORS = {  # PLA colour per link (roughly matching the Fusion component colours)
     'base': '0.25 0.29 0.62 1', 'base_pinion': '0.95 0.65 0.25 1', 'yaw_spindle': '0.86 0.80 0.25 1',
@@ -144,7 +153,7 @@ def main(shell_alpha=1.0, out_name='robot_arm.xml'):
             tree[parent]['children'].append(name)
         order.append(name)
 
-    Z = [0, 0, 1]
+    Z = [0, 0, ARM_SIGN]       # arm joints: positive bends toward the front
     UP = [0, -1, 0]            # Fusion -Y is up; yaw positive = CCW seen from above
     add('base', None, [0, 0, 0])
     add('base_pinion', 'base', [piv['base_motor'][0][0], 0, piv['base_motor'][0][2]],
@@ -152,20 +161,20 @@ def main(shell_alpha=1.0, out_name='robot_arm.xml'):
     add('yaw_spindle', 'base', [0, 0, 0], dict(name='yaw', axis=UP, rotor=MOTOR40_ROTOR, motor_torque=MOTOR40_TORQUE, gear=BASE_GEAR))
     add('first_link', 'yaw_spindle', [0, 0, 0], dict(name='shoulder', axis=Z, rotor=MOTOR40_ROTOR, motor_torque=MOTOR40_TORQUE, gear=SHOULDER_GEAR))
     add('shoulder_cam', 'first_link', [piv['shoulder_cam'][0][0], piv['shoulder_cam'][0][1], 0],
-        dict(name='shoulder_motor_shaft', axis=Z))
+        dict(name='shoulder_motor_shaft', axis=[0, 0, 1]))
     add('elbow_cam', 'first_link', [piv['elbow_cam'][0][0], piv['elbow_cam'][0][1], 0],
-        dict(name='elbow_motor_shaft', axis=Z))
+        dict(name='elbow_motor_shaft', axis=[0, 0, 1]))
     add('second_link', 'first_link', [piv['elbow'][0][0], piv['elbow'][0][1], 0], dict(name='elbow', axis=Z, rotor=MOTOR40_ROTOR, motor_torque=MOTOR40_TORQUE, gear=ELBOW_GEAR))
     add('wrist_cam', 'second_link', [piv['wrist_cam'][0][0], piv['wrist_cam'][0][1], 0],
-        dict(name='wrist_motor_shaft', axis=Z))
+        dict(name='wrist_motor_shaft', axis=[0, 0, 1]))
     add('head', 'second_link', [piv['wrist'][0][0], piv['wrist'][0][1], 0], dict(name='wrist', axis=Z, rotor=MOTOR23_ROTOR, motor_torque=MOTOR23_TORQUE, gear=WRIST_GEAR))
     ht = piv['head_tilt']
     add('head_tilt', 'head', [0, ht[0][1], ht[0][2]],
-        dict(name='head_tilt', axis=[1, 0, 0], range=(-math.radians(135), math.radians(135))))
+        dict(name='head_tilt', axis=[ARM_SIGN, 0, 0], range=(-math.radians(135), math.radians(135))))
     for drive in ('shoulder', 'elbow', 'wrist'):
         for x in 'abc':
             c = piv[f'{drive}_plate_{x}'][0]
-            add(f'{drive}_plate_{x}', f'{drive}_cam', [c[0], c[1], 0], dict(name=f'{drive}_plate_{x}', axis=Z))
+            add(f'{drive}_plate_{x}', f'{drive}_cam', [c[0], c[1], 0], dict(name=f'{drive}_plate_{x}', axis=[0, 0, 1]))
     # depth-first order (MuJoCo qpos order follows XML nesting)
     dfs = []
 
@@ -282,7 +291,9 @@ def main(shell_alpha=1.0, out_name='robot_arm.xml'):
         ind = '  ' * depth
         if name == 'base':
             z0 = plate_bottom_y / 1000.0       # put the plate's underside on the table (z = 0)
-            W(f'{ind}<body name="base" pos="0 0 {z0:.4f}" quat="0.7071068 -0.7071068 0 0">')
+            # Fusion -Y up -> MuJoCo +Z up (and, with FRONT_IS_LONG_SIDE, turned 180 deg about Z)
+            q = '0 0 -0.7071068 0.7071068' if FRONT_IS_LONG_SIDE else '0.7071068 -0.7071068 0 0'
+            W(f'{ind}<body name="base" pos="0 0 {z0:.4f}" quat="{q}">')
         else:
             par = node['parent']
             rel = [(wpos[name][i] - wpos[par][i]) / 1000.0 for i in range(3)]

@@ -45,13 +45,16 @@ import numpy as np
 import mujoco
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from lamp_demo import couplings, set_arm_pose  # noqa: E402
 D = math.radians
 TWO_PI = 2 * math.pi
 
 # ----------------------------------------------------------------------------- CONFIG
 STEPPERS = ['yaw', 'shoulder', 'elbow', 'wrist']
 ACTUATOR = dict(yaw='base_motor', shoulder='shoulder_motor', elbow='elbow_motor', wrist='wrist_motor')
-GEAR = dict(yaw=-5.0, shoulder=16.0, elbow=-16.0, wrist=-16.0)   # motor angle = GEAR * joint angle
+GEAR = dict(yaw=-5.0, shoulder=-16.0, elbow=16.0, wrist=16.0)   # motor angle = GEAR * joint angle (read from the model)
+SHAFT = dict(yaw='base_motor_shaft', shoulder='shoulder_motor_shaft', elbow='elbow_motor_shaft', wrist='wrist_motor_shaft')
 MOTOR_OF = dict(yaw='17HS4401', shoulder='17HS4401', elbow='17HS4401', wrist='17HS4023')
 
 # Motors. hold: holding torque with both phases at rated current [N*m]; i_rated [A/phase];
@@ -147,8 +150,8 @@ def scenario(name):
                     push=(1.0, 1.5, 'head_tilt', np.array([0.0, 0.0, -20.0])))
     if name == 'boot':
         # power-up after someone moved the arm by hand while it was off. The firmware last
-        # parked it in 'sleep'; it is really at `actual`. Then Linux asks for 'look'.
-        return dict(stream=False, duration=4.0, events=[(0.0, POSES['sleep']), (0.5, POSES['look'])],
+        # parked it in 'sleep' (its belief); it is really at `actual`. Then Linux asks for 'look'.
+        return dict(stream=False, duration=4.0, belief=POSES['sleep'], events=[(0.5, POSES['look'])],
                     actual=(-30, 20, 75, 70, 0), push=None)
     if name == 'show':
         sys.path.insert(0, HERE)
@@ -355,6 +358,8 @@ class Sim:
         self.controller, self.sensor, self.name = controller, sensor, ('show' if sc else scenario_name)
         self.warmup = WARMUP if warmup is None else warmup
         self.m = m = model or mujoco.MjModel.from_xml_path(xml or os.path.join(HERE, 'robot_arm.xml'))
+        cp = couplings(m)
+        GEAR.update({j: cp[SHAFT[j]][1] for j in STEPPERS})   # motor = GEAR * joint, from the model
         self.d = mujoco.MjData(m)
         self.rng = np.random.default_rng(seed)
         self.qadr = [m.jnt_qposadr[m.joint(j).id] for j in STEPPERS + ['head_tilt']]
@@ -391,22 +396,13 @@ class Sim:
 
     # ---------------------------------------------------------------- state
     def set_pose(self, q5):
-        m, d = self.m, self.d
-        full = dict(zip(STEPPERS + ['head_tilt'], q5))
-        for jn, (src, k) in {'base_motor_shaft': ('yaw', -5), 'shoulder_motor_shaft': ('shoulder', 16),
-                             'elbow_motor_shaft': ('elbow', -16), 'wrist_motor_shaft': ('wrist', -16)}.items():
-            full[jn] = k * full[src]
-        for drive in ('shoulder', 'elbow', 'wrist'):
-            for x in 'abc':
-                full[f'{drive}_plate_{x}'] = -full[f'{drive}_motor_shaft']
-        for jn, v in full.items():
-            d.qpos[m.jnt_qposadr[m.joint(jn).id]] = v
+        set_arm_pose(self.m, self.d, q5)
 
     def reset(self):
         m, d = self.m, self.d
         mujoco.mj_resetData(m, d)
         sc = self.sc
-        start = list(sc['ref'](0.0)) if sc['stream'] else list(sc['events'][0][1])   # firmware's belief
+        start = list(sc['ref'](0.0)) if sc['stream'] else list(sc.get('belief', sc['events'][0][1]))   # firmware's belief
         q0 = [D(a) for a in sc.get('actual', start)]                                 # where the arm is
         self.set_pose(q0)
         d.ctrl[self.head_act] = q0[4]
@@ -698,7 +694,7 @@ def run_report(xml, pid, scenarios=('step', 'boot', 'push', 'show')):
             print(f'  {"":{W}s} {"error 2 s after letting go (deg)":>34s}  {"lost steps":<20s} {"torque":>6s}')
         elif scn == 'boot':
             b = scenario('boot')
-            print(f'BOOT  moved by hand while off (really at {b["actual"][:4]}, firmware thinks {b["events"][0][1][:4]}), '
+            print(f'BOOT  moved by hand while off (really at {b["actual"][:4]}, firmware thinks {b["belief"][:4]}), '
                   'then asked for "look"')
             print(f'  {"":{W}s} {"final error y/s/e/w (deg)":>34s}  {"lost steps":<20s} {"torque":>6s}')
         else:

@@ -38,10 +38,10 @@ import mujoco
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from lamp_demo import JOINTS, ACTUATORS, VMAX, AMAX, quintic  # noqa: E402
+from lamp_demo import JOINTS, ACTUATORS, VMAX, AMAX, quintic, set_arm_pose  # noqa: E402
 
 YAW, SH, EL, WR, TILT = range(5)
-WRIST_SAFE = (math.radians(-110), math.radians(140))   # beyond this the shade folds into the arm
+WRIST_SAFE = (math.radians(-125), math.radians(95))    # beyond this the shade hits the Second Link (measured -130..100)
 TILT_SAFE = math.radians(75)
 
 # ------------------------------------------------------------------ scene (world frame, m)
@@ -144,13 +144,18 @@ class LampKin:
         return ref + (a - ref + math.pi) % (2 * math.pi) - math.pi
 
     def look(self, P, reach, height, tilt=0.0, yaw=None, ref=None):
-        """Whole-body pose: wrist at (reach, height) in the arm plane, shade aimed at P."""
+        """Whole-body pose: wrist at (reach, height) in the arm plane, shade aimed at P. If aiming
+        would fold the shade into the forearm, the wrist is lowered (the arm bends more) instead."""
         y = math.atan2(P[1] - self.S[1], P[0] - self.S[0]) if yaw is None else yaw
         if ref is not None:
             y = self._near(y, ref[YAW])
-        th1, th2 = self.ik(reach, height)
-        Wr, Wz = self.wrist([0, th1, th2])
-        phi, dl = self._aim(y, Wr, Wz, P)
+        for _ in range(30):
+            th1, th2 = self.ik(reach, height)
+            Wr, Wz = self.wrist([0, th1, th2])
+            phi, dl = self._aim(y, Wr, Wz, P)
+            if phi - th1 - th2 <= WRIST_SAFE[1] or height < 0.14:
+                break
+            height -= 0.01
         return np.array([y, th1, th2, phi - th1 - th2, max(-2.3, min(2.3, dl + tilt))])
 
     def glance(self, q, P, tilt=0.0):
@@ -168,7 +173,11 @@ class LampKin:
         if ref is not None:
             y = self._near(y, ref[YAW])
         r = math.hypot(T[0] - self.S[0], T[1] - self.S[1])
-        th1, th2 = self.ik(r - self.h * math.sin(phi), T[2] - self.h * math.cos(phi))
+        for _ in range(30):            # tilt the shade back rather than fold it into the forearm
+            th1, th2 = self.ik(r - self.h * math.sin(phi), T[2] - self.h * math.cos(phi))
+            if phi - th1 - th2 <= WRIST_SAFE[1]:
+                break
+            phi -= math.radians(3)
         return np.array([y, th1, th2, phi - th1 - th2, 0.0])
 
     def reach_of(self, P):
@@ -387,7 +396,7 @@ def sc_project(kin, g):
     s.user_hand(0.8, 0.8, hand_on_paper); s.user_scribble(1.6, 9.0)
     s.at(1.8)
     s.glance(s.hand_at(2.0), label='glance at the hand')
-    s.look(s.hand_at(2.6), reach=kin.reach_of(PAPER) - 0.13, height=0.31, tilt=-0.30, speed=0.7, E=True, label='curious lean-in')
+    s.look(s.hand_at(2.6), reach=kin.reach_of(PAPER) - 0.15, height=0.31, tilt=-0.30, speed=0.7, E=True, label='curious lean-in')
     t = s.t
     for k in range(5):                                # joint attention: gaze tracks the hand
         s.glance(s.hand_at(t + 0.55 * (k + 1)), speed=0.8, E=True, label='joint attention' if k == 0 else None)
@@ -553,15 +562,7 @@ class Rig:
             mujoco.mj_forward(m, d)
             return
         mujoco.mj_resetData(m, d)
-        full = dict(zip(JOINTS, q0))
-        for jn, (src, k) in {'base_motor_shaft': ('yaw', -5), 'shoulder_motor_shaft': ('shoulder', 16),
-                             'elbow_motor_shaft': ('elbow', -16), 'wrist_motor_shaft': ('wrist', -16)}.items():
-            full[jn] = k * full[src]
-        for drive in ('shoulder', 'elbow', 'wrist'):
-            for x in 'abc':
-                full[f'{drive}_plate_{x}'] = -full[f'{drive}_motor_shaft']
-        for jn, v in full.items():
-            d.qpos[m.jnt_qposadr[m.joint(jn).id]] = v
+        set_arm_pose(m, d, q0)
         d.ctrl[self.act] = q0
         for i, a in enumerate(self.act):
             if self.tc[i] > 0:

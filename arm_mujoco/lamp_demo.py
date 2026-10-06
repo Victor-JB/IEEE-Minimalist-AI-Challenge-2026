@@ -77,6 +77,26 @@ SHOW = [
 ]
 
 
+def couplings(m):
+    """{dependent joint: (source joint, ratio)} from the model's joint equalities: motor shafts
+    geared to the arm joints, cam plates to their motor shafts."""
+    return {m.joint(m.eq_obj1id[i]).name: (m.joint(m.eq_obj2id[i]).name, float(m.eq_data[i, 1]))
+            for i in range(m.neq) if m.eq_type[i] == mujoco.mjtEq.mjEQ_JOINT}
+
+
+def set_arm_pose(m, d, q):
+    """Put the 5 arm joints at q (rad) with every motor shaft and cam plate on its coupling."""
+    val = dict(zip(JOINTS, q))
+    pend = couplings(m)
+    for _ in range(len(pend)):
+        for jn, (src, k) in list(pend.items()):
+            if src in val:
+                val[jn] = k * val[src]
+                del pend[jn]
+    for jn, v in val.items():
+        d.qpos[m.jnt_qposadr[m.joint(jn).id]] = v
+
+
 def quintic(s):
     """Minimum-jerk time scaling: position, velocity, acceleration factors for s in [0, 1]."""
     s = min(max(s, 0.0), 1.0)
@@ -152,16 +172,7 @@ class Arm:
             self.sim.reset()
             return
         mujoco.mj_resetData(m, d)
-        # put every joint (incl. motor shafts and cam plates) on the coupled manifold at the start pose
-        full = {'yaw': START[0], 'shoulder': START[1], 'elbow': START[2], 'wrist': START[3], 'head_tilt': START[4]}
-        g = {'base_motor_shaft': ('yaw', -5), 'shoulder_motor_shaft': ('shoulder', 16), 'elbow_motor_shaft': ('elbow', -16), 'wrist_motor_shaft': ('wrist', -16)}
-        for jn, (src, k) in g.items():
-            full[jn] = k * full[src]
-        for drive in ('shoulder', 'elbow', 'wrist'):
-            for x in 'abc':
-                full[f'{drive}_plate_{x}'] = -full[f'{drive}_motor_shaft']
-        for jn, v in full.items():
-            d.qpos[m.jnt_qposadr[m.joint(jn).id]] = v
+        set_arm_pose(m, d, START)          # incl. motor shafts and cam plates, on their couplings
         d.ctrl[self.act] = START
         k = 0
         for i, a in enumerate(self.act):

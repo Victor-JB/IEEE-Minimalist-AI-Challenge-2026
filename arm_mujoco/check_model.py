@@ -30,12 +30,14 @@ def rel_angle(a, b):
     R = body_xmat(b).T @ body_xmat(a)
     return math.degrees(math.atan2(R[1, 0], R[0, 0])), R
 
+RATIO = {m.joint(m.eq_obj1id[i]).name: float(m.eq_data[i, 1]) for i in range(m.neq)}   # motor = RATIO * joint
+
 def couplings():
     out = {}
-    out['base'] = q('base_motor_shaft') - (-5) * q('yaw')
-    out['sh'] = q('shoulder_motor_shaft') - 16 * q('shoulder')
-    out['el'] = q('elbow_motor_shaft') - (-16) * q('elbow')
-    out['wr'] = q('wrist_motor_shaft') - (-16) * q('wrist')
+    out['base'] = q('base_motor_shaft') - RATIO['base_motor_shaft'] * q('yaw')
+    out['sh'] = q('shoulder_motor_shaft') - RATIO['shoulder_motor_shaft'] * q('shoulder')
+    out['el'] = q('elbow_motor_shaft') - RATIO['elbow_motor_shaft'] * q('elbow')
+    out['wr'] = q('wrist_motor_shaft') - RATIO['wrist_motor_shaft'] * q('wrist')
     spin = 0
     for drive, housing in [('shoulder', 'first_link'), ('elbow', 'first_link'), ('wrist', 'second_link')]:
         for x in 'abc':

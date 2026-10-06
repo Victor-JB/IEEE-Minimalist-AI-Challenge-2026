@@ -116,7 +116,7 @@ The function-driven runs take 4.5–17.7 s; the expressive versions are 2–7 s 
 
 The scene adds a user, with a moving hand, plus a plant, a sheet of paper, a free cup, and a spotlight inside the shade.
 
-The look-at solver aims the shade at real points (the user's head, the cup, the plant). Head-only glances are clamped so the shade can never fold into the arm.
+The look-at solver aims the shade at real points (the user's head, the cup, the plant). It keeps the wrist between −125° and +95°, so the shade never folds into the Second Link: when aiming would need more, it lowers the arm instead, and head-only glances are clamped.
 
 ```
 python3  elegnt_demo.py --video elegnt.mp4          # side-by-side video (gamma 0 vs 1), all scenarios
@@ -162,8 +162,8 @@ Results with the default assumptions (12 V, driver current = rated, `stepper_ste
 
 | Controller, sensor | Big target jump | Power-up after being moved by hand | 20 N push on the head | Lamp show, 20 Hz stream |
 |---|---|---|---|---|
-| PID → step rate, joint | motors stall: 7000 steps lost, head hits the table | 29° off | 28° off | 22 000 steps lost |
-| PID + speed ramp, joint | 19° overshoot, 5900 steps lost | within 1.9° | 29° off | 12 000 steps lost |
+| PID → step rate, joint | motors stall: 7000 steps lost, head hits the table | 26° off | 28° off | 22 000 steps lost |
+| PID + speed ramp, joint | 19° overshoot, 5900 steps lost | within 0.5° | 29° off | 12 000 steps lost |
 | tuned PID, joint | 0.4°, settles in 0.83 s, none lost | within 0.27° | back within 0.4° | 2.6° rms, 220 ms late, 4 steps lost |
 | tuned PID, motor | 0.4°, none lost | elbow 22° off | back within 0.3° | 2.6° rms, 220 ms late |
 | **Planned + feed-forward, joint** | **0.4°, no lost steps** | **within 0.26°** | **back within 0.3°** | **0.27° rms, none lost** |
@@ -206,7 +206,7 @@ What it shows:
 
 The failure gesture stretches the arm out horizontally and trembles. At the driver's rated current that is more than the shoulder can hold. A TMC2209 set to the rated RMS current (`--current 1.41`) handles it.
 
-The social scenario's "point at the plant" pose sits 2 cm higher and closer than before: the original passed within 0.1 mm of the plant, so any real-world delay made the shade hit it. It now clears it by 27 mm. (`elegnt.mp4` was rendered before this change.)
+The social scenario's "point at the plant" pose sits 2 cm higher and closer than before: the original passed within 0.1 mm of the plant, so any real-world delay made the shade hit it. It now clears it by 27 mm. The project scenario's lean-in stops 2 cm shorter for the same reason. (`elegnt.mp4` was rendered before these changes.)
 
 ### Tuned settings
 Found by `tune_stepper.py` on this model with the default assumptions. Starting values, not final ones: re-run the tuner once you've measured your gearbox, driver current and supply.
@@ -267,14 +267,67 @@ Assumptions to replace with measurements (CONFIG block at the top of the script)
 - **Driver and supply:** 12 V, current set to the motors' rated current (A4988/DRV8825 style). Change with `--vbus` / `--current`, then re-run `tune_stepper.py`.
 - **Your firmware:** the plain PID rows are a generic version (kp 15, ki 5, 120°/s limit from `robot_config.h`). Set yours with `--kp --ki --kd --max-speed --max-accel`.
 
+## Parts and terminology
+![Arm parts](arm_parts.png)
+![Inside the First Link](drive_parts.png)
+
+Regenerate both pictures with `python3 label_parts.py`.
+
+### The arm, from the table up
+It has 5 joints (degrees of freedom): four driven by steppers, one by a servo. "Proximal" means closer to the base, "distal" further out. Each joint connects a parent link (before it) to a child link (after it).
+
+| Part | Also called | What it is on ARM v29 |
+|---|---|---|
+| Base plate | base, mount | Navy plate fixed to the table. Holds the yaw bearings; the yaw stepper hangs underneath. |
+| Yaw spindle | turntable, waist | Yellow part that turns on the base. Its bottom carries the 100T wheel; its top is the fork (clevis) holding the shoulder axle. |
+| **J1 yaw** | base rotation, waist joint | Vertical axis. Driven through a 20T pinion → 100T wheel spur-gear pair (5:1). |
+| **J2 shoulder** | shoulder pitch | First Link pitches on an axle that belongs to the yaw-spindle fork. 16:1 cycloid. |
+| First Link | upper arm, link 1 | Teal shell (EnclosureTop + EnclosureBottom). Carries the shoulder and elbow steppers and both of their cycloid drives. |
+| **J3 elbow** | elbow pitch | Second Link pitches on its own axle, which runs through the First Link's bearings. 16:1 cycloid. |
+| Second Link | forearm, link 2 | Brown shell (ShellTop). Carries the wrist stepper and the wrist cycloid. |
+| **J4 wrist** | wrist pitch | Head pitches on its axle at the end of the Second Link. 16:1 cycloid. |
+| Head | wrist yoke, 1st segment | Blue bracket carrying the head-tilt servo. |
+| **J5 head tilt** | head roll / side tilt | HPS-2027 servo swings the shade sideways, ±135°. |
+| Shade | end effector, lamp head, 2nd segments | Orange lamp head; the light sits inside. |
+
+### Drive train
+| Term | Meaning here |
+|---|---|
+| Stepper motor | Moves in fixed steps (200 per turn). 17HS4401 for yaw, shoulder and elbow; 17HS4023 "pancake" for the wrist. |
+| Microstepping | The driver splits each step, e.g. 1/16 = 3200 microsteps per motor turn. |
+| Holding / pull-out torque | The most torque the motor can hold still / while moving. Past pull-out it **loses steps** (slips 4 full steps at a time). |
+| Driver | Board that turns STEP/DIR pulses into coil currents (A4988, DRV8825, TMC2209). |
+| Pinion / wheel | The small (20T) and large (100T) gears of the yaw drive. 20T:100T = **5:1 reduction**. |
+| Reduction ratio | Motor turns per joint turn. More torque and resolution at the joint, less speed. |
+| Cycloidal reducer (inside-out) | The 16:1 gearbox in each arm joint, built from the parts below. |
+| Input / eccentric shaft | The motor shaft with the offset cams (cam a-b, cam a-c), 0.8 mm **eccentricity**. |
+| Cam bearings | Three bearings on the cams, 120° apart, each driving one plate. |
+| Cycloid plates (discs) | The long pink plates a, b, c. One end rides on a cam bearing; the other end is a ring with 17 internal lobes around the pins. They orbit 0.8 mm without spinning, a third of a turn out of phase so the drive never locks up. |
+| Output pins | 16 steel dowels on the child link's axle. The lobes roll around them, turning the joint 1/16 of a turn per motor turn. |
+| Output axle / clevis | The child link's axle (a fork at the shoulder), supported by the parent link's bearings. |
+| Backlash | Free play in a gearbox (≈0.3° assumed for the printed cycloids). |
+| Torsional stiffness | How much a gearbox twists under load (N·m per radian). |
+
+### Sensing and control
+| Term | Meaning here |
+|---|---|
+| AS5600 | 12-bit magnetic angle sensor reading a diametric magnet on a shaft end. |
+| Joint-side vs motor-side sensor | On the joint output (absolute angle, sees backlash and flex) or on the motor shaft (16× finer, but only knows the angle within one motor turn). |
+| TCA9548A | I2C multiplexer: lets several AS5600s share one bus despite their fixed address. |
+| PID | Control law: speed = kp·error + ki·∫error + kd·d(error)/dt. |
+| Feed-forward | Sending the planned motion directly as steps instead of waiting for an error. |
+| Trim / re-sync | Slow sensor correction of small errors / recounting steps after lost steps. |
+| Servo (HPS-2027) | Motor with a built-in position sensor and controller; takes an angle command. |
+
 ## What is modelled
 - **Geometry:** every part exported from Fusion at the home pose, in its exact assembly position. Home is all joints 0, with the arm pointing straight up.
+- **Front:** the lamp's front is the base plate's long side (the yaw-motor end, Fusion −X), and positive shoulder, elbow and wrist angles bend toward it. The parts are exactly as in Fusion: the arm just bends the other way round its output axles. The whole robot is placed turned 180° in the world so this front is world +X.
 - **Joints:** yaw, shoulder, elbow, wrist and head tilt, plus each motor shaft.
 - **Cycloidal drives:** each eccentric shaft (cams + cam bearings) spins on its motor axis. The 3 cam plates ride on their cam bearings and orbit 0.8 mm without spinning, 120° apart. The 16 pins are fixed to the output link.
 - **Couplings:** exact, as joint equality constraints:
-  - Shoulder: motor shaft = 16 × shoulder.
-  - Elbow: motor shaft = −16 × elbow.
-  - Wrist: motor shaft = −16 × wrist.
+  - Shoulder: motor shaft = −16 × shoulder.
+  - Elbow: motor shaft = 16 × elbow.
+  - Wrist: motor shaft = 16 × wrist.
   - Base: pinion = −5 × yaw.
   - Each cam plate = −(its motor shaft), so it doesn't spin.
 - **Rotor inertia and actuator torque:** applied at the arm joints, multiplied by the gear ratio (rotor inertia and damping × ratio²). This is mechanically equivalent to driving the motor shaft, and numerically much more robust. The motor shafts, cams and plates still turn exactly, through the couplings.
@@ -290,6 +343,9 @@ Assumptions to replace with measurements (CONFIG block at the top of the script)
   - Drive internals, pins, bearings and gears are visual only.
   - The yaw spindle and 100T wheel sit below the base plate (through the table), so they don't collide with the table.
 - **Table:** at the underside of the base plate.
+- **Front / bending direction:** `FRONT_IS_LONG_SIDE = True` in `build_mjcf.py` (see "Front" above). `False` gives the Fusion export's convention (bending toward Fusion +X, over the plate's short side).
+  - Bending this way mirrors how far the head folds toward the forearm. The wrist is free from −130° to +100° (it used to be −100° to +130°), so the ELEGNT look-at solver now bends the arm more rather than fold the shade past +95°.
+  - `preview.png`, `preview_drives.png` and the videos were rendered before this change.
 - **Joint limits:** none on yaw, shoulder, elbow or wrist; the links' collisions stop them. Head tilt is ±135° (the servo's 270°).
 - **Not modelled in `robot_arm.xml`:** cycloid/gear friction, backlash, efficiency, and stepper resonance or missed steps. `stepper_pid_sim.py` adds backlash, gearbox stiffness, friction and real stepper behaviour on top.
 
@@ -307,5 +363,6 @@ Assumptions to replace with measurements (CONFIG block at the top of the script)
 - `check_model.py`, `step_response.py`: model checks (see "Open it").
 - `stepper_pid_sim.py`: stepper drivers, AS5600s and the STM32 loop on the CAD model (report, plots or viewer).
 - `tune_stepper.py`: grid-searches the PID and planner settings in `stepper_pid_sim.py`.
+- `label_parts.py`, `arm_parts.png`, `drive_parts.png`: the labelled pictures in "Parts and terminology".
 - `stepper_step.png`, `stepper_push.png`: its big-step and push traces for every controller and sensor placement.
 - `preview.png`, `preview_drives.png`: renders of the model.
