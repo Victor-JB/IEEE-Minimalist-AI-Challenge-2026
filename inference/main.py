@@ -4,6 +4,7 @@
     python inference/main.py --camera /dev/video2  # another camera
     python inference/main.py --no-detect           # camera only
     python inference/main.py --headless            # no window, print detections
+    python inference/main.py --headless --stream   # + view in a browser at http://<board>:8080/
     PERF=1 python inference/main.py --headless     # + timing/system report at exit (see perf/)
 """
 
@@ -19,6 +20,7 @@ from perfstats import count, timed  # noqa: E402  (no-op unless PERF=1)
 
 from camera import Camera, FpsCounter, display_available  # noqa: E402
 from detector import FaceDetector  # noqa: E402
+from stream import FrameStreamer  # noqa: E402
 
 
 def draw(frame, detections, fps, infer_ms):
@@ -40,10 +42,13 @@ def main():
     parser.add_argument("--no-detect", action="store_true", help="show the camera feed only")
     parser.add_argument("--headless", action="store_true", help="no window; print to the terminal")
     parser.add_argument("--threshold", type=float, default=0.5)
+    parser.add_argument("--stream", nargs="?", type=int, const=8080, metavar="PORT",
+                        help="serve the annotated feed over HTTP (default port 8080)")
     args = parser.parse_args()
 
     headless = args.headless or not display_available()
     detector = None if args.no_detect else FaceDetector(score_threshold=args.threshold)
+    streamer = FrameStreamer(args.stream) if args.stream else None
     last_print = 0.0
 
     with Camera(args.camera) as cam:
@@ -67,6 +72,11 @@ def main():
             # TODO: pick a target face (e.g. largest box) and turn its center
             # into a normalized [-1, 1] error for the robot's head motors.
 
+            if streamer:
+                with timed("stream"):
+                    draw(frame, detections, fps.fps, infer_ms)
+                    streamer.update(frame)
+
             if headless:
                 if time.perf_counter() - last_print > 1:
                     infer = f", infer {infer_ms:.1f} ms" if infer_ms is not None else ""
@@ -75,7 +85,8 @@ def main():
                 continue
 
             with timed("display"):
-                draw(frame, detections, fps.fps, infer_ms)
+                if not streamer:  # already drawn
+                    draw(frame, detections, fps.fps, infer_ms)
                 cv2.imshow("face detection (q to quit)", frame)
                 key = cv2.waitKey(1) & 0xFF
             if key == ord("q"):
