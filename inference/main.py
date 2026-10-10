@@ -1,6 +1,6 @@
 """Live face detection: camera -> detector -> on-screen boxes.
 
-    python inference/main.py                       # camera 0 with detection
+    python inference/main.py                       # first USB camera with detection
     python inference/main.py --camera /dev/video2  # another camera
     python inference/main.py --no-detect           # camera only
     python inference/main.py --headless            # no window, print detections
@@ -35,7 +35,8 @@ def draw(frame, detections, fps, infer_ms):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--camera", "--index", default="0", help="index (0) or device path (/dev/video0)")
+    parser.add_argument("--camera", "--index", default="auto",
+                        help="'auto' (first USB camera), index (0) or device path (/dev/video0)")
     parser.add_argument("--no-detect", action="store_true", help="show the camera feed only")
     parser.add_argument("--headless", action="store_true", help="no window; print to the terminal")
     parser.add_argument("--threshold", type=float, default=0.5)

@@ -1,7 +1,7 @@
 """USB camera capture via OpenCV, on Linux (V4L2) and Windows (DirectShow).
 
 Run directly to check the feed:
-    python inference/camera.py                       # opens camera 0
+    python inference/camera.py                       # opens the first USB camera
     python inference/camera.py --camera 1            # another index
     python inference/camera.py --camera /dev/video2  # Linux device path
     python inference/camera.py --probe               # list cameras
@@ -29,8 +29,24 @@ WARMUP_FRAMES = 5
 
 
 def parse_source(source):
-    """'0' -> 0 (index); anything else (e.g. '/dev/video0') stays a device path."""
+    """'0' -> 0 (index); 'auto' -> the USB camera; anything else stays a device path."""
+    if source == "auto":
+        return find_usb_camera()
     return int(source) if str(source).isdigit() else source
+
+
+def find_usb_camera():
+    """First USB camera's capture node, else index 0.
+
+    On boards like the UNO Q, /dev/video0 and /dev/video1 are the SoC's
+    hardware video codec, not a camera, so index 0 won't open.
+    """
+    if sys.platform.startswith("linux"):
+        # A UVC camera exposes video-index0 (frames) and video-index1 (metadata).
+        nodes = sorted(glob.glob("/dev/v4l/by-id/usb-*-video-index0"))
+        if nodes:
+            return nodes[0]
+    return 0
 
 
 def display_available():
@@ -41,7 +57,7 @@ def display_available():
 
 
 class Camera:
-    def __init__(self, source=0, width=640, height=480, fps=30):
+    def __init__(self, source="auto", width=640, height=480, fps=30):
         source = parse_source(source)
         self.cap = cv2.VideoCapture(source, BACKEND)
         if not self.cap.isOpened():
@@ -133,8 +149,8 @@ def main():
     parser.add_argument(
         "--camera",
         "--index",
-        default="0",
-        help="index (0) or device path (/dev/video0, /dev/v4l/by-id/...)",
+        default="auto",
+        help="'auto' (first USB camera), index (0) or device path (/dev/video0, /dev/v4l/by-id/...)",
     )
     parser.add_argument(
         "--probe", action="store_true", help="list working cameras and exit"
