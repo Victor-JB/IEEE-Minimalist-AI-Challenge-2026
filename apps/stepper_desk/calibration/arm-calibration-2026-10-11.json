@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-11T06:47:37-07:00",
+  "source": {
+    "application": "Stepper Desk Q",
+    "preferences_domain": "dev.tongtong.stepperdeskq",
+    "preferences_key": "q.arm.geometry.v1"
+  },
+  "saved_calibration": {
+    "joints": [
+      {
+        "zero": 22.5,
+        "calibrated": true,
+        "reversed": false
+      },
+      {
+        "reversed": true,
+        "calibrated": true,
+        "zero": 53.349609375
+      },
+      {
+        "reversed": true,
+        "calibrated": true,
+        "zero": -30.322265625
+      }
+    ]
+  },
+  "joint_mapping": [
+    {
+      "joint": "shoulder",
+      "connection": "base to first segment",
+      "sensor": 1,
+      "mux_channel": 0,
+      "motor": 2
+    },
+    {
+      "joint": "elbow",
+      "connection": "first segment to second segment",
+      "sensor": 2,
+      "mux_channel": 1,
+      "motor": 1
+    },
+    {
+      "joint": "head",
+      "connection": "second segment to head",
+      "sensor": 3,
+      "mux_channel": 2,
+      "motor": 3
+    }
+  ],
+  "motor_settings": [
+    {
+      "motor": 1,
+      "full_steps_per_revolution": 200,
+      "microsteps_per_full_step": 2
+    },
+    {
+      "motor": 2,
+      "full_steps_per_revolution": 200,
+      "microsteps_per_full_step": 16
+    },
+    {
+      "motor": 3,
+      "full_steps_per_revolution": 200,
+      "microsteps_per_full_step": 16
+    }
+  ],
+  "angle_convention": {
+    "units": "degrees",
+    "formula": "wrap_to_minus180_plus180((raw_sensor_degrees - zero) * (-1 if reversed else 1))",
+    "raw_sensor_degrees": "AS5600 raw count * 360 / 4096",
+    "zero_pose": "Shoulder upright; elbow and wrist/head continue straight from the preceding link.",
+    "positive_direction": "Toward the CAD front; clockwise in the default Side camera."
+  },
+  "notes": [
+    "Snapshot of saved calibration offsets and direction flags, not a live arm pose.",
+    "Physical angles entered during calibration were not retained by the app.",
+    "Base swivel omitted; separate CAD head-tilt servo fixed at zero."
+  ]
+}

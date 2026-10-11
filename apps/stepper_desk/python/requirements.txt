@@ -1,0 +1,2 @@
+arduino-router-bridge==0.5.1
+msgpack==1.2.3
