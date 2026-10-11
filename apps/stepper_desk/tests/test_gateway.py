@@ -41,6 +41,29 @@ class Tests(unittest.TestCase):
         self.assertEqual(bridge.calls[-1],[5,2,gateway.owner,-30322266,1,-1])
         for bad in ['LIMITS 0 0 0','LIMITS 180000001 0 1','LIMITS 0 2 -1','LIMITS --1 0 1','LIMITS -1 0 1 9']:
             with self.assertRaises(ValueError):gateway.command(bad)
+    def test_power_protocol(self):
+        class PowerBridge(FakeBridge):
+            def call(self, *args, **kwargs):
+                state=super().call(*args, **kwargs); state[0]=7
+                return state+[2048,32,0,15,0,1,0,0,1,0,-80000,87000,1,0,5,0,1]
+        bridge=PowerBridge(); gateway=Gateway(bridge,0)
+        result=gateway.command('HELLO')
+        self.assertEqual(result['power_enabled'],1)
+        self.assertEqual((result['drivers_awake'],result['power_generation'],result['power_ready']),(0,5,0))
+        gateway.command('POWER 1 5')
+        self.assertEqual(bridge.calls[-1],[6,0,gateway.owner,1,5])
+        gateway.command('CURVE 1 0 400 2 0 0 60 500 6')
+        self.assertEqual(bridge.calls[-1][-1],6)
+        for bad in ['POWER','POWER 2 5','POWER 1 0','POWER 1 -2','POWER 1 99999999999','POWER 1 5 2']:
+            with self.assertRaises(ValueError): gateway.command(bad)
+    def test_sleep_discards_queued_start(self):
+        self.g.command('HELLO')
+        read,write=os.pipe()
+        os.write(write,b'CURVE 1 0 200 2 0 0 60 500 1\nHOLD 1\nPOWER 0 1\n')
+        os.close(write)
+        with contextlib.redirect_stdout(io.StringIO()): serve(self.g,read)
+        os.close(read)
+        self.assertEqual([a[0] for a in self.bridge.calls],[0,6,3])
     def test_requires_claim(self):
         with self.assertRaises(ValueError): self.g.command('CURVE 1 0 200 2 0 0 60 500')
         self.assertEqual(self.bridge.calls, [])

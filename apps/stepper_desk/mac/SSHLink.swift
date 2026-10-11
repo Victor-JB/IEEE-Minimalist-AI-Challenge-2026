@@ -15,33 +15,41 @@ final class SSHLink {
     private var incoming = Data(), outgoing = Data(), errorText = Data()
     private var generation = 0
     init(axis: Int) { self.axis = axis }
-    static func ports() -> [String] { ["Arduino Q · USB"] }
+    static func ports() -> [String] { ["Arduino Q · USB or Tailscale"] }
 
     func connect(_ unused: String) {
         queue.async { [self] in
             closeInternal()
-            // Re-establish the USB forward after reconnecting the cable.
-            let adb = Process()
-            let paths = ["/opt/homebrew/bin/adb", "/usr/local/bin/adb"]
-            guard let path = paths.first(where: { FileManager.default.isExecutableFile(atPath: $0) }) else {
-                fail("Install Android Platform Tools with Homebrew, then reconnect."); return
+            // USB (ADB forward to localhost:2222) when the board is plugged in, else
+            // Tailscale to STEPPER_HOST (default daboard). STEPPER_LINK=usb|tailscale forces one.
+            let env = ProcessInfo.processInfo.environment
+            let link = env["STEPPER_LINK"] ?? "auto"
+            var target = ["-p", "2222", "arduino@localhost"]
+            var usb = false
+            if link != "tailscale",
+               let path = ["/opt/homebrew/bin/adb", "/usr/local/bin/adb"].first(where: { FileManager.default.isExecutableFile(atPath: $0) }) {
+                let adb = Process()
+                adb.executableURL = URL(fileURLWithPath: path)
+                adb.arguments = ["-s", "2709356903", "forward", "tcp:2222", "tcp:22"]
+                adb.standardOutput = FileHandle.nullDevice; adb.standardError = FileHandle.nullDevice
+                if (try? adb.run()) != nil {
+                    // ADB forward normally completes instantly.
+                    let deadline = Date().addingTimeInterval(2)
+                    while adb.isRunning && Date() < deadline { Thread.sleep(forTimeInterval: 0.02) }
+                    if adb.isRunning { adb.terminate() } else { usb = adb.terminationStatus == 0 }
+                }
             }
-            adb.executableURL = URL(fileURLWithPath: path)
-            adb.arguments = ["-s", "2709356903", "forward", "tcp:2222", "tcp:22"]
-            adb.standardOutput = FileHandle.nullDevice; adb.standardError = FileHandle.nullDevice
-            do { try adb.run() } catch { fail("Cannot start the Arduino Q USB connection."); return }
-            // Polling below watches the SSH connection; ADB forward normally completes instantly.
-            let deadline = Date().addingTimeInterval(2)
-            while adb.isRunning && Date() < deadline { Thread.sleep(forTimeInterval: 0.02) }
-            if adb.isRunning { adb.terminate(); fail("USB setup timed out. Reconnect Arduino Q."); return }
-            guard adb.terminationStatus == 0 else { fail("Arduino Q not found. Check its USB cable."); return }
+            if !usb {
+                if link == "usb" { fail("Arduino Q not found. Check its USB cable."); return }
+                target = ["arduino@" + (env["STEPPER_HOST"] ?? "daboard")]
+            }
             let task = Process(), pin = Pipe(), pout = Pipe(), perr = Pipe()
             task.executableURL = URL(fileURLWithPath: "/usr/bin/ssh")
             // Board login currently takes ~3.4 s. A 1 s SSH keepalive killed
             // healthy logins before the gateway started. Motor leases stay 300 ms.
-            task.arguments = ["-T", "-p", "2222", "-o", "BatchMode=yes", "-o", "ConnectTimeout=3",
-                              "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=2", "arduino@localhost",
-                              "/home/arduino/stepper-desk-q/.venv/bin/python -u /home/arduino/stepper-desk-q/python/gateway.py --axis \(axis)"]
+            task.arguments = ["-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=\(usb ? 3 : 6)",
+                              "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=2"] + target +
+                             ["/home/arduino/stepper-desk-q/.venv/bin/python -u /home/arduino/stepper-desk-q/python/gateway.py \(axis < 0 ? "--group" : "--axis \(axis)")"]
             task.standardInput = pin; task.standardOutput = pout; task.standardError = perr
             do { try task.run() } catch { fail("Cannot open SSH to Arduino Q: \(error.localizedDescription)"); return }
             process = task; input = pin; output = pout; errors = perr

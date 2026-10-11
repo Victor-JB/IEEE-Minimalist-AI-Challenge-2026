@@ -38,3 +38,9 @@ __pycache__/
 sim/build/
 adding_emotion.txt
 infer_out_on_arduino.log
+
+# Raw commissioning data stays local; explicit diagnostic summaries are tracked.
+apps/stepper_desk/recordings/
+
+# macOS
+.DS_Store

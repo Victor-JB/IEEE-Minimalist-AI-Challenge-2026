@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-11T20:35:00.795053+00:00",
+  "status": "local endpoint tolerance accepted; six sensor-target checks passed; full-range calibration remains incomplete",
+  "fully_calibrated": false,
+  "joint_order": [
+    "shoulder",
+    "elbow",
+    "head"
+  ],
+  "angle_calibration_source": "calibration/arm-calibration-2026-10-11.json",
+  "accepted_ratios": {},
+  "completed": [
+    "Asleep STEP pad verification: 100 observed edges for 100 counted edges, all three axes at 100/1333/2400pps",
+    "Bounded real movement and direction verification for all joints",
+    "Powered endpoint settlement and stable 400ms wake preparation",
+    "Adjacent-range and reversal tests for all joints, repeated for shoulder and elbow",
+    "Independent head 6-degree holdout tests against frozen endpoint model",
+    "Twelve independent 6-degree shoulder/elbow trials against frozen local models",
+    "Movement history audit with explicit correction of one shoulder continuation label",
+    "Absolute UTC and unique session identifiers added to future Python recordings",
+    "User accepted observed endpoint errors; saved retrospective 1.5 degree local profile without rewriting original 0.5 degree failures",
+    "Six local sensor-target moves passed in both directions, all three joints; maximum powered/released endpoint error 1.062 degrees"
+  ],
+  "head_local_model": {
+    "pulses_per_reported_degree": 143.1,
+    "reversal_extra_pulses": 260,
+    "heldout_trials": 4,
+    "max_abs_prediction_error_degrees": 0.2397987421383645,
+    "declared_tolerance_degrees": 0.5,
+    "globally_verified": false,
+    "installed": false,
+    "physical_angle_accuracy_independently_verified": false
+  },
+  "remaining": [
+    "Validate a broader intended operating range and simultaneous coordinated movement",
+    "Resolve or explicitly model position dependence and reversal loss for feedforward planning",
+    "Independently verify physical angles and MODE wiring before claiming absolute accuracy, motor RPM, or reduction ratio",
+    "Keep original firmware guards authoritative when implementing supervised stall recovery and later learned corrections"
+  ],
+  "findings": [
+    "A single constant pulse-to-angle ratio does not explain all recordings",
+    "Head local gain plus reversal loss predicts four held-out endpoints within 0.24 degrees; this is encoder-space evidence, not independent mechanical angle calibration",
+    "Shoulder repeated adjacent intervals show roughly 121\u2013126 versus 171\u2013174 pulses per reported degree; one earlier lower-interval trial was 111.6",
+    "Elbow response also varies with position; do not cherry-pick a narrow passing group"
+  ],
+  "last_observed_state": {
+    "run": 0,
+    "awake": 0,
+    "owner": 0,
+    "all_sensor_errors": 0,
+    "angles_joint_order_degrees": [
+      -12.041,
+      63.281,
+      4.307
+    ],
+    "note": "Read after the six target checks; observed pose, not mechanical zero."
+  },
+  "rpm_note": "200 RPM at configured elbow half-step is 1333 pulses/sec. Shoulder/head configured 1/16-step tests remain within the 2400pps ceiling.",
+  "calibration_installed": false,
+  "raw_recordings_directory": "recordings/",
+  "model_evaluation_report": "diagnostics/calibration-model-evaluation-2026-10-11.json",
+  "software_validation": {
+    "integrated_suite": "passed (C++, Python, Swift)",
+    "python_tests": 101,
+    "mac_app_build": "passed",
+    "firmware_compile_and_flash": "passed",
+    "latest_python_suite": "passed"
+  },
+  "sensor_mounting_confirmed_by_user": true,
+  "physical_angle_accuracy_independently_verified": false,
+  "local_model_validation": {
+    "report": "diagnostics/local-heldout-evaluation-2026-10-11.json",
+    "declared_tolerance_deg": 0.5,
+    "shoulder_max_error_deg": 1.414,
+    "elbow_max_error_deg": 1.164,
+    "all_measurement_quality_checks_passed": true,
+    "models_accepted": false,
+    "elbow_first_trial_outside_training_envelope": true
+  },
+  "pending_physical_checks": [
+    "Independent physical angle reference and actual MODE wiring remain unverified; user accepted observed local endpoint error without supplying these measurements."
+  ],
+  "history_audit": "diagnostics/motion-history-audit-2026-10-11.json",
+  "accepted_endpoint_tolerance_deg": 1.5,
+  "local_profile": "calibration/local-endpoint-profile-v1.json",
+  "local_target_verification": "diagnostics/local-target-verification-2026-10-11.json",
+  "global_ratios_installed": false,
+  "local_profile_saved": true
+}

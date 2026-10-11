@@ -19,7 +19,7 @@ class Gateway:
 
     def rpc(self, op, *args):
         raw = self.bridge.call('stepper_command', [op, self.axis, self.owner, *args], timeout=0.2)
-        if not isinstance(raw, (list, tuple)) or not raw or (raw[0], len(raw)) not in ((3, 14), (4, 18), (5, 27)) or raw[1] != self.axis:
+        if not isinstance(raw, (list, tuple)) or not raw or (raw[0], len(raw)) not in ((3, 14), (4, 18), (5, 27), (6, 30), (7, 31)) or raw[1] != self.axis:
             raise ValueError('Incompatible Arduino Q firmware')
         if raw[3] == -errno.EACCES:
             raise ConnectionError('Motor ownership changed; reconnect to claim it')
@@ -27,7 +27,7 @@ class Gateway:
                          'want_dir', 'run', 'ppr', 'phase', 'max_hz', 'session',
                          'angle_raw', 'magnet_status', 'sensor_error', 'sensor_age_ms',
                          'limit_state', 'limit_configured', 'limit_zero_udeg', 'limit_reversed',
-                         'limit_forward_sign', 'joint_angle_mdeg', 'limit_min_mdeg', 'limit_max_mdeg', 'limit_revision'], raw))
+                         'limit_forward_sign', 'joint_angle_mdeg', 'limit_min_mdeg', 'limit_max_mdeg', 'limit_revision', 'drivers_awake', 'power_generation', 'power_ready', 'power_enabled'], raw))
 
     def command(self, line):
         parts = line.split()
@@ -44,6 +44,10 @@ class Gateway:
             raise ValueError('HELLO required before motor commands')
         if command in ('STOP', 'STATUS') and not words:
             return self.rpc(3 if command == 'STOP' else 4)
+        if command == 'POWER':
+            if len(words) != 2 or words[0] not in ('0','1') or not words[1].isascii() or not words[1].isdecimal() or len(words[1])>10 or not 1 <= int(words[1]) <= 2**31-1:
+                raise ValueError('Malformed shared power command')
+            return self.rpc(6, *map(int, words))
         if command == 'LIMITS':
             if len(words) != 3 or any(not w.isascii() or not w.lstrip('-').isdecimal() or len(w)>11 or w.count('-')>1 or ('-' in w and not w.startswith('-')) for w in words):
                 raise ValueError('Malformed limit calibration')
@@ -60,7 +64,7 @@ class Gateway:
             raise ValueError('Argument too large')
         if command == 'HOLD' and len(args) == 1:
             return self.rpc(2, *args)
-        if command == 'CURVE' and len(args) >= 4 and 2 <= args[3] <= 8 and len(args) == 4+2*args[3]:
+        if command == 'CURVE' and len(args) >= 4 and 2 <= args[3] <= 8 and len(args) in (4+2*args[3], 5+2*args[3]):
             return self.rpc(1, *args)
         raise ValueError('Malformed command')
 
@@ -73,6 +77,9 @@ def emit(status):
     if status is None:
         return
     status = dict(status)
+    if status.get('kind') == 'arm':
+        print('@ARM ' + json.dumps(status, separators=(',', ':')), flush=True)
+        return
     status['v'] = 2  # Mac telemetry schema; RPC firmware schema is independently v3/v4.
     status['phase'] = PHASES[status['phase']] if 0 <= status['phase'] < len(PHASES) else 'ERROR'
     print('@STP ' + json.dumps(status, separators=(',', ':')), flush=True)
@@ -96,7 +103,7 @@ def serve(gateway, fd=0):
                 buffer = lines.pop()
                 # A queued STOP supersedes every earlier command, including a
                 # delayed start. Commands after it still need a fresh CURVE id.
-                stops = [i for i, line in enumerate(lines) if line.strip() == b'STOP']
+                stops = [i for i, line in enumerate(lines) if line.strip() == b'STOP' or line.strip().startswith(b'POWER ')]
                 if stops:
                     if not gateway.claimed and any(line.strip() == b'HELLO' for line in lines[:stops[-1]]):
                         emit(gateway.command('HELLO'))
@@ -121,14 +128,20 @@ def serve(gateway, fd=0):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--axis', type=int, choices=range(3), required=True)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--axis', type=int, choices=range(3))
+    group.add_argument('--group', action='store_true')
     args = parser.parse_args()
     from arduino.router_bridge import Bridge
     bridge = Bridge()
     try:
         if not bridge.connect(timeout=3):
             raise ConnectionError('Arduino router is unavailable')
-        serve(Gateway(bridge, args.axis))
+        if args.group:
+            from arm_gateway import ArmGateway
+            serve(ArmGateway(bridge))
+        else:
+            serve(Gateway(bridge, args.axis))
     except Exception as exc:
         print('@ERR ' + str(exc), flush=True)
         return 1

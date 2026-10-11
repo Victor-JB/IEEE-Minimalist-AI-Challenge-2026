@@ -10,7 +10,7 @@ enum ArmMapping {
     static let connections = ["Base → first segment", "First → second segment", "Second segment → head"]
     static let microsteps = [2, 16, 16]
     // Relative joint angles in the calibrated convention, not physical motor numbers.
-    static let limits: [ClosedRange<Double>] = [-45...38, -72...79, -80...87]
+    static let limits: [ClosedRange<Double>] = [-34...38, -72...79, -80...87]
     static func limitLabel(_ joint: Int) -> String {
         String(format: "Range %+.0f° to %+.0f°", limits[joint].lowerBound, limits[joint].upperBound)
     }

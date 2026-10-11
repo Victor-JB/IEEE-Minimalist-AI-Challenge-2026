@@ -74,7 +74,7 @@ struct DeskView: View {
     private var connection: some View {
         HStack(spacing: 14) {
             Image(systemName: "cable.connector").foregroundStyle(muted)
-            Text("Arduino Q · USB").font(.system(size: 13, weight: .medium))
+            Text("Arduino Q · USB or Tailscale").font(.system(size: 13, weight: .medium))
             Spacer()
             Text("STEP D\([3,5,9][model.axis]) · DIR D\([2,4,7][model.axis])").font(.system(size: 11, design: .monospaced)).foregroundStyle(muted)
             Button(model.connected || model.connecting ? "Disconnect" : "Connect") {
@@ -227,7 +227,7 @@ struct DeskView: View {
             } else {
                 Text("Enter your meter reading above").font(.system(size: 11)).foregroundStyle(muted)
             }
-            Text("Calculator only · R100 resistors\nStopping pulses does not release holding torque.")
+            Text("Calculator only · R100 resistors\nAll drivers sleep when all motors stop.")
                 .font(.system(size: 10)).foregroundStyle(muted).fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -415,9 +415,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 final class DeskModel: ObservableObject {
     let axes: [Controller]
     let arm: ArmSettings
+    let poses: PoseController
     init(preview: Bool = false) {
         axes = (0..<3).map { Controller(axis: $0, preview: preview) }
         arm = ArmSettings(defaults: preview ? nil : .standard)
+        poses = PoseController(settings: arm)
         for motor in axes {
             let joint=ArmMapping.jointForMotor[motor.axis]
             motor.limitConfiguration = { [weak arm] in
@@ -426,8 +428,8 @@ final class DeskModel: ObservableObject {
             }
         }
     }
-    func disarmAll() { axes.forEach { $0.disarm() } }
-    func shutdown() { axes.forEach { $0.shutdown() } }
+    func disarmAll() { axes.forEach { $0.disarm() }; poses.stop() }
+    func shutdown() { axes.forEach { $0.shutdown() }; poses.shutdown() }
 }
 struct AxisSummary: View {
     @ObservedObject var model: Controller
@@ -450,19 +452,36 @@ struct AxisSummary: View {
         }.buttonStyle(.plain)
     }
 }
+struct DriverPowerView: View {
+    @ObservedObject var model: Controller
+    let disarmAll: () -> Void
+    var body: some View {
+        HStack(spacing: 12) {
+            Text(!model.powerSupported ? "Connect selected joint · automatic sleep firmware required" :
+                 (!model.powerAllowsMotion ? "Asleep and locked" : (model.driversAwake ? "Drivers awake · automatic sleep when stopped" : "Drivers asleep · automatic wake on movement")))
+                .font(.system(size: 12)).foregroundStyle(muted)
+            Spacer()
+            Button("Enable movement") { disarmAll(); model.setMotionEnabled(true) }
+                .disabled(!model.powerSupported || model.powerAllowsMotion)
+            Button("Sleep & lock") { disarmAll(); model.setMotionEnabled(false) }
+                .disabled(!model.powerSupported || !model.powerAllowsMotion)
+        }.padding(.horizontal, 30).padding(.top, 12)
+    }
+}
 struct QDashboard: View {
     @ObservedObject var desk: DeskModel
     @State private var selected = 1
-    @State private var showingArm = true
+    @State private var workspace = 0
     var body: some View {
         VStack(spacing: 0) {
             HStack {
                 Text("STEPPER DESK Q").font(.system(size: 11, weight: .semibold)).tracking(2)
                 Spacer()
                 Text("Fixed base · three joints").font(.system(size: 11)).foregroundStyle(muted)
-                Button("Connect all") { desk.axes.filter { !$0.connected && !$0.connecting }.forEach { $0.connect() } }
+                Button("Connect all") { desk.axes.filter { !$0.connected && !$0.connecting }.forEach { $0.connect() } }.disabled(workspace == 2)
                 Button("Disarm all") { desk.disarmAll() }
             }.padding(.horizontal, 30).padding(.top, 22)
+            if workspace != 2 {
             HStack(spacing: 12) {
                 ForEach(ArmMapping.motorForJoint, id: \.self) { axis in
                     AxisSummary(model: desk.axes[axis], sensor: desk.axes[ArmMapping.jointForMotor[axis]], selected: selected == axis) {
@@ -470,12 +489,21 @@ struct QDashboard: View {
                     }
                 }
             }.padding(.horizontal, 30).padding(.top, 18)
-            Picker("Workspace", selection: $showingArm) {
-                Text("Live arm").tag(true)
-                Text("Motor settings & ramps").tag(false)
-            }.pickerStyle(.segmented).frame(width: 340, height: 28).padding(.top, 18)
-                .onChange(of: showingArm) { desk.disarmAll() }
-            if showingArm {
+            DriverPowerView(model: desk.axes[selected], disarmAll: desk.disarmAll)
+            }
+            Picker("Workspace", selection: $workspace) {
+                Text("Live arm").tag(0)
+                Text("Motor settings & ramps").tag(1)
+                Text("Poses & recordings").tag(2)
+            }.pickerStyle(.segmented).frame(width: 520, height: 28).padding(.top, 18)
+                .onChange(of: workspace) {
+                    desk.disarmAll()
+                    if workspace == 2 { desk.axes.forEach { $0.disconnect() } }
+                    else { desk.poses.disconnect() }
+                }
+            if workspace == 2 {
+                PoseWorkspace(model: desk.poses)
+            } else if workspace == 0 {
                 ArmView(shoulder: desk.axes[0], elbow: desk.axes[1], head: desk.axes[2], motor: desk.axes[selected], settings: desk.arm, disarmAll: desk.disarmAll)
             } else {
                 DeskView(model: desk.axes[selected], sensor: desk.axes[ArmMapping.jointForMotor[selected]]).id(selected)
@@ -484,6 +512,7 @@ struct QDashboard: View {
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in desk.shutdown() }
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification)) { _ in desk.disarmAll() }
             .onReceive(NotificationCenter.default.publisher(for: NSWindow.didResignKeyNotification)) { _ in desk.disarmAll() }
+            .onReceive(NotificationCenter.default.publisher(for: NSWindow.willCloseNotification)) { _ in desk.disarmAll() }
     }
 }
 #if !STEPPER_UI_TEST

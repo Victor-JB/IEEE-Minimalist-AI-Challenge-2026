@@ -5,7 +5,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CORE=/home/arduino/.arduino15/packages/arduino/hardware/zephyr/1.0.0
 LOADER="$CORE/firmwares/zephyr-arduino_uno_q_stm32u585xx.elf"
-SKETCH="$ROOT/build/sketch.ino.elf-zsk.bin"
+BUILD_DIR="${STEPPER_BUILD_DIR:-$ROOT/build}"
+SKETCH="$BUILD_DIR/sketch.ino.elf-zsk.bin"
 RECIPE="$CORE/variants/arduino_uno_q_stm32u585xx/flash_sketch.cfg"
 [[ -f "$LOADER" && -f "$SKETCH" && -f "$RECIPE" ]] || { echo 'Build artifacts or pinned core missing.' >&2; exit 1; }
 /opt/openocd/bin/openocd -d2 -s /opt/openocd -f openocd_gpiod.cfg \

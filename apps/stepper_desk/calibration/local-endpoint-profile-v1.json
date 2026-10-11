@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "profile_type": "local_single_joint_endpoint",
+  "status": "accepted_local_retrospective",
+  "fingerprint": "0:22.5:false:true:16:200|1:53.349609375:true:true:2:200|2:-30.322265625:true:true:16:200",
+  "tolerance_deg": 1.5,
+  "max_move_deg": 5,
+  "globally_verified": false,
+  "physical_angle_accuracy_verified": false,
+  "physical_microsteps_verified": false,
+  "scope": "Single-joint sensor-target local endpoint validation only; not coordinated pose control, full-range calibration, or a legacy verified ratio file.",
+  "joints": {
+    "shoulder": {
+      "motor_axis": 1,
+      "forward_sign": 1,
+      "bounds_deg": [
+        -17.227,
+        2.285
+      ],
+      "model": {
+        "knot_deg": -7.0,
+        "low_pulses_per_degree": 119.36739006303452,
+        "high_pulses_per_degree": 172.5765776126733,
+        "reversal_pulses": 0.0,
+        "kind": "piecewise_cumulative_gain_plus_reversal"
+      },
+      "observed_max_endpoint_error_deg": 1.4140229329819736
+    },
+    "elbow": {
+      "motor_axis": 0,
+      "forward_sign": -1,
+      "bounds_deg": [
+        51.68,
+        65.127
+      ],
+      "model": {
+        "knot_deg": 61.0,
+        "low_pulses_per_degree": 148.51821077235243,
+        "high_pulses_per_degree": 131.58658273364668,
+        "reversal_pulses": 49.15949943348443,
+        "kind": "piecewise_cumulative_gain_plus_reversal"
+      },
+      "observed_max_endpoint_error_deg": 1.164263864701418
+    },
+    "head": {
+      "motor_axis": 2,
+      "forward_sign": -1,
+      "bounds_deg": [
+        -4.395,
+        8.613
+      ],
+      "model": {
+        "kind": "gain_plus_reversal",
+        "gain_pulses_per_degree": 143.1,
+        "reversal_pulses": 260
+      },
+      "observed_max_endpoint_error_deg": 0.34877638015374046
+    }
+  },
+  "provenance": [
+    {
+      "source": "diagnostics/local-endpoint-acceptance-v2-2026-10-11.json",
+      "sha256": "75340088bd2dd27d2b8d4d0f4235dc00776baca1b801529da196eb54aa23acab"
+    },
+    {
+      "source": "diagnostics/calibration-model-evaluation-2026-10-11.json",
+      "sha256": "f869d8a49377d3d57dd144d87e8d52be9e00ae70cca648963bd5b9ee0d10fc94"
+    },
+    {
+      "source": "diagnostics/local-piecewise-model-frozen-2026-10-11.json",
+      "sha256": "171637fd7256a0655c63ac93ece25b9b14dedeb4a87f7fa35d6619d3f949763b"
+    },
+    {
+      "source": "diagnostics/local-heldout-evaluation-2026-10-11.json",
+      "sha256": "f5c268e3eaad72ee40b39a6cba2a4439ab5d1c88e4beb32fbf534f790eeccfb7"
+    },
+    {
+      "source": "diagnostics/motion-history-audit-2026-10-11.json",
+      "sha256": "8f70aaaf0562f6e5d64874c8871594383922cc8045c87c279850427a55adc7c5"
+    },
+    {
+      "source": "calibration/arm-calibration-2026-10-11.json",
+      "sha256": "21728453e60996173515c7c34df6777e7f6802ee97d79dd0e64a2a5aab00fcd9"
+    }
+  ],
+  "constraints": [
+    "Require matching calibration fingerprint and verify provenance hashes before use.",
+    "Require start and target inside selected joint bounds; no clipping or extrapolation.",
+    "Run only one joint at a time, with existing sensor freshness, direction, limit, motion lease and powered-settlement guards.",
+    "Model pulse predictions are optional diagnostics, not authority to issue unbounded reversal take-up.",
+    "Do not set global ratio verification flags from this profile.",
+    "Original0.5degree failures remain;1.5degree criterion was accepted retrospectively by the user."
+  ]
+}

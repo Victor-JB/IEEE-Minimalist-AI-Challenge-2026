@@ -5,7 +5,7 @@ APP_DIR="$MAC_DIR/Stepper Desk Q.app"
 mkdir -p "$APP_DIR/Contents/MacOS" "$APP_DIR/Contents/Resources" /tmp/stepper-swift-cache
 xcrun swiftc -swift-version 5 -O -parse-as-library -target "$(uname -m)-apple-macosx14.0" \
   -module-cache-path /tmp/stepper-swift-cache \
-  "$MAC_DIR/SSHLink.swift" "$MAC_DIR/Controller.swift" "$MAC_DIR/ArmModel.swift" "$MAC_DIR/ArmCAD.swift" "$MAC_DIR/ArmView.swift" "$MAC_DIR/StepperDesk.swift" \
+  "$MAC_DIR/SSHLink.swift" "$MAC_DIR/Controller.swift" "$MAC_DIR/ArmModel.swift" "$MAC_DIR/ArmCAD.swift" "$MAC_DIR/ArmView.swift" "$MAC_DIR/PoseController.swift" "$MAC_DIR/PoseView.swift" "$MAC_DIR/StepperDesk.swift" \
   -framework SwiftUI -framework AppKit -framework SceneKit -o "$APP_DIR/Contents/MacOS/StepperDeskQ"
 cat > "$APP_DIR/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -16,8 +16,8 @@ cat > "$APP_DIR/Contents/Info.plist" <<'PLIST'
 <key>CFBundleName</key><string>Stepper Desk Q</string>
 <key>CFBundleDisplayName</key><string>Stepper Desk Q</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>1.2</string>
-<key>CFBundleVersion</key><string>3</string>
+<key>CFBundleShortVersionString</key><string>1.4</string>
+<key>CFBundleVersion</key><string>6</string>
 <key>LSMinimumSystemVersion</key><string>14.0</string>
 <key>NSHighResolutionCapable</key><true/>
 </dict></plist>

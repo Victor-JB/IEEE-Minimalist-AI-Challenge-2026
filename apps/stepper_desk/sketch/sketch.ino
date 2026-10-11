@@ -6,12 +6,23 @@
 #include <stm32_ll_tim.h>
 #include <vector>
 #include "motion.hpp"
+#include "power.hpp"
+#include "trajectory.hpp"
+#include "servo.hpp"
+#include <zephyr/irq.h>
 #include "sensors.hpp"
 #include "limits.hpp"
 #include <Wire.h>
 #include <zephyr/drivers/i2c.h>
 
 using namespace stepper;
+constexpr uint8_t SLEEP_PIN = 8;
+static Power power;
+static coordinated::Motion armMotion;
+static servo::Controller servoCtl; // closed-loop moves; see servo.hpp
+static uint32_t armOwner=0,armSeen=0;
+static unsigned armConfigured=0,armVerified=0;
+static std::array<double,3> armPPD{};
 constexpr uint8_t STEP_PINS[AXES] = {3, 5, 9};
 constexpr uint8_t DIR_PINS[AXES] = {2, 4, 7};
 // These are PWM spec indices, not Arduino digital pin numbers.
@@ -39,6 +50,7 @@ static std::vector<int> scanAddresses;
 static std::vector<int> scanBus(int request) {
     k_mutex_lock(&lock, K_FOREVER);
     if (request) {
+        if(armOwner){ k_mutex_unlock(&lock); return {1,-EBUSY}; }
         for (unsigned a=0; a<AXES; ++a) {
             if (motors[a].running) { k_mutex_unlock(&lock); return {1,-EBUSY}; }
         }
@@ -101,30 +113,33 @@ static void readSensors(void *, void *, void *) {
             sensors[a] = value;
             k_mutex_unlock(&lock);
         }
-        k_msleep(20);
+        // About 110 Hz per joint at 100 kHz I2C; the closed loop needs fresh angles.
+        k_msleep(5);
     }
 }
 
 static int output(unsigned axis) {
+    if(armOwner)return 0;
     auto &m = motors[axis];
     const auto &p = outputs[axis];
     if (m.direction != appliedDirection[axis]) {
         digitalWrite(DIR_PINS[axis], m.direction ? HIGH : LOW);
         appliedDirection[axis] = m.direction;
     }
-    if (m.hz == applied[axis]) return 0;
+    const uint32_t hz = power.ready(millis()) ? m.hz : 0;
+    if (hz == applied[axis]) return 0;
     // Force a zero compare immediately on STOP, rather than waiting a long
     // low-frequency period. The timer is exclusively owned by this motor.
-    if (!m.hz) {
+    if (!hz) {
         int err = pwm_set_cycles(p.dev, p.channel, 1000, 0, p.flags);
         if (err) return err;
         LL_TIM_GenerateEvent_UPDATE(timers[axis]);
     } else {
-        uint32_t period = (tickHz[axis] + m.hz/2) / m.hz;
+        uint32_t period = (tickHz[axis] + hz/2) / hz;
         int err = pwm_set_cycles(p.dev, p.channel, period, period/2, p.flags);
         if (err) return err;
     }
-    applied[axis] = m.hz;
+    applied[axis] = hz;
     return 0;
 }
 static void applyOrFault(unsigned a) {
@@ -138,6 +153,21 @@ static void applyOrFault(unsigned a) {
         applied[a] = 0;
     }
 }
+static void stopCountedJog();
+static void releaseTrains();
+static void syncPower() {
+    bool moving = (armMotion.running() || servoCtl.wantsPower()) && armOwner;
+    for (unsigned a=0; a<AXES; ++a) moving |= motors[a].running;
+    if (!moving) { stopCountedJog(); releaseTrains(); }
+    if (power.update(moving,millis())) {
+        // All stopped: clear PWM outputs before removing shared coil current.
+        if (!power.awake) for (unsigned a=0; a<AXES; ++a) applyOrFault(a);
+        digitalWrite(SLEEP_PIN,power.awake ? HIGH : LOW);
+        power.wokeAt=millis(); // Delay is measured from the physical transition.
+    }
+}
+#include "arm_control.hpp"
+
 static void guardMotion(unsigned a, uint32_t now) {
     auto &m=motors[a];
     if (m.running && !limits[a].permits(a,sensors[joint_limit::SENSOR_FOR_MOTOR[a]],now,m.wanted))
@@ -147,9 +177,13 @@ static void control(void *, void *, void *) {
     for (;;) {
         k_mutex_lock(&lock, K_FOREVER);
         uint32_t now = millis();
-        for (unsigned a=0; a<AXES; ++a) { motors[a].tick(now); guardMotion(a,now); applyOrFault(a); }
+        for (unsigned a=0; a<AXES; ++a) { motors[a].tick(now); guardMotion(a,now); }
+        syncPower();
+        armTick(now);
+        for (unsigned a=0; a<AXES; ++a) applyOrFault(a);
+        syncPower(); // A PWM failure may have stopped the final active motor.
         k_mutex_unlock(&lock);
-        k_msleep(5);
+        k_msleep(1);
     }
 }
 static std::vector<int> status(unsigned a, int ack, int error) {
@@ -161,14 +195,14 @@ static std::vector<int> status(unsigned a, int ack, int error) {
     const auto &jointSensor=sensors[joint_limit::SENSOR_FOR_MOTOR[a]];
     const int guardState=guard.state(a,jointSensor,millis());
     const int angle=(guard.configured && guard.usable(jointSensor,millis())) ? int(std::lround(guard.angle(jointSensor)*1000)) : INT32_MIN;
-    return {5, int(a), ack, error, m.fault, int(m.hz), int(m.target),
+    return {7, int(a), ack, error, m.fault, int(m.hz), int(m.target),
             int(m.direction), int(m.wanted), int(m.running), int(m.ppr),
             int(m.phase), int(MAX_HZ), int(m.session),
             sensor.raw, sensor.magnet, sensor.error, int(age),
             guardState, int(guard.configured), guard.zeroUdeg, int(guard.reversed), guard.forwardSign,
-            angle, joint_limit::MIN_MDEG[a], joint_limit::MAX_MDEG[a], 1};
+            angle, joint_limit::MIN_MDEG[a], joint_limit::MAX_MDEG[a], 1, int(power.awake), int(power.generation), int(power.ready(millis())), int(power.enabled)};
 }
-// op 0 claim, 1 curve, 2 hold, 3 stop, 4 status, 5 limit calibration. All calls use an owner token.
+// op 0 claim, 1 curve, 2 hold, 3 stop, 4 status, 5 limit calibration, 6 shared sleep/wake. All calls use an owner token.
 // One mutex covers callbacks and the independent 5 ms watchdog thread.
 static std::vector<int> command(std::vector<int> args) {
     if (args.size() < 3 || args[1] < 0 || args[1] >= int(AXES) || args[2] <= 0)
@@ -178,11 +212,23 @@ static std::vector<int> command(std::vector<int> args) {
     uint32_t owner = args[2], now = millis();
     k_mutex_lock(&lock, K_FOREVER);
     auto &m = motors[a];
+    if(armOwner){
+        if(op==3){armMotion.stop();syncPower();}
+        auto r=status(a,0,-EBUSY);k_mutex_unlock(&lock);return r;
+    }
     if (op == 0 && args.size() == 3) {
         err = m.claim(owner);
         if (!err) limits[a]=joint_limit::Guard{}; // Every new owner must synchronize calibration.
     }
     else if (m.owner != owner) err = -EACCES;
+    else if (op == 6 && args.size() == 5) {
+        err = power.change(args[3], uint32_t(args[4]));
+        if (!err) {
+            // Stop every timer before changing the shared physical sleep line.
+            for (unsigned j=0; j<AXES; ++j) { motors[j].stop(); applyOrFault(j); }
+            syncPower();
+        }
+    }
     else if (op == 5 && args.size() == 6) {
         if (m.running) err=-EBUSY;
         else if (!limits[a].configure(args[3],args[4],args[5])) err=-EINVAL;
@@ -191,10 +237,11 @@ static std::vector<int> command(std::vector<int> args) {
         ack = args[3];
         int count = args[6];
         Point points[MAX_POINTS];
-        if (count < 2 || count > int(MAX_POINTS) || args.size() != size_t(7+2*count)) err = -EINVAL;
+        if (count < 2 || count > int(MAX_POINTS) || args.size() != size_t(8+2*count)) err = -EINVAL;
         else {
             for (unsigned i=3; i<args.size(); ++i) if (args[i] < 0) err = -EINVAL;
             for (int i=0; i<count; ++i) points[i] = {uint32_t(args[7+2*i]), uint32_t(args[8+2*i])};
+            if (!err && !power.permits(uint32_t(args.back()))) err = -EPERM;
             if (!err && (scanState == 1 || scanState == 2)) err = -EBUSY;
             if (!err && !limits[a].permits(a,sensors[joint_limit::SENSOR_FOR_MOTOR[a]],now,args[4])) err=-EPERM;
             if (!err) err = m.start(owner, args[3], args[4], args[5], points, count, now);
@@ -204,13 +251,17 @@ static std::vector<int> command(std::vector<int> args) {
     else if (op != 4 || args.size() != 3) err = -EINVAL;
     m.tick(now);
     guardMotion(a,now);
+    syncPower();
     applyOrFault(a);
+    syncPower();
     auto result = status(a, ack, err);
     k_mutex_unlock(&lock);
     return result;
 }
 
 void setup() {
+    digitalWrite(SLEEP_PIN, LOW);
+    pinMode(SLEEP_PIN, OUTPUT);
     k_mutex_init(&lock);
     for (unsigned a=0; a<AXES; ++a) {
         pinMode(DIR_PINS[a], OUTPUT); digitalWrite(DIR_PINS[a], LOW);
@@ -239,7 +290,13 @@ void setup() {
     Bridge.begin();
     Bridge.provide("stepper_command", command);
     Bridge.provide("stepper_scan", scanBus);
+    Bridge.provide("arm_command",armCommand);
+    Bridge.provide("arm_observe",armObserve);
+    Bridge.provide("arm_lock",armLock);
+    Bridge.provide("arm_servo_status",armServoStatus);
+    Bridge.provide("arm_selftest",armSelftest);
+    Bridge.provide("arm_pulse_selftest",armPulseSelftest);
     Monitor.begin();
-    Monitor.println("Stepper Desk Q ready: STEP D3/D5/D9, DIR D2/D4/D7; all stopped");
+    Monitor.println("Stepper Desk Q ready: STEP D3/D5/D9, DIR D2/D4/D7; SLEEP D8; all asleep and stopped");
 }
 void loop() { delay(100); }

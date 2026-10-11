@@ -27,6 +27,10 @@ struct BoardStatus: Decodable {
     let limit_min_mdeg: Int?
     let limit_max_mdeg: Int?
     let limit_revision: Int?
+    let drivers_awake: Int?
+    let power_generation: Int?
+    let power_ready: Int?
+    let power_enabled: Int?
 }
 
 struct RampPoint: Identifiable, Codable, Equatable {
@@ -105,12 +109,21 @@ final class Controller: ObservableObject {
     var minRPM: Double { 20 * 60 / Double(ppr) }
     var requestedHz: Int { rpm.isFinite ? Int((min(max(rpm, 0), maxRPM) * Double(ppr) / 60).rounded()) : 0 }
     var running: Bool { telemetry?.run == 1 }
+    var powerSupported: Bool { connected && telemetry?.power_enabled != nil }
+    var driversAwake: Bool { telemetry?.drivers_awake == 1 }
+    var powerAllowsMotion: Bool { telemetry?.power_enabled == 1 || (preview && telemetry?.power_generation == nil) }
+    func setMotionEnabled(_ awake: Bool) {
+        guard powerSupported, let generation=telemetry?.power_generation else { return }
+        disarm()
+        send("POWER \(awake ? 1 : 0) \(generation)", priority: true)
+        notice = awake ? "Enabling movement · drivers stay asleep until needed." : "Sleeping and locking all drivers…"
+    }
     var canArm: Bool {
-        connected && !held && !running && pending == nil && !stopping &&
+        connected && powerAllowsMotion && !held && !running && pending == nil && !stopping &&
         (telemetry?.fault ?? 0) == 0 && rampError == nil && limitReady
     }
     func canHold(direction requested: Int) -> Bool {
-        guard armed, connected, !stopping, (telemetry?.fault ?? 0) == 0,
+        guard armed, connected, powerAllowsMotion, !stopping, (telemetry?.fault ?? 0) == 0,
               requested == 0 || requested == 1 else { return false }
         if limitConfiguration != nil {
             guard limitReady, let config=limitConfiguration?(), config.permits(state:telemetry?.limit_state,direction:requested) else { return false }
@@ -177,6 +190,7 @@ final class Controller: ObservableObject {
     }
     var phase: String {
         guard connected else { return connecting ? "Connecting" : "Disconnected" }
+        if telemetry?.drivers_awake == 0 { return "Asleep · torque off" }
         switch telemetry?.phase {
         case "RUNNING": return "Running"
         case "ARMING": return "Starting"
@@ -252,7 +266,7 @@ final class Controller: ObservableObject {
         armed = false; held = false; session = nil; accepted = false
         if !preview { link.close() }
         connected = false; connecting = false; pending = nil; stopping = false
-        notice = "Disconnected. STEP pulses stopped; the motor can still hold torque."
+        notice = "Disconnected. Motors sleep when all three channels are stopped."
         problem = false
     }
     func shutdown() { armed = false; held = false; session = nil; if !preview { link.close() } }
@@ -281,7 +295,8 @@ final class Controller: ObservableObject {
         let values = effectiveRamp.map {
             "\(Int(($0.seconds * 1000).rounded())) \(Int(($0.rpm * Double(ppr) / 60).rounded()))"
         }.joined(separator: " ")
-        send("CURVE \(sequence) \(direction) \(ppr) \(ramp.count) \(values)")
+        let powerSuffix = telemetry?.power_generation.map { " \($0)" } ?? ""
+        send("CURVE \(sequence) \(direction) \(ppr) \(ramp.count) \(values)\(powerSuffix)")
         return true
     }
     func endHold(direction requested: Int? = nil) {
@@ -302,8 +317,12 @@ final class Controller: ObservableObject {
             disconnect(); notice = "Update the board firmware for hold-to-run control."; problem = true; return
         }
         let first = !connected
+        let previousPower = telemetry?.power_generation
         telemetry = state; connected = true; connecting = false; lastStatus = now()
         if first { armed = false; notice = "Connected. Press Arm, then hold a direction button."; problem = false; clampRPM() }
+        if state.power_generation != nil && (previousPower != state.power_generation || state.power_enabled != 1) {
+            disarm()
+        }
         if let wanted = pending, state.ack == wanted {
             pending = nil
             if state.error != 0 {
@@ -324,6 +343,9 @@ final class Controller: ObservableObject {
             notice = limitNotice; problem = true
         }
         synchronizeLimits()
+        if state.drivers_awake == 0 && state.fault == 0 { notice = state.power_enabled == 1 ? "Drivers asleep · wake automatically when you hold a direction." : "Drivers asleep and locked · enable movement to continue."; problem = false }
+        else if state.power_ready == 0 { notice = "Drivers waking · motion locked." }
+        if state.error != 0 && state.ack == 0 { notice = "Board rejected the command (\(state.error)); check driver status."; problem = true }
         if state.phase == "LINK_LOST" {
             armed = false
             notice = "Hold expired. Release, then arm again to restart."; problem = true
