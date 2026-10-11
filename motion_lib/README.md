@@ -25,6 +25,11 @@ python -m unittest discover motion_lib/tests
 ```
 Re-run from `author.py` after changing a clip or `sim/robot.toml` (joint limits, speed, accel, jerk).
 
+`ROBOT_CONFIG=sim/stepper_desk.toml` plays clips on the real 3-joint stepper arm model instead
+(see `sim/README.md`); joints that arm lacks are dropped. Do not run `validate.py` with it set:
+validation rewrites the clip JSON ranges for whichever robot is active. On the physical arm, clips
+play through `apps/stepper_desk/scripts/emote.py`.
+
 ## Files
 | file | role |
 |---|---|

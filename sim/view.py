@@ -3,6 +3,7 @@
     python sim/view.py           # interactive: pose joints with the sliders in the Control panel
     python sim/view.py --demo    # play a test motion through the same easing the sketch uses
     python sim/view.py --torque  # holding torque each joint needs against gravity
+    python sim/view.py --config sim/stepper_desk.toml   # the real 3-joint stepper arm
 """
 
 import argparse
@@ -106,9 +107,11 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--demo", action="store_true", help="play a test motion")
     mode.add_argument("--torque", action="store_true", help="print holding torques and exit")
+    parser.add_argument("--config", default=configurator.CONFIG_PATH,
+                        help="robot description (default sim/robot.toml; the real arm is sim/stepper_desk.toml)")
     args = parser.parse_args()
 
-    cfg, model_path = configurator.generate()
+    cfg, model_path = configurator.generate(args.config)
     model = mujoco.MjModel.from_xml_path(str(model_path))
 
     if args.torque:

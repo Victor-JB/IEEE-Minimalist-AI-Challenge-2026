@@ -77,6 +77,60 @@ def fmt(values):
     return " ".join(f"{v:.6g}" for v in values)
 
 
+# The app's CAD view (apps/stepper_desk/mac/ArmCAD.swift) places parts in joint frames whose links
+# run along -y with the hinge on z, inside a rig turned 180 deg about z; positions are in cm.
+# This frame here has links along +z and the hinge on +y; both turn toward +x for positive angles.
+# The change of frame is a 180 deg rotation about (0, 1, -1)/sqrt(2).
+CAD_FRAME_QUAT = [0.0, 0.0, math.sqrt(0.5), -math.sqrt(0.5)]
+
+
+def cad_pos(p):
+    return [-p[0] / 100, -p[2] / 100, -p[1] / 100]
+
+
+def quat_mul(a, b):
+    aw, ax, ay, az = a
+    bw, bx, by, bz = b
+    return [aw * bw - ax * bx - ay * by - az * bz, aw * bx + ax * bw + ay * bz - az * by,
+            aw * by - ax * bz + ay * bw + az * bx, aw * bz + ax * by - ay * bx + az * bw]
+
+
+def cad_quat(q):
+    return quat_mul(CAD_FRAME_QUAT, q)
+
+
+def load_cad(cfg):
+    """[cad] manifest = path to the app's CAD model.json (relative to the repo root)."""
+    if "cad" not in cfg:
+        return None
+    import json
+    manifest = ROOT / cfg["cad"]["manifest"]
+    data = json.loads(manifest.read_text())
+    return {"dir": manifest.parent, "parts": data["parts"], "meshes": {},
+            "density": cfg["cad"].get("density", {}), "body_mass": cfg["cad"].get("body_mass_kg", {})}
+
+
+def stl_volume(path):
+    """Enclosed volume of a binary STL in its own units^3. MuJoCo would otherwise weigh a mesh
+    by its convex hull, which turns the hollow lamp shade into a solid bowl."""
+    import struct
+    data = Path(path).read_bytes()
+    total = 0.0
+    for k in range(struct.unpack_from("<I", data, 80)[0]):
+        a = struct.unpack_from("<9f", data, 84 + 50 * k + 12)
+        total += (a[0] * (a[4] * a[8] - a[5] * a[7]) - a[1] * (a[3] * a[8] - a[5] * a[6])
+                  + a[2] * (a[3] * a[7] - a[4] * a[6]))
+    return abs(total) / 6
+
+
+def cad_density(cad, filename):
+    """kg/m^3 for a CAD part, by the first matching file-name prefix in [cad.density]."""
+    for prefix, rho in cad["density"].items():
+        if prefix != "default" and filename.startswith(prefix):
+            return rho
+    return cad["density"]["default"]
+
+
 def build_mjcf(cfg, collisions=False):
     """MuJoCo model. collisions=True turns on contacts between the solid parts (for
     motion validation); the default model is kinematics-only for viewing."""
@@ -93,6 +147,18 @@ def build_mjcf(cfg, collisions=False):
     ET.SubElement(asset, "material", name="axis", rgba=".95 .55 .1 1")
     ET.SubElement(asset, "material", name="head", rgba=".3 .55 .9 1")
     ET.SubElement(asset, "material", name="eye", rgba=".05 .05 .05 1")
+    cad = load_cad(cfg)
+    if cad:
+        for i, part in enumerate(cad["parts"]):
+            if part["file"] not in cad["meshes"]:
+                cad["meshes"][part["file"]] = f"cad{len(cad['meshes'])}"
+                ET.SubElement(asset, "mesh", name=cad["meshes"][part["file"]],
+                              file=str(cad["dir"] / part["file"]), scale="0.001 0.001 0.001")
+            ET.SubElement(asset, "material", name=f"cad_part{i}", rgba=fmt(part["color"]))
+        # Simple shapes keep their masses but are hidden behind the CAD shells.
+        ET.SubElement(asset, "material", name="pedestal", rgba=".34 .34 .34 1")
+        for name in ("link", "head", "eye", "axis"):
+            asset.find(f"material[@name='{name}']").set("rgba", "0 0 0 0")
 
     # Kinematics only: no collisions anywhere, so overlapping links never push on each other.
     default = ET.SubElement(root, "default")
@@ -106,7 +172,8 @@ def build_mjcf(cfg, collisions=False):
     bw, bd, bh = base.get("size", [0.1, 0.1, 0.03])
     parent = ET.SubElement(world, "body", name="base")
     ET.SubElement(parent, "geom", type="box", size=fmt([bw / 2, bd / 2, bh / 2]),
-                  pos=fmt([0, 0, bh / 2]), mass=f"{base.get('mass', 0.5):g}", material="link", **solid)
+                  pos=fmt([0, 0, bh / 2]), mass=f"{base.get('mass', 0.5):g}",
+                  material="pedestal" if "cad" in cfg else "link", **solid)
     pos = [0, 0, bh]
 
     actuators = []
@@ -123,10 +190,25 @@ def build_mjcf(cfg, collisions=False):
 
         if math.dist(j["link"], [0, 0, 0]) > 1e-6:
             ET.SubElement(body, "geom", type="capsule", fromto=fmt([0, 0, 0] + j["link"]),
-                          size=f"{j['radius']:g}", mass=f"{j['mass']:g}", material="link", **solid)
+                          size=f"{j['radius']:g}", mass="0" if cad and cad["density"] else f"{j['mass']:g}",
+                          material="link", **solid)
         else:  # joints stacked at the same point: a small sphere carries the mass
             ET.SubElement(body, "geom", type="sphere", size=f"{j['radius']:g}",
                           mass=f"{j['mass']:g}", material="link", **solid)
+
+        if cad:
+            index = len(actuators)
+            mine = [(i, part) for i, part in enumerate(cad["parts"]) if part["joint"] == index]
+            masses = [cad_density(cad, part["file"]) * stl_volume(cad["dir"] / part["file"]) * 1e-9
+                      if cad["density"] else 0.0 for _, part in mine]  # mm^3 -> m^3
+            target = cad["body_mass"].get(j["name"])
+            if target and sum(masses) > 0:
+                masses = [m * target / sum(masses) for m in masses]
+            for (i, part), mass in zip(mine, masses):
+                weight = {"mass": f"{mass:.6g}"}
+                ET.SubElement(body, "geom", type="mesh", mesh=cad["meshes"][part["file"]],
+                              pos=fmt(cad_pos(part["position"])), quat=fmt(cad_quat(part["quaternion"])),
+                              material=f"cad_part{i}", **weight)
 
         actuator = {"name": j["name"], "joint": j["name"], "kp": f"{j['kp']:g}",
                     "ctrlrange": fmt(map(math.radians, j["range"]))}
@@ -140,7 +222,7 @@ def build_mjcf(cfg, collisions=False):
     hx, hy, hz = [s / 2 for s in head.get("size", [0.06, 0.08, 0.05])]
     head_body = ET.SubElement(parent, "body", name="head", pos=fmt([pos[0], pos[1], pos[2] + hz]))
     ET.SubElement(head_body, "geom", type="box", size=fmt([hx, hy, hz]),
-                  mass=f"{head.get('mass', 0.1):g}", material="head", **solid)
+                  mass="0" if cad and cad["density"] else f"{head.get('mass', 0.1):g}", material="head", **solid)
     for side in (-1, 1):
         ET.SubElement(head_body, "geom", type="sphere", size=f"{min(hy, hz) * 0.18:g}",
                       pos=fmt([hx, side * hy * 0.45, hz * 0.25]), mass="0", material="eye")
@@ -216,21 +298,32 @@ def write_if_changed(path, text):
 
 
 def generate(config_path=CONFIG_PATH, verbose=True):
-    """Rebuild every output from robot.toml. Returns (config, path to the MuJoCo model)."""
+    """Rebuild every output from robot.toml. Returns (config, path to the MuJoCo model).
+
+    Another config (e.g. sim/stepper_desk.toml) only writes sim/build/<name>.xml, so the
+    expressive_robot app's generated constants keep following robot.toml.
+    """
+    config_path = Path(config_path).resolve()
     cfg = load_config(config_path)
-    outputs = {
-        MJCF_PATH: build_mjcf(cfg),
-        HEADER_PATH: build_header(cfg),
-        PY_CONFIG_PATH: build_py_config(cfg),
-    }
+    if config_path == CONFIG_PATH.resolve():
+        mjcf_path = MJCF_PATH
+        outputs = {
+            MJCF_PATH: build_mjcf(cfg),
+            HEADER_PATH: build_header(cfg),
+            PY_CONFIG_PATH: build_py_config(cfg),
+        }
+    else:
+        mjcf_path = MJCF_PATH.with_name(config_path.stem + ".xml")
+        outputs = {mjcf_path: build_mjcf(cfg)}
     for path, text in outputs.items():
         changed = write_if_changed(path, text)
         if verbose:
             print(f"  {'wrote' if changed else 'unchanged'}  {path.relative_to(ROOT)}")
-    return cfg, MJCF_PATH
+    return cfg, mjcf_path
 
 
 if __name__ == "__main__":
-    cfg, _ = generate()
+    import sys
+    cfg, _ = generate(sys.argv[1] if len(sys.argv) > 1 else CONFIG_PATH)
     print(f"{cfg.get('name', 'robot')}: {len(cfg['joint'])} joints "
           f"({', '.join(j['name'] for j in cfg['joint'])})")

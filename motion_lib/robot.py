@@ -1,5 +1,6 @@
 """The robot as the motion library sees it, loaded from sim/robot.toml."""
 
+import os
 import sys
 from pathlib import Path
 
@@ -11,8 +12,12 @@ sys.path.insert(0, str(ROOT / "sim"))
 import configurator  # noqa: E402
 
 
+# ROBOT_CONFIG=sim/stepper_desk.toml selects the real stepper arm instead of robot.toml.
+DEFAULT_CONFIG = os.environ.get("ROBOT_CONFIG") or configurator.CONFIG_PATH
+
+
 class Robot:
-    def __init__(self, config_path=configurator.CONFIG_PATH):
+    def __init__(self, config_path=DEFAULT_CONFIG):
         self.cfg = cfg = configurator.load_config(config_path)
         joints = cfg["joint"]
         self.joint_names = [j["name"] for j in joints]

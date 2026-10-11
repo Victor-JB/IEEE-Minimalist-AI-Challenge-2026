@@ -193,6 +193,8 @@ def play(clip, robot, start=None, amplitude=None, time_scale=None, hold=None, re
 
     q = np.tile(start, (len(t), 1))
     for name in clip["joint_mask"]:
+        if name not in names:
+            continue  # this robot lacks the joint (e.g. the 3-joint stepper arm): drop that part
         j = names.index(name)
         track = sorted((k["t"], k["joints"][name], k.get("ease", "ease_in_out")) for k in kfs if name in k["joints"])
         times = np.array([k[0] for k in track])
