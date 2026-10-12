@@ -69,5 +69,4 @@ ssh arduino@daboard
 cd stepper-desk-q && .venv/bin/python scripts/emote.py lamp_happy/arm --execute
 ```
 
-**From the Mac:** 
-USB (ADB forward) when the board is plugged in, otherwise Tailscale to `daboard`; see [COMMISSIONING_REPORT.md](COMMISSIONING_REPORT.md#connection-and-deployment). STATUS round trips: USB about 18 ms, Tailscale about 30 ms with spikes to 120–250 ms (Tailscale requests get a 0.6 s deadline; the MCU's 300 ms motion lease is unchanged).
+**From the Mac:** USB (ADB forward) when the board is plugged in, otherwise Tailscale to `daboard`; see [COMMISSIONING_REPORT.md](COMMISSIONING_REPORT.md#connection-and-deployment). STATUS round trips: USB about 18 ms, Tailscale about 30 ms with spikes to 120–250 ms (Tailscale requests get a 0.6 s deadline; the MCU's 300 ms motion lease is unchanged).
