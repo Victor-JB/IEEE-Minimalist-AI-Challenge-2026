@@ -17,6 +17,7 @@ class FakeBridge:
         self.fail_op = None
         self.reject_op = None
         self.observe_response = None
+        self.roll_response = [3, 1, 10000, 9500, 1570, 0]
 
     def call(self, method, *args, timeout):
         self.calls.append((method, args, timeout))
@@ -24,6 +25,10 @@ class FakeBridge:
             if self.observe_response is not None:
                 return self.observe_response
             return [1, 0, 456, 0, 7, 1000, 0, 0, 1, 9, 7, 0, 5000, 0] + [123, 124, 125, 0, 1, 10, 0x30, 0]*3
+        if method == 'arm_roll_status':
+            if self.roll_response is None:
+                raise ValueError('Unknown method arm_roll_status')   # firmware without the servo
+            return self.roll_response
         values = args[0]
         op = values[0]
         if op == self.fail_op:
@@ -171,6 +176,29 @@ class ScriptGatewayTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertFalse(replies[-1]['ok'])
         self.assertEqual(self.ops(), [0, 6, 7])
+
+    def test_roll_commands_map_to_ops_16_to_18(self):
+        bridge = FakeBridge(); gateway = ArmGateway(bridge)
+        gateway.command('HELLO')
+        gateway.command('ROLL 12000 30000')
+        gateway.command('ROLLCONFIG 1500 7407 -45000 45000 1 180000')
+        gateway.command('ROLLOFF')
+        ops = [c[1][0][:2] for c in bridge.calls if c[0] == 'arm_command'][1:]
+        self.assertEqual([o[0] for o in ops], [16, 17, 18])
+        self.assertEqual(bridge.calls[2][1][0][2:], [1500, 7407, -45000, 45000, 1, 180000])
+        with self.assertRaises(ValueError):
+            gateway.command('ROLL 12000')            # wrong argument count
+
+    def test_roll_status_decodes_or_reports_unsupported(self):
+        bridge = FakeBridge(); gateway = ArmGateway(bridge)
+        gateway.command('HELLO')
+        status = gateway.command('ROLLSTAT')
+        self.assertEqual((status['supported'], status['enabled'], status['target'], status['pulse_us']),
+                         (True, 1, 10000, 1570))
+        bridge.roll_response = None
+        self.assertEqual(gateway.command('ROLLSTAT'), {'kind': 'roll', 'supported': False})
+        bridge.roll_response = [2, 0, 0]               # wrong shape: treated as no servo
+        self.assertFalse(gateway.command('ROLLSTAT')['supported'])
 
     def test_response_is_flushed_for_each_request(self):
         class Output(io.StringIO):

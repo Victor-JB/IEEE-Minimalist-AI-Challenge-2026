@@ -9,6 +9,7 @@
 #include "power.hpp"
 #include "trajectory.hpp"
 #include "servo.hpp"
+#include "roll.hpp"
 #include <zephyr/irq.h>
 #include "sensors.hpp"
 #include "limits.hpp"
@@ -24,7 +25,7 @@ static uint32_t armOwner=0,armSeen=0;
 static unsigned armConfigured=0,armVerified=0;
 static std::array<double,3> armPPD{};
 constexpr uint8_t STEP_PINS[AXES] = {3, 5, 9};
-constexpr uint8_t DIR_PINS[AXES] = {2, 4, 7};
+constexpr uint8_t DIR_PINS[AXES] = {6, 4, 7}; // elbow DIR moved D2 -> D6 for the roll servo
 // These are PWM spec indices, not Arduino digital pin numbers.
 static const pwm_dt_spec outputs[AXES] = {
     PWM_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 1), // D3 TIM3 CH3
@@ -32,6 +33,12 @@ static const pwm_dt_spec outputs[AXES] = {
     PWM_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 6), // D9 TIM4 CH3
 };
 static TIM_TypeDef *const timers[AXES] = {TIM3, TIM1, TIM4};
+// Head-tilt servo (roll.hpp). TIM2 has no STEP pin, so its 50 Hz period stays put.
+constexpr uint8_t ROLL_PIN = 2;
+static const pwm_dt_spec rollOutput = PWM_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 0); // D2 TIM2 CH2
+static roll::Roll headRoll;
+static unsigned rollApplied = ~0u;
+static int rollFault = 0;
 static Motor motors[AXES];
 static joint_limit::Guard limits[AXES];
 static uint32_t tickHz[AXES], applied[AXES];
@@ -166,6 +173,14 @@ static void syncPower() {
         power.wokeAt=millis(); // Delay is measured from the physical transition.
     }
 }
+static void rollTick(uint32_t now) {
+    headRoll.tick(now);
+    const unsigned us = headRoll.pulseUs();   // 0 = no pulses: limp
+    if (us == rollApplied || rollFault) return;
+    int err = pwm_set_dt(&rollOutput, PWM_USEC(roll::PERIOD_US), PWM_USEC(us));
+    if (err) { rollFault = err; headRoll.release(); }
+    else rollApplied = us;
+}
 #include "arm_control.hpp"
 
 static void guardMotion(unsigned a, uint32_t now) {
@@ -180,6 +195,7 @@ static void control(void *, void *, void *) {
         for (unsigned a=0; a<AXES; ++a) { motors[a].tick(now); guardMotion(a,now); }
         syncPower();
         armTick(now);
+        rollTick(now);
         for (unsigned a=0; a<AXES; ++a) applyOrFault(a);
         syncPower(); // A PWM failure may have stopped the final active motor.
         k_mutex_unlock(&lock);
@@ -283,6 +299,9 @@ void setup() {
         }
         if (err) { motors[a].fault = err; motors[a].stop(stepper::ERROR); }
     }
+    analogWrite(ROLL_PIN, 0); // Initialize PWM and only this pin's mux.
+    rollFault = !pwm_is_ready_dt(&rollOutput) ? -ENODEV : pwm_set_dt(&rollOutput, PWM_USEC(roll::PERIOD_US), 0);
+    rollApplied = 0;
     k_thread_create(&motionThread, motionStack, K_THREAD_STACK_SIZEOF(motionStack),
                     control, nullptr, nullptr, nullptr, 4, 0, K_NO_WAIT);
     k_thread_create(&sensorThread, sensorStack, K_THREAD_STACK_SIZEOF(sensorStack),
@@ -294,9 +313,10 @@ void setup() {
     Bridge.provide("arm_observe",armObserve);
     Bridge.provide("arm_lock",armLock);
     Bridge.provide("arm_servo_status",armServoStatus);
+    Bridge.provide("arm_roll_status",armRollStatus);
     Bridge.provide("arm_selftest",armSelftest);
     Bridge.provide("arm_pulse_selftest",armPulseSelftest);
     Monitor.begin();
-    Monitor.println("Stepper Desk Q ready: STEP D3/D5/D9, DIR D2/D4/D7; SLEEP D8; all asleep and stopped");
+    Monitor.println("Stepper Desk Q ready: STEP D3/D5/D9, DIR D6/D4/D7; SLEEP D8; roll servo D2; all asleep and stopped");
 }
 void loop() { delay(100); }

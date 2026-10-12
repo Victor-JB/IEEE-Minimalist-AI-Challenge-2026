@@ -21,6 +21,20 @@ class ConceptRobot:
 def trajectory(ref, home, amplitude=1.0, speeds=C.SPEED_CAPS, accel=C.ACCEL_CAP,
                gains=(1, 1, 1), elbow_lift=C.ELBOW_LIFT_CAP, safe=C.SAFE_RANGES):
     """(t s, q deg (N,3), velocity deg/s (N,3), time_scale) for one clip ref like "nod_yes/medium"."""
+    return _trajectory(ref, home, amplitude, speeds, accel, gains, elbow_lift, safe)[:4]
+
+
+def trajectory_with_roll(ref, home, amplitude=1.0, roll_home=0.0, roll_range=C.ROLL_RANGE, **caps):
+    """trajectory() plus the clip's head_roll track for the head-tilt servo: (t, q, vel,
+    time_scale, roll deg (N,)), on the same time base. Roll doesn't slow the clip down: the
+    servo is much faster than the steppers. caps: trajectory()'s speeds/accel/gains/... keywords."""
+    t, q, vel, scale, tr = _trajectory(ref, home, amplitude, **caps)
+    roll = np.clip(roll_home + tr.q[:, 5] - ConceptRobot.home[5], *roll_range)
+    return t, q, vel, scale, roll
+
+
+def _trajectory(ref, home, amplitude=1.0, speeds=C.SPEED_CAPS, accel=C.ACCEL_CAP,
+                gains=(1, 1, 1), elbow_lift=C.ELBOW_LIFT_CAP, safe=C.SAFE_RANGES):
     clip, sim = load_clip(ref), ConceptRobot()
 
     def render(scale):
@@ -41,4 +55,4 @@ def trajectory(ref, home, amplitude=1.0, speeds=C.SPEED_CAPS, accel=C.ACCEL_CAP,
     q = np.array(home) + (tr.q[:, 1:4] - sim.home[1:4]) * np.array(gains)
     for j, (lo, hi) in enumerate(safe):
         q[:, j] = np.clip(q[:, j], lo, hi)
-    return tr.t, q, np.gradient(q, axis=0) * sim.rate, scale
+    return tr.t, q, np.gradient(q, axis=0) * sim.rate, scale, tr

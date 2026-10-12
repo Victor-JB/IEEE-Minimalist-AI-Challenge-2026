@@ -31,6 +31,11 @@ ssh arduino@daboard journalctl --user -u lumen -f                               
 ssh arduino@daboard bash IEEE-Minimalist-AI-Challenge-2026/apps/lumen/scripts/run.sh   # foreground
 ```
 
+Manual control: `python -m lumen.desk` (stop Lumen first; one arm owner), then
+`http://daboard:8081/`. It has the camera, live joints and sensors, enable/lock, arm/disarm,
+hold-to-jog, pose targets, taught poses, clips, head tilt, the measured-vs-commanded plot, and
+recordings with replay. It's the Stepper Desk Mac app's job, on the closed-loop firmware.
+
 HUD stream: `http://daboard:8080/` (state, active models, light, energy, detections).
 Transition log: `apps/lumen/logs/transitions-<date>.csv` on the board. Every state change with
 the models running and the cumulative inference counts, which is your scorecard data.
@@ -56,6 +61,7 @@ apps/lumen/
     │                               hands (TODO), gestures, book (TODO)
     ├── behavior/                   pools, expressive (noise + energy), director, look_at
     ├── motion/worker.py            thread streaming to the arm at 25 Hz (or fake), via arm/python
+    ├── desk/                       Lumen Desk: browser control page (python -m lumen.desk, :8081)
     └── io/                         camera, stream (MJPEG), light (TODO)
 ```
 

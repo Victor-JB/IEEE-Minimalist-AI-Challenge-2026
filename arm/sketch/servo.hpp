@@ -52,6 +52,11 @@ struct Settings {
     double stallEfficiency=0.3,maxFollow=5;uint32_t followMs=300;
     // Recovery: pause powered, back off, retry slower; repeated stall = obstruction.
     double backoffDeg=1,sameStallDeg=2,retryScale=0.5;unsigned maxRetries=2;uint32_t pauseMs=150;
+    // Streaming stall: grind through on the spot instead of stopping. The stalled joint stays
+    // powered and keeps pushing toward the stream, capped at grindSpeed/n deg/s on the n-th
+    // grind (a stepper has the most torque at a low step rate: gear tight spots, heavy poses).
+    // maxGrinds grinds in a row without grindProgressDeg of motion = a real obstruction: STALLED.
+    double grindSpeed=3,grindProgressDeg=0.5;uint32_t grindMs=1200;unsigned maxGrinds=3;
     // Shoulder recovery: fold the elbow to a limit to pull the centre of mass
     // over the shoulder, lift the shoulder, then unfold. NAN = fold the elbow
     // opposite the shoulder's lean; set an angle once the right side is known.
@@ -83,6 +88,9 @@ struct Joint {
     // Stall window
     unsigned windowPulses=0,badWindows=0;double windowStart=0;uint32_t windowMs=0;
     bool following=false;uint32_t followSince=0;
+    // Grind (streaming stall recovery)
+    bool grinding=false;unsigned grinds=0;double grindFrom=0;uint32_t grindUntil=0;
+    void clearGrind(){grinding=false;grinds=0;}
     double angleSign(unsigned d)const{return cfg.forwardSign*(d?-1.0:1.0);}
     double ppd()const{return ppdEst[dir];}
     double estimate()const{
@@ -164,11 +172,12 @@ struct Controller {
         int err=plan(goal,Vec{0,0,0},durationMs/1000.0,1,1,caps(speed));
         if(err)return err;
         id=lastID=next;renewed=segStart=now;state=MOVING;reason=NONE;everStarted=true;
-        for(unsigned a=0;a<3;++a){resetWindow(a,now);j[a].following=false;}
+        for(unsigned a=0;a<3;++a){resetWindow(a,now);j[a].following=false;j[a].clearGrind();}
         return 0;
     }
     // One short-horizon setpoint from a higher-level behavior model. Each one
-    // replaces the previous segment and renews the lease. No automatic retry.
+    // replaces the previous segment and renews the lease. A stall grinds through
+    // on the spot (see Settings); only a joint that won't move at all goes STALLED.
     int stream(uint32_t next,const Vec &goal,const Vec &vel,uint32_t horizonMs,const Vec &measured,uint32_t now){
         if(!next||next<=lastID||horizonMs<20||horizonMs>2000)return -EINVAL;
         for(unsigned a=0;a<3;++a){
@@ -182,7 +191,7 @@ struct Controller {
         if(segActive)for(auto &q:j)q.seg.eval(tau,q.ref,q.refV,q.refA);
         int err=plan(goal,vel,horizonMs/1000.0,set.speedGain,0,caps(0));
         if(err)return err;
-        if(state!=STREAMING)for(unsigned a=0;a<3;++a){resetWindow(a,now);j[a].following=false;}
+        if(state!=STREAMING)for(unsigned a=0;a<3;++a){resetWindow(a,now);j[a].following=false;j[a].clearGrind();}
         id=lastID=next;renewed=segStart=now;state=STREAMING;reason=NONE;everStarted=true;
         return 0;
     }
@@ -199,7 +208,7 @@ struct Controller {
     int scale(double s){if(!std::isfinite(s)||s<0.05||s>1)return -ERANGE;live=s;return 0;}
     int halt(uint32_t now){if(!active())return -ESTALE;haltAt(now,HALTED);return 0;}
     void relax(Reason why=RELAXED){
-        for(auto &q:j){q.vCmd=0;q.rate=0;q.engaged=false;}
+        for(auto &q:j){q.vCmd=0;q.rate=0;q.engaged=false;q.clearGrind();}
         segActive=false;phase=NO_PHASE;
         if(active())reason=why;
         state=IDLE;
@@ -237,6 +246,11 @@ struct Controller {
         Vec est;for(unsigned i=0;i<3;++i)est[i]=j[i].estimate();
         ++stalls;stallJoint=int(a);stallAngle=est[a];
         bool repeat=retries>0&&int(a)==lastStallJoint&&std::abs(est[a]-lastStallAngle)<=set.sameStallDeg;
+        auto &x=j[a];
+        if(state==STREAMING&&x.grinds<set.maxGrinds){
+            ++x.grinds;x.grinding=true;x.grindFrom=x.meas;x.grindUntil=now+set.grindMs;
+            resetWindow(a,now);x.following=false;return;
+        }
         if(state==STREAMING||state==RECOVERING||repeat||retries>=set.maxRetries){
             holdAt(est);state=STALLED;reason=repeat?OBSTRUCTION:STALL;
             holdSince=now;phase=NO_PHASE;return;
@@ -324,9 +338,18 @@ struct Controller {
                 if(uint32_t(now-segStart)>=uint32_t(segT*1000/live)+set.settleTimeoutMs){state=HOLDING;reason=UNSETTLED;holdSince=now;}}
         }
         if(state==STREAMING&&!segActive){state=HOLDING;reason=COMPLETE;holdSince=now;}
+        // A grind ends after grindMs; real motion during it means the joint got through.
+        for(unsigned a=0;a<3;++a){auto &x=j[a];
+            if(x.grinding&&int32_t(now-x.grindUntil)>=0){
+                x.grinding=false;
+                if(std::abs(x.meas-x.grindFrom)>=set.grindProgressDeg||std::abs(x.ref-x.meas)<=set.maxFollow)x.grinds=0;
+                resetWindow(a,now);x.following=false;
+            }
+        }
         // Stall and following-error detection while a path is active.
         if(moving()&&phase!=PAUSE){
             for(unsigned a=0;a<3;++a){auto &x=j[a];
+                if(x.grinding)continue;
                 bool far=std::abs(x.ref-x.estimate())>set.maxFollow;
                 if(far&&!x.following){x.following=true;x.followSince=now;}else if(!far)x.following=false;
                 if(x.badWindows>=set.stallWindows||(x.following&&uint32_t(now-x.followSince)>=set.followMs)){
@@ -343,6 +366,9 @@ struct Controller {
             else if(std::abs(e)<set.release)x.engaged=false;
             double vt=x.engaged?(tracking?x.refV:0)+set.kp*e:0;
             double vLimit=std::min(MAX_RATE/std::max(x.ppdEst[0],x.ppdEst[1]),x.cfg.vmax*set.speedGain);
+            // Stay slow until the joint gets through (grinds resets on progress), not just during
+            // the grind window: full rate against a stall only loses more steps.
+            if(x.grinds)vLimit=std::min(vLimit,set.grindSpeed/x.grinds);
             vt=std::max(-vLimit,std::min(vLimit,vt));
             double dv=x.cfg.amax*set.accelGain*dt,v=x.vCmd,next=v+std::max(-dv,std::min(dv,vt-v));
             if(std::abs(v)<=set.startSpeed){

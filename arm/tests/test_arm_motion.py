@@ -31,6 +31,7 @@ class FakeServo:
                           axes=[dict(estimate=0, reference=0, goal=0, velocity=0, rate=0, ppd_forward=142200,
                                      ppd_reverse=142200, direction=0, count=0) for _ in range(3)])
         self.left = 0; self.goal = None
+        self.roll_supported = True
 
     def request(self, command):
         self.commands.append(command)
@@ -41,6 +42,11 @@ class FakeServo:
             return None
         if name == 'SERVOSTAT':
             return copy.deepcopy(self.servo)
+        if name == 'ROLLSTAT':
+            if not self.roll_supported:
+                return {'kind': 'roll', 'supported': False}
+            return {'kind': 'roll', 'supported': True, 'v': 3, 'enabled': 1, 'target': 12500,
+                    'current': 12000, 'pulse_us': 1589, 'fault': 0}
         if name == 'MOVE':
             self.goal = list(map(int, words[2:5]))
             self.left = self.polls
@@ -129,6 +135,32 @@ class ArmMotionTests(unittest.TestCase):
         self.assertFalse(result['ok'])
         self.assertEqual((result['state'], result['reason']), ('stalled', 'obstruction'))
         self.assertEqual((result['stalled_joint'], result['stall_angle']), ('shoulder', -1.5))
+
+    def test_roll_configures_clamps_and_sends_millidegrees(self):
+        cfg = dict(center_us=1520, us_per_deg=7.5, limits=(-30, 40), sign=-1, max_speed=120)
+        with self.session(roll=cfg) as arm:
+            self.assertTrue(arm.roll_supported)
+            arm.roll(12.5)
+            arm.roll(100, speed=30)                 # clamped to the configured range
+            arm.roll(-100)
+            status = arm.roll_status()
+        self.assertEqual(self.fake.sent('ROLLCONFIG'), ['ROLLCONFIG 1520 7500 -30000 40000 -1 120000'])
+        self.assertEqual(self.fake.sent('ROLL'), ['ROLL 12500 0', 'ROLL 40000 30000', 'ROLL -30000 0'])
+        self.assertEqual((status['target'], status['current']), (12.5, 12.0))
+
+    def test_roll_is_a_no_op_on_firmware_without_the_servo(self):
+        self.fake.roll_supported = False
+        with self.session(roll={}) as arm:
+            self.assertFalse(arm.roll_supported)
+            self.assertIsNone(arm.roll(10))
+            arm.roll_off()
+            arm.move_to([0, 60, 0])                 # everything else still works
+        self.assertEqual(self.fake.sent('ROLLCONFIG') + self.fake.sent('ROLL') + self.fake.sent('ROLLOFF'), [])
+
+    def test_no_roll_config_leaves_the_servo_alone(self):
+        with self.session() as arm:
+            self.assertFalse(arm.roll_supported)
+        self.assertEqual(self.fake.sent('ROLLSTAT'), [])
 
     def test_fault_raises(self):
         self.fake.finish = (18, 4)

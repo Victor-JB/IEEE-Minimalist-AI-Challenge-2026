@@ -10,6 +10,7 @@ using namespace servo;
 
 struct SimJoint {
     double q=0,m=0,backlash=1.8,base=142.2,swing=0,knot=0,loss=0,lossAcc=0,obstacle=NAN;
+    double tightFrom=NAN,tightTo=NAN;unsigned tightRate=0;   // tight spot: passable only below tightRate
     int forwardSign=1;
     uint32_t slipFrom=0,slipTo=0;
     double rateAcc=0;unsigned count=0;
@@ -19,6 +20,7 @@ struct SimJoint {
         rateAcc+=rate/1000.0;unsigned n=unsigned(rateAcc);rateAcc-=n;count+=n;
         for(unsigned i=0;i<n;++i){
             if(now>=slipFrom&&now<slipTo)continue;           // rotor slipping: no motion
+            if(q>=tightFrom&&q<=tightTo&&rate>tightRate)continue; // too fast for the torque needed here
             double s=forwardSign*(dir?-1.0:1.0);
             if(loss>0&&s>0){lossAcc+=loss;if(lossAcc>=1){lossAcc-=1;continue;}} // load-dependent lost steps
             double nm=m+s/ppd(),nq=q;
@@ -247,14 +249,28 @@ static void streamingTracksAndStops(){
     assert(worst<1.5);
     r.run(400,false);
     assert(r.c.state==HOLDING&&r.last.power);
-    // Stall during streaming stops and reports; no retry behind the host's back.
+    // A joint that won't move at all: grinds maxGrinds times, then stops and reports.
     r.s[2].slipFrom=r.now;r.s[2].slipTo=r.now+100000;
-    for(int k=0;k<100&&r.c.state!=STALLED;++k){
+    for(int k=0;k<400&&r.c.state!=STALLED;++k){
         Vec goal=Rig::motor(-12.041,63.281,4.307+0.4*k);
         r.c.stream(++id,goal,Vec{0,0,0},100,r.reading,r.now);r.run(20,false);
     }
-    assert(r.c.state==STALLED&&r.c.reason==STALL&&r.c.retries==0);
+    assert(r.c.state==STALLED&&r.c.reason==STALL&&r.c.retries==0&&r.c.stalls==r.c.set.maxGrinds+1);
     assert(r.c.stream(++id,Rig::motor(-12,63,4),Vec{0,0,0},100,r.reading,r.now)==-EBUSY);
+}
+
+static void streamingGrindsThroughTightSpot(){
+    // Head tight spot (like the real one near +14 deg): passable only below ~4 deg/s.
+    Rig r;r.s[2].tightFrom=11;r.s[2].tightTo=15;r.s[2].tightRate=600;
+    uint32_t id=0;double head=4.307;
+    for(int k=0;k<400;++k){
+        head=std::min(20.0,head+0.16);                     // ~8 deg/s up through the spot
+        assert(r.c.stream(++id,Rig::motor(-12.041,63.281,head),Vec{0,0,0},100,r.reading,r.now)==0);
+        r.run(20,false);
+    }
+    r.run(400,false);
+    std::printf("  tight spot: %u stall(s), ground through to %.2f deg\n",r.c.stalls,r.s[2].q);
+    assert(r.c.stalls>=1&&r.c.state==HOLDING&&std::abs(r.s[2].q-20)<1);
 }
 
 static void liveScaleSlowsPath(){
@@ -294,7 +310,7 @@ int main(){setvbuf(stdout,nullptr,_IONBF,0);
     durationIsHonoredAndSynchronized();reversalBacklash();holdsAgainstDisturbance();
     leaseLossHoldsInPlace();loadLossStillReachesTarget();
     std::puts("recovery:");transientSlipRecovers();shoulderRecoversByTuckingElbow();obstructionStopsPushing();
-    std::puts("streaming:");streamingTracksAndStops();headSlackCompensation();
+    std::puts("streaming:");streamingTracksAndStops();streamingGrindsThroughTightSpot();headSlackCompensation();
     liveScaleSlowsPath();faultsSleep();reversalWaitsForZeroRate();
     std::puts("servo tests passed");
 }
