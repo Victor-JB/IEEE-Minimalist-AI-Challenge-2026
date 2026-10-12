@@ -8,7 +8,7 @@ REPO_LOCAL="$(cd "$(dirname "$0")/../.." && pwd)"
 ADB="$(command -v adb || true)"
 [[ -z "$ADB" && -x /opt/homebrew/bin/adb ]] && ADB=/opt/homebrew/bin/adb
 LINK="${STEPPER_LINK:-auto}"
-if [[ "$LINK" != tailscale && -n "$ADB" ]] && "$ADB" -s 2709356903 forward tcp:2222 tcp:22 >/dev/null 2>&1; then
+if [[ "$LINK" != tailscale && -n "$ADB" ]] && "$ADB" -s "${ARDUINO_Q_SERIAL:-634018433}" forward tcp:2222 tcp:22 >/dev/null 2>&1; then
   PORT=2222; HOST=arduino@localhost; echo 'Link: USB'
 elif [[ "$LINK" == usb ]]; then
   echo 'Arduino Q not found over USB.' >&2; exit 1

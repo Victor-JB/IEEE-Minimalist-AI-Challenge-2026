@@ -39,7 +39,7 @@ def ssh_target():
     if link!='tailscale':
         adb=shutil.which('adb') or '/opt/homebrew/bin/adb'
         try:
-            subprocess.run([adb,'-s','2709356903','forward','tcp:2222','tcp:22'],check=True,timeout=4,
+            subprocess.run([adb,'-s',os.environ.get('ARDUINO_Q_SERIAL','634018433'),'forward','tcp:2222','tcp:22'],check=True,timeout=4,
                            stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
             return ['-p','2222','arduino@localhost'],.25
         except (OSError,subprocess.SubprocessError):
