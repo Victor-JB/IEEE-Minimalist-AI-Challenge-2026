@@ -161,7 +161,7 @@ User limits in calibrated relative joint degrees:
 
 | Joint | Sensor | Motor | Minimum | Maximum | Hold Forward |
 | --- | --- | --- | --- | --- | --- |
-| Shoulder | 1 / CH0 | 2 | −45° (firmware −34° since the closed-loop tests) | +38° | Increases angle |
+| Shoulder | 1 / CH0 | 2 | −45° | +38° | Increases angle |
 | Elbow | 2 / CH1 | 1 | −72° | +79° | Decreases angle |
 | Head / wrist | 3 / CH2 | 3 | −80° | +87° | Decreases angle |
 

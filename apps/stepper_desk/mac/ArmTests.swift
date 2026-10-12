@@ -5,7 +5,7 @@ struct ArmTests {
     static func main() {
         assert(ArmMapping.motorForJoint == [1,0,2])
         for joint in 0..<3 { assert(ArmMapping.jointForMotor[ArmMapping.motorForJoint[joint]] == joint) }
-        assert(ArmMapping.limits == [-34.0...38.0, -72.0...79.0, -80.0...87.0])
+        assert(ArmMapping.limits == [-45.0...38.0, -72.0...79.0, -80.0...87.0])
         for index in 0..<3 {
             let limit = ArmMapping.limits[index]
             assert(!ArmMapping.outsideLimits(limit.lowerBound, joint:index))

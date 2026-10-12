@@ -7,7 +7,7 @@
 #include <algorithm>
 namespace coordinated {
 // All arrays use physical motor order. Keep this first commissioning mode slow.
-constexpr double LOWER[3]={-72,-34,-80}, UPPER[3]={79,38,87};
+constexpr double LOWER[3]={-72,-45,-80}, UPPER[3]={79,38,87};
 constexpr unsigned MAX_RATE=200, MAX_JOG_RATE=2400, JOG_RATE=100;
 enum State { IDLE, PREPARING, MOVING, MEASURING, COMPLETE, RELEASED, LEASE_LOST, SENSOR_FAULT, LIMIT, TRACKING, TIMING, TRAVEL, SETTLING };
 struct Motion {

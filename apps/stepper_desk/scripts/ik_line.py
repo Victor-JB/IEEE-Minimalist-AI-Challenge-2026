@@ -27,7 +27,7 @@ from arm_motion import ArmMotion  # noqa: E402
 
 L1 = L2 = 0.185                            # m, pivot to pivot
 HOME = (-12.04, 63.46, 5.27)
-SAFE = ((-30, 10), (-70, 77), (-68, 85))   # as scripts/emote.py: shoulder stuck zones, head slow zone
+SAFE = ((-43, 36), (-70, 77), (-78, 85))   # joint limits less the firmware's 2 deg margin
 HZ, RATE = 25, 50
 
 

@@ -35,8 +35,8 @@ from arm_motion import ArmMotion  # noqa: E402
 from player import load_clip, play  # noqa: E402
 
 HOME = (-12.04, 63.46, 5.27)
-SAFE = ((-30, 10), (-70, 77), (-68, 85))   # shoulder, elbow, head (head stays out of the -72 slow zone)
-SHOULDER_STOP = -31.0
+SAFE = ((-43, 36), (-70, 77), (-78, 85))   # shoulder, elbow, head: joint limits less the firmware's 2 deg margin
+SHOULDER_STOP = -44.0
 HZ = 25
 HORIZON = {'usb': 0.12, 'tailscale': 0.3}   # Tailscale points can arrive 100-170 ms apart
 

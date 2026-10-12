@@ -36,10 +36,10 @@ mass = 0.8
 [[joint]]
 name = "shoulder_pitch"
 axis = "y"
-# Firmware hard limits. The -34 floor was added after the arm could not lift back from below
-# about -36 deg. It also could not lift back from +21 deg (elbow 51) while leaning forward;
-# lifting was clean from -27 and +3 deg. Keep expressive motion inside about -30..+10.
-range = [-34, 38]
+# Firmware hard limits (the user's). On 2026-10-11 the shoulder could not lift back from below
+# about -36 deg or from +21 deg (elbow 51), so a -34 floor was used for a while; a recheck on
+# 2026-10-12 after hardware work lifted cleanly from -31..+36 at 30 deg/s, and the floor was removed.
+range = [-45, 38]
 home = -12
 link = [0, 0, 0.185]
 mass = 0.25
