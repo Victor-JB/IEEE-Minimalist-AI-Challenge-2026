@@ -65,6 +65,13 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--speed', type=float, default=0.02, help='peak head-pivot speed in m/s (default 0.02)')
     p.add_argument('--size', type=float, default=0.09, help='line length in m (default 0.09)')
+    p.add_argument('--shapes', nargs='+', default=['horizontal', 'vertical', 'square'],
+                   choices=['horizontal', 'vertical', 'square'])
+    p.add_argument('--line', type=float, nargs=4, metavar=('X0', 'Z0', 'X1', 'Z1'),
+                   help='run this segment (cm from the shoulder pivot) instead of the built-in shapes')
+    p.add_argument('--joint-speed', type=float, default=60,
+                   help='cap on every joint in deg/s; 8.5 is about 25 motor RPM (1333 pulses/s at ~150 pulses/deg)')
+    p.add_argument('--repeat', type=int, default=1, help='back-and-forth passes along the horizontal line')
     p.add_argument('--no-level', dest='level', action='store_false',
                    help='hold the head joint still instead of keeping the head level')
     p.add_argument('--execute', action='store_true')
@@ -75,22 +82,32 @@ def main():
     h, d = args.size / 2, 0.4 * args.size / 2   # home has the elbow at 63 deg: little room to go down
     w = 0.35 * args.size / 2                     # square half-width: reach and the shoulder's +10 cap
     shapes = {
-        'horizontal': [(x0, z0), (x0 - h, z0), (x0 + h, z0), (x0, z0)],
+        'horizontal': [(x0, z0)] + [(x0 - h, z0), (x0 + h, z0)] * args.repeat + [(x0, z0)],
         'vertical': [(x0, z0), (x0, z0 + h), (x0, z0 - d), (x0, z0)],
         'square': [(x0, z0), (x0 - w, z0), (x0 + w, z0), (x0 + w, z0 + 2 * w), (x0 - w, z0 + 2 * w), (x0 - w, z0), (x0, z0)],
     }
+    if args.line:   # explicit segment in cm from the shoulder pivot (x forward, z up)
+        a, b = (args.line[0] / 100, args.line[1] / 100), (args.line[2] / 100, args.line[3] / 100)
+        shapes['line'] = [(x0, z0)] + [a, b] * args.repeat + [a, (x0, z0)]
+        args.shapes = ['line']
     plans = {}
-    for name, pts in shapes.items():
-        xz = path(pts, args.speed, 0.4)
-        q = np.array([ik(x, z, pitch) for x, z in xz])
-        if not args.level:
-            q[:, 2] = HOME[2]              # head held still; the pivot still follows the line
+    for name, pts in ((n, shapes[n]) for n in args.shapes):
+        speed = args.speed
+        while True:   # slow the tool down until no joint exceeds --joint-speed
+            xz = path(pts, speed, 0.4)
+            q = np.array([ik(x, z, pitch) for x, z in xz])
+            if not args.level:
+                q[:, 2] = HOME[2]          # head held still; the pivot still follows the line
+            peak = np.abs(np.gradient(q, axis=0)).max() * RATE
+            if peak <= args.joint_speed:
+                break
+            speed *= 0.95 * args.joint_speed / peak
         for j, (lo, hi) in enumerate(SAFE):
             if q[:, j].min() < lo or q[:, j].max() > hi:
                 raise SystemExit(f'{name}: joint {j} leaves {lo}..{hi} ({q[:, j].min():.1f}..{q[:, j].max():.1f}); use a smaller --size')
         vel = np.gradient(q, axis=0) * RATE
         plans[name] = (xz, q, vel)
-        print(json.dumps({'shape': name, 'seconds': round(len(q) / RATE, 1), 'min': q.min(0).round(1).tolist(),
+        print(json.dumps({'shape': name, 'tool_speed_cm_s': round(speed * 100, 2), 'seconds': round(len(q) / RATE, 1), 'min': q.min(0).round(1).tolist(),
                           'max': q.max(0).round(1).tolist(), 'peak_joint_speed': np.abs(vel).max(0).round(1).tolist()}))
     if not args.execute:
         return
