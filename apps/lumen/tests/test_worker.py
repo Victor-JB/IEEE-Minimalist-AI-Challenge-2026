@@ -24,6 +24,9 @@ class FakeArm:
     def halt(self):
         self.halts += 1
 
+    def roll(self, angle, speed=None):
+        pass
+
     def angles(self):
         return [0.0, 60.0, 5.0]
 
