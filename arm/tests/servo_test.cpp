@@ -252,7 +252,9 @@ static void streamingTracksAndStops(){
     // A joint that won't move at all: grinds maxGrinds times, then stops and reports.
     r.s[2].slipFrom=r.now;r.s[2].slipTo=r.now+100000;
     for(int k=0;k<400&&r.c.state!=STALLED;++k){
-        Vec goal=Rig::motor(-12.041,63.281,4.307+0.4*k);
+        // Capped well inside the head's range: the grinds take ~4.5 s, and a goal past the limit
+        // would be refused, letting the lease lapse to HOLDING before the last stall.
+        Vec goal=Rig::motor(-12.041,63.281,std::min(40.0,4.307+0.4*k));
         r.c.stream(++id,goal,Vec{0,0,0},100,r.reading,r.now);r.run(20,false);
     }
     assert(r.c.state==STALLED&&r.c.reason==STALL&&r.c.retries==0&&r.c.stalls==r.c.set.maxGrinds+1);
