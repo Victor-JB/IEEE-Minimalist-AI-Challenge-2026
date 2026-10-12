@@ -46,6 +46,15 @@ def ssh_target():
             if link=='usb': raise ArmError('Arduino Q not found over USB')
     return ['arduino@'+os.environ.get('STEPPER_HOST','daboard')],.6
 
+def gateway_python():
+    """Interpreter for a local gateway: this one if it has the router bridge, else the deploy venv."""
+    import importlib.util
+    if importlib.util.find_spec('arduino') is not None:
+        return sys.executable
+    for venv in (os.environ.get('STEPPER_VENV'),'/home/arduino/stepper-desk-q/.venv'):
+        if venv and os.path.exists(venv+'/bin/python'): return venv+'/bin/python'
+    raise ArmError('arduino-router-bridge not installed: run bash scripts/deploy.sh or pip install -r python/requirements.txt')
+
 class Transport:
     """Correlated JSON over one SSH process. Closing stdin releases ownership."""
     def __init__(self, axis=None):
@@ -53,7 +62,7 @@ class Transport:
         target,self.timeout=ssh_target()
         mode=['--group'] if axis is None else ['--axis',str(axis)]
         if target is None:
-            command=[sys.executable,'-u',str(ROOT/'python/script_gateway.py'),*mode]
+            command=[gateway_python(),'-u',str(ROOT/'python/script_gateway.py'),*mode]
         else:
             remote=' '.join(['/home/arduino/stepper-desk-q/.venv/bin/python -u /home/arduino/stepper-desk-q/python/script_gateway.py',*mode])
             command=['ssh','-T','-o','BatchMode=yes','-o','ConnectTimeout=5',
