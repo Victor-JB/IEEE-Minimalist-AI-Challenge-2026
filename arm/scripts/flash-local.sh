@@ -4,6 +4,8 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CORE=/home/arduino/.arduino15/packages/arduino/hardware/zephyr/1.0.0
+# A board that only ever built with --profile has the core under internal/ instead (luxoIII board).
+[[ -d "$CORE" ]] || CORE="$(ls -d /home/arduino/.arduino15/internal/arduino_zephyr_1.0.0_* 2>/dev/null | head -1)"
 LOADER="$CORE/firmwares/zephyr-arduino_uno_q_stm32u585xx.elf"
 BUILD_DIR="${STEPPER_BUILD_DIR:-$ROOT/build}"
 SKETCH="$BUILD_DIR/sketch.ino.elf-zsk.bin"
