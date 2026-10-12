@@ -20,5 +20,11 @@ SSH=(ssh -p "$PORT" -o BatchMode=yes -o ConnectTimeout=5 "$HOST")
 "${SSH[@]}" 'mkdir -p /home/arduino/stepper-desk-q/{sketch,python,scripts}'
 scp -P "$PORT" -o BatchMode=yes "$ROOT"/sketch/* "$HOST":/home/arduino/stepper-desk-q/sketch/
 scp -P "$PORT" -o BatchMode=yes "$ROOT"/python/*.py "$ROOT"/python/requirements.txt "$HOST":/home/arduino/stepper-desk-q/python/
-scp -P "$PORT" -o BatchMode=yes "$ROOT/scripts/flash-local.sh" "$HOST":/home/arduino/stepper-desk-q/scripts/
+scp -P "$PORT" -o BatchMode=yes "$ROOT/scripts/flash-local.sh" "$ROOT/scripts/emote.py" "$ROOT/scripts/armctl.py" "$HOST":/home/arduino/stepper-desk-q/scripts/
+# Emotes run on the board too (no network hop): calibration, arm clips and motion_lib's player and clips.
+"${SSH[@]}" 'mkdir -p /home/arduino/stepper-desk-q/{calibration,clips,recordings,motion_lib/clips}'
+scp -P "$PORT" -o BatchMode=yes "$ROOT"/calibration/*.json "$HOST":/home/arduino/stepper-desk-q/calibration/
+scp -P "$PORT" -o BatchMode=yes "$ROOT"/clips/*.json "$HOST":/home/arduino/stepper-desk-q/clips/
+scp -P "$PORT" -o BatchMode=yes "$ROOT"/../../motion_lib/player.py "$HOST":/home/arduino/stepper-desk-q/motion_lib/
+scp -q -P "$PORT" -o BatchMode=yes "$ROOT"/../../motion_lib/clips/*.json "$HOST":/home/arduino/stepper-desk-q/motion_lib/clips/
 "${SSH[@]}" 'cd /home/arduino/stepper-desk-q && python3 -m venv .venv && .venv/bin/pip install -r python/requirements.txt && arduino-cli compile --profile default --build-path /home/arduino/stepper-desk-q/build sketch && bash scripts/flash-local.sh'

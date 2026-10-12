@@ -28,7 +28,8 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'python'))
-sys.path.insert(0, str(ROOT.parents[1] / 'motion_lib'))
+# motion_lib sits next to this app on the Arduino Q (deploy.sh), at the repo root on the Mac.
+sys.path.insert(0, str(ROOT / 'motion_lib' if (ROOT / 'motion_lib').exists() else ROOT.parents[1] / 'motion_lib'))
 from arm_client import ArmError, angles  # noqa: E402
 from arm_motion import ArmMotion  # noqa: E402
 from player import load_clip, play  # noqa: E402

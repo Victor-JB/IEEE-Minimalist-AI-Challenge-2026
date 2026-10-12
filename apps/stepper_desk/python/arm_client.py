@@ -10,6 +10,7 @@ import selectors
 import shutil
 import statistics
 import subprocess
+import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,18 +19,23 @@ JOINTS = ('shoulder','elbow','head')
 MOTOR = (1,0,2)
 LIMITS = ((-34,38),(-72,79),(-80,87))
 
+ROUTER_SOCKET='/var/run/arduino-router.sock'
+
 class ArmError(RuntimeError): pass
 
 def ssh_target():
     """SSH arguments for the board and the per-request timeout.
 
-    STEPPER_LINK=auto (default) uses USB (ADB forward to localhost:2222) when the board
+    On the Arduino Q itself (the router socket exists) the gateway runs as a local
+    process. Otherwise STEPPER_LINK=auto (default) uses USB (ADB forward to localhost:2222) when the board
     is plugged in, else Tailscale (STEPPER_HOST, default daboard). Tailscale round trips
     are ~13 ms with occasional ~250 ms spikes, so requests there get a longer deadline;
     the MCU's 300 ms lease still halts and holds the arm if renewals stop.
     """
     link=os.environ.get('STEPPER_LINK','auto')
-    if link not in ('auto','usb','tailscale'): raise ValueError('STEPPER_LINK must be auto, usb or tailscale')
+    if link not in ('auto','usb','tailscale','local'): raise ValueError('STEPPER_LINK must be auto, usb, tailscale or local')
+    if link=='local' or (link=='auto' and os.path.exists(ROUTER_SOCKET)):
+        return None,.25   # running on the Arduino Q itself: no SSH hop
     if link!='tailscale':
         adb=shutil.which('adb') or '/opt/homebrew/bin/adb'
         try:
@@ -45,10 +51,14 @@ class Transport:
     def __init__(self, axis=None):
         if axis is not None and axis not in (0,1,2): raise ValueError('Invalid motor')
         target,self.timeout=ssh_target()
-        remote='/home/arduino/stepper-desk-q/.venv/bin/python -u /home/arduino/stepper-desk-q/python/script_gateway.py '
-        remote += '--group' if axis is None else '--axis '+str(axis)
-        self.process=subprocess.Popen(['ssh','-T','-o','BatchMode=yes','-o','ConnectTimeout=5',
-                                      '-o','ServerAliveInterval=5','-o','ServerAliveCountMax=2',*target,remote],
+        mode=['--group'] if axis is None else ['--axis',str(axis)]
+        if target is None:
+            command=[sys.executable,'-u',str(ROOT/'python/script_gateway.py'),*mode]
+        else:
+            remote=' '.join(['/home/arduino/stepper-desk-q/.venv/bin/python -u /home/arduino/stepper-desk-q/python/script_gateway.py',*mode])
+            command=['ssh','-T','-o','BatchMode=yes','-o','ConnectTimeout=5',
+                     '-o','ServerAliveInterval=5','-o','ServerAliveCountMax=2',*target,remote]
+        self.process=subprocess.Popen(command,
                                       stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,bufsize=0)
         self.selector=selectors.DefaultSelector()
         for name,pipe in [('out',self.process.stdout),('err',self.process.stderr)]:
