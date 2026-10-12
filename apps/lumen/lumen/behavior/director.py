@@ -6,14 +6,15 @@ import random
 from .. import config as C
 from .. import events as E
 from ..machine import INITIAL_CHILD, STATES
-from .look_at import face_error, look_offset
+from .look_at import LookAt, face_error
 
 ONE_SHOT = {"NOTICE", "ACK", "NOT_FOUND", "CHECKIN", "GOODBYE", "FAULT"}   # CLIP_DONE ends the state
 LOOK_AT = {"NOTICE", "STANDBY", "LOST", "CHECKIN"}                          # follow the target face
 GAP_S = {"bored": (2.0, 6.0), "attentive": (1.5, 4.0), "holding": (4.0, 9.0),
          "looking_around": (0.5, 1.5), "asleep": (20.0, 40.0)}               # pause between looping clips
+CENTER_FIRST = {"NOTICE", "STANDBY"}   # center the face before any clip plays here
+CENTER_TIMEOUT_S = 4.0                 # ...but start the clips anyway after this long
 INTERACTIONS = {E.POINT, E.CLOSER, E.FURTHER, E.PALM, E.FACE_CONFIRMED}
-FAULT_COOLDOWN_S = 10.0
 ADJUST_STEP = (3.0, -4.0, 1.0)   # (shoulder, elbow, head) deg per CLOSER; TODO: tune on the arm
 
 
@@ -22,8 +23,9 @@ class Director:
         self.w, self.light, self.x = worker, light, expressive
         self.rng = rng or random.Random()
         self.token, self.busy, self.next_clip_at = 0, False, 0.0
-        self.faults = 0
+        self.faults, self.last_fault_t, self.fault_reason = 0, -1e9, None
         self.aim_pose = list(C.HOME)
+        self.look, self.last_tick = LookAt(), None
 
     # -- state machine callbacks ------------------------------------------------
     def on_enter(self, state, m):
@@ -32,10 +34,14 @@ class Director:
             self.light.set(spec.light)
         if state in INITIAL_CHILD:          # composite (ILLUMINATE): its child does the work
             return
+        if state not in LOOK_AT:            # NOTICE -> STANDBY -> LOST keep the face centered
+            self.look.reset()
+            self.w.set_offset(self.look.offset)
         self.token += 1
         self.busy = True
         tok = self.token
         if state == "BOOT":
+            self.w.connect()                # new arm session if a fault closed the last one
             self.w.set_base(C.HOME)
             self.w.goto(C.HOME, 3.0, tok)
         elif state == "SEARCH":
@@ -54,26 +60,37 @@ class Director:
             self.aim_pose = [a + sign * d for a, d in zip(self.aim_pose, ADJUST_STEP)]
             self.w.goto(self.aim_pose, 0.8, tok)
         elif state == "FAULT":
+            if m.entered_at - self.last_fault_t > C.FAULT_FORGET_S:
+                self.faults = 0
             self.faults += 1
+            self.last_fault_t = m.entered_at
             self.w.relax()
-        elif state in ("IDLE", "STANDBY", "SLEEP"):
+        elif state in CENTER_FIRST:         # hold still and center the face; tick() starts the clips
+            self.w.set_base(C.HOME)
+            self.busy = False
+        elif state in ("IDLE", "SLEEP"):
             self.w.set_base(C.HOME)
             self._play(spec.pool, tok)
         else:
             self._play(spec.pool, tok)
 
     def on_exit(self, state, m):
-        if state in LOOK_AT:
-            self.w.set_offset((0.0, 0.0, 0.0))
+        pass
 
     # -- per frame ---------------------------------------------------------------
     def tick(self, now, m, perception, frame_shape):
         self.x.update(now)
-        if m.state in LOOK_AT and perception.target is not None:
+        dt, self.last_tick = (0.0 if self.last_tick is None else min(0.2, now - self.last_tick)), now
+        # Steer only between clips: a clip moves the head (and camera) itself.
+        if m.state in LOOK_AT and not self.busy:
             h, w = frame_shape[:2]
-            self.w.set_offset(look_offset(face_error(perception.target, w, h)))
+            err = face_error(perception.target, w, h) if perception.target is not None else None
+            self.w.set_offset(self.look.update(err, now, dt))
         pool = m.spec.pool
-        if not self.busy and m.state not in ONE_SHOT and pool in GAP_S and now >= self.next_clip_at:
+        waiting = (m.state in CENTER_FIRST and not self.look.centered(now)
+                   and now - m.entered_at < CENTER_TIMEOUT_S)
+        if (not self.busy and not waiting and m.state not in ONE_SHOT and pool in GAP_S
+                and now >= self.next_clip_at):
             self.token += 1
             self.busy = True
             self._play(pool, self.token)
@@ -85,6 +102,7 @@ class Director:
         out = []
         for event, token, info in self.w.poll_events():
             if event == E.FAULT:
+                self.fault_reason = info
                 out.append(E.FAULT)
                 continue
             if token != self.token:
@@ -99,7 +117,7 @@ class Director:
                 out.append(E.READY)
             else:
                 out.append(event)
-        if m.state == "FAULT" and self.faults <= 1 and now - m.entered_at > FAULT_COOLDOWN_S:
+        if m.state == "FAULT" and self.faults <= 1 and now - m.entered_at > C.FAULT_COOLDOWN_S:
             out.append(E.RECOVERED)
         return out
 
