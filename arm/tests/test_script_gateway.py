@@ -16,6 +16,7 @@ class FakeBridge:
         self.calls = []
         self.fail_op = None
         self.reject_op = None
+        self.reject_error = -errno.EPERM
         self.observe_response = None
 
     def call(self, method, *args, timeout):
@@ -28,7 +29,7 @@ class FakeBridge:
         op = values[0]
         if op == self.fail_op:
             raise TimeoutError('Fake RPC timeout')
-        error = -errno.EPERM if op == self.reject_op else 0
+        error = self.reject_error if op == self.reject_op else 0
         if method == 'stepper_command':
             return [7, values[1], 0, error, 0, 0, 0, 0, 0, 0, 400, 0, 2400, values[2]] + [0]*17
         return [1, error, values[1], 0, 7, 1000, 0, 0, 1, 9, 7, 0, 5000, 0] + [123, 124, 125, 0, 1, 10, 0x30, 0]*3
@@ -158,6 +159,21 @@ class ScriptGatewayTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn(str(-errno.EPERM), replies[-1]['error'])
         self.assertEqual(self.ops(), [0, 3, 6, 7])
+
+    def test_stalled_stream_is_returned_not_fatal(self):
+        self.bridge.reject_op, self.bridge.reject_error = 11, -errno.EBUSY
+        code, replies = self.run_server(request(1, 'HELLO') + request(2, 'STREAM 2 1 2 3 0 0 0 100 1')
+                                        + request(3, 'HALT'))
+        self.assertEqual(code, 0)
+        self.assertTrue(replies[1]['ok'])
+        self.assertEqual(replies[1]['status']['error'], -errno.EBUSY)
+        self.assertEqual(self.ops(), [0, 11, 12, 6, 7])
+
+    def test_other_stream_rejection_still_fatal(self):
+        self.bridge.reject_op = 11
+        code, replies = self.run_server(request(1, 'HELLO') + request(2, 'STREAM 2 1 2 3 0 0 0 100 1'))
+        self.assertEqual(code, 1)
+        self.assertEqual(self.ops(), [0, 11, 6, 7])
 
     def test_rpc_failure_still_releases(self):
         self.bridge.fail_op = 4

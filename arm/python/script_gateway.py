@@ -6,6 +6,7 @@ request or failed operation terminates the session and stops/releases its owner.
 The MCU's independent deadman remains the fallback if communication is lost.
 """
 import argparse
+import errno
 import json
 import sys
 
@@ -13,6 +14,11 @@ from arm_gateway import AXIS, HEADER, ArmGateway
 from gateway import Gateway
 
 MAX_LINE = 2048  # Bytes excluding the final newline.
+# Firmware errors that leave the session usable and are returned with their status
+# instead of ending it. A STREAM refused with -EBUSY means the servo stalled and holds
+# where it is; the client acknowledges with HALT. Releasing here would sleep the drivers
+# and let the arm sag.
+NONFATAL = {('STREAM', -errno.EBUSY)}
 
 
 def snapshot(bridge, method):
@@ -91,7 +97,7 @@ def serve(gateway, source=None, destination=None):
                     status = gateway.command(command)
                 if not isinstance(status, dict):
                     raise ValueError('Command returned no status')
-                if status.get('error', 0):
+                if status.get('error', 0) and (command.split()[0], status['error']) not in NONFATAL:
                     raise RuntimeError('Firmware rejected command: %s' % status['error'])
                 reply({'id': request_id, 'ok': True, 'status': status})
             except Exception as exc:

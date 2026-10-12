@@ -18,6 +18,7 @@ shoulder first folds the elbow to cut its load) and reports an obstruction
 instead of pushing again. Every call is recorded in the session JSONL.
 """
 from __future__ import annotations
+from errno import EBUSY
 import json
 
 from arm_client import ArmError, ArmSession, JOINTS, LIMITS, MOTOR, angles, finite, healthy
@@ -148,7 +149,8 @@ class ArmMotion(ArmSession):
     def stream_point(self, pose, velocity=None, horizon=0.1):
         """Send one short-horizon setpoint: be at pose (moving at velocity)
         horizon seconds from now. Call at least every 0.25 s or the arm halts
-        and holds. Stalls during streaming stop and report; no automatic retry.
+        and holds. Stalls during streaming stop and report; no automatic retry:
+        the result's state is 'stalled' and the arm holds until halt().
         """
         pose = self._pose(pose, 'setpoint')
         top = self.limits_speed or [12.0]*3
@@ -160,7 +162,11 @@ class ArmMotion(ArmSession):
         self.motion_id += 1
         values = ' '.join(str(round(pose[j]*1000)) for j in MOTOR)
         speeds = ' '.join(str(round(vel[j]*1000)) for j in MOTOR)
-        s = self._request(f'STREAM {self.motion_id} {values} {speeds} {h} {generation}')
+        # A stall is only reported by refusing the next point (-EBUSY, state stalled): return it
+        # so the caller can halt() to acknowledge, instead of losing the session.
+        s = self._request(f'STREAM {self.motion_id} {values} {speeds} {h} {generation}', allow=(-EBUSY,))
+        if s['error'] == -EBUSY and s['state'] != 16:
+            raise ArmError(f"Firmware rejected command: {s['error']}")
         if s['state'] == 18:
             self._outcome(s, None)
         return {'state': STATES.get(s['state'], s['state']), 'angles': angles(s)}

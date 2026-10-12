@@ -13,7 +13,9 @@ class Expressive:
         self.rng = rng or random.Random()
         self.energy, self._t = C.ENERGY_START, now
         self.recent = []
-        self.drift = [0.0, 0.0, 0.0]
+        self.drift = [0.0, 0.0, 0.0]      # hold offset per joint, deg
+        self._mid, self._goal = [0.0] * 3, [0.0] * 3
+        self._next_goal, self._clock = [0.0] * 3, 0.0
 
     # -- mood ------------------------------------------------------------------
     def bump(self, now, amount=C.ENERGY_BUMP):
@@ -47,11 +49,20 @@ class Expressive:
 
     # -- hold drift ------------------------------------------------------------
     def drift_step(self, dt):
-        """Ornstein-Uhlenbeck offset per joint (deg): add to any hold so it is never frozen."""
-        theta = 2 * math.pi * C.HOLD_DRIFT_HZ
-        sigma = C.HOLD_DRIFT_DEG * math.sqrt(2 * theta)
+        """Slow random offset per joint (deg): add to any hold so it is never frozen.
+
+        Each joint glides to a new random target every HOLD_DRIFT_EVERY_S through a two-stage
+        critically damped filter, so it never overshoots and reverses at most once per target.
+        (A raw Ornstein-Uhlenbeck walk jumped ~0.6 deg per 25 Hz tick and reversed the joints
+        many times a second, into their gear backlash, which the firmware reads as a stall.)
+        """
+        self._clock += dt
+        a = min(1.0, dt / C.HOLD_DRIFT_SMOOTH_S)
         for j in range(3):
-            self.drift[j] += -theta * self.drift[j] * dt + sigma * math.sqrt(dt) * self.rng.gauss(0, 1)
-            lim = 2 * C.HOLD_DRIFT_DEG
-            self.drift[j] = max(-lim, min(lim, self.drift[j]))
+            if self._clock >= self._next_goal[j]:
+                self._next_goal[j] = self._clock + self.rng.uniform(*C.HOLD_DRIFT_EVERY_S)
+                sd = C.HOLD_DRIFT_DEG * C.HOLD_DRIFT_GAIN[j]
+                self._goal[j] = max(-2 * sd, min(2 * sd, self.rng.gauss(0, sd)))
+            self._mid[j] += (self._goal[j] - self._mid[j]) * a
+            self.drift[j] += (self._mid[j] - self.drift[j]) * a
         return list(self.drift)

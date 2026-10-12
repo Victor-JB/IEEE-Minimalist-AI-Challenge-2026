@@ -21,6 +21,9 @@ NO_MOTION_SLEEP_S = 300.0                # IDLE -> SLEEP
 NOBODY_S = 180.0                         # ILLUMINATE -> GOODBYE: no face, hand or motion
 
 # --- State timers -----------------------------------------------------------
+BOOT_TIMEOUT_S = 20.0                    # not homed by then -> FAULT (connect retries + a 3 s home move)
+FAULT_COOLDOWN_S = 10.0                  # FAULT -> BOOT after this long (one auto retry)
+FAULT_FORGET_S = 120.0                   # a fault this long after the last one counts as the first again
 NOTICE_TIMEOUT_S = 1.5                   # false alarm -> IDLE
 LOST_TIMEOUT_S = 6.0                     # LOST USER -> IDLE (4 s + 6 s = 10 s total)
 CHECKIN_EVERY_S = (8.0, 15.0)            # HOLD -> CHECK-IN, random in this range
@@ -34,8 +37,13 @@ SWITCH_FACE_HOLD_S = 2.0                 # ...for this long before the lamp swit
 AMPLITUDE_RANGE = (0.8, 1.2)
 TIME_SCALE_RANGE = (0.9, 1.15)
 NO_REPEAT_LAST = 2
-HOLD_DRIFT_DEG = 1.5                     # OU drift on holds
-HOLD_DRIFT_HZ = 0.3
+HOLD_DRIFT_DEG = 1.5                     # spread of the random drift targets on holds
+HOLD_DRIFT_EVERY_S = (2.0, 5.0)          # a new target this often, per joint
+HOLD_DRIFT_SMOOTH_S = 0.6                # glide time constant (two stages: smooth, no overshoot)
+# Per joint. OFF for now: on the real arm, small slow hold corrections trip the firmware's stall
+# detector (60 s hold at HOME: 0 stalls with no drift, a FAULT every ~30 s with drift; gear backlash
+# ~2-2.5 deg). Turn back on once the firmware compensates backlash (servo.hpp slackDeg).
+HOLD_DRIFT_GAIN = (0.0, 0.0, 0.0)
 ENERGY_START, ENERGY_REST = 0.3, 0.3
 ENERGY_BUMP = 0.15                       # per interaction
 ENERGY_DECAY_S = 180.0                   # time constant back to rest

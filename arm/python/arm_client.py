@@ -198,12 +198,12 @@ class ArmSession:
     def _event(self,kind,**values):
         if self.file:
             self.file.write(json.dumps(dict(type=kind,version=1,time=self.clock()-self.started,**values),allow_nan=False)+'\n');self.file.flush()
-    def _request(self,command):
+    def _request(self,command,allow=()):
         self._event('command',text=command)
         s=self.transport.request(command)
         if s is not None:
             self.sample=s;self._event('sample',sample=s)
-            if s.get('error',0):raise ArmError(f"Firmware rejected command: {s['error']}")
+            if s.get('error',0) and s['error'] not in allow:raise ArmError(f"Firmware rejected command: {s['error']}")
         return s
     def status(self):return self._request('STATUS')
     def stop(self):return self._request('STOP')

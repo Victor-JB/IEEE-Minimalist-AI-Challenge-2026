@@ -66,15 +66,14 @@ def run(args):
             events += director.poll_events(now, machine, perception)
             director.note_events(events, now)
 
-            for ev in events:
-                tr = machine.handle(ev, now)
+            for tr in [machine.handle(ev, now) for ev in events] + [machine.tick(now)]:
                 if tr:
                     log.write(tr, machine.models, expressive.energy, perception.sched.counts)
                     print(f"{tr.src:>10} --{tr.event}--> {machine.path}")
-            tr = machine.tick(now)
-            if tr:
-                log.write(tr, machine.models, expressive.energy, perception.sched.counts)
-                print(f"{tr.src:>10} --{tr.event}--> {machine.path}")
+                    if tr.dst == "FAULT":
+                        latched = "" if director.faults <= 1 else " (latched: restart Lumen to clear)"
+                        why = director.fault_reason if tr.event == "FAULT" else f"{tr.src} {tr.event}"
+                        print(f"FAULT #{director.faults}: {why}{latched}")
 
             director.tick(now, machine, perception, frame.shape)
             fps.tick()

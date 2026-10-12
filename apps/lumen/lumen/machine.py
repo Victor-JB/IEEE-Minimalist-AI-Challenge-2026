@@ -22,7 +22,7 @@ class State:
 
 
 STATES = {
-    "BOOT":      State({}, "boot"),
+    "BOOT":      State({}, "boot", timer=(C.BOOT_TIMEOUT_S, E.TIMEOUT)),
     "SLEEP":     State({"gate": 2}, "asleep", light=0.0),
     "IDLE":      State({"gate": 10, "face": 1}, "bored", light=0.0),
     "NOTICE":    State({"face": 10}, "notice", timer=(C.NOTICE_TIMEOUT_S, E.TIMEOUT)),
@@ -54,6 +54,7 @@ def _face_or_idle(m):
 # Lookup order: the state itself, then its parent, then "*" (any state).
 TRANSITIONS = {
     ("BOOT", E.READY): "IDLE",
+    ("BOOT", E.TIMEOUT): "FAULT",            # homing never finished (arm unreachable)
     ("IDLE", E.NO_MOTION): "SLEEP",
     ("SLEEP", E.MOTION): "IDLE",
     ("IDLE", E.FACE_SEEN): "NOTICE",

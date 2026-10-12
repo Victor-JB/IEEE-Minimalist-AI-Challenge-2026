@@ -54,6 +54,9 @@ class FakeServo:
                 self.servo.update(state=state, reason=reason)
                 if reason == 1:
                     for axis, value in zip(self.s['axes'], self.goal): axis['angle'] = value
+        elif name == 'STREAM' and self.s['state'] == 16:
+            result = copy.deepcopy(self.s); result['error'] = -16      # stalled: refused until HALT
+            return result
         elif name == 'STREAM':
             self.s.update(state=17, run=1, awake=1, id=int(words[1]))
         elif name == 'HALT':
@@ -156,6 +159,14 @@ class ArmMotionTests(unittest.TestCase):
             with self.assertRaises(ValueError): arm.stream_point([1, 62, 5], [13, 0, 0])
         words = self.fake.sent('STREAM')[0].split()
         self.assertEqual(words[2:], ['62000', '1000', '5000', '-3000', '2000', '4000', '80', '3'])
+
+    def test_stream_stall_is_returned_then_halt_resumes(self):
+        with self.session() as arm:
+            arm.stream_point([1, 62, 5])
+            self.fake.s.update(state=16)
+            self.assertEqual(arm.stream_point([1, 62, 4])['state'], 'stalled')
+            arm.halt()
+            self.assertEqual(arm.stream_point([1, 62, 4])['state'], 'streaming')
 
     def test_scale_halt_relax(self):
         with self.session() as arm:

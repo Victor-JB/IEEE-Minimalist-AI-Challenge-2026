@@ -57,6 +57,14 @@ class HappyPath(unittest.TestCase):
         self.ev(E.PALM)
         self.assertEqual(self.m.state, "GOODBYE")
 
+    def test_boot_times_out_to_fault_and_retries(self):
+        self.m.tick(self.t + 30)
+        self.assertEqual(self.m.state, "FAULT")
+        self.ev(E.RECOVERED)
+        self.assertEqual(self.m.state, "BOOT")
+        self.ev(E.READY)
+        self.assertEqual(self.m.state, "IDLE")
+
     def test_fault_from_anywhere(self):
         self.ev(E.READY); self.ev(E.FACE_SEEN); self.ev(E.FAULT)
         self.assertEqual(self.m.state, "FAULT")

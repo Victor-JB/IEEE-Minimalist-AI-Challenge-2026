@@ -20,6 +20,18 @@ class ExpressiveTest(unittest.TestCase):
         self.assertGreater(x.energy, 0.9)
         self.assertLess(abs(x.update(2000.0) - 0.3), 0.01)
 
+    def test_hold_drift_is_smooth(self):
+        x = Expressive(random.Random(1))
+        from lumen import config as C
+        C.HOLD_DRIFT_GAIN, saved = (1.0, 1.0, 0.5), C.HOLD_DRIFT_GAIN
+        self.addCleanup(setattr, C, "HOLD_DRIFT_GAIN", saved)
+        steps = []
+        for _ in range(25 * 60):
+            before = list(x.drift)
+            after = x.drift_step(0.04)
+            steps.append(max(abs(a - b) for a, b in zip(after, before)))
+        self.assertLess(max(steps), 0.15)                      # deg per 25 Hz tick, was ~0.6
+
     def test_every_pool_entry_has_an_energy_level(self):
         for name, entries in POOLS.items():
             for ref, level in entries:
