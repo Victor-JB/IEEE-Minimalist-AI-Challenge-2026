@@ -24,7 +24,15 @@ REPO=/home/arduino/IEEE-Minimalist-AI-Challenge-2026
 WT=/home/arduino/IEEE-tongtong-worktree
 GITHUB=https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026
 TS_VERSION=1.104.1
-board() { "${A[@]}" shell "$1"; }
+# Run on the board: over SSH (USB forward) once key login works, since `systemctl --user` needs
+# the login session that adb shell lacks; over adb shell before that (fresh board).
+board() {
+  if [[ -z "${VIA:-}" ]]; then
+    "${A[@]}" forward tcp:2222 tcp:22 >/dev/null 2>&1 || true
+    if ssh -p 2222 -o BatchMode=yes -o ConnectTimeout=5 arduino@localhost true 2>/dev/null; then VIA=ssh; else VIA=adb; fi
+  fi
+  if [[ $VIA == ssh ]]; then ssh -p 2222 -o BatchMode=yes arduino@localhost "$1"; else "${A[@]}" shell "$1"; fi
+}
 
 root() {
   cat > /tmp/luxoIII-root.sh <<'EOF'
@@ -81,7 +89,7 @@ restore() {
 
   echo '== Firmware: pinned core, compile, flash'
   board "set -e; cd $REPO/arm
-    arduino-cli core update-index >/dev/null || echo "index update failed; compiling with what is cached"
+    arduino-cli core update-index >/dev/null || echo 'index update failed; compiling with what is cached'
     arduino-cli compile --profile default --build-path $REPO/arm/build sketch | tail -2
     bash scripts/flash-local.sh 2>&1 | grep -iE 'error|verified|wrote' | tail -4"
 
