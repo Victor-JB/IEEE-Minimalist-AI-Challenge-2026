@@ -50,6 +50,12 @@ From the back side (below −36°) no motor fold worked; it took a manual recove
 
 Head slack compensation exists in the firmware (`Settings::slackDeg`, an uncounted burst of steps on each reversal; in the simulator it cuts a 30 °/s nod's lag from 0.76° to 0.49°) but ships **off** on all joints until the head tight spot is fixed and an A/B test on the arm shows it helps.
 
+### Lamp clips, elbow exaggeration and the evening slowdown
+
+`scripts/make-lamp-clips.py` ports the lamp show from `arm_mujoco/lamp_demo.py` (full-model-animations) to `clips/lamp_*__arm.json`; `emote.py` plays them by name (`lamp_wake/arm`). `--gains SH EL HD` scales each joint on top of `--amplitude` (e.g. `0.7 2 0.6` doubles the elbow). Shoulder lifting torque was checked in the sim first: `lamp_wake` needs 1.46-1.87 N·m to stand up from its crouch (the shoulder lifts about 1.27), so it is not played on the arm.
+
+As the evening went on the elbow could no longer straighten (lift the forearm and head) quickly: emotes that ran at 45 °/s in the afternoon stalled at it, and at 25 °/s 12 of 14 exaggerated clips played (lamp yes, happy, curious, sleep; double_take, hesitate, nod, shrug, lean_in, sad_droop, startle, celebrate). Straightening above about 15 °/s still stalled, so `--elbow-lift` (default 14 °/s) caps it separately and the defaults are now 30/25/22 °/s. Finally the elbow would not lift from 63° at all, even at 8 °/s, while it had done so all day. Together with the head's worsening tight spot this points to heat (motors or DRV8825s after hours powered) or a mechanical/driver fault; let the arm cool and check driver current before tuning further.
+
 ## Real arm vs simulation
 
 `sim/stepper_desk.toml` models this arm (CAD geometry and masses, fitted torque limits; see [sim/README.md](../../sim/README.md)). `sim/compare_real.py` replays the traces `emote.py` saves. The sim tracks the command within 0.07–0.18° RMS, the real arm within 0.4–1.7°: the sim has no streaming delay, gear slack or 0.088° sensor quantization yet.

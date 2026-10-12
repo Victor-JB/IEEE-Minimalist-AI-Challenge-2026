@@ -1,0 +1,137 @@
+{
+ "name": "lamp_curious",
+ "variant": "arm",
+ "description": "Cocks toward something, then crouches and peeks in.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_demo",
+  "valence": 0.5,
+  "arousal": 0.5,
+  "source": "full-model-animations@ef1b0d2 arm_mujoco/lamp_demo.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0,
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.35,
+   "joints": {
+    "shoulder_pitch": 5.0,
+    "elbow_pitch": 5.0,
+    "wrist_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.15,
+   "joints": {
+    "shoulder_pitch": 5.0,
+    "elbow_pitch": 5.0,
+    "wrist_pitch": -10.0
+   },
+   "ease": "linear"
+  },
+  {
+   "t": 1.5,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0,
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.7,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0,
+    "wrist_pitch": 0.0
+   },
+   "ease": "linear"
+  },
+  {
+   "t": 2.247,
+   "joints": {
+    "shoulder_pitch": -30.0,
+    "elbow_pitch": 35.0,
+    "wrist_pitch": -15.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.347,
+   "joints": {
+    "shoulder_pitch": -30.0,
+    "elbow_pitch": 35.0,
+    "wrist_pitch": -15.0
+   },
+   "ease": "linear"
+  },
+  {
+   "t": 3.363,
+   "joints": {
+    "shoulder_pitch": 35.0,
+    "elbow_pitch": -30.0,
+    "wrist_pitch": 5.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.062,
+   "joints": {
+    "shoulder_pitch": 35.0,
+    "elbow_pitch": -30.0,
+    "wrist_pitch": 5.0
+   },
+   "ease": "linear"
+  },
+  {
+   "t": 4.609,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0,
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.3,
+    2.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    6.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 4.609
+}

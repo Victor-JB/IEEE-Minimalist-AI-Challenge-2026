@@ -1,0 +1,101 @@
+{
+ "name": "lamp_sleep",
+ "variant": "arm",
+ "description": "Stretches tall, then sinks slowly back to sleep, and wakes again.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_demo",
+  "valence": -0.3,
+  "arousal": 0.2,
+  "source": "full-model-animations@ef1b0d2 arm_mujoco/lamp_demo.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0,
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.228,
+   "joints": {
+    "shoulder_pitch": -15.0,
+    "elbow_pitch": -45.0,
+    "wrist_pitch": -55.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.528,
+   "joints": {
+    "shoulder_pitch": -15.0,
+    "elbow_pitch": -45.0,
+    "wrist_pitch": -55.0
+   },
+   "ease": "linear"
+  },
+  {
+   "t": 4.653,
+   "joints": {
+    "shoulder_pitch": -5.0,
+    "elbow_pitch": 45.0,
+    "wrist_pitch": 25.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.153,
+   "joints": {
+    "shoulder_pitch": -5.0,
+    "elbow_pitch": 45.0,
+    "wrist_pitch": 25.0
+   },
+   "ease": "linear"
+  },
+  {
+   "t": 7.325,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0,
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.3,
+    2.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    6.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 7.325
+}
