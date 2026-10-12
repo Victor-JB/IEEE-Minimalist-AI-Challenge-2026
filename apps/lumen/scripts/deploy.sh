@@ -2,7 +2,7 @@
 # From the Mac: copy Lumen (apps/lumen) and the shared arm module (arm/) to the board, install its venv,
 # install/restart the boot service. Does NOT flash the MCU: the firmware comes from
 # arm/scripts/deploy.sh (run that once, and again only when arm/sketch changes).
-#   bash apps/lumen/scripts/deploy.sh            # USB if plugged in, else Tailscale (daboard)
+#   bash apps/lumen/scripts/deploy.sh            # USB if plugged in, else Tailscale (luxo3)
 #   LUMEN_NO_START=1 bash apps/lumen/scripts/deploy.sh   # install but don't (re)start
 set -euo pipefail
 REPO_LOCAL="$(cd "$(dirname "$0")/../../.." && pwd)"
@@ -14,7 +14,7 @@ if [[ "$LINK" != tailscale && -n "$ADB" ]] && "$ADB" -s "${ARDUINO_Q_SERIAL:-634
 elif [[ "$LINK" == usb ]]; then
   echo 'Arduino Q not found over USB.' >&2; exit 1
 else
-  PORT=22; HOST="arduino@${STEPPER_HOST:-daboard}"; echo "Link: Tailscale ($HOST)"
+  PORT=22; HOST="arduino@${STEPPER_HOST:-luxo3}"; echo "Link: Tailscale ($HOST)"
 fi
 SSH=(ssh -p "$PORT" -o BatchMode=yes -o ConnectTimeout=5 "$HOST")
 REPO=/home/arduino/IEEE-Minimalist-AI-Challenge-2026
@@ -33,4 +33,4 @@ REPO=/home/arduino/IEEE-Minimalist-AI-Challenge-2026
   systemctl --user daemon-reload && systemctl --user enable lumen >/dev/null
   if [ -z '${LUMEN_NO_START:-}' ]; then systemctl --user restart lumen; fi
   sleep 2; systemctl --user --no-pager status lumen | head -5 || true"
-echo "HUD: http://${STEPPER_HOST:-daboard}:8080/   logs: ssh $HOST journalctl --user -u lumen -f"
+echo "HUD: http://${STEPPER_HOST:-luxo3}:8080/   logs: ssh $HOST journalctl --user -u lumen -f"

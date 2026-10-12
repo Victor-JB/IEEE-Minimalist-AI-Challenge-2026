@@ -3,7 +3,7 @@
 #   bash scripts/luxoIII-board-setup.sh root      # once, interactive: Wi-Fi, python3-venv, SSH, linger, clock (asks for
 #                                                 # the board's sudo password and the Wi-Fi password)
 #   bash scripts/luxoIII-board-setup.sh restore   # everything else; safe to re-run
-#   bash scripts/luxoIII-board-setup.sh tailscale # join the tailnet as daboard (prints a login link)
+#   bash scripts/luxoIII-board-setup.sh tailscale # join the tailnet as luxo3 (prints a login link)
 # ARDUINO_Q_SERIAL picks the board (adb devices), BRANCH the branch the board clone checks out
 # (default: the Mac's current branch).
 #
@@ -111,7 +111,7 @@ board that died on 2026-10-12. Set up by \`scripts/luxoIII-board-setup.sh\` in t
 | \`~/IEEE-Minimalist-AI-Challenge-2026\` | repo clone on \`$BRANCH\`; Lumen runs from here at boot |
 | \`~/IEEE-Minimalist-AI-Challenge-2026/.venv\` | the one venv (\`apps/lumen/.venv\`, \`arm/.venv\` link to it) |
 | \`~/IEEE-tongtong-worktree\` | git worktree on branch \`tongtong\`, for development |
-| \`~/tailscale\` | rootless Tailscale, user unit \`tailscaled.service\`, tailnet name \`daboard\` |
+| \`~/tailscale\` | rootless Tailscale, user unit \`tailscaled.service\`, tailnet name \`luxo3\` |
 | \`~/CHANGES.md\` | what changed in the 2026-10-12 work, for teammates |
 
 - Lumen: \`systemctl --user start|stop lumen\`, logs \`journalctl --user -u lumen -f\`, HUD on :8080.
@@ -139,7 +139,7 @@ Restart=on-failure
 WantedBy=default.target
 UNIT
     systemctl --user daemon-reload && systemctl --user enable --now tailscaled >/dev/null; sleep 3
-    (timeout 15 ./tailscale --socket=\$HOME/tailscale/tailscaled.sock up --hostname=daboard 2>&1 || true) \
+    (timeout 15 ./tailscale --socket=\$HOME/tailscale/tailscaled.sock up --hostname=luxo3 2>&1 || true) \
       | grep -o 'https://login.tailscale.com/[^ ]*' | head -1
     ./tailscale --socket=\$HOME/tailscale/tailscaled.sock status 2>&1 | head -2"
 }
