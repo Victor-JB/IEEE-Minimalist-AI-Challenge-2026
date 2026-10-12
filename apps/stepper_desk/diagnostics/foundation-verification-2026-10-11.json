@@ -1,0 +1,1103 @@
+{
+  "boot": {
+    "v": 1,
+    "error": 0,
+    "owner": 1484387017,
+    "state": 0,
+    "id": 0,
+    "ms": 29794,
+    "run": 0,
+    "awake": 0,
+    "enabled": 1,
+    "generation": 1,
+    "configured": 0,
+    "verified": 0,
+    "duration": 0,
+    "elapsed": 29794,
+    "axes": [
+      {
+        "angle": -2147483648,
+        "reference": 0,
+        "target": 0,
+        "count": 0,
+        "direction": 0,
+        "age": 16,
+        "magnet": 48,
+        "sensor_error": 0
+      },
+      {
+        "angle": -2147483648,
+        "reference": 0,
+        "target": 0,
+        "count": 0,
+        "direction": 0,
+        "age": 17,
+        "magnet": 32,
+        "sensor_error": 0
+      },
+      {
+        "angle": -2147483648,
+        "reference": 0,
+        "target": 0,
+        "count": 0,
+        "direction": 0,
+        "age": 15,
+        "magnet": 32,
+        "sensor_error": 0
+      }
+    ],
+    "kind": "arm"
+  },
+  "sleep_locked_pad_check": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    2,
+    0,
+    4,
+    0
+  ],
+  "idle_samples": [
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 29875,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 29875,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 2,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 3,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 24,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 29988,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 29988,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 19,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 20,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 18,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 30103,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 30103,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 16,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 17,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 14,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 30216,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 30216,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 10,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 11,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 9,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 30331,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 30331,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 7,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26104,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 8,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 6,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 30445,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 30445,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 3,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 4,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 1,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 30558,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 30558,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 21,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26104,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 22,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 20,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 30671,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 30671,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 15,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26104,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 17,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 14,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 30785,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 30785,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 11,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26104,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 12,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 10,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 30898,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 30898,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 5,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 7,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 4,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 31012,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 31012,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 25,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26104,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 2,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 23,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 31126,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 31126,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 19,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 21,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 18,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 31239,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 31239,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 14,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26104,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 15,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 13,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 31352,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 31352,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 9,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26104,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 10,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 8,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 31466,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 31466,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 4,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 6,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 3,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 31580,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 31580,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 24,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26104,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 25,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 22,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 31693,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 31693,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 18,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 19,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 16,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 31807,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 31807,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 13,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 14,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 12,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 31920,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 31920,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 8,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 9,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 7,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    },
+    {
+      "v": 1,
+      "error": 0,
+      "owner": 1484387017,
+      "state": 0,
+      "id": 0,
+      "ms": 32034,
+      "run": 0,
+      "awake": 0,
+      "enabled": 0,
+      "generation": 2,
+      "configured": 7,
+      "verified": 0,
+      "duration": 0,
+      "elapsed": 32034,
+      "axes": [
+        {
+          "angle": 79277,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 4,
+          "magnet": 48,
+          "sensor_error": 0
+        },
+        {
+          "angle": -26191,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 5,
+          "magnet": 32,
+          "sensor_error": 0
+        },
+        {
+          "angle": 12393,
+          "reference": 0,
+          "target": 0,
+          "count": 0,
+          "direction": 0,
+          "age": 2,
+          "magnet": 32,
+          "sensor_error": 0
+        }
+      ],
+      "kind": "arm"
+    }
+  ],
+  "final": {
+    "v": 1,
+    "error": 0,
+    "owner": 1484387017,
+    "state": 0,
+    "id": 0,
+    "ms": 32149,
+    "run": 0,
+    "awake": 0,
+    "enabled": 1,
+    "generation": 3,
+    "configured": 7,
+    "verified": 0,
+    "duration": 0,
+    "elapsed": 32149,
+    "axes": [
+      {
+        "angle": 79277,
+        "reference": 0,
+        "target": 0,
+        "count": 0,
+        "direction": 0,
+        "age": 24,
+        "magnet": 48,
+        "sensor_error": 0
+      },
+      {
+        "angle": -26191,
+        "reference": 0,
+        "target": 0,
+        "count": 0,
+        "direction": 0,
+        "age": 25,
+        "magnet": 32,
+        "sensor_error": 0
+      },
+      {
+        "angle": 12393,
+        "reference": 0,
+        "target": 0,
+        "count": 0,
+        "direction": 0,
+        "age": 22,
+        "magnet": 32,
+        "sensor_error": 0
+      }
+    ],
+    "kind": "arm"
+  },
+  "note": "No JOG, POSE, CURVE or HOLD sent. Three diagnostic STEP pad transitions occurred with physical D8 LOW and movement locked; drivers ignored them. This does not measure pulse width or loaded motion.",
+  "mac_validation": {
+    "app_version": "1.4 (6)",
+    "configuration_acknowledged": true,
+    "recorded_idle_samples": 60,
+    "replay_opened": true,
+    "replay_scrubbed_to_sample": 31,
+    "replay_disables_motion": true,
+    "legacy_reconnection_all_axes_stopped": true
+  }
+}

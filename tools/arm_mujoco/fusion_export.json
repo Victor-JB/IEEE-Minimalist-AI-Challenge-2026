@@ -1,0 +1,3944 @@
+{
+ "units": "mm",
+ "frame": "Fusion world at home pose (all joints 0); -Y is up",
+ "meshes": [
+  {
+   "file": "base_base_plate_underside_motor_bracket.stl",
+   "component": "Base",
+   "body": "Base plate + underside motor bracket",
+   "volume_mm3": 282017.6309201114,
+   "bbox_local": [
+    [
+     -169.0,
+     42.0,
+     -89.0
+    ],
+    [
+     69.0,
+     72.0,
+     89.0
+    ]
+   ]
+  },
+  {
+   "file": "bearing_body1.stl",
+   "component": "bearing",
+   "body": "Body1",
+   "volume_mm3": 2543.9046512444434,
+   "bbox_local": [
+    [
+     -22.0,
+     -22.0,
+     0.0
+    ],
+    [
+     22.0,
+     22.0,
+     5.0
+    ]
+   ]
+  },
+  {
+   "file": "stepper_body1.stl",
+   "component": "Stepper",
+   "body": "Body1",
+   "volume_mm3": 7149.874981159761,
+   "bbox_local": [
+    [
+     -21.0,
+     -21.0,
+     -4.0
+    ],
+    [
+     21.0,
+     21.0,
+     2.0
+    ]
+   ]
+  },
+  {
+   "file": "stepper_body2.stl",
+   "component": "Stepper",
+   "body": "Body2",
+   "volume_mm3": 54790.90102033939,
+   "bbox_local": [
+    [
+     -21.0,
+     -21.0,
+     -35.5
+    ],
+    [
+     26.1,
+     21.0,
+     24.0
+    ]
+   ]
+  },
+  {
+   "file": "base_drive_20t_pinion_20t_pinion_with_d_shaft_hub.stl",
+   "component": "Base drive | 20T pinion",
+   "body": "20T pinion with D-shaft hub",
+   "volume_mm3": 5332.152749981198,
+   "bbox_local": [
+    [
+     -13.629,
+     -13.629,
+     -5.0
+    ],
+    [
+     13.629,
+     13.629,
+     10.0
+    ]
+   ]
+  },
+  {
+   "file": "yaw_spindle_base_spindle_100t_drive_wheel.stl",
+   "component": "Yaw Spindle",
+   "body": "Base spindle + 100T drive wheel",
+   "volume_mm3": 53984.66207505169,
+   "bbox_local": [
+    [
+     -28.734,
+     -23.0,
+     -26.493
+    ],
+    [
+     28.734,
+     65.0,
+     -0.1
+    ]
+   ]
+  },
+  {
+   "file": "yaw_spindle_base_spindle_100t_drive_wheel_1.stl",
+   "component": "Yaw Spindle",
+   "body": "Base spindle + 100T drive wheel (1)",
+   "volume_mm3": 53989.64703934127,
+   "bbox_local": [
+    [
+     -28.734,
+     -23.0,
+     0.1
+    ],
+    [
+     28.734,
+     65.0,
+     26.493
+    ]
+   ]
+  },
+  {
+   "file": "yaw_spindle_body205.stl",
+   "component": "Yaw Spindle",
+   "body": "Body205",
+   "volume_mm3": 88693.74842859876,
+   "bbox_local": [
+    [
+     -63.75,
+     55.0,
+     -63.75
+    ],
+    [
+     63.75,
+     65.0,
+     63.75
+    ]
+   ]
+  },
+  {
+   "file": "enclosuretop_body1.stl",
+   "component": "EnclosureTop",
+   "body": "Body1",
+   "volume_mm3": 58762.87494420664,
+   "bbox_local": [
+    [
+     -26.6,
+     -211.6,
+     0.2
+    ],
+    [
+     26.6,
+     26.6,
+     15.0
+    ]
+   ]
+  },
+  {
+   "file": "enclosurebottom_body1.stl",
+   "component": "EnclosureBottom",
+   "body": "Body1",
+   "volume_mm3": 66157.88197811437,
+   "bbox_local": [
+    [
+     -26.6,
+     -211.6,
+     -15.0
+    ],
+    [
+     26.6,
+     26.6,
+     2.8
+    ]
+   ]
+  },
+  {
+   "file": "shelltop_body9.stl",
+   "component": "ShellTop",
+   "body": "Body9",
+   "volume_mm3": 97685.43861308078,
+   "bbox_local": [
+    [
+     -29.187,
+     -206.5,
+     0.0
+    ],
+    [
+     29.187,
+     28.6,
+     30.0
+    ]
+   ]
+  },
+  {
+   "file": "shelltop_body11.stl",
+   "component": "ShellTop",
+   "body": "Body11",
+   "volume_mm3": 91113.00303655866,
+   "bbox_local": [
+    [
+     -29.187,
+     -206.5,
+     -15.0
+    ],
+    [
+     29.187,
+     28.6,
+     7.4
+    ]
+   ]
+  },
+  {
+   "file": "17hs4023_stepper_42x23_front_end_cap.stl",
+   "component": "17HS4023 Stepper (42x23)",
+   "body": "Front end cap",
+   "volume_mm3": 9376.980919698373,
+   "bbox_local": [
+    [
+     -21.15,
+     -21.15,
+     -2.0
+    ],
+    [
+     21.15,
+     21.15,
+     5.0
+    ]
+   ]
+  },
+  {
+   "file": "17hs4023_stepper_42x23_stator.stl",
+   "component": "17HS4023 Stepper (42x23)",
+   "body": "Stator",
+   "volume_mm3": 23608.665000000005,
+   "bbox_local": [
+    [
+     -21.15,
+     -21.15,
+     5.0
+    ],
+    [
+     21.15,
+     21.15,
+     18.5
+    ]
+   ]
+  },
+  {
+   "file": "17hs4023_stepper_42x23_rear_end_cap.stl",
+   "component": "17HS4023 Stepper (42x23)",
+   "body": "Rear end cap",
+   "volume_mm3": 8743.950000000003,
+   "bbox_local": [
+    [
+     -21.15,
+     -21.15,
+     18.5
+    ],
+    [
+     21.15,
+     21.15,
+     23.5
+    ]
+   ]
+  },
+  {
+   "file": "17hs4023_stepper_42x23_shaft.stl",
+   "component": "17HS4023 Stepper (42x23)",
+   "body": "Shaft",
+   "volume_mm3": 357.7358986644096,
+   "bbox_local": [
+    [
+     -2.5,
+     -2.5,
+     -21.0
+    ],
+    [
+     2.5,
+     2.5,
+     -2.0
+    ]
+   ]
+  },
+  {
+   "file": "17hs4023_stepper_42x23_connector.stl",
+   "component": "17HS4023 Stepper (42x23)",
+   "body": "Connector",
+   "volume_mm3": 659.9999999999998,
+   "bbox_local": [
+    [
+     -8.0,
+     21.15,
+     15.0
+    ],
+    [
+     8.0,
+     26.65,
+     22.5
+    ]
+   ]
+  },
+  {
+   "file": "1stsegment_body1.stl",
+   "component": "1stsegment",
+   "body": "Body1",
+   "volume_mm3": 30525.87438862852,
+   "bbox_local": [
+    [
+     -19.5,
+     -19.5,
+     -31.25
+    ],
+    [
+     23.5,
+     57.0,
+     -0.1
+    ]
+   ]
+  },
+  {
+   "file": "1stsegment_body2.stl",
+   "component": "1stsegment",
+   "body": "Body2",
+   "volume_mm3": 30964.386897514527,
+   "bbox_local": [
+    [
+     -19.5,
+     -19.5,
+     -11.161
+    ],
+    [
+     23.5,
+     59.478,
+     26.25
+    ]
+   ]
+  },
+  {
+   "file": "bearing_1_body1.stl",
+   "component": "bearing (1)",
+   "body": "Body1",
+   "volume_mm3": 1378.373776762583,
+   "bbox_local": [
+    [
+     0.0,
+     -12.0,
+     -12.0
+    ],
+    [
+     5.0,
+     12.0,
+     12.0
+    ]
+   ]
+  },
+  {
+   "file": "01_housing_lower_cover_black_polymer.stl",
+   "component": "01 Housing",
+   "body": "Lower cover - black polymer",
+   "volume_mm3": 8394.231502632123,
+   "bbox_local": [
+    [
+     -10.0,
+     -20.0,
+     0.0
+    ],
+    [
+     10.0,
+     20.0,
+     10.5
+    ]
+   ]
+  },
+  {
+   "file": "01_housing_center_housing_red.stl",
+   "component": "01 Housing",
+   "body": "Center housing - red",
+   "volume_mm3": 13830.495713860546,
+   "bbox_local": [
+    [
+     -10.0,
+     -20.0,
+     10.5
+    ],
+    [
+     10.0,
+     20.0,
+     27.8
+    ]
+   ]
+  },
+  {
+   "file": "01_housing_upper_gearbox_and_mounting_tabs_black.stl",
+   "component": "01 Housing",
+   "body": "Upper gearbox and mounting tabs - black",
+   "volume_mm3": 9741.424863846969,
+   "bbox_local": [
+    [
+     -10.0,
+     -27.25,
+     27.8
+    ],
+    [
+     10.0,
+     27.25,
+     40.5
+    ]
+   ]
+  },
+  {
+   "file": "01_housing_cable_strain_relief_rubber.stl",
+   "component": "01 Housing",
+   "body": "Cable strain relief - rubber",
+   "volume_mm3": 44.99999999999998,
+   "bbox_local": [
+    [
+     -2.5,
+     -23.0,
+     6.0
+    ],
+    [
+     2.5,
+     -20.0,
+     9.0
+    ]
+   ]
+  },
+  {
+   "file": "2nd_segments_body4.stl",
+   "component": "2nd segments",
+   "body": "Body4",
+   "volume_mm3": 62776.5569622026,
+   "bbox_local": [
+    [
+     -29.5,
+     37.5,
+     -32.5
+    ],
+    [
+     27.5,
+     87.0,
+     47.5
+    ]
+   ]
+  },
+  {
+   "file": "2nd_segments_body8.stl",
+   "component": "2nd segments",
+   "body": "Body8",
+   "volume_mm3": 0.0,
+   "bbox_local": [
+    [
+     -104.0,
+     85.0,
+     -95.5
+    ],
+    [
+     102.0,
+     185.0,
+     110.5
+    ]
+   ]
+  },
+  {
+   "file": "2nd_segments_body10.stl",
+   "component": "2nd segments",
+   "body": "Body10",
+   "volume_mm3": 0.0,
+   "bbox_local": [
+    [
+     -31.5,
+     75.0,
+     -34.5
+    ],
+    [
+     29.5,
+     85.0,
+     49.5
+    ]
+   ]
+  },
+  {
+   "file": "2nd_segments_body9.stl",
+   "component": "2nd segments",
+   "body": "Body9",
+   "volume_mm3": 200223.18723028275,
+   "bbox_local": [
+    [
+     -105.5,
+     75.0,
+     -97.0
+    ],
+    [
+     103.5,
+     185.013,
+     112.0
+    ]
+   ]
+  },
+  {
+   "file": "02_output_shaft_and_horn_output_shaft_brass_spline_envelope.stl",
+   "component": "02 Output shaft and horn",
+   "body": "Output shaft - brass spline envelope",
+   "volume_mm3": 93.30530181162091,
+   "bbox_local": [
+    [
+     -3.0,
+     7.0,
+     40.5
+    ],
+    [
+     3.0,
+     13.0,
+     43.8
+    ]
+   ]
+  },
+  {
+   "file": "02_output_shaft_and_horn_single_arm_horn_aluminum.stl",
+   "component": "02 Output shaft and horn",
+   "body": "Single-arm horn - aluminum",
+   "volume_mm3": 790.7909428710186,
+   "bbox_local": [
+    [
+     -25.0,
+     2.5,
+     41.6
+    ],
+    [
+     7.5,
+     17.5,
+     44.6
+    ]
+   ]
+  },
+  {
+   "file": "02_output_shaft_and_horn_retaining_screw_black_steel.stl",
+   "component": "02 Output shaft and horn",
+   "body": "Retaining screw - black steel",
+   "volume_mm3": 25.55326162989417,
+   "bbox_local": [
+    [
+     -2.75,
+     7.25,
+     44.6
+    ],
+    [
+     2.75,
+     12.75,
+     45.8
+    ]
+   ]
+  },
+  {
+   "file": "cam_a_b_body1.stl",
+   "component": "cam a-b",
+   "body": "Body1",
+   "volume_mm3": 1475.4022194851932,
+   "bbox_local": [
+    [
+     -79.6,
+     -8.3,
+     0.0
+    ],
+    [
+     -61.8,
+     8.993,
+     10.0
+    ]
+   ]
+  },
+  {
+   "file": "cam_a_c_body1.stl",
+   "component": "cam a-c",
+   "body": "Body1",
+   "volume_mm3": 1475.4022194851639,
+   "bbox_local": [
+    [
+     -79.6,
+     -8.993,
+     -10.0
+    ],
+    [
+     -61.8,
+     8.3,
+     0.0
+    ]
+   ]
+  },
+  {
+   "file": "cam_bearing_body1.stl",
+   "component": "cam bearing",
+   "body": "Body1",
+   "volume_mm3": 1378.3737767625803,
+   "bbox_local": [
+    [
+     -83.3,
+     -12.0,
+     -2.5
+    ],
+    [
+     -59.3,
+     12.0,
+     2.5
+    ]
+   ]
+  },
+  {
+   "file": "ring_a_body1.stl",
+   "component": "ring a",
+   "body": "Body1",
+   "volume_mm3": 14981.469553162618,
+   "bbox_local": [
+    [
+     -87.3,
+     -21.8,
+     -3.0
+    ],
+    [
+     21.0,
+     21.8,
+     3.0
+    ]
+   ]
+  },
+  {
+   "file": "ring_b_body1.stl",
+   "component": "ring b",
+   "body": "Body1",
+   "volume_mm3": 14984.862140078529,
+   "bbox_local": [
+    [
+     -86.1,
+     -21.107,
+     3.5
+    ],
+    [
+     22.2,
+     22.493,
+     9.5
+    ]
+   ]
+  },
+  {
+   "file": "ring_c_body1.stl",
+   "component": "ring c",
+   "body": "Body1",
+   "volume_mm3": 14984.190515731889,
+   "bbox_local": [
+    [
+     -86.1,
+     -22.493,
+     -9.5
+    ],
+    [
+     22.2,
+     21.107,
+     -3.5
+    ]
+   ]
+  },
+  {
+   "file": "pin_body1.stl",
+   "component": "pin",
+   "body": "Body1",
+   "volume_mm3": 376.99111843075906,
+   "bbox_local": [
+    [
+     13.0,
+     -2.0,
+     -15.0
+    ],
+    [
+     17.0,
+     2.0,
+     15.0
+    ]
+   ]
+  },
+  {
+   "file": "cam_a_b_mirror_body1.stl",
+   "component": "cam a-b(Mirror)",
+   "body": "Body1",
+   "volume_mm3": 1475.4022204844182,
+   "bbox_local": [
+    [
+     -79.6,
+     -8.3,
+     -10.0
+    ],
+    [
+     -61.8,
+     8.993,
+     0.0
+    ]
+   ]
+  },
+  {
+   "file": "cam_a_c_mirror_body1.stl",
+   "component": "cam a-c(Mirror)",
+   "body": "Body1",
+   "volume_mm3": 1475.4022204843889,
+   "bbox_local": [
+    [
+     -79.6,
+     -8.993,
+     0.0
+    ],
+    [
+     -61.8,
+     8.3,
+     10.0
+    ]
+   ]
+  },
+  {
+   "file": "cam_bearing_mirror_body1.stl",
+   "component": "cam bearing(Mirror)",
+   "body": "Body1",
+   "volume_mm3": 1378.3737767625803,
+   "bbox_local": [
+    [
+     -83.3,
+     -12.0,
+     -2.5
+    ],
+    [
+     -59.3,
+     12.0,
+     2.5
+    ]
+   ]
+  },
+  {
+   "file": "ring_a_mirror_body1.stl",
+   "component": "ring a(Mirror)",
+   "body": "Body1",
+   "volume_mm3": 14981.469553162793,
+   "bbox_local": [
+    [
+     -87.3,
+     -21.8,
+     -3.0
+    ],
+    [
+     21.0,
+     21.8,
+     3.0
+    ]
+   ]
+  },
+  {
+   "file": "ring_b_mirror_body1.stl",
+   "component": "ring b(Mirror)",
+   "body": "Body1",
+   "volume_mm3": 14984.862140078527,
+   "bbox_local": [
+    [
+     -86.1,
+     -21.107,
+     -9.5
+    ],
+    [
+     22.2,
+     22.493,
+     -3.5
+    ]
+   ]
+  },
+  {
+   "file": "ring_c_mirror_body1.stl",
+   "component": "ring c(Mirror)",
+   "body": "Body1",
+   "volume_mm3": 14984.19051573189,
+   "bbox_local": [
+    [
+     -86.1,
+     -22.493,
+     3.5
+    ],
+    [
+     22.2,
+     21.107,
+     9.5
+    ]
+   ]
+  },
+  {
+   "file": "pin_mirror_body1.stl",
+   "component": "pin(Mirror)",
+   "body": "Body1",
+   "volume_mm3": 376.99111843075906,
+   "bbox_local": [
+    [
+     13.0,
+     -2.0,
+     -15.0
+    ],
+    [
+     17.0,
+     2.0,
+     15.0
+    ]
+   ]
+  },
+  {
+   "file": "cam_a_b_body1_2.stl",
+   "component": "cam a-b",
+   "body": "Body1",
+   "volume_mm3": 1475.4022009409312,
+   "bbox_local": [
+    [
+     -141.6,
+     -8.3,
+     0.0
+    ],
+    [
+     -123.8,
+     8.993,
+     10.0
+    ]
+   ]
+  },
+  {
+   "file": "cam_a_c_body1_2.stl",
+   "component": "cam a-c",
+   "body": "Body1",
+   "volume_mm3": 1475.402219485458,
+   "bbox_local": [
+    [
+     -141.6,
+     -8.993,
+     -10.0
+    ],
+    [
+     -123.8,
+     8.3,
+     0.0
+    ]
+   ]
+  },
+  {
+   "file": "cam_bearing_body1_2.stl",
+   "component": "cam bearing",
+   "body": "Body1",
+   "volume_mm3": 1378.3737767625798,
+   "bbox_local": [
+    [
+     -145.3,
+     -12.0,
+     -2.5
+    ],
+    [
+     -121.3,
+     12.0,
+     2.5
+    ]
+   ]
+  },
+  {
+   "file": "ring_a_body1_2.stl",
+   "component": "ring a",
+   "body": "Body1",
+   "volume_mm3": 28791.569350646234,
+   "bbox_local": [
+    [
+     -149.3,
+     -21.8,
+     -3.0
+    ],
+    [
+     21.0,
+     21.8,
+     3.0
+    ]
+   ]
+  },
+  {
+   "file": "ring_b_body1_2.stl",
+   "component": "ring b",
+   "body": "Body1",
+   "volume_mm3": 28794.961937562104,
+   "bbox_local": [
+    [
+     -148.1,
+     -21.107,
+     3.5
+    ],
+    [
+     22.2,
+     22.493,
+     9.5
+    ]
+   ]
+  },
+  {
+   "file": "ring_c_body1_2.stl",
+   "component": "ring c",
+   "body": "Body1",
+   "volume_mm3": 28794.290313215464,
+   "bbox_local": [
+    [
+     -148.1,
+     -22.493,
+     -9.5
+    ],
+    [
+     22.2,
+     21.107,
+     -3.5
+    ]
+   ]
+  }
+ ],
+ "instances": [
+  {
+   "mjbody": "base",
+   "cls": "pla",
+   "occurrence": "Base:1",
+   "body": "Base plate + underside motor bracket",
+   "mesh": "base_base_plate_underside_motor_bracket.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "base",
+   "cls": "steel",
+   "occurrence": "Base:1+bearing:6",
+   "body": "Body1",
+   "mesh": "bearing_body1.stl",
+   "world_from_mesh_mm": [
+    1.000000000000002,
+    -1.1657341758564144e-15,
+    -6.938893903906803e-18,
+    3.469446951953614e-16,
+    -4.510281037539586e-17,
+    3.4184446996414256e-17,
+    1.0,
+    41.000000000000085,
+    0.0,
+    -1.0000000000000018,
+    7.522001612644295e-18,
+    2.220446049250313e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "base",
+   "cls": "steel",
+   "occurrence": "Base:1+bearing:7",
+   "body": "Body1",
+   "mesh": "bearing_body1.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    71.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "base",
+   "cls": "motor40",
+   "occurrence": "Base:1+Stepper:3",
+   "body": "Body1",
+   "mesh": "stepper_body1.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    -75.0,
+    0.0,
+    0.0,
+    -1.0,
+    78.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "base",
+   "cls": "motor40",
+   "occurrence": "Base:1+Stepper:3",
+   "body": "Body2",
+   "mesh": "stepper_body2.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    -75.0,
+    0.0,
+    0.0,
+    -1.0,
+    78.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "base_pinion",
+   "cls": "pla",
+   "occurrence": "Base:1+Base drive | 20T pinion:1",
+   "body": "20T pinion with D-shaft hub",
+   "mesh": "base_drive_20t_pinion_20t_pinion_with_d_shaft_hub.stl",
+   "world_from_mesh_mm": [
+    0.9999999999999989,
+    5.551115123125783e-17,
+    0.0,
+    -75.00000000000001,
+    0.0,
+    0.0,
+    1.0,
+    60.0,
+    5.551115123125783e-17,
+    -0.9999999999999989,
+    0.0,
+    8.881784197001243e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "pla",
+   "occurrence": "Base:1+Yaw Spindle:1",
+   "body": "Base spindle + 100T drive wheel",
+   "mesh": "yaw_spindle_base_spindle_100t_drive_wheel.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "pla",
+   "occurrence": "Base:1+Yaw Spindle:1",
+   "body": "Base spindle + 100T drive wheel (1)",
+   "mesh": "yaw_spindle_base_spindle_100t_drive_wheel_1.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "pla",
+   "occurrence": "Base:1+Yaw Spindle:1",
+   "body": "Body205",
+   "mesh": "yaw_spindle_body205.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "first_link",
+   "cls": "pla",
+   "occurrence": "First Link:1+EnclosureTop:1",
+   "body": "Body1",
+   "mesh": "enclosuretop_body1.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "first_link",
+   "cls": "pla",
+   "occurrence": "First Link:1+EnclosureBottom:1",
+   "body": "Body1",
+   "mesh": "enclosurebottom_body1.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "first_link",
+   "cls": "motor40",
+   "occurrence": "First Link:1+Stepper:1",
+   "body": "Body1",
+   "mesh": "stepper_body1.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    1.2246467991473532e-16,
+    0.0,
+    -1.1707301794672276e-12,
+    1.2246467991473532e-16,
+    1.0,
+    1.2246467991473532e-16,
+    -70.49999999999756,
+    0.0,
+    1.224646799147353e-16,
+    -1.0,
+    15.000000000000014,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "first_link",
+   "cls": "motor40",
+   "occurrence": "First Link:1+Stepper:1",
+   "body": "Body2",
+   "mesh": "stepper_body2.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    1.2246467991473532e-16,
+    0.0,
+    -1.1707301794672276e-12,
+    1.2246467991473532e-16,
+    1.0,
+    1.2246467991473532e-16,
+    -70.49999999999756,
+    0.0,
+    1.224646799147353e-16,
+    -1.0,
+    15.000000000000014,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "first_link",
+   "cls": "motor40",
+   "occurrence": "First Link:1+Stepper:2",
+   "body": "Body1",
+   "mesh": "stepper_body1.stl",
+   "world_from_mesh_mm": [
+    -1.0000000000000018,
+    3.1675370922413794e-16,
+    6.661338147750939e-16,
+    -1.1007861289158427e-12,
+    1.224646799147355e-16,
+    1.000000000000001,
+    2.465190328815662e-32,
+    -114.50000000000244,
+    2.7755575615628914e-16,
+    4.207682887517503e-17,
+    -0.9999999999999998,
+    15.000000000000009,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "first_link",
+   "cls": "motor40",
+   "occurrence": "First Link:1+Stepper:2",
+   "body": "Body2",
+   "mesh": "stepper_body2.stl",
+   "world_from_mesh_mm": [
+    -1.0000000000000018,
+    3.1675370922413794e-16,
+    6.661338147750939e-16,
+    -1.1007861289158427e-12,
+    1.224646799147355e-16,
+    1.000000000000001,
+    2.465190328815662e-32,
+    -114.50000000000244,
+    2.7755575615628914e-16,
+    4.207682887517503e-17,
+    -0.9999999999999998,
+    15.000000000000009,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "first_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+bearing:1",
+   "body": "Body1",
+   "mesh": "bearing_body1.stl",
+   "world_from_mesh_mm": [
+    1.0000000000000062,
+    -4.783149641574586e-15,
+    1.3322676295501878e-15,
+    -1.27675647831893e-14,
+    9.19063568426042e-18,
+    1.000000000000005,
+    1.2121774576677513e-13,
+    -1.9184653865522705e-12,
+    1.6209256159527285e-14,
+    -1.1694606221870908e-13,
+    1.0000000000000544,
+    -15.999999999994333,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "first_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+bearing:3",
+   "body": "Body1",
+   "mesh": "bearing_body1.stl",
+   "world_from_mesh_mm": [
+    1.000000000000029,
+    -4.0615046755699885e-15,
+    1.27675647831893e-15,
+    -4.118927421359331e-13,
+    3.694621129687538e-17,
+    1.0000000000000373,
+    1.2121774576677654e-13,
+    -3.552713678800501e-13,
+    3.7192471324942744e-15,
+    -1.1649637561880492e-13,
+    1.0000000000000664,
+    11.000000000007848,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "first_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+bearing:4",
+   "body": "Body1",
+   "mesh": "bearing_body1.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    1.8318679906315083e-14,
+    0.0,
+    1.0,
+    0.0,
+    -185.0,
+    0.0,
+    0.0,
+    1.0,
+    -15.999999999999996,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "first_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+bearing:5",
+   "body": "Body1",
+   "mesh": "bearing_body1.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    8.326672684688674e-15,
+    0.0,
+    1.0,
+    0.0,
+    -185.0,
+    0.0,
+    0.0,
+    1.0,
+    11.0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "pla",
+   "occurrence": "Second Link:1+ShellTop:1",
+   "body": "Body9",
+   "mesh": "shelltop_body9.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    -1.0,
+    0.0,
+    -370.0,
+    0.0,
+    0.0,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "pla",
+   "occurrence": "Second Link:1+ShellTop:1",
+   "body": "Body11",
+   "mesh": "shelltop_body11.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    -1.0,
+    0.0,
+    -370.0,
+    0.0,
+    0.0,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "motor23",
+   "occurrence": "Second Link:1+17HS4023 Stepper (42x23):1",
+   "body": "Front end cap",
+   "mesh": "17hs4023_stepper_42x23_front_end_cap.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    -1.0,
+    0.0,
+    -237.5,
+    0.0,
+    0.0,
+    1.0,
+    7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "motor23",
+   "occurrence": "Second Link:1+17HS4023 Stepper (42x23):1",
+   "body": "Stator",
+   "mesh": "17hs4023_stepper_42x23_stator.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    -1.0,
+    0.0,
+    -237.5,
+    0.0,
+    0.0,
+    1.0,
+    7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "motor23",
+   "occurrence": "Second Link:1+17HS4023 Stepper (42x23):1",
+   "body": "Rear end cap",
+   "mesh": "17hs4023_stepper_42x23_rear_end_cap.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    -1.0,
+    0.0,
+    -237.5,
+    0.0,
+    0.0,
+    1.0,
+    7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "motor23",
+   "occurrence": "Second Link:1+17HS4023 Stepper (42x23):1",
+   "body": "Shaft",
+   "mesh": "17hs4023_stepper_42x23_shaft.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    -1.0,
+    0.0,
+    -237.5,
+    0.0,
+    0.0,
+    1.0,
+    7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "motor23",
+   "occurrence": "Second Link:1+17HS4023 Stepper (42x23):1",
+   "body": "Connector",
+   "mesh": "17hs4023_stepper_42x23_connector.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    -1.0,
+    0.0,
+    -237.5,
+    0.0,
+    0.0,
+    1.0,
+    7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "pla",
+   "occurrence": "Head:1+1stsegment:1",
+   "body": "Body1",
+   "mesh": "1stsegment_body1.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    -1.0,
+    0.0,
+    -370.0,
+    0.0,
+    0.0,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "pla",
+   "occurrence": "Head:1+1stsegment:1",
+   "body": "Body2",
+   "mesh": "1stsegment_body2.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -5.551115123125783e-16,
+    0.0,
+    -1.0,
+    0.0,
+    -370.0,
+    0.0,
+    0.0,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Head:1+bearing (1):1",
+   "body": "Body1",
+   "mesh": "bearing_1_body1.stl",
+   "world_from_mesh_mm": [
+    1.0,
+    0.0,
+    0.0,
+    -23.500000000000007,
+    0.0,
+    1.0,
+    0.0,
+    -415.0000000000002,
+    0.0,
+    0.0,
+    1.0,
+    2.6645352591003757e-14,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "servo",
+   "occurrence": "Head:1+HPS-2027 Servo:1+01 Housing:1",
+   "body": "Lower cover - black polymer",
+   "mesh": "01_housing_lower_cover_black_polymer.stl",
+   "world_from_mesh_mm": [
+    2.7209883233405273e-15,
+    1.6653345369377348e-16,
+    1.0000000000000049,
+    -17.10682231805253,
+    0.9999999999999851,
+    -6.123233995736283e-17,
+    9.843810213459017e-16,
+    -415.0000000000002,
+    1.964853183035298e-16,
+    0.9999999999999785,
+    0.0,
+    -10.000000000000515,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "servo",
+   "occurrence": "Head:1+HPS-2027 Servo:1+01 Housing:1",
+   "body": "Center housing - red",
+   "mesh": "01_housing_center_housing_red.stl",
+   "world_from_mesh_mm": [
+    2.7209883233405273e-15,
+    1.6653345369377348e-16,
+    1.0000000000000049,
+    -17.10682231805253,
+    0.9999999999999851,
+    -6.123233995736283e-17,
+    9.843810213459017e-16,
+    -415.0000000000002,
+    1.964853183035298e-16,
+    0.9999999999999785,
+    0.0,
+    -10.000000000000515,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "servo",
+   "occurrence": "Head:1+HPS-2027 Servo:1+01 Housing:1",
+   "body": "Upper gearbox and mounting tabs - black",
+   "mesh": "01_housing_upper_gearbox_and_mounting_tabs_black.stl",
+   "world_from_mesh_mm": [
+    2.7209883233405273e-15,
+    1.6653345369377348e-16,
+    1.0000000000000049,
+    -17.10682231805253,
+    0.9999999999999851,
+    -6.123233995736283e-17,
+    9.843810213459017e-16,
+    -415.0000000000002,
+    1.964853183035298e-16,
+    0.9999999999999785,
+    0.0,
+    -10.000000000000515,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "servo",
+   "occurrence": "Head:1+HPS-2027 Servo:1+01 Housing:1",
+   "body": "Cable strain relief - rubber",
+   "mesh": "01_housing_cable_strain_relief_rubber.stl",
+   "world_from_mesh_mm": [
+    2.7209883233405273e-15,
+    1.6653345369377348e-16,
+    1.0000000000000049,
+    -17.10682231805253,
+    0.9999999999999851,
+    -6.123233995736283e-17,
+    9.843810213459017e-16,
+    -415.0000000000002,
+    1.964853183035298e-16,
+    0.9999999999999785,
+    0.0,
+    -10.000000000000515,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head_tilt",
+   "cls": "pla",
+   "occurrence": "Head:1+2nd segments:1",
+   "body": "Body4",
+   "mesh": "2nd_segments_body4.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -0.5000000000000027,
+    0.0,
+    -1.0,
+    0.0,
+    -370.0,
+    0.0,
+    0.0,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head_tilt",
+   "cls": "pla",
+   "occurrence": "Head:1+2nd segments:1",
+   "body": "Body8",
+   "mesh": "2nd_segments_body8.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -0.5000000000000027,
+    0.0,
+    -1.0,
+    0.0,
+    -370.0,
+    0.0,
+    0.0,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head_tilt",
+   "cls": "pla",
+   "occurrence": "Head:1+2nd segments:1",
+   "body": "Body10",
+   "mesh": "2nd_segments_body10.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -0.5000000000000027,
+    0.0,
+    -1.0,
+    0.0,
+    -370.0,
+    0.0,
+    0.0,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head_tilt",
+   "cls": "pla",
+   "occurrence": "Head:1+2nd segments:1",
+   "body": "Body9",
+   "mesh": "2nd_segments_body9.stl",
+   "world_from_mesh_mm": [
+    -1.0,
+    0.0,
+    0.0,
+    -0.5000000000000027,
+    0.0,
+    -1.0,
+    0.0,
+    -370.0,
+    0.0,
+    0.0,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head_tilt",
+   "cls": "servo",
+   "occurrence": "Head:1+HPS-2027 Servo:1+02 Output shaft and horn:1",
+   "body": "Output shaft - brass spline envelope",
+   "mesh": "02_output_shaft_and_horn_output_shaft_brass_spline_envelope.stl",
+   "world_from_mesh_mm": [
+    2.7209883233405273e-15,
+    1.6653345369377348e-16,
+    1.0000000000000049,
+    -17.10682231805253,
+    0.9999999999999851,
+    -6.123233995736283e-17,
+    9.843810213459017e-16,
+    -415.0000000000002,
+    1.964853183035298e-16,
+    0.9999999999999785,
+    0.0,
+    -10.000000000000515,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head_tilt",
+   "cls": "servo",
+   "occurrence": "Head:1+HPS-2027 Servo:1+02 Output shaft and horn:1",
+   "body": "Single-arm horn - aluminum",
+   "mesh": "02_output_shaft_and_horn_single_arm_horn_aluminum.stl",
+   "world_from_mesh_mm": [
+    2.7209883233405273e-15,
+    1.6653345369377348e-16,
+    1.0000000000000049,
+    -17.10682231805253,
+    0.9999999999999851,
+    -6.123233995736283e-17,
+    9.843810213459017e-16,
+    -415.0000000000002,
+    1.964853183035298e-16,
+    0.9999999999999785,
+    0.0,
+    -10.000000000000515,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head_tilt",
+   "cls": "servo",
+   "occurrence": "Head:1+HPS-2027 Servo:1+02 Output shaft and horn:1",
+   "body": "Retaining screw - black steel",
+   "mesh": "02_output_shaft_and_horn_retaining_screw_black_steel.stl",
+   "world_from_mesh_mm": [
+    2.7209883233405273e-15,
+    1.6653345369377348e-16,
+    1.0000000000000049,
+    -17.10682231805253,
+    0.9999999999999851,
+    -6.123233995736283e-17,
+    9.843810213459017e-16,
+    -415.0000000000002,
+    1.964853183035298e-16,
+    0.9999999999999785,
+    0.0,
+    -10.000000000000515,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "shoulder_cam",
+   "cls": "pla",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+cam a-b:1",
+   "body": "Body1",
+   "mesh": "cam_a_b_body1.stl",
+   "world_from_mesh_mm": [
+    0.3478204715123258,
+    -0.9375611551237286,
+    1.4432899320127035e-15,
+    24.521343241619007,
+    0.9375611551237406,
+    0.347820471512305,
+    1.2173996009413663e-13,
+    -4.401938563780519,
+    -1.242062008799394e-13,
+    -4.518607710224387e-14,
+    1.0000000000000004,
+    6.779021788361206e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "shoulder_cam",
+   "cls": "pla",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+cam a-c:1",
+   "body": "Body1",
+   "mesh": "cam_a_c_body1.stl",
+   "world_from_mesh_mm": [
+    0.3478204715123258,
+    -0.9375611551237286,
+    1.4432899320127035e-15,
+    24.521343241619007,
+    0.9375611551237406,
+    0.347820471512305,
+    1.2173968406451797e-13,
+    -4.401938563780519,
+    -1.242062008799394e-13,
+    -4.518607710224387e-14,
+    1.0000000000000004,
+    6.779021788361206e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "shoulder_cam",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+cam bearing:1",
+   "body": "Body1",
+   "mesh": "cam_bearing_body1.stl",
+   "world_from_mesh_mm": [
+    -5.689621416598363e-15,
+    -1.0000000000000395,
+    1.3877787807814457e-15,
+    0.788699979632323,
+    1.0000000000000193,
+    -1.5515095184542715e-14,
+    1.2186239265298462e-13,
+    0.9340461621851404,
+    -1.165107207465569e-13,
+    3.774758283725532e-15,
+    1.0000000000000093,
+    -6.499999999993811,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "shoulder_cam",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+cam bearing:2",
+   "body": "Body1",
+   "mesh": "cam_bearing_body1.stl",
+   "world_from_mesh_mm": [
+    -8.299514224173291e-17,
+    -1.0000000000000249,
+    1.4432899320127035e-15,
+    -0.2782554854331325,
+    1.000000000000024,
+    -4.135309182135403e-15,
+    1.2182276957302887e-13,
+    0.04995273316097837,
+    -1.2329728238570013e-13,
+    1.3322676295501878e-15,
+    1.0000000000000104,
+    6.260547635861258e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "shoulder_cam",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+cam bearing:3",
+   "body": "Body1",
+   "mesh": "cam_bearing_body1.stl",
+   "world_from_mesh_mm": [
+    -5.825955033229524e-16,
+    1.0,
+    -1.3877787807814457e-15,
+    -0.5104420269902041,
+    1.0,
+    5.825955033348647e-16,
+    -1.2183741449970015e-13,
+    1.4160036980853619,
+    -1.2183741449970018e-13,
+    -1.3877787807814457e-15,
+    -1.0,
+    6.5000000000061045,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "shoulder_plate_a",
+   "cls": "pla",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+ring a:1",
+   "body": "Body1",
+   "mesh": "ring_a_body1.stl",
+   "world_from_mesh_mm": [
+    -2.1762802276236913e-17,
+    -1.0,
+    1.3877787807814457e-15,
+    -0.2782605472804472,
+    1.0,
+    -2.1762802276068467e-17,
+    1.217615372330702e-13,
+    0.04995438838456323,
+    -1.217615372330702e-13,
+    1.3877787807814457e-15,
+    1.0,
+    6.370459715299148e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "shoulder_plate_b",
+   "cls": "pla",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+ring b:1",
+   "body": "Body1",
+   "mesh": "ring_b_body1.stl",
+   "world_from_mesh_mm": [
+    -8.821856463605628e-16,
+    -1.0,
+    1.5543122344752192e-15,
+    0.18238335788466856,
+    1.0,
+    -8.821856463603825e-16,
+    1.2177618215974277e-13,
+    0.2160053533103934,
+    -1.2177618215974277e-13,
+    1.5543122344752192e-15,
+    1.0,
+    6.252776074688882e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "shoulder_plate_c",
+   "cls": "pla",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+ring c:1",
+   "body": "Body1",
+   "mesh": "ring_c_body1.stl",
+   "world_from_mesh_mm": [
+    -5.6857954965001226e-15,
+    -1.0,
+    1.3877787807814457e-15,
+    0.09587459475745415,
+    1.0,
+    -5.6857954964998765e-15,
+    1.7928004255305698e-13,
+    -0.2659521825898281,
+    -1.7928004255305695e-13,
+    1.3877787807814457e-15,
+    1.0,
+    1.91402449445377e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:1",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.915155860792711,
+    -0.40310017422069366,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    0.40310017422069544,
+    0.9151558607927153,
+    1.2197403408182924e-13,
+    0.0,
+    -5.0182080713057076e-14,
+    -1.1107781361374691e-13,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:2",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.9997535271018763,
+    -0.022201014557048947,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    0.022201014557049092,
+    0.9997535271018735,
+    1.2197403408182924e-13,
+    0.0,
+    -4.274358644806853e-15,
+    -1.2194238674378965e-13,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:3",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.3620780483202074,
+    0.9321477816980726,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    -0.932147781698073,
+    -0.3620780483202092,
+    1.2197403408182924e-13,
+    0.0,
+    1.141309269314661e-13,
+    4.335420911161236e-14,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:4",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.40310017422069366,
+    -0.915155860792711,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    0.9151558607927153,
+    -0.40310017422069544,
+    1.2197403408182924e-13,
+    0.0,
+    -1.1107781361374691e-13,
+    5.0182080713057076e-14,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:5",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.40310017422069366,
+    0.915155860792711,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    -0.9151558607927153,
+    0.40310017422069544,
+    1.2197403408182924e-13,
+    0.0,
+    1.1107781361374691e-13,
+    -5.0182080713057076e-14,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:6",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.9321477816980723,
+    0.3620780483202089,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    -0.3620780483202098,
+    0.9321477816980709,
+    1.2197576837774313e-13,
+    0.0,
+    4.3576253716537394e-14,
+    -1.1399214905338795e-13,
+    1.000000000000004,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:7",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.6912340105863939,
+    -0.7226309864714147,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    0.7226309864714182,
+    0.6912340105863974,
+    1.2197403408182924e-13,
+    0.0,
+    -8.826273045769994e-14,
+    -8.404388296412435e-14,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:8",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.9997535271018763,
+    0.022201014557049193,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    -0.022201014557049262,
+    -0.9997535271018757,
+    1.2197403408182924e-13,
+    0.0,
+    4.274358644806853e-15,
+    1.219319784029338e-13,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:9",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.6912340105863956,
+    0.7226309864714168,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    -0.722630986471419,
+    -0.6912340105863931,
+    1.2197403408182924e-13,
+    0.0,
+    8.826273045769994e-14,
+    8.376632720796806e-14,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:10",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.022201014557049193,
+    -0.9997535271018763,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    0.9997535271018757,
+    -0.022201014557049262,
+    1.2197403408182924e-13,
+    0.0,
+    -1.219319784029338e-13,
+    4.274358644806853e-15,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:11",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.3620780483202089,
+    -0.9321477816980723,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    0.9321477816980709,
+    0.3620780483202098,
+    1.2197576837774313e-13,
+    0.0,
+    -1.1399214905338795e-13,
+    -4.3576253716537394e-14,
+    1.000000000000004,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:12",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.7226309864714168,
+    0.6912340105863956,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    -0.6912340105863931,
+    0.722630986471419,
+    1.2197403408182924e-13,
+    0.0,
+    8.376632720796806e-14,
+    -8.826273045769994e-14,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:13",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.7226309864714168,
+    -0.6912340105863956,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    0.6912340105863931,
+    -0.722630986471419,
+    1.2197403408182924e-13,
+    0.0,
+    -8.376632720796806e-14,
+    8.826273045769994e-14,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:14",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.9321477816980726,
+    -0.3620780483202074,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    0.3620780483202092,
+    -0.932147781698073,
+    1.2197403408182924e-13,
+    0.0,
+    -4.335420911161236e-14,
+    1.141309269314661e-13,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:15",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.915155860792711,
+    0.40310017422069366,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    -0.40310017422069544,
+    -0.9151558607927153,
+    1.2197403408182924e-13,
+    0.0,
+    5.0182080713057076e-14,
+    1.1107781361374691e-13,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "yaw_spindle",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2:1+TRICY <1>:1+pin:16",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.02220101455704905,
+    0.9997535271018763,
+    6.661338147750939e-16,
+    2.220446049250313e-15,
+    -0.9997535271018735,
+    0.02220101455704918,
+    1.2197403408182924e-13,
+    0.0,
+    1.2194238674378965e-13,
+    -4.274358644806853e-15,
+    1.0000000000000022,
+    5.820899318109696e-12,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "elbow_cam",
+   "cls": "pla",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+cam a-b(Mirror):1",
+   "body": "Body1",
+   "mesh": "cam_a_b_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    0.34782047151232276,
+    -0.9375611551237314,
+    0.0,
+    24.5213432416188,
+    -0.9375611551237313,
+    -0.34782047151232276,
+    1.2246454922225724e-16,
+    -180.59806143622328,
+    -1.1102230246251565e-16,
+    -5.551115123125783e-17,
+    -0.9999999999999999,
+    -1.1102230246251565e-14,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "elbow_cam",
+   "cls": "pla",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+cam a-c(Mirror):1",
+   "body": "Body1",
+   "mesh": "cam_a_c_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    0.34782047151232276,
+    -0.9375611551237314,
+    0.0,
+    24.5213432416188,
+    -0.9375611551237313,
+    -0.34782047151232276,
+    1.221885196035402e-16,
+    -180.59806143622328,
+    -1.1102230246251565e-16,
+    -5.551115123125783e-17,
+    -0.9999999999999999,
+    -1.1102230246251565e-14,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "elbow_cam",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+cam bearing(Mirror):1",
+   "body": "Body1",
+   "mesh": "cam_bearing_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -1.232595164407831e-32,
+    -1.0,
+    0.0,
+    0.7886999796330724,
+    -1.0,
+    -7.49879891330928e-33,
+    2.449293598294703e-16,
+    -185.93404616219,
+    -2.449293598294703e-16,
+    0.0,
+    -1.0,
+    -6.500000000000011,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "elbow_cam",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+cam bearing(Mirror):2",
+   "body": "Body1",
+   "mesh": "cam_bearing_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -2.7091501784981493e-17,
+    -1.0,
+    -0.0,
+    -0.2782554854327218,
+    -1.0,
+    2.70915017849815e-17,
+    2.0529772589262783e-16,
+    -185.0499527331648,
+    -2.0529772589262783e-16,
+    0.0,
+    -1.0,
+    -1.7763568394002505e-14,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "elbow_cam",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+cam bearing(Mirror):3",
+   "body": "Body1",
+   "mesh": "cam_bearing_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -4.4342513601941796e-16,
+    1.0,
+    0.0,
+    -0.510442026990412,
+    -1.0,
+    -4.43425136019418e-16,
+    -2.2004287543843812e-16,
+    -186.41600369808842,
+    -2.2004287543843812e-16,
+    0.0,
+    1.0,
+    6.499999999999991,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "elbow_plate_a",
+   "cls": "pla",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+ring a(Mirror):1",
+   "body": "Body1",
+   "mesh": "ring_a_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -2.7091501784981493e-17,
+    -1.0,
+    -0.0,
+    -0.27826054728004934,
+    -1.0,
+    2.70915017849815e-17,
+    2.0529772589262783e-16,
+    -185.04995438839003,
+    -2.0529772589262783e-16,
+    0.0,
+    -1.0,
+    -1.7763568394002505e-14,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "elbow_plate_b",
+   "cls": "pla",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+ring b(Mirror):1",
+   "body": "Body1",
+   "mesh": "ring_b_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -7.764920434069589e-16,
+    -1.0,
+    0.0,
+    0.18238335788444984,
+    -1.0,
+    7.76492043406959e-16,
+    2.2004287543843733e-16,
+    -185.21600535331424,
+    -2.200428754384373e-16,
+    0.0,
+    -1.0,
+    -1.4432899320127035e-14,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "elbow_plate_c",
+   "cls": "pla",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+ring c(Mirror):1",
+   "body": "Body1",
+   "mesh": "ring_c_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -1.232595164407831e-32,
+    -1.0,
+    0.0,
+    0.09587459475819265,
+    -1.0,
+    -7.49879891330928e-33,
+    2.449293598294703e-16,
+    -184.73404781741525,
+    -2.449293598294703e-16,
+    0.0,
+    -1.0,
+    -2.3314683517128287e-14,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):1",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    0.9151558607927106,
+    -0.40310017422069283,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    -0.40310017422069283,
+    -0.9151558607927106,
+    8.817961651470134e-16,
+    -185.0,
+    -3.885780586188048e-16,
+    -8.049116928532385e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):2",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    0.9997535271018743,
+    -0.022201014557049002,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    -0.022201014557049002,
+    -0.9997535271018742,
+    8.817961651470154e-16,
+    -185.0,
+    -5.551115123125783e-17,
+    -8.795048023202412e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):3",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -0.3620780483202072,
+    0.9321477816980684,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    0.9321477816980684,
+    0.3620780483202072,
+    8.817961651470055e-16,
+    -185.0,
+    8.604228440844963e-16,
+    2.220446049250313e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):4",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -0.40310017422069283,
+    -0.9151558607927106,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    -0.9151558607927106,
+    0.40310017422069283,
+    8.817961651469984e-16,
+    -185.0,
+    -8.049116928532385e-16,
+    3.885780586188048e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):5",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    0.40310017422069283,
+    0.9151558607927106,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    0.9151558607927106,
+    -0.40310017422069283,
+    8.8179616514701355e-16,
+    -185.0,
+    8.049116928532385e-16,
+    -3.885780586188048e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):6",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    0.9321477816980681,
+    0.36207804832020807,
+    0.0,
+    6.938893903907228e-17,
+    0.36207804832020807,
+    -0.9321477816980681,
+    8.817961651470164e-16,
+    -185.0,
+    2.220446049250313e-16,
+    -8.604228440844963e-16,
+    -1.0000000000000002,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):7",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    0.6912340105863941,
+    -0.722630986471414,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    -0.722630986471414,
+    -0.691234010586394,
+    8.817961651470092e-16,
+    -185.0,
+    -6.661338147750939e-16,
+    -5.551115123125783e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):8",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -0.9997535271018743,
+    0.022201014557049207,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    0.022201014557049203,
+    0.9997535271018742,
+    8.817961651469954e-16,
+    -185.0,
+    5.551115123125783e-17,
+    8.81239525796218e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):9",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -0.6912340105863931,
+    0.7226309864714151,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    0.722630986471415,
+    0.691234010586393,
+    8.817961651470013e-16,
+    -185.0,
+    7.216449660063518e-16,
+    6.106226635438361e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):10",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -0.022201014557049207,
+    -0.9997535271018743,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    -0.9997535271018742,
+    0.022201014557049203,
+    8.817961651470015e-16,
+    -185.0,
+    -8.81239525796218e-16,
+    5.551115123125783e-17,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):11",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    0.36207804832020807,
+    -0.9321477816980681,
+    0.0,
+    6.938893903907228e-17,
+    -0.9321477816980681,
+    -0.36207804832020807,
+    8.817961651470056e-16,
+    -185.0,
+    -8.604228440844963e-16,
+    -2.220446049250313e-16,
+    -1.0000000000000002,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):12",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    0.7226309864714151,
+    0.6912340105863931,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    0.691234010586393,
+    -0.722630986471415,
+    8.817961651470152e-16,
+    -185.0,
+    6.106226635438361e-16,
+    -7.216449660063518e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):13",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -0.7226309864714151,
+    -0.6912340105863931,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    -0.691234010586393,
+    0.722630986471415,
+    8.817961651469953e-16,
+    -185.0,
+    -6.106226635438361e-16,
+    7.216449660063518e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):14",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -0.9321477816980684,
+    -0.3620780483202072,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    -0.3620780483202072,
+    0.9321477816980684,
+    8.817961651469944e-16,
+    -185.0,
+    -2.220446049250313e-16,
+    8.604228440844963e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):15",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    -0.9151558607927106,
+    0.40310017422069283,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    0.40310017422069283,
+    0.9151558607927106,
+    8.817961651469984e-16,
+    -185.0,
+    3.885780586188048e-16,
+    8.049116928532385e-16,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "second_link",
+   "cls": "steel",
+   "occurrence": "First Link:1+70.5cutout v2(Mirror):1+TRICY <1>(Mirror):1+pin(Mirror):16",
+   "body": "Body1",
+   "mesh": "pin_mirror_body1.stl",
+   "world_from_mesh_mm": [
+    0.022201014557049106,
+    0.9997535271018743,
+    -5.551115123125783e-17,
+    6.938893903907228e-17,
+    0.9997535271018742,
+    -0.022201014557049103,
+    8.817961651470094e-16,
+    -185.0,
+    8.795048023202412e-16,
+    -5.551115123125783e-17,
+    -1.0,
+    -9.992007221626409e-15,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "wrist_cam",
+   "cls": "pla",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+cam a-b:1",
+   "body": "Body1",
+   "mesh": "cam_a_b_body1_2.stl",
+   "world_from_mesh_mm": [
+    -0.34782047151232276,
+    0.9375611551237314,
+    0.0,
+    -46.086212475382894,
+    -0.9375611551237313,
+    -0.34782047151232276,
+    1.30692478055357e-22,
+    -361.7268530538948,
+    0.0,
+    0.0,
+    0.9999999999999999,
+    -7.500000000000262,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "wrist_cam",
+   "cls": "pla",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+cam a-c:1",
+   "body": "Body1",
+   "mesh": "cam_a_c_body1_2.stl",
+   "world_from_mesh_mm": [
+    -0.34782047151232276,
+    0.9375611551237314,
+    0.0,
+    -46.086212475382894,
+    -0.9375611551237313,
+    -0.34782047151232276,
+    2.7616031119510094e-19,
+    -361.7268530538948,
+    0.0,
+    0.0,
+    0.9999999999999999,
+    -7.500000000000262,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "wrist_cam",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+cam bearing:1",
+   "body": "Body1",
+   "mesh": "cam_bearing_body1_2.stl",
+   "world_from_mesh_mm": [
+    -1.232595164407831e-32,
+    1.0,
+    0.0,
+    -0.7886999796330735,
+    -1.0,
+    -7.49879891330928e-33,
+    -1.22464679914735e-16,
+    -370.93404616219,
+    -1.22464679914735e-16,
+    0.0,
+    1.0,
+    -13.999999999999996,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "wrist_cam",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+cam bearing:2",
+   "body": "Body1",
+   "mesh": "cam_bearing_body1_2.stl",
+   "world_from_mesh_mm": [
+    2.7091501784981493e-17,
+    1.0,
+    0.0,
+    0.2782554854327218,
+    -1.0,
+    2.70915017849815e-17,
+    -8.28330459778925e-17,
+    -370.0499527331648,
+    -8.28330459778925e-17,
+    0.0,
+    1.0,
+    -7.500000000000005,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "wrist_cam",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+cam bearing:3",
+   "body": "Body1",
+   "mesh": "cam_bearing_body1_2.stl",
+   "world_from_mesh_mm": [
+    4.43425136019418e-16,
+    -1.0,
+    0.0,
+    0.5104420269904129,
+    -1.0,
+    -4.43425136019418e-16,
+    9.75781955237028e-17,
+    -371.4160036980884,
+    -9.757819552370282e-17,
+    0.0,
+    -1.0,
+    -0.9999999999999987,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "wrist_plate_a",
+   "cls": "pla",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+ring a:1",
+   "body": "Body1",
+   "mesh": "ring_a_body1_2.stl",
+   "world_from_mesh_mm": [
+    2.7091501784981493e-17,
+    1.0,
+    0.0,
+    0.2782605472800498,
+    -1.0,
+    2.70915017849815e-17,
+    -8.28330459778925e-17,
+    -370.04995438839,
+    -8.28330459778925e-17,
+    0.0,
+    1.0,
+    -7.500000000000007,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "wrist_plate_b",
+   "cls": "pla",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+ring b:1",
+   "body": "Body1",
+   "mesh": "ring_b_body1_2.stl",
+   "world_from_mesh_mm": [
+    7.76492043406959e-16,
+    1.0,
+    0.0,
+    -0.1823833578844497,
+    -1.0,
+    7.76492043406959e-16,
+    -9.7578195523702e-17,
+    -370.21600535331424,
+    -9.7578195523702e-17,
+    0.0,
+    1.0,
+    -7.500000000000002,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "wrist_plate_c",
+   "cls": "pla",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+ring c:1",
+   "body": "Body1",
+   "mesh": "ring_c_body1_2.stl",
+   "world_from_mesh_mm": [
+    -1.232595164407831e-32,
+    1.0,
+    0.0,
+    -0.09587459475819293,
+    -1.0,
+    -7.49879891330928e-33,
+    -1.22464679914735e-16,
+    -369.7340478174152,
+    -1.22464679914735e-16,
+    0.0,
+    1.0,
+    -7.500000000000012,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:1",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.9151558607927106,
+    0.4031001742206928,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    -0.40310017422069283,
+    -0.9151558607927106,
+    -7.59331485232278e-16,
+    -370.0,
+    -3.885780586188048e-16,
+    -6.38378239159465e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:2",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.9997535271018743,
+    0.022201014557049002,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    -0.022201014557049002,
+    -0.9997535271018742,
+    -7.593314852322801e-16,
+    -370.0,
+    -5.551115123125783e-17,
+    -7.580741590018647e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:3",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.3620780483202072,
+    -0.9321477816980683,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    0.9321477816980684,
+    0.3620780483202072,
+    -7.593314852322701e-16,
+    -370.0,
+    7.494005416219807e-16,
+    2.220446049250313e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:4",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.4031001742206928,
+    0.9151558607927106,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    -0.9151558607927106,
+    0.40310017422069283,
+    -7.59331485232263e-16,
+    -370.0,
+    -6.38378239159465e-16,
+    3.885780586188048e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:5",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.4031001742206928,
+    -0.9151558607927106,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    0.9151558607927106,
+    -0.40310017422069283,
+    -7.593314852322782e-16,
+    -370.0,
+    6.38378239159465e-16,
+    -3.885780586188048e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:6",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.9321477816980681,
+    -0.36207804832020807,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    0.36207804832020807,
+    -0.9321477816980681,
+    -7.593314852322811e-16,
+    -370.0,
+    2.220446049250313e-16,
+    -7.494005416219807e-16,
+    1.0000000000000002,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:7",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.6912340105863941,
+    0.722630986471414,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    -0.722630986471414,
+    -0.691234010586394,
+    -7.593314852322739e-16,
+    -370.0,
+    -6.106226635438361e-16,
+    -4.996003610813204e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:8",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.9997535271018743,
+    -0.022201014557049207,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    0.022201014557049203,
+    0.9997535271018742,
+    -7.593314852322601e-16,
+    -370.0,
+    5.551115123125783e-17,
+    7.563394355258879e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:9",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.6912340105863931,
+    -0.7226309864714151,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    0.722630986471415,
+    0.691234010586393,
+    -7.59331485232266e-16,
+    -370.0,
+    6.106226635438361e-16,
+    4.996003610813204e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:10",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.022201014557049207,
+    0.9997535271018743,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    -0.9997535271018742,
+    0.022201014557049203,
+    -7.593314852322662e-16,
+    -370.0,
+    -7.563394355258879e-16,
+    5.551115123125783e-17,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:11",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.36207804832020807,
+    0.9321477816980681,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    -0.9321477816980681,
+    -0.36207804832020807,
+    -7.593314852322702e-16,
+    -370.0,
+    -7.494005416219807e-16,
+    -2.220446049250313e-16,
+    1.0000000000000002,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:12",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.7226309864714151,
+    -0.6912340105863931,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    0.691234010586393,
+    -0.722630986471415,
+    -7.593314852322799e-16,
+    -370.0,
+    4.996003610813204e-16,
+    -6.106226635438361e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:13",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.7226309864714151,
+    0.6912340105863931,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    -0.691234010586393,
+    0.722630986471415,
+    -7.5933148523226e-16,
+    -370.0,
+    -4.996003610813204e-16,
+    6.106226635438361e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:14",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.9321477816980683,
+    0.3620780483202072,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    -0.3620780483202072,
+    0.9321477816980684,
+    -7.593314852322591e-16,
+    -370.0,
+    -2.220446049250313e-16,
+    7.494005416219807e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:15",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    0.9151558607927106,
+    -0.4031001742206928,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    0.40310017422069283,
+    0.9151558607927106,
+    -7.59331485232263e-16,
+    -370.0,
+    3.885780586188048e-16,
+    6.38378239159465e-16,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "mjbody": "head",
+   "cls": "steel",
+   "occurrence": "Second Link:1+132.5v2 v2:1+TRICY <1>:1+pin:16",
+   "body": "Body1",
+   "mesh": "pin_body1.stl",
+   "world_from_mesh_mm": [
+    -0.022201014557049103,
+    -0.9997535271018743,
+    -5.551115123125783e-17,
+    -5.551115123125783e-16,
+    0.9997535271018742,
+    -0.022201014557049103,
+    -7.593314852322741e-16,
+    -370.0,
+    7.580741590018647e-16,
+    -5.551115123125783e-17,
+    1.0,
+    -7.499999999999999,
+    0,
+    0,
+    0,
+    1
+   ]
+  }
+ ],
+ "pivots": {
+  "yaw": [
+   [
+    -5.551115123125783e-16,
+    40.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "base_motor": [
+   [
+    -75.00000000000001,
+    55.0,
+    8.881784197001243e-15
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "shoulder": [
+   [
+    -1.27675647831893e-14,
+    -1.9184653865522705e-12,
+    -15.999999999994333
+   ],
+   [
+    1.3322676295501153e-15,
+    1.2121774576676854e-13,
+    1.0
+   ]
+  ],
+  "elbow": [
+   [
+    1.8318679906315083e-14,
+    -185.0,
+    -15.999999999999996
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "wrist": [
+   [
+    1.0761100266618128e-15,
+    -370.0,
+    5.750000000000001
+   ],
+   [
+    1.240472653212465e-16,
+    0.0,
+    1.0
+   ]
+  ],
+  "head_tilt": [
+   [
+    -23.500000000000007,
+    -415.0000000000002,
+    2.6645352591003757e-14
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "shoulder_cam": [
+   [
+    2.9309887850104133e-13,
+    -70.50000000000236,
+    10.000000000015536
+   ],
+   [
+    -1.443289932012703e-15,
+    -1.2173996009413658e-13,
+    -1.0
+   ]
+  ],
+  "shoulder_plate_a": [
+   [
+    -0.27826054728045063,
+    -71.25004561161342,
+    2.500000000015052
+   ],
+   [
+    1.4432899320126885e-15,
+    1.218227695730276e-13,
+    1.0
+   ]
+  ],
+  "shoulder_plate_b": [
+   [
+    -0.5104369651428383,
+    -69.88399464668964,
+    4.000000000014791
+   ],
+   [
+    -1.3877787807814457e-15,
+    -1.2183741449970015e-13,
+    -1.0
+   ]
+  ],
+  "shoulder_plate_c": [
+   [
+    0.7886949177854043,
+    -70.36595218258925,
+    -3.9999999999855036
+   ],
+   [
+    1.3877787807814327e-15,
+    1.2186239265298349e-13,
+    1.0
+   ]
+  ],
+  "elbow_cam": [
+   [
+    4.440892098500626e-14,
+    -114.50000000000023,
+    9.999999999999998
+   ],
+   [
+    -0.0,
+    -1.2246454922225727e-16,
+    1.0
+   ]
+  ],
+  "elbow_plate_a": [
+   [
+    -0.2782605472800476,
+    -113.74995438839008,
+    2.4999999999999964
+   ],
+   [
+    0.0,
+    2.0529772589262783e-16,
+    -1.0
+   ]
+  ],
+  "elbow_plate_b": [
+   [
+    -0.5104369651430527,
+    -115.11600535331371,
+    4.000000000000007
+   ],
+   [
+    0.0,
+    -2.2004287543843812e-16,
+    1.0
+   ]
+  ],
+  "elbow_plate_c": [
+   [
+    0.7886949177857447,
+    -114.63404781741528,
+    -3.999999999999993
+   ],
+   [
+    0.0,
+    2.449293598294703e-16,
+    -1.0
+   ]
+  ],
+  "wrist_cam": [
+   [
+    -1.2434497875801753e-13,
+    -237.50000000000034,
+    2.499999999999738
+   ],
+   [
+    0.0,
+    -1.3069247805535702e-22,
+    -1.0
+   ]
+  ],
+  "wrist_plate_a": [
+   [
+    0.2782605472800459,
+    -236.74995438838982,
+    -4.999999999999995
+   ],
+   [
+    0.0,
+    -8.28330459778925e-17,
+    1.0
+   ]
+  ],
+  "wrist_plate_b": [
+   [
+    0.5104369651430261,
+    -238.11600535331343,
+    -3.4999999999999853
+   ],
+   [
+    0.0,
+    9.75781955237028e-17,
+    -1.0
+   ]
+  ],
+  "wrist_plate_c": [
+   [
+    -0.7886949177857459,
+    -237.634047817415,
+    -11.499999999999982
+   ],
+   [
+    0.0,
+    -1.22464679914735e-16,
+    1.0
+   ]
+  ]
+ }
+}

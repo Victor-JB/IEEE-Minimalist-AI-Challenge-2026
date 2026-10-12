@@ -1,0 +1,2059 @@
+{
+  "artifact_type": "motion_history_provenance_correction",
+  "original_frozen_model_sha256": "171637fd7256a0655c63ac93ece25b9b14dedeb4a87f7fa35d6619d3f949763b",
+  "frozen_v1_modified": false,
+  "corrections": [
+    {
+      "source": "recordings/calquiet-shoulder-forward-01.jsonl",
+      "original_reversal": true,
+      "corrected_history": "continuation",
+      "prior_motion": {
+        "source": "recordings/calpowered-shoulder-forward-03.jsonl",
+        "direction": 0,
+        "board_ms": 62271
+      },
+      "impact": "Original artifact preserved. Shoulder frozen reversal coefficient is zero, so its original numerical predictions are unchanged. Any refit must be labeled a new model after held-out data."
+    }
+  ],
+  "timeline": [
+    {
+      "source": "recordings/elbow-100pps-2026-10-11.jsonl",
+      "event_time_s": 0.723890208,
+      "ordering_time_s": 1791732603.8490283,
+      "board_ms": 17811,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1328537157,
+      "motion_id": 1,
+      "issued_pulses": 41,
+      "previous_recorded_motion": null,
+      "history": "unknown",
+      "same_boot_order_confirmed": false
+    },
+    {
+      "source": "recordings/manual-feedback-20261011-083230.jsonl",
+      "event_time_s": 49.30417020800087,
+      "ordering_time_s": 1791732799.5157368,
+      "board_ms": 213279,
+      "joint": "elbow",
+      "direction": null,
+      "kind": "passive_motion_direction_unknown",
+      "previous_recorded_motion": {
+        "source": "recordings/elbow-100pps-2026-10-11.jsonl",
+        "direction": 0,
+        "board_ms": 17811
+      },
+      "history": "unknown",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/elbow-pwm-200rpm-forward-2.jsonl",
+      "event_time_s": 3.978916625,
+      "ordering_time_s": 1791733043.8847678,
+      "board_ms": 457450,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "observed_active_manual_pwm",
+      "previous_recorded_motion": {
+        "source": "recordings/manual-feedback-20261011-083230.jsonl",
+        "direction": null,
+        "board_ms": 213279
+      },
+      "history": "unknown",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/elbow-pwm-200rpm-reverse-1.jsonl",
+      "event_time_s": 0.8753146669999999,
+      "ordering_time_s": 1791733054.2697968,
+      "board_ms": 467827,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "observed_active_manual_pwm",
+      "previous_recorded_motion": {
+        "source": "recordings/elbow-pwm-200rpm-forward-2.jsonl",
+        "direction": 0,
+        "board_ms": 457450
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/elbow-pwm-100pps-forward-1.jsonl",
+      "event_time_s": 3.954282375,
+      "ordering_time_s": 1791733080.7973359,
+      "board_ms": 494330,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "observed_active_manual_pwm",
+      "previous_recorded_motion": {
+        "source": "recordings/elbow-pwm-200rpm-reverse-1.jsonl",
+        "direction": 1,
+        "board_ms": 467827
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/elbow-pwm-200rpm-forward-3.jsonl",
+      "event_time_s": 3.9673952910000003,
+      "ordering_time_s": 1791733109.9487615,
+      "board_ms": 523455,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "observed_active_manual_pwm",
+      "previous_recorded_motion": {
+        "source": "recordings/elbow-pwm-100pps-forward-1.jsonl",
+        "direction": 0,
+        "board_ms": 494330
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/elbow-pwm-200rpm-reverse-2.jsonl",
+      "event_time_s": 3.9858087920000003,
+      "ordering_time_s": 1791733126.0458598,
+      "board_ms": 539538,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "observed_active_manual_pwm",
+      "previous_recorded_motion": {
+        "source": "recordings/elbow-pwm-200rpm-forward-3.jsonl",
+        "direction": 0,
+        "board_ms": 523455
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/counted-elbow-probe-1.jsonl",
+      "event_time_s": 0.686609167,
+      "ordering_time_s": 1791733791.2659605,
+      "board_ms": 34398,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1998715485,
+      "motion_id": 1,
+      "issued_pulses": 440,
+      "previous_recorded_motion": {
+        "source": "recordings/elbow-pwm-200rpm-reverse-2.jsonl",
+        "direction": 1,
+        "board_ms": 539538
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": false
+    },
+    {
+      "source": "recordings/counted-shoulder-probe-1.jsonl",
+      "event_time_s": 3.881028125,
+      "ordering_time_s": 1791733808.1144235,
+      "board_ms": 51231,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 245114135,
+      "motion_id": 1,
+      "issued_pulses": 431,
+      "previous_recorded_motion": null,
+      "history": "unknown",
+      "same_boot_order_confirmed": false
+    },
+    {
+      "source": "recordings/counted-head-probe-1.jsonl",
+      "event_time_s": 3.817249542,
+      "ordering_time_s": 1791733824.4703226,
+      "board_ms": 67573,
+      "joint": "head",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1669214455,
+      "motion_id": 1,
+      "issued_pulses": 437,
+      "previous_recorded_motion": null,
+      "history": "unknown",
+      "same_boot_order_confirmed": false
+    },
+    {
+      "source": "recordings/cal-elbow-forward-01.jsonl",
+      "event_time_s": 3.827689167,
+      "ordering_time_s": 1791733843.210496,
+      "board_ms": 86297,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 82967294,
+      "motion_id": 1,
+      "issued_pulses": 991,
+      "previous_recorded_motion": {
+        "source": "recordings/counted-elbow-probe-1.jsonl",
+        "direction": 0,
+        "board_ms": 34398
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal-elbow-reverse-01.jsonl",
+      "event_time_s": 3.867953041,
+      "ordering_time_s": 1791733864.7381837,
+      "board_ms": 107805,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1288789675,
+      "motion_id": 1,
+      "issued_pulses": 972,
+      "previous_recorded_motion": {
+        "source": "recordings/cal-elbow-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 86297
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal-elbow-forward-02.jsonl",
+      "event_time_s": 3.858723125,
+      "ordering_time_s": 1791733896.9489918,
+      "board_ms": 139987,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 865457320,
+      "motion_id": 1,
+      "issued_pulses": 951,
+      "previous_recorded_motion": {
+        "source": "recordings/cal-elbow-reverse-01.jsonl",
+        "direction": 1,
+        "board_ms": 107805
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal-elbow-reverse-02.jsonl",
+      "event_time_s": 0.7097147500000001,
+      "ordering_time_s": 1791733899.2511399,
+      "board_ms": 142288,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1975867045,
+      "motion_id": 1,
+      "issued_pulses": 954,
+      "previous_recorded_motion": {
+        "source": "recordings/cal-elbow-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 139987
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal-elbow-forward-03.jsonl",
+      "event_time_s": 0.742523417,
+      "ordering_time_s": 1791733901.5883448,
+      "board_ms": 144622,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 367030699,
+      "motion_id": 1,
+      "issued_pulses": 967,
+      "previous_recorded_motion": {
+        "source": "recordings/cal-elbow-reverse-02.jsonl",
+        "direction": 1,
+        "board_ms": 142288
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal-elbow-reverse-03.jsonl",
+      "event_time_s": 0.74119025,
+      "ordering_time_s": 1791733903.944752,
+      "board_ms": 146977,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1691722317,
+      "motion_id": 1,
+      "issued_pulses": 964,
+      "previous_recorded_motion": {
+        "source": "recordings/cal-elbow-forward-03.jsonl",
+        "direction": 0,
+        "board_ms": 144622
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal10-elbow-forward-01.jsonl",
+      "event_time_s": 3.852089834,
+      "ordering_time_s": 1791733946.1741467,
+      "board_ms": 189167,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1221996235,
+      "motion_id": 1,
+      "issued_pulses": 1434,
+      "previous_recorded_motion": {
+        "source": "recordings/cal-elbow-reverse-03.jsonl",
+        "direction": 1,
+        "board_ms": 146977
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal10-elbow-reverse-01.jsonl",
+      "event_time_s": 0.734642,
+      "ordering_time_s": 1791733948.8947487,
+      "board_ms": 191885,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 823794029,
+      "motion_id": 1,
+      "issued_pulses": 1392,
+      "previous_recorded_motion": {
+        "source": "recordings/cal10-elbow-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 189167
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal10-elbow-forward-02.jsonl",
+      "event_time_s": 0.73238925,
+      "ordering_time_s": 1791733951.5315683,
+      "board_ms": 194520,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1093604638,
+      "motion_id": 1,
+      "issued_pulses": 1488,
+      "previous_recorded_motion": {
+        "source": "recordings/cal10-elbow-reverse-01.jsonl",
+        "direction": 1,
+        "board_ms": 191885
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal10-elbow-reverse-02.jsonl",
+      "event_time_s": 0.721272417,
+      "ordering_time_s": 1791733954.2598596,
+      "board_ms": 197246,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1117794312,
+      "motion_id": 1,
+      "issued_pulses": 1394,
+      "previous_recorded_motion": {
+        "source": "recordings/cal10-elbow-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 194520
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal10-elbow-forward-03.jsonl",
+      "event_time_s": 0.720377166,
+      "ordering_time_s": 1791733956.9179976,
+      "board_ms": 199901,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 19222836,
+      "motion_id": 1,
+      "issued_pulses": 1445,
+      "previous_recorded_motion": {
+        "source": "recordings/cal10-elbow-reverse-02.jsonl",
+        "direction": 1,
+        "board_ms": 197246
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal10-elbow-reverse-03.jsonl",
+      "event_time_s": 0.702218292,
+      "ordering_time_s": 1791733959.5786877,
+      "board_ms": 202560,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 2000812061,
+      "motion_id": 1,
+      "issued_pulses": 1479,
+      "previous_recorded_motion": {
+        "source": "recordings/cal10-elbow-forward-03.jsonl",
+        "direction": 0,
+        "board_ms": 199901
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal10-shoulder-forward-01.jsonl",
+      "event_time_s": 3.862239417,
+      "ordering_time_s": 1791734000.1889102,
+      "board_ms": 243133,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 945964385,
+      "motion_id": 1,
+      "issued_pulses": 1457,
+      "previous_recorded_motion": {
+        "source": "recordings/counted-shoulder-probe-1.jsonl",
+        "direction": 0,
+        "board_ms": 51231
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-shoulder-reverse-01.jsonl",
+      "event_time_s": 3.9153977500000003,
+      "ordering_time_s": 1791734346.0570748,
+      "board_ms": 24851,
+      "joint": "shoulder",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 2001987057,
+      "motion_id": 1,
+      "issued_pulses": 1676,
+      "previous_recorded_motion": {
+        "source": "recordings/cal10-shoulder-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 243133
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": false
+    },
+    {
+      "source": "recordings/calpowered-shoulder-forward-01.jsonl",
+      "event_time_s": 3.942569625,
+      "ordering_time_s": 1791734370.9318194,
+      "board_ms": 49702,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 886568126,
+      "motion_id": 1,
+      "issued_pulses": 1542,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-shoulder-reverse-01.jsonl",
+        "direction": 1,
+        "board_ms": 24851
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-shoulder-reverse-02.jsonl",
+      "event_time_s": 0.717130375,
+      "ordering_time_s": 1791734374.0762234,
+      "board_ms": 52846,
+      "joint": "shoulder",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1179547855,
+      "motion_id": 1,
+      "issued_pulses": 1626,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-shoulder-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 49702
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-shoulder-forward-02.jsonl",
+      "event_time_s": 0.701567875,
+      "ordering_time_s": 1791734377.2293923,
+      "board_ms": 55995,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 909761910,
+      "motion_id": 1,
+      "issued_pulses": 1550,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-shoulder-reverse-02.jsonl",
+        "direction": 1,
+        "board_ms": 52846
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-shoulder-reverse-03.jsonl",
+      "event_time_s": 0.697683125,
+      "ordering_time_s": 1791734380.3541408,
+      "board_ms": 59117,
+      "joint": "shoulder",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1988186756,
+      "motion_id": 1,
+      "issued_pulses": 1612,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-shoulder-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 55995
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-shoulder-forward-03.jsonl",
+      "event_time_s": 0.710867959,
+      "ordering_time_s": 1791734383.512099,
+      "board_ms": 62271,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 507493702,
+      "motion_id": 1,
+      "issued_pulses": 1494,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-shoulder-reverse-03.jsonl",
+        "direction": 1,
+        "board_ms": 59117
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-elbow-forward-01.jsonl",
+      "event_time_s": 3.886954542,
+      "ordering_time_s": 1791734412.9672039,
+      "board_ms": 91699,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1334003004,
+      "motion_id": 1,
+      "issued_pulses": 1469,
+      "previous_recorded_motion": {
+        "source": "recordings/cal10-elbow-reverse-03.jsonl",
+        "direction": 1,
+        "board_ms": 202560
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": false
+    },
+    {
+      "source": "recordings/calpowered-elbow-reverse-01.jsonl",
+      "event_time_s": 0.7095085,
+      "ordering_time_s": 1791734416.0602891,
+      "board_ms": 94790,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 135654799,
+      "motion_id": 1,
+      "issued_pulses": 1425,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-elbow-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 91699
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-elbow-forward-02.jsonl",
+      "event_time_s": 0.7166144579999999,
+      "ordering_time_s": 1791734419.1133542,
+      "board_ms": 97841,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1192377006,
+      "motion_id": 1,
+      "issued_pulses": 1481,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-elbow-reverse-01.jsonl",
+        "direction": 1,
+        "board_ms": 94790
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-elbow-reverse-02.jsonl",
+      "event_time_s": 0.7242534580000001,
+      "ordering_time_s": 1791734422.20356,
+      "board_ms": 100928,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1955628048,
+      "motion_id": 1,
+      "issued_pulses": 1429,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-elbow-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 97841
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-elbow-forward-03.jsonl",
+      "event_time_s": 0.735443625,
+      "ordering_time_s": 1791734425.2717104,
+      "board_ms": 103994,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 2013905789,
+      "motion_id": 1,
+      "issued_pulses": 1489,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-elbow-reverse-02.jsonl",
+        "direction": 1,
+        "board_ms": 100928
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-elbow-reverse-03.jsonl",
+      "event_time_s": 0.711120167,
+      "ordering_time_s": 1791734428.3348327,
+      "board_ms": 107055,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1784225710,
+      "motion_id": 1,
+      "issued_pulses": 1488,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-elbow-forward-03.jsonl",
+        "direction": 0,
+        "board_ms": 103994
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-head-forward-01.jsonl",
+      "event_time_s": 3.871171542,
+      "ordering_time_s": 1791734472.8120773,
+      "board_ms": 151491,
+      "joint": "head",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 936592213,
+      "motion_id": 1,
+      "issued_pulses": 1681,
+      "previous_recorded_motion": {
+        "source": "recordings/counted-head-probe-1.jsonl",
+        "direction": 0,
+        "board_ms": 67573
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-head-reverse-01.jsonl",
+      "event_time_s": 0.728448709,
+      "ordering_time_s": 1791734476.0583985,
+      "board_ms": 154735,
+      "joint": "head",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1930647356,
+      "motion_id": 1,
+      "issued_pulses": 1765,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-head-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 151491
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-head-forward-02.jsonl",
+      "event_time_s": 0.715795792,
+      "ordering_time_s": 1791734479.3704834,
+      "board_ms": 158043,
+      "joint": "head",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 2092336510,
+      "motion_id": 1,
+      "issued_pulses": 1789,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-head-reverse-01.jsonl",
+        "direction": 1,
+        "board_ms": 154735
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-head-reverse-02.jsonl",
+      "event_time_s": 0.7522600420000001,
+      "ordering_time_s": 1791734482.7430158,
+      "board_ms": 161411,
+      "joint": "head",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 975771090,
+      "motion_id": 1,
+      "issued_pulses": 1822,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-head-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 158043
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-head-forward-03.jsonl",
+      "event_time_s": 0.733687,
+      "ordering_time_s": 1791734486.1319892,
+      "board_ms": 164799,
+      "joint": "head",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 525989961,
+      "motion_id": 1,
+      "issued_pulses": 1772,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-head-reverse-02.jsonl",
+        "direction": 1,
+        "board_ms": 161411
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calpowered-head-reverse-03.jsonl",
+      "event_time_s": 0.660792666,
+      "ordering_time_s": 1791734489.4026654,
+      "board_ms": 168066,
+      "joint": "head",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1361492086,
+      "motion_id": 1,
+      "issued_pulses": 1730,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-head-forward-03.jsonl",
+        "direction": 0,
+        "board_ms": 164799
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal150-elbow-forward-01.jsonl",
+      "event_time_s": 3.7886710839999997,
+      "ordering_time_s": 1791734559.4893239,
+      "board_ms": 238090,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 823451420,
+      "motion_id": 1,
+      "issued_pulses": 1452,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-elbow-reverse-03.jsonl",
+        "direction": 1,
+        "board_ms": 107055
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal150-elbow-reverse-01.jsonl",
+      "event_time_s": 0.734460875,
+      "ordering_time_s": 1791734562.9256077,
+      "board_ms": 241524,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 762070499,
+      "motion_id": 1,
+      "issued_pulses": 1450,
+      "previous_recorded_motion": {
+        "source": "recordings/cal150-elbow-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 238090
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal150-head-forward-01.jsonl",
+      "event_time_s": 0.734924792,
+      "ordering_time_s": 1791734566.387447,
+      "board_ms": 244982,
+      "joint": "head",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1056466603,
+      "motion_id": 1,
+      "issued_pulses": 1748,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-head-reverse-03.jsonl",
+        "direction": 1,
+        "board_ms": 168066
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/cal150-head-reverse-01.jsonl",
+      "event_time_s": 0.71554675,
+      "ordering_time_s": 1791734570.1294782,
+      "board_ms": 248721,
+      "joint": "head",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 499589777,
+      "motion_id": 1,
+      "issued_pulses": 1753,
+      "previous_recorded_motion": {
+        "source": "recordings/cal150-head-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 244982
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/head-adjacent-01-forward.jsonl",
+      "event_time_s": 3.879563916,
+      "ordering_time_s": 1791734684.1774793,
+      "board_ms": 362666,
+      "joint": "head",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1288115566,
+      "motion_id": 1,
+      "issued_pulses": 1783,
+      "previous_recorded_motion": {
+        "source": "recordings/cal150-head-reverse-01.jsonl",
+        "direction": 1,
+        "board_ms": 248721
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/head-adjacent-02-forward.jsonl",
+      "event_time_s": 0.733634292,
+      "ordering_time_s": 1791734687.9699142,
+      "board_ms": 366456,
+      "joint": "head",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1877485281,
+      "motion_id": 1,
+      "issued_pulses": 1531,
+      "previous_recorded_motion": {
+        "source": "recordings/head-adjacent-01-forward.jsonl",
+        "direction": 0,
+        "board_ms": 362666
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/head-adjacent-03-reverse.jsonl",
+      "event_time_s": 0.738990375,
+      "ordering_time_s": 1791734691.522755,
+      "board_ms": 370005,
+      "joint": "head",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 106991054,
+      "motion_id": 1,
+      "issued_pulses": 1754,
+      "previous_recorded_motion": {
+        "source": "recordings/head-adjacent-02-forward.jsonl",
+        "direction": 0,
+        "board_ms": 366456
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/head-adjacent-04-reverse.jsonl",
+      "event_time_s": 0.745332208,
+      "ordering_time_s": 1791734695.288837,
+      "board_ms": 373769,
+      "joint": "head",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 526508952,
+      "motion_id": 1,
+      "issued_pulses": 1466,
+      "previous_recorded_motion": {
+        "source": "recordings/head-adjacent-03-reverse.jsonl",
+        "direction": 1,
+        "board_ms": 370005
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calquiet-head-forward-01.jsonl",
+      "event_time_s": 3.888440584,
+      "ordering_time_s": 1791735162.95406,
+      "board_ms": 188267,
+      "joint": "head",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 2022511385,
+      "motion_id": 1,
+      "issued_pulses": 1721,
+      "previous_recorded_motion": {
+        "source": "recordings/head-adjacent-04-reverse.jsonl",
+        "direction": 1,
+        "board_ms": 373769
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": false
+    },
+    {
+      "source": "recordings/calquiet-head-forward-02.jsonl",
+      "event_time_s": 3.862644875,
+      "ordering_time_s": 1791735181.018856,
+      "board_ms": 206316,
+      "joint": "head",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1472786207,
+      "motion_id": 1,
+      "issued_pulses": 1479,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-head-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 188267
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calquiet-head-reverse-03.jsonl",
+      "event_time_s": 0.741575833,
+      "ordering_time_s": 1791735184.835232,
+      "board_ms": 210130,
+      "joint": "head",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 133267915,
+      "motion_id": 1,
+      "issued_pulses": 1794,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-head-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 206316
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calquiet-head-reverse-04.jsonl",
+      "event_time_s": 0.724710791,
+      "ordering_time_s": 1791735188.9836366,
+      "board_ms": 214274,
+      "joint": "head",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 444866166,
+      "motion_id": 1,
+      "issued_pulses": 1461,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-head-reverse-03.jsonl",
+        "direction": 1,
+        "board_ms": 210130
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calquiet-elbow-forward-01.jsonl",
+      "event_time_s": 3.84958925,
+      "ordering_time_s": 1791735229.0998156,
+      "board_ms": 254353,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 576968761,
+      "motion_id": 1,
+      "issued_pulses": 1432,
+      "previous_recorded_motion": {
+        "source": "recordings/cal150-elbow-reverse-01.jsonl",
+        "direction": 1,
+        "board_ms": 241524
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calquiet-elbow-forward-02.jsonl",
+      "event_time_s": 0.741183875,
+      "ordering_time_s": 1791735232.5123425,
+      "board_ms": 257762,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 446463999,
+      "motion_id": 1,
+      "issued_pulses": 1621,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-elbow-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 254353
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calquiet-elbow-reverse-03.jsonl",
+      "event_time_s": 0.73180675,
+      "ordering_time_s": 1791735236.0076807,
+      "board_ms": 261255,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 90442095,
+      "motion_id": 1,
+      "issued_pulses": 1648,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-elbow-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 257762
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calquiet-elbow-reverse-04.jsonl",
+      "event_time_s": 0.7098560420000001,
+      "ordering_time_s": 1791735239.5239985,
+      "board_ms": 264768,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 2143062865,
+      "motion_id": 1,
+      "issued_pulses": 1382,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-elbow-reverse-03.jsonl",
+        "direction": 1,
+        "board_ms": 261255
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calquiet-shoulder-forward-01.jsonl",
+      "event_time_s": 0.706507833,
+      "ordering_time_s": 1791735242.853922,
+      "board_ms": 268095,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 376741542,
+      "motion_id": 1,
+      "issued_pulses": 1206,
+      "previous_recorded_motion": {
+        "source": "recordings/calpowered-shoulder-forward-03.jsonl",
+        "direction": 0,
+        "board_ms": 62271
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calquiet-shoulder-forward-02.jsonl",
+      "event_time_s": 0.7064040829999999,
+      "ordering_time_s": 1791735246.0574644,
+      "board_ms": 271295,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1077693294,
+      "motion_id": 1,
+      "issued_pulses": 1797,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-shoulder-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 268095
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calquiet-shoulder-reverse-03.jsonl",
+      "event_time_s": 0.712008292,
+      "ordering_time_s": 1791735249.7275062,
+      "board_ms": 274963,
+      "joint": "shoulder",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1222579953,
+      "motion_id": 1,
+      "issued_pulses": 1835,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-shoulder-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 271295
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calquiet-shoulder-reverse-04.jsonl",
+      "event_time_s": 0.7584735,
+      "ordering_time_s": 1791735253.431076,
+      "board_ms": 278661,
+      "joint": "shoulder",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1637542482,
+      "motion_id": 1,
+      "issued_pulses": 1342,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-shoulder-reverse-03.jsonl",
+        "direction": 1,
+        "board_ms": 274963
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/head-holdout6-forward-01.jsonl",
+      "event_time_s": 3.839710334,
+      "ordering_time_s": 1791735278.6013522,
+      "board_ms": 303809,
+      "joint": "head",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 671486235,
+      "motion_id": 1,
+      "issued_pulses": 1169,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-head-reverse-04.jsonl",
+        "direction": 1,
+        "board_ms": 214274
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/head-holdout6-forward-02.jsonl",
+      "event_time_s": 0.724057333,
+      "ordering_time_s": 1791735282.060771,
+      "board_ms": 307265,
+      "joint": "head",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 614280242,
+      "motion_id": 1,
+      "issued_pulses": 946,
+      "previous_recorded_motion": {
+        "source": "recordings/head-holdout6-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 303809
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/head-holdout6-reverse-03.jsonl",
+      "event_time_s": 0.705997542,
+      "ordering_time_s": 1791735285.298324,
+      "board_ms": 310501,
+      "joint": "head",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 87457687,
+      "motion_id": 1,
+      "issued_pulses": 1219,
+      "previous_recorded_motion": {
+        "source": "recordings/head-holdout6-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 307265
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/head-holdout6-reverse-04.jsonl",
+      "event_time_s": 0.746363667,
+      "ordering_time_s": 1791735288.8734455,
+      "board_ms": 314071,
+      "joint": "head",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 2069573298,
+      "motion_id": 1,
+      "issued_pulses": 925,
+      "previous_recorded_motion": {
+        "source": "recordings/head-holdout6-reverse-03.jsonl",
+        "direction": 1,
+        "board_ms": 310501
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calrepeat-shoulder-forward-01.jsonl",
+      "event_time_s": 3.862255709,
+      "ordering_time_s": 1791735314.797502,
+      "board_ms": 339974,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 483908032,
+      "motion_id": 1,
+      "issued_pulses": 1323,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-shoulder-reverse-04.jsonl",
+        "direction": 1,
+        "board_ms": 278661
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calrepeat-shoulder-forward-02.jsonl",
+      "event_time_s": 0.7326038340000001,
+      "ordering_time_s": 1791735318.1449566,
+      "board_ms": 343318,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1511067824,
+      "motion_id": 1,
+      "issued_pulses": 1806,
+      "previous_recorded_motion": {
+        "source": "recordings/calrepeat-shoulder-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 339974
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calrepeat-shoulder-reverse-03.jsonl",
+      "event_time_s": 0.745848709,
+      "ordering_time_s": 1791735321.851741,
+      "board_ms": 347021,
+      "joint": "shoulder",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 631567397,
+      "motion_id": 1,
+      "issued_pulses": 1926,
+      "previous_recorded_motion": {
+        "source": "recordings/calrepeat-shoulder-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 343318
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calrepeat-shoulder-reverse-04.jsonl",
+      "event_time_s": 0.7220075420000001,
+      "ordering_time_s": 1791735325.6276197,
+      "board_ms": 350794,
+      "joint": "shoulder",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1132519108,
+      "motion_id": 1,
+      "issued_pulses": 1319,
+      "previous_recorded_motion": {
+        "source": "recordings/calrepeat-shoulder-reverse-03.jsonl",
+        "direction": 1,
+        "board_ms": 347021
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calrepeat-elbow-forward-01.jsonl",
+      "event_time_s": 0.7479605829999999,
+      "ordering_time_s": 1791735328.9156697,
+      "board_ms": 354078,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1441081458,
+      "motion_id": 1,
+      "issued_pulses": 1458,
+      "previous_recorded_motion": {
+        "source": "recordings/calquiet-elbow-reverse-04.jsonl",
+        "direction": 1,
+        "board_ms": 264768
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calrepeat-elbow-forward-02.jsonl",
+      "event_time_s": 0.7196897080000001,
+      "ordering_time_s": 1791735332.3113544,
+      "board_ms": 357471,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 861173678,
+      "motion_id": 1,
+      "issued_pulses": 1628,
+      "previous_recorded_motion": {
+        "source": "recordings/calrepeat-elbow-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 354078
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calrepeat-elbow-reverse-03.jsonl",
+      "event_time_s": 0.741166667,
+      "ordering_time_s": 1791735335.8698323,
+      "board_ms": 361024,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 339713435,
+      "motion_id": 1,
+      "issued_pulses": 1630,
+      "previous_recorded_motion": {
+        "source": "recordings/calrepeat-elbow-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 357471
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/calrepeat-elbow-reverse-04.jsonl",
+      "event_time_s": 0.724613625,
+      "ordering_time_s": 1791735339.4488459,
+      "board_ms": 364603,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1699920039,
+      "motion_id": 1,
+      "issued_pulses": 1436,
+      "previous_recorded_motion": {
+        "source": "recordings/calrepeat-elbow-reverse-03.jsonl",
+        "direction": 1,
+        "board_ms": 361024
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-forward-01.jsonl",
+      "event_time_s": 3.8157769999999998,
+      "ordering_time_s": 1791749488.566044,
+      "board_ms": 14501103,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 722230437,
+      "motion_id": 1,
+      "issued_pulses": 876,
+      "previous_recorded_motion": {
+        "source": "recordings/calrepeat-shoulder-reverse-04.jsonl",
+        "direction": 1,
+        "board_ms": 350794
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-forward-02.jsonl",
+      "event_time_s": 0.736693334,
+      "ordering_time_s": 1791749491.5560782,
+      "board_ms": 14504091,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1199061393,
+      "motion_id": 1,
+      "issued_pulses": 1124,
+      "previous_recorded_motion": {
+        "source": "recordings/local-holdout6-shoulder-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 14501103
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-forward-03.jsonl",
+      "event_time_s": 0.735398666,
+      "ordering_time_s": 1791749494.6955554,
+      "board_ms": 14507227,
+      "joint": "shoulder",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 490022589,
+      "motion_id": 1,
+      "issued_pulses": 989,
+      "previous_recorded_motion": {
+        "source": "recordings/local-holdout6-shoulder-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 14504091
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-reverse-04.jsonl",
+      "event_time_s": 0.742689583,
+      "ordering_time_s": 1791749497.787244,
+      "board_ms": 14510316,
+      "joint": "shoulder",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 798445419,
+      "motion_id": 1,
+      "issued_pulses": 1267,
+      "previous_recorded_motion": {
+        "source": "recordings/local-holdout6-shoulder-forward-03.jsonl",
+        "direction": 0,
+        "board_ms": 14507227
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-reverse-05.jsonl",
+      "event_time_s": 0.709503334,
+      "ordering_time_s": 1791749501.0326698,
+      "board_ms": 14513559,
+      "joint": "shoulder",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1821898748,
+      "motion_id": 1,
+      "issued_pulses": 869,
+      "previous_recorded_motion": {
+        "source": "recordings/local-holdout6-shoulder-reverse-04.jsonl",
+        "direction": 1,
+        "board_ms": 14510316
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-reverse-06.jsonl",
+      "event_time_s": 0.6509425,
+      "ordering_time_s": 1791749503.9242177,
+      "board_ms": 14516447,
+      "joint": "shoulder",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1279466883,
+      "motion_id": 1,
+      "issued_pulses": 844,
+      "previous_recorded_motion": {
+        "source": "recordings/local-holdout6-shoulder-reverse-05.jsonl",
+        "direction": 1,
+        "board_ms": 14513559
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-forward-01.jsonl",
+      "event_time_s": 0.637234666,
+      "ordering_time_s": 1791749506.7805815,
+      "board_ms": 14519302,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1325419089,
+      "motion_id": 1,
+      "issued_pulses": 978,
+      "previous_recorded_motion": {
+        "source": "recordings/calrepeat-elbow-reverse-04.jsonl",
+        "direction": 1,
+        "board_ms": 364603
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-forward-02.jsonl",
+      "event_time_s": 0.7131073339999999,
+      "ordering_time_s": 1791749509.8274603,
+      "board_ms": 14522344,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 1408216368,
+      "motion_id": 1,
+      "issued_pulses": 1069,
+      "previous_recorded_motion": {
+        "source": "recordings/local-holdout6-elbow-forward-01.jsonl",
+        "direction": 0,
+        "board_ms": 14519302
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-forward-03.jsonl",
+      "event_time_s": 0.703051167,
+      "ordering_time_s": 1791749512.9081397,
+      "board_ms": 14525423,
+      "joint": "elbow",
+      "direction": 0,
+      "kind": "accepted_counted_jog",
+      "owner": 28553967,
+      "motion_id": 1,
+      "issued_pulses": 1047,
+      "previous_recorded_motion": {
+        "source": "recordings/local-holdout6-elbow-forward-02.jsonl",
+        "direction": 0,
+        "board_ms": 14522344
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-reverse-04.jsonl",
+      "event_time_s": 0.738107292,
+      "ordering_time_s": 1791749516.014551,
+      "board_ms": 14528527,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 975702658,
+      "motion_id": 1,
+      "issued_pulses": 1025,
+      "previous_recorded_motion": {
+        "source": "recordings/local-holdout6-elbow-forward-03.jsonl",
+        "direction": 0,
+        "board_ms": 14525423
+      },
+      "history": "reversal",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-reverse-05.jsonl",
+      "event_time_s": 0.70292225,
+      "ordering_time_s": 1791749519.0615637,
+      "board_ms": 14531571,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 1234962014,
+      "motion_id": 1,
+      "issued_pulses": 927,
+      "previous_recorded_motion": {
+        "source": "recordings/local-holdout6-elbow-reverse-04.jsonl",
+        "direction": 1,
+        "board_ms": 14528527
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-reverse-06.jsonl",
+      "event_time_s": 0.735443125,
+      "ordering_time_s": 1791749522.0676308,
+      "board_ms": 14534573,
+      "joint": "elbow",
+      "direction": 1,
+      "kind": "accepted_counted_jog",
+      "owner": 363846764,
+      "motion_id": 1,
+      "issued_pulses": 871,
+      "previous_recorded_motion": {
+        "source": "recordings/local-holdout6-elbow-reverse-05.jsonl",
+        "direction": 1,
+        "board_ms": 14531571
+      },
+      "history": "continuation",
+      "same_boot_order_confirmed": true
+    }
+  ],
+  "recording_sources": [
+    {
+      "source": "recordings/script-idle-check.jsonl",
+      "sha256": "ed271b6eccb723c20fe00e1fedf9e0cd58d61abb7c6c55d6f08f635b81d8b29f",
+      "filesystem_birth_unix_s": 1791732319.4027095
+    },
+    {
+      "source": "recordings/elbow-100pps-2026-10-11.jsonl",
+      "sha256": "51c94b47d587a7511f1a086f76c7997931f2061fdef7887163e4f7a863c5e28f",
+      "filesystem_birth_unix_s": 1791732603.125138
+    },
+    {
+      "source": "recordings/script-20261011-083026-611000.jsonl",
+      "sha256": "460fe437d946e8184c0b8fb51b3893e54bb648d037fc4f6e51316a736756373c",
+      "filesystem_birth_unix_s": 1791732626.022675
+    },
+    {
+      "source": "recordings/manual-feedback-20261011-083230.jsonl",
+      "sha256": "5507a27d541b757ac7d974c5c41a050ec144f0f0feb17f871118495f457ba600",
+      "filesystem_birth_unix_s": 1791732750.2115667
+    },
+    {
+      "source": "recordings/elbow-pwm-200rpm-forward-1.jsonl",
+      "sha256": "6ef1032cebfb6f91a70edbcdb74825da9993a168b3e1eb0afd60f51a52875b6e",
+      "filesystem_birth_unix_s": 1791733021.2830365
+    },
+    {
+      "source": "recordings/elbow-pwm-200rpm-forward-2.jsonl",
+      "sha256": "cc65efc4a35bf6787af34d560f228a70684bddd188000bd399a2cff00489fab3",
+      "filesystem_birth_unix_s": 1791733039.9058511
+    },
+    {
+      "source": "recordings/elbow-pwm-200rpm-reverse-1.jsonl",
+      "sha256": "e6c5ca262feb86c7c473d35159daed28ef20eea0c65e12c95930b8e6439eb032",
+      "filesystem_birth_unix_s": 1791733053.3944821
+    },
+    {
+      "source": "recordings/elbow-pwm-100pps-forward-1.jsonl",
+      "sha256": "e023f870b3495efd5a2d410c0f9f5f5b0d670631601cdbb15e958a35de8846e7",
+      "filesystem_birth_unix_s": 1791733076.8430536
+    },
+    {
+      "source": "recordings/elbow-pwm-200rpm-forward-3.jsonl",
+      "sha256": "540e3fad15dde6ef04c6632d91234379223749a26bb8713eb79caa8be20ec21b",
+      "filesystem_birth_unix_s": 1791733105.9813662
+    },
+    {
+      "source": "recordings/elbow-pwm-200rpm-reverse-2.jsonl",
+      "sha256": "8306ddd7d3f5137f6332a726ee82147fbe78cf96e85007ec7929452c910d37dd",
+      "filesystem_birth_unix_s": 1791733122.060051
+    },
+    {
+      "source": "recordings/script-20261011-084946-446000.jsonl",
+      "sha256": "810a274fcb0d1192471ce8ad2c83dd284bf3f69d7fd71cb8b0122135819b62e6",
+      "filesystem_birth_unix_s": 1791733786.446502
+    },
+    {
+      "source": "recordings/counted-elbow-probe-1.jsonl",
+      "sha256": "1e1efc445df63509ced0bb2408e4b19709aa428e51e807d10a990f159129efaf",
+      "filesystem_birth_unix_s": 1791733790.5793512
+    },
+    {
+      "source": "recordings/counted-shoulder-probe-1.jsonl",
+      "sha256": "f5e1f0c50e57188604199cc3a7029cdb542eb0eeadfe32fc33dfb1680fe8eadf",
+      "filesystem_birth_unix_s": 1791733804.2333953
+    },
+    {
+      "source": "recordings/counted-head-probe-1.jsonl",
+      "sha256": "334eb0ff77b82419ac2b30c959da2a5bb563432300a316bd71303a24ca8ef4d8",
+      "filesystem_birth_unix_s": 1791733820.653073
+    },
+    {
+      "source": "recordings/cal-elbow-forward-01.jsonl",
+      "sha256": "a236f4d518bae106e2bf4ca31f9574a51170e0a68b5568f03abcac4258dc91c7",
+      "filesystem_birth_unix_s": 1791733839.3828068
+    },
+    {
+      "source": "recordings/cal-elbow-reverse-01.jsonl",
+      "sha256": "f89141d536744160d6f241a17824125c2f25126758ce918e79398c51802b0dc7",
+      "filesystem_birth_unix_s": 1791733860.8702307
+    },
+    {
+      "source": "recordings/cal-elbow-forward-02.jsonl",
+      "sha256": "f9aa4b450624848d094d70821262122b3726bf14b4f74f929cea246ebe928afe",
+      "filesystem_birth_unix_s": 1791733893.0902686
+    },
+    {
+      "source": "recordings/cal-elbow-reverse-02.jsonl",
+      "sha256": "0da6ae600b912ffcc0580d1e47876618a2571bb2c82fa5a8cb9ed264128949c8",
+      "filesystem_birth_unix_s": 1791733898.5414252
+    },
+    {
+      "source": "recordings/cal-elbow-forward-03.jsonl",
+      "sha256": "9fb1b150896ef6cf998f7aef38a71cb766eee7afa59218b22ccedb62a3112c35",
+      "filesystem_birth_unix_s": 1791733900.8458214
+    },
+    {
+      "source": "recordings/cal-elbow-reverse-03.jsonl",
+      "sha256": "1057848f95579daf125f74c8a68a8bc9ec62c7137cfd20104cebe7179bee2081",
+      "filesystem_birth_unix_s": 1791733903.2035618
+    },
+    {
+      "source": "recordings/cal10-elbow-forward-01.jsonl",
+      "sha256": "c1d3c3e50b43ed2f01f832cefd3813e8be2e896b01fc2916afa4f86c4f100427",
+      "filesystem_birth_unix_s": 1791733942.3220568
+    },
+    {
+      "source": "recordings/cal10-elbow-reverse-01.jsonl",
+      "sha256": "8baf7cb4bc68e78dafb1d8b3f95552f15956d5cf3f9a3207f8419b0b1156d275",
+      "filesystem_birth_unix_s": 1791733948.1601067
+    },
+    {
+      "source": "recordings/cal10-elbow-forward-02.jsonl",
+      "sha256": "be8b001dcc1ae6e78f27f9f8faf76cf5451f44931c4e39b88812442483325af7",
+      "filesystem_birth_unix_s": 1791733950.799179
+    },
+    {
+      "source": "recordings/cal10-elbow-reverse-02.jsonl",
+      "sha256": "ba7c2fb6d917476aeeec345caaa0a9324e2cf8e123bf788c4ae9497dd55ea3f5",
+      "filesystem_birth_unix_s": 1791733953.538587
+    },
+    {
+      "source": "recordings/cal10-elbow-forward-03.jsonl",
+      "sha256": "5244b9ec8e0c483f53ca126c7191577a6f766b858752e3b348bd367630fcf671",
+      "filesystem_birth_unix_s": 1791733956.1976204
+    },
+    {
+      "source": "recordings/cal10-elbow-reverse-03.jsonl",
+      "sha256": "00fd3c9c3caa1a0fd775907db1a5378e79b17dc34a8bf518f074f8a7640b42a4",
+      "filesystem_birth_unix_s": 1791733958.8764694
+    },
+    {
+      "source": "recordings/cal10-shoulder-forward-01.jsonl",
+      "sha256": "42f56bffec85af675aeb26924a8244506ee5780a3fd5431017e40c885f2f531d",
+      "filesystem_birth_unix_s": 1791733996.326671
+    },
+    {
+      "source": "recordings/calpowered-shoulder-reverse-01.jsonl",
+      "sha256": "22f34a38f4e896fa31da326a36dcb5c1d2691ac961258cda507601c4f650914f",
+      "filesystem_birth_unix_s": 1791734342.1416771
+    },
+    {
+      "source": "recordings/calpowered-shoulder-forward-01.jsonl",
+      "sha256": "607e57bf9e8be7d4b278f4e4215e6d946dfe96169fa73348b572124fbca69c3c",
+      "filesystem_birth_unix_s": 1791734366.9892497
+    },
+    {
+      "source": "recordings/calpowered-shoulder-reverse-02.jsonl",
+      "sha256": "75f08961987fba698cfc5d80e111a0c75aff4ea0f50c9a69105d2b483b8571a3",
+      "filesystem_birth_unix_s": 1791734373.359093
+    },
+    {
+      "source": "recordings/calpowered-shoulder-forward-02.jsonl",
+      "sha256": "3a0555d8d723f2d5049686bca611d0e0c4c911e8ed501bc5f226385310a4451e",
+      "filesystem_birth_unix_s": 1791734376.5278244
+    },
+    {
+      "source": "recordings/calpowered-shoulder-reverse-03.jsonl",
+      "sha256": "3b25e120fe8c84483cf3426cce56191a0954cd6f25f1785f2e46472aa6cfc5b2",
+      "filesystem_birth_unix_s": 1791734379.6564577
+    },
+    {
+      "source": "recordings/calpowered-shoulder-forward-03.jsonl",
+      "sha256": "70cb8be8e5553153a7820d5b8c7b149523060a3f3558cccc18594b0d8794d9e2",
+      "filesystem_birth_unix_s": 1791734382.8012311
+    },
+    {
+      "source": "recordings/calpowered-elbow-forward-01.jsonl",
+      "sha256": "c1d5e4789a61564539343ac9179d125c2e60058f2940238e365cd2603cdbb68f",
+      "filesystem_birth_unix_s": 1791734409.0802493
+    },
+    {
+      "source": "recordings/calpowered-elbow-reverse-01.jsonl",
+      "sha256": "6b929b649ee2ea4b460a07677c7cb684394f97e78fbd2d63821070389932fbf9",
+      "filesystem_birth_unix_s": 1791734415.3507807
+    },
+    {
+      "source": "recordings/calpowered-elbow-forward-02.jsonl",
+      "sha256": "b972c77009237d71a8a6827d82cc9ebf98199c44134c77f6a9b9655ba3a9bcfd",
+      "filesystem_birth_unix_s": 1791734418.3967397
+    },
+    {
+      "source": "recordings/calpowered-elbow-reverse-02.jsonl",
+      "sha256": "b1f2a9102e7ef66b31cbdb4a9dff03e9fe30e789bd63f75155c2905144d56eb5",
+      "filesystem_birth_unix_s": 1791734421.4793067
+    },
+    {
+      "source": "recordings/calpowered-elbow-forward-03.jsonl",
+      "sha256": "df9cebe79534d592405ff11e08d8316d833e797b09df2e26a833adae3c4fc8de",
+      "filesystem_birth_unix_s": 1791734424.5362668
+    },
+    {
+      "source": "recordings/calpowered-elbow-reverse-03.jsonl",
+      "sha256": "9218e028269d7d52df6174e683b069cd984fc0b749a7bbde61daafee4620dff5",
+      "filesystem_birth_unix_s": 1791734427.6237125
+    },
+    {
+      "source": "recordings/calpowered-head-forward-01.jsonl",
+      "sha256": "c9a05dc4f980f798929cc6ba5ea9490d03ed850c6d5cca58f0d68a1592a301a8",
+      "filesystem_birth_unix_s": 1791734468.9409058
+    },
+    {
+      "source": "recordings/calpowered-head-reverse-01.jsonl",
+      "sha256": "bf167ae5d24e7d4f44e10f67d59f990136e40e9c737b74ff55119f33b70e3004",
+      "filesystem_birth_unix_s": 1791734475.3299499
+    },
+    {
+      "source": "recordings/calpowered-head-forward-02.jsonl",
+      "sha256": "000915f4d27e98cb2bc338418884eeaf88d555e5a5c148161fb6a23370738de8",
+      "filesystem_birth_unix_s": 1791734478.6546876
+    },
+    {
+      "source": "recordings/calpowered-head-reverse-02.jsonl",
+      "sha256": "941bb11dde3bdf76339e6e7e3c08914e85c4a92d257c102989bf5c5ce796c407",
+      "filesystem_birth_unix_s": 1791734481.9907558
+    },
+    {
+      "source": "recordings/calpowered-head-forward-03.jsonl",
+      "sha256": "372d50dcee6c5fc32f9dfcf66329e1ab0d6e0c996252e9c991e0afbf10834059",
+      "filesystem_birth_unix_s": 1791734485.3983023
+    },
+    {
+      "source": "recordings/calpowered-head-reverse-03.jsonl",
+      "sha256": "da8a310d45ee04d5d10a81fe0ff6486a56dd1a01f8a48e59bad73889f2c0cb14",
+      "filesystem_birth_unix_s": 1791734488.7418728
+    },
+    {
+      "source": "recordings/cal150-elbow-forward-01.jsonl",
+      "sha256": "b8ec0cb4196d635608598b9a7ae61590c55982f1440db7a37b80e916f7bc17ab",
+      "filesystem_birth_unix_s": 1791734555.7006528
+    },
+    {
+      "source": "recordings/cal150-elbow-reverse-01.jsonl",
+      "sha256": "36df16d725d64bf96671620c09b8377e482b5d523af262c5eae879e431fecef3",
+      "filesystem_birth_unix_s": 1791734562.1911469
+    },
+    {
+      "source": "recordings/cal150-head-forward-01.jsonl",
+      "sha256": "a841559f90832a7fe50b36fdede408a1aa3c8d1b1d36a02b1916153edc433674",
+      "filesystem_birth_unix_s": 1791734565.6525223
+    },
+    {
+      "source": "recordings/cal150-head-reverse-01.jsonl",
+      "sha256": "53a7a66d5a6d132e1d71588b554cc9df4844d4d38b6196bb15a00611bb46f8a6",
+      "filesystem_birth_unix_s": 1791734569.4139314
+    },
+    {
+      "source": "recordings/head-adjacent-01-forward.jsonl",
+      "sha256": "2335ecf38b718c842e7ebb91959cac62fd5f111580dd68d069cdf77cdff496c5",
+      "filesystem_birth_unix_s": 1791734680.2979155
+    },
+    {
+      "source": "recordings/head-adjacent-02-forward.jsonl",
+      "sha256": "c03b1cc1e851fc09640c7aef9c7771c6808b42c047ffce39bdb7ec9c6be0ac21",
+      "filesystem_birth_unix_s": 1791734687.23628
+    },
+    {
+      "source": "recordings/head-adjacent-03-reverse.jsonl",
+      "sha256": "21b9c3073af820f206c7f728245cca853a0f4f8787905ef2c602c20aa850d9fa",
+      "filesystem_birth_unix_s": 1791734690.7837646
+    },
+    {
+      "source": "recordings/head-adjacent-04-reverse.jsonl",
+      "sha256": "609d19c993bb9f2d33aac995e5f98fa03f0bca0b4ab1d20d603c56d2704b5f98",
+      "filesystem_birth_unix_s": 1791734694.5435047
+    },
+    {
+      "source": "recordings/calquiet-head-forward-01.jsonl",
+      "sha256": "7b8a18ff3ef5a9beda4bbee3c2d36c0bfdd202305d63eada8e109403dc156192",
+      "filesystem_birth_unix_s": 1791735159.0656195
+    },
+    {
+      "source": "recordings/calquiet-head-forward-02.jsonl",
+      "sha256": "eff881cf058dc373787adf30e50c94fcb085c430dc4e6e70d30ae60475a10977",
+      "filesystem_birth_unix_s": 1791735177.1562111
+    },
+    {
+      "source": "recordings/calquiet-head-reverse-03.jsonl",
+      "sha256": "07cd096be45c9dd8e450ec8358fe33bcaabd64701144df10ca35da3066ec3392",
+      "filesystem_birth_unix_s": 1791735184.0936563
+    },
+    {
+      "source": "recordings/calquiet-head-reverse-04.jsonl",
+      "sha256": "b7143c03bfc5fa2633e42366eb9ef36e5dfeb392c3207e151b2981135b24c07c",
+      "filesystem_birth_unix_s": 1791735188.258926
+    },
+    {
+      "source": "recordings/calquiet-elbow-forward-01.jsonl",
+      "sha256": "2cfe541e72106dcefb9a8fd877923659e5228cb031f56fd1ed031bc93236ef8f",
+      "filesystem_birth_unix_s": 1791735225.2502263
+    },
+    {
+      "source": "recordings/calquiet-elbow-forward-02.jsonl",
+      "sha256": "7304fdf67a9a2ae19d41409eca29d1e572c6cef262618f898b700189f7900096",
+      "filesystem_birth_unix_s": 1791735231.7711587
+    },
+    {
+      "source": "recordings/calquiet-elbow-reverse-03.jsonl",
+      "sha256": "91be181b284a987b3b147e6ca1436b2faa8d6fb776f0641dfb6cd2baba64c57f",
+      "filesystem_birth_unix_s": 1791735235.275874
+    },
+    {
+      "source": "recordings/calquiet-elbow-reverse-04.jsonl",
+      "sha256": "7c31d62b1014fa7ee2d4731e130922c381bfcc264d355c5823855a563d5db383",
+      "filesystem_birth_unix_s": 1791735238.8141425
+    },
+    {
+      "source": "recordings/calquiet-shoulder-forward-01.jsonl",
+      "sha256": "04f65632e67ab4df2a567c64808318f4458b2ba25d5710cd9fbb6984773384d0",
+      "filesystem_birth_unix_s": 1791735242.147414
+    },
+    {
+      "source": "recordings/calquiet-shoulder-forward-02.jsonl",
+      "sha256": "11ab8a34e9fd52098890cabaaecf08e7a7d66e4efe3a4a3cc7f20d698bd5000d",
+      "filesystem_birth_unix_s": 1791735245.3510604
+    },
+    {
+      "source": "recordings/calquiet-shoulder-reverse-03.jsonl",
+      "sha256": "ccc3ad4d8b10d65a950b0e6e0e96dc106fda847c92c9aa09113deae9576157e3",
+      "filesystem_birth_unix_s": 1791735249.015498
+    },
+    {
+      "source": "recordings/calquiet-shoulder-reverse-04.jsonl",
+      "sha256": "d683a8ad694a88dbf8241ee34661674aced952205e47579a909784d3139dfea0",
+      "filesystem_birth_unix_s": 1791735252.6726027
+    },
+    {
+      "source": "recordings/head-holdout6-forward-01.jsonl",
+      "sha256": "f45b0ab02b0c190f1e76ac97abfee37db78acda9f1535edaeb2b2ad2facdd0cc",
+      "filesystem_birth_unix_s": 1791735274.761642
+    },
+    {
+      "source": "recordings/head-holdout6-forward-02.jsonl",
+      "sha256": "dad6d49262182fdd1fab75017908dac2abdb8b3796e1e8440fd155372af0fd46",
+      "filesystem_birth_unix_s": 1791735281.3367136
+    },
+    {
+      "source": "recordings/head-holdout6-reverse-03.jsonl",
+      "sha256": "0a9a7d7e77fe0df54d4a813b5c761bdb7e7ee58a84ac74f60e1b6442272ec459",
+      "filesystem_birth_unix_s": 1791735284.5923266
+    },
+    {
+      "source": "recordings/head-holdout6-reverse-04.jsonl",
+      "sha256": "2378b1eb959cdbc5f61393754a864e6fbb5e1c7c6794cdb2dfd6b13d1b1e704a",
+      "filesystem_birth_unix_s": 1791735288.1270819
+    },
+    {
+      "source": "recordings/calrepeat-shoulder-forward-01.jsonl",
+      "sha256": "aef8e8852de05b3b84cbb664c0eb3edf47ed16eb326cda793cc3c562608e1e29",
+      "filesystem_birth_unix_s": 1791735310.9352462
+    },
+    {
+      "source": "recordings/calrepeat-shoulder-forward-02.jsonl",
+      "sha256": "3fbc90d9f081e1b00aa88220accc0705be01ae7c61534e6f217ea3a029f1bc80",
+      "filesystem_birth_unix_s": 1791735317.4123528
+    },
+    {
+      "source": "recordings/calrepeat-shoulder-reverse-03.jsonl",
+      "sha256": "ce81d8080d6db60428d33d1496c2e13c820b104537fba7cd26d9d6fdee7dea42",
+      "filesystem_birth_unix_s": 1791735321.1058924
+    },
+    {
+      "source": "recordings/calrepeat-shoulder-reverse-04.jsonl",
+      "sha256": "3f2e9a3c422123868a0bb8ec0ac643f6a18fd39ffaef73de9637ca082819f5a6",
+      "filesystem_birth_unix_s": 1791735324.9056122
+    },
+    {
+      "source": "recordings/calrepeat-elbow-forward-01.jsonl",
+      "sha256": "d281df82fbf8225c3287c3cae605a7f9754f85bd24262ea22be09d18cf52a980",
+      "filesystem_birth_unix_s": 1791735328.167709
+    },
+    {
+      "source": "recordings/calrepeat-elbow-forward-02.jsonl",
+      "sha256": "d638d7a5f180e0a48b87188d5812a1ad2111c8e07abdb28e17f16caf529532ae",
+      "filesystem_birth_unix_s": 1791735331.5916648
+    },
+    {
+      "source": "recordings/calrepeat-elbow-reverse-03.jsonl",
+      "sha256": "edbd4d09250b4187970db981394ad932f48e6118f5538061eddb094c9e30cc79",
+      "filesystem_birth_unix_s": 1791735335.1286657
+    },
+    {
+      "source": "recordings/calrepeat-elbow-reverse-04.jsonl",
+      "sha256": "0dc4e8f348b5ddc457a9e2345a376d3a546ad2722dc13ed48b2905f8f91bd4e9",
+      "filesystem_birth_unix_s": 1791735338.7242322
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-forward-01.jsonl",
+      "sha256": "f7e2d4144a27a7998b8d2e129425fc888ad9fe7a3f4650ae117717e570766599",
+      "filesystem_birth_unix_s": 1791749484.750267
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-forward-02.jsonl",
+      "sha256": "823acff45b1b4bb2e5891cb0cefae7a39557d0ccf92eb028f168d46f32cf294a",
+      "filesystem_birth_unix_s": 1791749490.8193848
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-forward-03.jsonl",
+      "sha256": "c953eeca333a19adf73bec3d41c256c2a41f166fd919dc41251413ac3e1f73ca",
+      "filesystem_birth_unix_s": 1791749493.9601567
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-reverse-04.jsonl",
+      "sha256": "32852e7b1c5b0133df0b40a5b4371c353b5ba961d6312ecd313ade15bf545de6",
+      "filesystem_birth_unix_s": 1791749497.0445545
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-reverse-05.jsonl",
+      "sha256": "022ef9a87a0f05b525071226de0f81c39f6c19e68e2260e84698acff220e54ec",
+      "filesystem_birth_unix_s": 1791749500.3231664
+    },
+    {
+      "source": "recordings/local-holdout6-shoulder-reverse-06.jsonl",
+      "sha256": "380d423a5444b96625f950d01bb7bbda947d38d57c52a5787acfd1b2b5f7fadc",
+      "filesystem_birth_unix_s": 1791749503.2732751
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-forward-01.jsonl",
+      "sha256": "8fea3fc90aa11c89734f74f2c9b37e33c4d179f14ec9ebf2cc140b56581190b7",
+      "filesystem_birth_unix_s": 1791749506.1433468
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-forward-02.jsonl",
+      "sha256": "011c36a945197b68c326761d5584b8bc64d44bdfe529fae7fc14c6d054b706f7",
+      "filesystem_birth_unix_s": 1791749509.114353
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-forward-03.jsonl",
+      "sha256": "61580ed7803c9f0678001d28edddac09ccf24c4aeebc0a298fb2e27d9a324e06",
+      "filesystem_birth_unix_s": 1791749512.2050886
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-reverse-04.jsonl",
+      "sha256": "0db568f6d1508af598c312b673fffb0f51162aa5473ddd5b281ab6da6aee9182",
+      "filesystem_birth_unix_s": 1791749515.2764437
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-reverse-05.jsonl",
+      "sha256": "b2903a59c6eeb6ad8f2f568da0ae9ce36429aa2361f84a2ab07b64eff2b25d66",
+      "filesystem_birth_unix_s": 1791749518.3586414
+    },
+    {
+      "source": "recordings/local-holdout6-elbow-reverse-06.jsonl",
+      "sha256": "f6b64d660e8aaae75469d7c6249966b73ae0af2098a53f22bfb5e543876d6559",
+      "filesystem_birth_unix_s": 1791749521.3321877
+    }
+  ],
+  "issues": [],
+  "ordering_method": "Filesystem recording-creation timestamp anchors each relative event timestamp; recorded MCU milliseconds accompany each event and corroborate order where monotonic. MCU timestamps reset on reboot. Filenames never determine direction history.",
+  "limitations": [
+    "Recordings omit absolute wall-clock event timestamps and boot IDs. Filesystem creation metadata supplies cross-boot order and is explicitly retained; it is weaker evidence than logged absolute timestamps.",
+    "No recording audit proves absence of unrecorded physical intervention or manually moved joints. Unknown passive motion invalidates assumed command history until another observed commanded movement.",
+    "Direction after zero issued pulses is not treated as physical direction history."
+  ]
+}
