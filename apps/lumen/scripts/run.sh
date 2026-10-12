@@ -6,4 +6,4 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 systemctl --user stop lumen 2>/dev/null || true
-exec .venv/bin/python -m lumen --headless --stream 8080 "$@"
+exec /home/arduino/IEEE-Minimalist-AI-Challenge-2026/.venv/bin/python -m lumen --headless --stream 8080 "$@"
