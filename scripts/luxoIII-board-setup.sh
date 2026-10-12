@@ -89,7 +89,7 @@ restore() {
 
   echo '== Firmware: pinned core, compile, flash'
   board "set -e; cd $REPO/arm
-    arduino-cli core update-index >/dev/null || echo 'index update failed; compiling with what is cached'
+    { arduino-cli core update-index && arduino-cli lib update-index; } >/dev/null || echo 'index update failed; compiling with what is cached'
     arduino-cli compile --profile default --build-path $REPO/arm/build sketch | tail -2
     bash scripts/flash-local.sh 2>&1 | grep -iE 'error|verified|wrote' | tail -4"
 
