@@ -35,7 +35,9 @@ if ! nmcli -t -f DEVICE,STATE dev | grep -q '^wlan0:connected$'; then
   nmcli --ask dev wifi connect "$ssid"
 fi
 dpkg -s python3-venv >/dev/null 2>&1 || { apt-get update -qq && apt-get install -y -qq python3-venv; }
-systemctl enable --now ssh
+ssh-keygen -A                      # the stock image ships without SSH host keys
+systemctl reset-failed ssh 2>/dev/null || true
+systemctl enable ssh && systemctl restart ssh
 loginctl enable-linger arduino
 timedatectl set-ntp true
 sleep 3; date; nmcli -t -f DEVICE,STATE dev | grep wlan0; systemctl is-active ssh
