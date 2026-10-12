@@ -1,7 +1,0 @@
-# PC-only tools in tools/: simulation (sim/, arm_mujoco/), clip authoring (motion_lib/) and plots.
-# Not needed on the board. The app's own deps are in apps/lumen/requirements.txt.
-numpy>=1.26
-opencv-python>=4.8
-ai-edge-litert>=2.0
-mujoco>=3.2
-matplotlib>=3.8
