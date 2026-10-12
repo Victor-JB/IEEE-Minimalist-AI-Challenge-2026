@@ -26,3 +26,19 @@ FIRMWARE_MAX_ACCEL = 500.0
 # Streaming: setpoints at 25 Hz, each aimed this far ahead (Tailscale points arrive 100-170 ms apart).
 STREAM_HZ = 25
 HORIZON = {"local": 0.12, "usb": 0.12, "tailscale": 0.3}
+
+# Head tilt (J5, "head_roll" in the clips): Hiwonder HPS-2027, signal on D2, own 7.4 V supply.
+# Checked on the arm 2026-10-12: 270 deg over 500-2500 us, 1500 us = level shade, and the servo is
+# mounted mirrored: a larger pulse tilts the shade to the lamp's left, while the clips' +head_roll is
+# the lamp's right (rotation about +x = the way it faces, sim/robot.toml), so ROLL_SIGN = -1.
+# Still to check: how far ROLL_RANGE can widen before the shade or its cable hits something.
+# ROLL is what ArmMotion(roll=...) takes; ROLL_ENABLED=False leaves the servo alone.
+ROLL_ENABLED = True
+ROLL_CENTER_US = 1500
+ROLL_SIGN = -1                  # see above: +head_roll = the lamp's right
+ROLL_RANGE = (-45.0, 45.0)
+ROLL_SPEED_CAP = 180.0          # deg/s the firmware slews the command at (the servo does ~460)
+ROLL_US_PER_DEG = 2000 / 270     # 270 deg servo over 500-2500 us
+ROLL = dict(center_us=ROLL_CENTER_US, us_per_deg=ROLL_US_PER_DEG, limits=ROLL_RANGE, sign=ROLL_SIGN,
+            max_speed=ROLL_SPEED_CAP)
+ROLL_HOME = 0.0                 # head tilt held between clips (deg)

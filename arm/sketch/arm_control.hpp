@@ -54,7 +54,7 @@ static void countedMode(bool enabled){
     }
 }
 static void releaseArm(){
-    armMotion.stop();servoCtl.relax();releaseTrains();armOwner=0;armConfigured=0;armVerified=0;
+    headRoll.release();armMotion.stop();servoCtl.relax();releaseTrains();armOwner=0;armConfigured=0;armVerified=0;
     countedMode(false);syncPower();
 }
 static void armTick(uint32_t now){
@@ -104,13 +104,20 @@ static std::vector<int> armStatus(int error){
 }
 static std::vector<int> armLock(){
     k_mutex_lock(&lock,K_FOREVER);
-    power.change(0,power.generation);armMotion.stop();servoCtl.relax();releaseTrains();
+    power.change(0,power.generation);headRoll.release();armMotion.stop();servoCtl.relax();releaseTrains();
     for(unsigned a=0;a<3;++a){motors[a].stop();applyOrFault(a);}
     syncPower();auto result=armStatus(0);k_mutex_unlock(&lock);return result;
 }
 
 static std::vector<int> armObserve(){
     k_mutex_lock(&lock,K_FOREVER);auto result=armStatus(0);k_mutex_unlock(&lock);return result;
+}
+// Read-only head-tilt telemetry (version 3): enabled, target/current mdeg, pulse us, PWM error.
+static std::vector<int> armRollStatus(){
+    k_mutex_lock(&lock,K_FOREVER);
+    std::vector<int> r={3,int(headRoll.enabled),int(std::lround(headRoll.target*1000)),
+        int(std::lround(headRoll.current*1000)),int(headRoll.pulseUs()),rollFault};
+    k_mutex_unlock(&lock);return r;
 }
 // Read-only closed-loop telemetry (38 integers, version 2). See servoStatus().
 static std::vector<int> armServoStatus(){
@@ -121,6 +128,8 @@ static std::vector<int> armServoStatus(){
 // 0 claim; 1 configure axis; 2 pose; 3 jog; 4 status; 5 hold; 6 stop; 7 release; 8 power; 9 bounded powered settle (motion ID).
 // Closed loop: 10 move; 11 stream setpoint; 12 halt and hold; 13 servo axis config;
 // 14 servo hold/tuck config; 15 live speed scale. Angles are millidegrees, motor order.
+// Head tilt: 16 roll to angle (mdeg) at speed (mdeg/s, 0 = max); 17 roll config (center us,
+// us/deg x1000, lower/upper mdeg, sign, max mdeg/s); 18 roll limp. Release and lock also go limp.
 static std::vector<int> armCommand(std::vector<int> args){
     k_mutex_lock(&lock,K_FOREVER);
     int err=0;uint32_t now=millis();
@@ -182,6 +191,13 @@ static std::vector<int> armCommand(std::vector<int> args){
                 else{servoCtl.set.holdTimeoutMs=args[2];servoCtl.set.tuck=args[3]!=0;
                     servoCtl.set.tuckElbow=args[3]==2?args[4]/1000.0:NAN;}
             }else if(op==15&&args.size()==3)err=servoCtl.scale(args[2]/1000.0);
+            else if(op==16&&args.size()==4){
+                if(rollFault)err=-EIO;
+                else if(!power.enabled)err=-EPERM;
+                else err=headRoll.set(args[2]/1000.0,args[3]/1000.0,now);
+            }else if(op==17&&args.size()==8)
+                err=headRoll.configure(args[2],args[3]/1000.0,args[4]/1000.0,args[5]/1000.0,args[6],args[7]/1000.0);
+            else if(op==18&&args.size()==2)headRoll.release();
             else if(op==5&&args.size()==3)err=servoCtl.everStarted&&!armMotion.running()?servoCtl.renew(args[2],now):armMotion.hold(args[2],now);
             else if(op==9&&args.size()==3){
                 err=armMotion.pause(args[2],now);

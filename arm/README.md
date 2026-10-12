@@ -7,6 +7,8 @@ tool use the same firmware, protocol, parameters and clips.
 arm/
 ├── sketch/          STM32 firmware: 1 kHz closed loop on the AS5600 joint encoders, joint limits,
 │                    300 ms motion lease, driver sleep (folder name must match sketch.ino)
+│                    + head-tilt servo (roll.hpp). Pins: STEP D3/D5/D9, DIR D6/D4/D7 (elbow,
+│                    shoulder, head), SLEEP D8, roll servo D2 (TIM2, 50 Hz), encoders I2C D20/D21
 ├── python/          flat modules, imported by plain name once arm/python is on sys.path
 │   ├── arm_config.py   ★ the one place for HOME, SAFE_RANGES, speed/accel caps, stream rate
 │   ├── arm_client.py · arm_motion.py   Python API (ArmMotion.move_to / stream_point / relax)

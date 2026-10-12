@@ -8,6 +8,9 @@ Real mode uses ArmMotion from the shared arm module (arm/python; the closed-loop
 already be flashed by arm/scripts/deploy.sh). Fake mode (--fake-arm) plays the same timing with no
 board, so the whole app runs on a laptop with a webcam.
 
+Head tilt (the J5 roll servo): clips play their head_roll track on it; holds and moves bring it
+back to arm_config.ROLL_HOME. It is skipped (no-op) when the firmware has no roll servo.
+
 Every command carries a token; finished-events come back as (event, token) so the director can
 ignore a CLIP_DONE from a clip that a state change already interrupted.
 
@@ -27,7 +30,8 @@ import traceback
 from .. import config as C
 from .. import events as E
 from .. import paths  # noqa: F401  (puts arm/python on sys.path)
-from trajectory import trajectory          # arm/python/trajectory.py (shared with emote.py)
+import arm_config as A                     # arm/python/arm_config.py (roll servo settings)
+from trajectory import trajectory_with_roll  # arm/python/trajectory.py (shared with emote.py)
 
 DT = 1.0 / C.STREAM_HZ
 STALL_PAUSE_S = 0.25                      # hold powered this long after a stall before pushing again
@@ -37,6 +41,8 @@ STALL_SLOWDOWN = 1.5                      # the rest of a clip plays this much s
 GIVE_UP_LIMIT, GIVE_UP_WINDOW_S = 6, 60.0 # abandoned commands this close together -> FAULT (jammed)
 EASE_SPEED = 20.0                         # deg/s when easing onto a clip's first pose
 OFFSET_SLEW = 25.0                        # deg/s: look-at offset changes are smoothed to this
+ROLL_RETURN_SPEED = 60.0                  # deg/s the head tilt eases back to ROLL_HOME after a clip
+ROLL_DEADBAND = 0.3                       # deg: smaller roll changes aren't sent (saves an RPC per tick)
 
 
 class Stalled(Exception):
@@ -58,6 +64,7 @@ class MotionWorker(threading.Thread):
         self.stall_time = 0.0               # seconds spent recovering from stalls (clips pause their clock)
         self.stall_count = 0
         self.current = list(C.HOME)
+        self.roll = None                    # last head-tilt angle sent (None: send the next one)
         self.relaxed = False
         self.arm = None
         self.give_ups = []                  # times commands were abandoned after failed retries
@@ -124,10 +131,12 @@ class MotionWorker(threading.Thread):
             log = paths.LOGS / time.strftime("arm-%Y%m%d-%H%M%S.jsonl")
             try:
                 self.arm = ArmMotion(output=log, max_speed=C.FIRMWARE_MAX_SPEED,
-                                     max_accel=C.FIRMWARE_MAX_ACCEL, tuck=False).__enter__()
+                                     max_accel=C.FIRMWARE_MAX_ACCEL, tuck=False,
+                                     roll=A.ROLL if A.ROLL_ENABLED else None).__enter__()
                 self.current = self.arm.angles()       # start every move from where the arm really is
-                self.give_ups = []
-                print(f"Arm connected at {[round(a, 1) for a in self.current]}")
+                self.give_ups, self.roll = [], None
+                tilt = "head tilt on" if self.arm.roll_supported else "no head tilt"
+                print(f"Arm connected at {[round(a, 1) for a in self.current]} ({tilt})")
                 return True
             except Exception as e:
                 last = e
@@ -260,6 +269,14 @@ class MotionWorker(threading.Thread):
             time.sleep(DT)
         return True
 
+    def _roll(self, angle, speed=None):
+        """Head tilt to angle; the firmware slews it (speed None = its cap) and the servo holds it."""
+        if self.roll is not None and abs(angle - self.roll) < ROLL_DEADBAND:
+            return
+        self.roll = angle
+        if self.arm:
+            self.arm.roll(angle, speed)
+
     def _slew_offset(self):
         """Move the applied look-at offset toward the requested one, at most OFFSET_SLEW deg/s."""
         step = OFFSET_SLEW * DT
@@ -283,11 +300,13 @@ class MotionWorker(threading.Thread):
             return
         drift = self.x.drift_step(DT)
         off = self._slew_offset()
+        self._roll(A.ROLL_HOME, ROLL_RETURN_SPEED)
         self._send([b + o + d for b, o, d in zip(self.base, off, drift)])
         time.sleep(DT)
 
     def _goto(self, pose, duration):
         start, n = list(self.current), max(1, int(duration / DT))
+        self._roll(A.ROLL_HOME, ROLL_RETURN_SPEED)
         for k in range(1, n + 1):
             if self._interrupted():
                 return False
@@ -305,7 +324,7 @@ class MotionWorker(threading.Thread):
         import numpy as np
         off0 = list(self._slew_offset())
         home = [b + o for b, o in zip(self.base, off0)]
-        t, q, vel, _ = trajectory(ref, home, amplitude)
+        t, q, vel, _, roll = trajectory_with_roll(ref, home, amplitude, roll_home=A.ROLL_HOME)
         if not self._ease_to(q[0].tolist()):
             return False
         stretch = max(1.0, time_scale)             # only ever slower: trajectory() already sits at the caps
@@ -322,6 +341,7 @@ class MotionWorker(threading.Thread):
             off = self._slew_offset()               # keep tracking the face while the clip plays
             point = [v + o - o0 for v, o, o0 in zip(q[k].tolist(), off, off0)]
             stalled_for = self.stall_time
+            self._roll(float(roll[k]))
             self._send(point, np.clip(vel[k] * rate, -59, 59).tolist())
             if self.stall_time != stalled_for:      # recovered from a stall: resume from here, slower
                 rate /= STALL_SLOWDOWN

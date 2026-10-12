@@ -34,16 +34,22 @@ DEFAULT_PPD = (146.0, 140.0, 143.1)
 
 class ArmMotion(ArmSession):
     def __init__(self, *args, ppd=DEFAULT_PPD, max_speed=12.0, max_accel=40.0,
-                 hold_timeout=60.0, tuck='auto', **kwargs):
+                 hold_timeout=60.0, tuck='auto', roll=None, **kwargs):
+        """roll: configure_roll() keywords to use the head-tilt servo, or None to leave it alone."""
         super().__init__(*args, **kwargs)
         self.servo_config = dict(ppd=ppd, max_speed=max_speed, max_accel=max_accel,
                                  hold_timeout=hold_timeout, tuck=tuck)
+        self.roll_config = roll
+        self.roll_supported = False
+        self.roll_range = None
         self.limits_speed = None
 
     def __enter__(self):
         super().__enter__()
         try:
             self.configure(**self.servo_config)
+            if self.roll_config is not None:
+                self.configure_roll(**self.roll_config)
         except BaseException:
             self.close(); raise
         return self
@@ -72,6 +78,47 @@ class ArmMotion(ArmSession):
             mode, angle = 2, round(finite(tuck, LIMITS[1][0]+MARGIN, LIMITS[1][1]-MARGIN, 'Elbow tuck angle')*1000)
         self._request(f'SERVOTIME {hold} {mode} {angle}')
         self.limits_speed = list(speeds)
+
+    # Head tilt (J5 roll servo) ------------------------------------------------
+    def configure_roll(self, center_us=1500, us_per_deg=2000/270, limits=(-45.0, 45.0), sign=1, max_speed=180.0):
+        """Pulse mapping and limits for the head-tilt servo. Returns False (and roll() becomes a
+        no-op) on firmware without the servo, so older firmware still runs everything else."""
+        if not self.roll_status()['supported']:
+            self.roll_supported = False
+            return False
+        lo, hi = (finite(v, -135, 135, 'Roll limit') for v in limits)
+        if lo >= hi or sign not in (1, -1):
+            raise ValueError('Roll range must be increasing and sign must be 1 or -1')
+        center = round(finite(center_us, 500, 2500, 'Roll center'))
+        per = round(finite(us_per_deg, 1, 20, 'Roll us/deg')*1000)
+        vmax = round(finite(max_speed, 1, 1000, 'Roll speed')*1000)
+        self._request(f'ROLLCONFIG {center} {per} {round(lo*1000)} {round(hi*1000)} {sign} {vmax}')
+        self.roll_supported, self.roll_range = True, (lo, hi)
+        return True
+
+    def roll(self, angle, speed=None):
+        """Tilt the head to angle (deg, clamped to the configured range), slewed at speed deg/s
+        (None = the configured maximum). The servo holds there until roll_off() or the session ends."""
+        if not self.roll_supported:
+            return None
+        lo, hi = self.roll_range
+        angle = min(hi, max(lo, finite(angle, -1e6, 1e6, 'Roll angle')))
+        speed_m = 0 if speed is None else round(finite(speed, 0, 1000, 'Roll speed')*1000)
+        return self._request(f'ROLL {round(angle*1000)} {speed_m}')
+
+    def roll_off(self):
+        """Stop the servo pulses: the head tilt goes limp."""
+        if self.roll_supported:
+            return self._request('ROLLOFF')
+
+    def roll_status(self):
+        """{'supported', 'enabled', 'target', 'current' (deg), 'pulse_us', 'fault'}."""
+        self._event('command', text='ROLLSTAT')
+        s = self.transport.request('ROLLSTAT')
+        self._event('roll', sample=s)
+        if s.get('supported'):
+            s = dict(s, target=s['target']/1000, current=s['current']/1000)
+        return s
 
     # Reads -----------------------------------------------------------------
     def servo_status(self):
@@ -149,8 +196,9 @@ class ArmMotion(ArmSession):
     def stream_point(self, pose, velocity=None, horizon=0.1):
         """Send one short-horizon setpoint: be at pose (moving at velocity)
         horizon seconds from now. Call at least every 0.25 s or the arm halts
-        and holds. Stalls during streaming stop and report; no automatic retry:
-        the result's state is 'stalled' and the arm holds until halt().
+        and holds. A stall makes the firmware grind through on the spot, slowly
+        and powered; only if the joint won't move at all is the result's state
+        'stalled', and the arm holds until halt().
         """
         pose = self._pose(pose, 'setpoint')
         top = self.limits_speed or [12.0]*3
