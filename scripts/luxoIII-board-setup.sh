@@ -1,6 +1,6 @@
 #!/bin/bash
 # luxoIII: set up a fresh Arduino UNO Q the way the lamp's board was, over USB (adb) from the Mac.
-#   bash scripts/luxoIII-board-setup.sh root      # once, interactive: Wi-Fi, SSH, linger, clock (asks for
+#   bash scripts/luxoIII-board-setup.sh root      # once, interactive: Wi-Fi, python3-venv, SSH, linger, clock (asks for
 #                                                 # the board's sudo password and the Wi-Fi password)
 #   bash scripts/luxoIII-board-setup.sh restore   # everything else; safe to re-run
 #   bash scripts/luxoIII-board-setup.sh tailscale # join the tailnet as daboard (prints a login link)
@@ -34,6 +34,7 @@ if ! nmcli -t -f DEVICE,STATE dev | grep -q '^wlan0:connected$'; then
   read -rp 'Wi-Fi network name: ' ssid
   nmcli --ask dev wifi connect "$ssid"
 fi
+dpkg -s python3-venv >/dev/null 2>&1 || { apt-get update -qq && apt-get install -y -qq python3-venv; }
 systemctl enable --now ssh
 loginctl enable-linger arduino
 timedatectl set-ntp true
