@@ -76,7 +76,7 @@ ssh -p 2222 arduino@localhost
 
 Tailscale (added 2026-10-11): the board is on the tailnet as `daboard`. Tailscale 1.104.1 runs without root from `/home/arduino/tailscale/` in userspace-networking mode, as a systemd user service with linger enabled, so it survives reboots. The Python client, `scripts/deploy.sh` and the Mac app use USB when the board is plugged in and fall back to `ssh arduino@daboard` otherwise; `STEPPER_LINK=usb|tailscale` forces one and `STEPPER_HOST` overrides the host. Measured STATUS round trips: USB about 18 ms; Tailscale about 30 ms median with spikes to about 120-250 ms, so Tailscale requests get a 0.6 s deadline (USB 0.25 s). The MCU's 300 ms motion lease is unchanged, so a long spike halts and holds the arm rather than letting it run on.
 
-Mac ADB path used: `/opt/homebrew/bin/adb`. Remote project: `/home/arduino/stepper-desk-q`; Python environment: `.venv/bin/python`. Board serial: `2709356903`. USB forwarding must be restored after unplugging the board or restarting ADB.
+Mac ADB path used: `/opt/homebrew/bin/adb`. Remote project: `/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk`; Python environment: `.venv/bin/python`. Board serial: `2709356903`. USB forwarding must be restored after unplugging the board or restarting ADB.
 
 Pinned versions in [sketch.yaml](sketch/sketch.yaml): Arduino Zephyr core 1.0.0, RouterBridge 0.4.3, RPClite 0.3.1, MsgPack 0.4.2, ArxContainer 0.7.0, ArxTypeTraits 0.3.2, DebugLog 0.8.4. Python dependencies: arduino-router-bridge 0.5.1 and msgpack 1.2.3.
 

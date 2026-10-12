@@ -62,11 +62,11 @@ As the evening went on the elbow could no longer straighten (lift the forearm an
 
 ## Connection
 
-**On the board (recommended for emotes):** `scripts/deploy.sh` also installs `emote.py`, `armctl.py`, the calibration, the arm clips, and `motion_lib`'s player and clips in `/home/arduino/stepper-desk-q`, plus numpy in its venv. On the Arduino Q the client sees the router socket and starts the gateway as a local process (no SSH hop): STATUS round trips 16 ms median, 33 ms worst. Run it there:
+**On the board (recommended for emotes):** The board runs from its clone of this repo, `/home/arduino/IEEE-Minimalist-AI-Challenge-2026`; `scripts/deploy.sh` copies the working tree into `apps/stepper_desk` there, builds its venv (`apps/stepper_desk/.venv`, with numpy) and flashes from it. On the Arduino Q the client sees the router socket and starts the gateway as a local process (no SSH hop): STATUS round trips 16 ms median, 33 ms worst. Run it there:
 
 ```sh
 ssh arduino@daboard
-cd stepper-desk-q && .venv/bin/python scripts/emote.py lamp_happy/arm --execute
+cd IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk && .venv/bin/python scripts/emote.py lamp_happy/arm --execute
 ```
 
 **From the Mac:** USB (ADB forward) when the board is plugged in, otherwise Tailscale to `daboard`; see [COMMISSIONING_REPORT.md](COMMISSIONING_REPORT.md#connection-and-deployment). STATUS round trips: USB about 18 ms, Tailscale about 30 ms with spikes to 120–250 ms (Tailscale requests get a 0.6 s deadline; the MCU's 300 ms motion lease is unchanged).

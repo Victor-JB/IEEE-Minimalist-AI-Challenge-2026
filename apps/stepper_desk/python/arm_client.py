@@ -51,7 +51,7 @@ def gateway_python():
     import importlib.util
     if importlib.util.find_spec('arduino') is not None:
         return sys.executable
-    for venv in (os.environ.get('STEPPER_VENV'),'/home/arduino/stepper-desk-q/.venv'):
+    for venv in (os.environ.get('STEPPER_VENV'),'/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/.venv'):
         if venv and os.path.exists(venv+'/bin/python'): return venv+'/bin/python'
     raise ArmError('arduino-router-bridge not installed: run bash scripts/deploy.sh or pip install -r python/requirements.txt')
 
@@ -64,7 +64,7 @@ class Transport:
         if target is None:
             command=[gateway_python(),'-u',str(ROOT/'python/script_gateway.py'),*mode]
         else:
-            remote=' '.join(['/home/arduino/stepper-desk-q/.venv/bin/python -u /home/arduino/stepper-desk-q/python/script_gateway.py',*mode])
+            remote=' '.join(['/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/.venv/bin/python -u /home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/python/script_gateway.py',*mode])
             command=['ssh','-T','-o','BatchMode=yes','-o','ConnectTimeout=5',
                      '-o','ServerAliveInterval=5','-o','ServerAliveCountMax=2',*target,remote]
         self.process=subprocess.Popen(command,

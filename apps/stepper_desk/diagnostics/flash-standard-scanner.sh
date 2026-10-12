@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-ROOT=/home/arduino/stepper-desk-q
+ROOT=/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk
 CORE=/home/arduino/.arduino15/packages/arduino/hardware/zephyr/1.0.0
 LOADER="$CORE/firmwares/zephyr-arduino_uno_q_stm32u585xx.elf"
 SKETCH="$ROOT/diagnostics/build-standard-scanner/i2c_scanner.ino.elf-zsk.bin"

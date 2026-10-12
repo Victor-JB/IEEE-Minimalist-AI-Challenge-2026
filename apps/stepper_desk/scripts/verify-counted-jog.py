@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run on Arduino Q. Test physical STEP pad edges with D8 sleep locked LOW."""
 import json,sys
-sys.path.insert(0,'/home/arduino/stepper-desk-q/python')
+sys.path.insert(0,'/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/python')
 from arduino.router_bridge import Bridge
 from arm_gateway import ArmGateway
 b=Bridge();g=ArmGateway(b);out={}

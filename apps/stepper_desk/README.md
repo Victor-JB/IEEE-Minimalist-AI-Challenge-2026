@@ -77,7 +77,7 @@ With automatic D8 sleep, stopping the final active motor releases holding torque
 
 The Mac establishes `adb -s 2709356903 forward tcp:2222 tcp:22`. Each axis uses its own SSH subprocess and random ownership token. The gateway calls `stepper_command` through the official `arduino-router-bridge` Python package. It never opens `/dev/ttyHS1` and never invents HOLD renewals. The existing router and monitor services remain in charge of serial transport.
 
-The board-side installation is `/home/arduino/stepper-desk-q`. Update the device serial and SSH endpoint in `mac/SSHLink.swift` and `scripts/deploy.sh` if using a different board.
+The board-side installation is `/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk`. Update the device serial and SSH endpoint in `mac/SSHLink.swift` and `scripts/deploy.sh` if using a different board.
 
 Hardware PWM uses separate TIM1/TIM3/TIM4 counters configured at approximately 1 MHz. Do not use other PWM channels on these timers in this sketch. Supported pulse frequencies are 20–2,400 Hz. Each motor's piecewise-linear ramp has 2–8 points and lasts up to 60 seconds. PWM compare is forced to zero on STOP. A direction change waits at least 60 ms stationary and then 20 ms after the actual DIR update before the ramp starts.
 

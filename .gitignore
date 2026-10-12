@@ -44,3 +44,8 @@ apps/stepper_desk/recordings/
 
 # macOS
 .DS_Store
+
+# Board-side builds (the Arduino Q runs from a clone of this repo)
+apps/stepper_desk/build/
+apps/stepper_desk/build-*/
+apps/stepper_desk/diagnostics/build-*/

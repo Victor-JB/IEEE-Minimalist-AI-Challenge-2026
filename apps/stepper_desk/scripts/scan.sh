@@ -8,4 +8,4 @@ if [[ -z "$ADB" ]]; then
 fi
 [[ -n "$ADB" ]] || { echo 'Install android-platform-tools with Homebrew.' >&2; exit 1; }
 # Use the existing USB shell directly; it does not need the SSH forward.
-"$ADB" -s 2709356903 shell '/home/arduino/stepper-desk-q/.venv/bin/python /home/arduino/stepper-desk-q/python/scanner.py'
+"$ADB" -s 2709356903 shell '/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/.venv/bin/python /home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/python/scanner.py'
