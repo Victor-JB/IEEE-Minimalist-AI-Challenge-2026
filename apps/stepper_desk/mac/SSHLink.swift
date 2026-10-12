@@ -49,7 +49,7 @@ final class SSHLink {
             // healthy logins before the gateway started. Motor leases stay 300 ms.
             task.arguments = ["-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=\(usb ? 3 : 6)",
                               "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=2"] + target +
-                             ["/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/.venv/bin/python -u /home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/python/gateway.py \(axis < 0 ? "--group" : "--axis \(axis)")"]
+                             ["/home/arduino/IEEE-Minimalist-AI-Challenge-2026/arm/.venv/bin/python -u /home/arduino/IEEE-Minimalist-AI-Challenge-2026/arm/python/gateway.py \(axis < 0 ? "--group" : "--axis \(axis)")"]
             task.standardInput = pin; task.standardOutput = pout; task.standardError = perr
             do { try task.run() } catch { fail("Cannot open SSH to Arduino Q: \(error.localizedDescription)"); return }
             process = task; input = pin; output = pout; errors = perr

@@ -7,7 +7,7 @@ Implemented in [apps/lumen](../apps/lumen/README.md): the tables below live in `
 Every state answers three questions:
 
 1. **Which AI models run, and how often.** The models are face, hand gesture and book, plus the free motion gate (a frame difference, no neural net). The state decides the compute budget.
-2. **Which animation pool it draws from.** Clip names are from `motion_lib/clips` and `apps/stepper_desk/clips`.
+2. **Which animation pool it draws from.** Clip names are from `arm/clips/authored` and `arm/clips/lamp`.
 3. **Which event moves it to another state.** Edges are labeled with the event that fires them.
 
 ---
@@ -189,7 +189,7 @@ When several faces are visible, pick the largest (closest) one. Switch targets o
 - High energy biases pools toward the bigger variants (`__big`, `excited_bounce`, `celebrate__big`) and slightly faster time scales. Low energy biases toward `__calm`, `__subtle` and slower ones.
 - This is one number, cheap to implement, and it makes the lamp feel like it remembers the last minute.
 
-**Reuse the existing modifier rules** in `motion_lib/modifiers/rules.py`: `LookBackAtUser` (CHECK-IN), `LightCoupling` (dim while looking at the user), `IdleBreathe` (any hold ≥ 2 s), `GlanceBeforeMove` + `AnticipationWindup` (AIM, ADJUST), `Hesitation` (NOTICE false alarm, NOT FOUND).
+**Reuse the existing modifier rules** in `tools/motion_lib/modifiers/rules.py` (port the ones you use into the app): `LookBackAtUser` (CHECK-IN), `LightCoupling` (dim while looking at the user), `IdleBreathe` (any hold ≥ 2 s), `GlanceBeforeMove` + `AnticipationWindup` (AIM, ADJUST), `Hesitation` (NOTICE false alarm, NOT FOUND).
 
 ---
 

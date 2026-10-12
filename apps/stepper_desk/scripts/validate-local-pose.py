@@ -6,7 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
-sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'python'))
+sys.path.insert(0,str(Path(__file__).resolve().parents[3]/'arm'/'python'))
 import arm_client as client
 
 
@@ -40,10 +40,13 @@ def load_profile(path,fingerprint):
         else:raise ValueError('Unsupported local model')
     provenance=profile.get('provenance')
     if not isinstance(provenance,list) or not provenance:raise ValueError('Missing profile provenance')
+    # Evidence lives in this app (diagnostics/, calibration/) or, for the arm calibration, in arm/.
+    bases=(Path(__file__).resolve().parents[1],client.ROOT.resolve())
     for item in provenance:
         source=Path(item.get('source',''))
-        resolved=(client.ROOT/source).resolve()
-        if source.is_absolute() or not resolved.is_relative_to(client.ROOT.resolve()) or not resolved.is_file():raise ValueError('Invalid provenance source')
+        if source.is_absolute():raise ValueError('Invalid provenance source')
+        resolved=next((r for r in ((b/source).resolve() for b in bases) if r.is_file() and any(r.is_relative_to(b) for b in bases)),None)
+        if resolved is None:raise ValueError('Invalid provenance source')
         expected=item.get('sha256')
         if not isinstance(expected,str) or hashlib.sha256(resolved.read_bytes()).hexdigest()!=expected:raise ValueError('Provenance hash mismatch')
     return profile

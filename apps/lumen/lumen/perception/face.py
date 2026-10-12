@@ -1,12 +1,11 @@
-"""Face detection (Qualcomm Lightweight-Face-Detection, already working in inference/) plus
+"""Face detection (Qualcomm Lightweight-Face-Detection, face_detector.py) plus
 target selection: follow the largest face, switch only if another stays clearly larger."""
 from .. import config as C
-from .. import paths  # noqa: F401  (puts inference/ on sys.path)
+from .face_detector import FaceDetector
 
 
 class FaceTracker:
     def __init__(self, threshold=0.5):
-        from detector import FaceDetector       # inference/detector.py
         self.detector = FaceDetector(score_threshold=threshold)
         self.target = None
         self._challenger_since = None

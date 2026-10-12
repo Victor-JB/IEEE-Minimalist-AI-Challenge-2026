@@ -18,16 +18,12 @@ else
 fi
 SSH=(ssh -p "$PORT" -o BatchMode=yes -o ConnectTimeout=5 "$HOST")
 # The board runs from its clone of this repo; deploy copies the working tree over it, so
-# uncommitted Mac changes deploy too (commit and git pull there to keep the clone clean).
+# uncommitted Mac changes deploy too.
+# 1) The shared arm module: firmware (compile + flash), Python API, calibration, clips, venv.
+STEPPER_LINK="$LINK" bash "$ROOT/../../arm/scripts/deploy.sh"
+# 2) This app's manual tools (emote.py, armctl.py, ...). They run with arm/.venv/bin/python.
 REPO=/home/arduino/IEEE-Minimalist-AI-Challenge-2026
 BOARD=$REPO/apps/stepper_desk
-"${SSH[@]}" "test -d $REPO/.git || git clone -q https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026 $REPO"
-"${SSH[@]}" "mkdir -p $BOARD/{sketch,python,scripts,calibration,clips,recordings} $REPO/motion_lib/clips"
-scp -q -P "$PORT" -o BatchMode=yes "$ROOT"/sketch/* "$HOST":$BOARD/sketch/
-scp -q -P "$PORT" -o BatchMode=yes "$ROOT"/python/*.py "$ROOT"/python/requirements.txt "$HOST":$BOARD/python/
+"${SSH[@]}" "mkdir -p $BOARD/{scripts,recordings}"
 scp -q -P "$PORT" -o BatchMode=yes "$ROOT"/scripts/*.sh "$ROOT"/scripts/*.py "$HOST":$BOARD/scripts/
-scp -q -P "$PORT" -o BatchMode=yes "$ROOT"/calibration/*.json "$HOST":$BOARD/calibration/
-scp -q -P "$PORT" -o BatchMode=yes "$ROOT"/clips/*.json "$HOST":$BOARD/clips/
-scp -q -P "$PORT" -o BatchMode=yes "$ROOT"/../../motion_lib/player.py "$HOST":$REPO/motion_lib/
-scp -q -P "$PORT" -o BatchMode=yes "$ROOT"/../../motion_lib/clips/*.json "$HOST":$REPO/motion_lib/clips/
-"${SSH[@]}" "cd $BOARD && python3 -m venv .venv && .venv/bin/pip install -q -r python/requirements.txt && arduino-cli compile --profile default --build-path $BOARD/build sketch && bash scripts/flash-local.sh"
+echo "Manual tools: ssh $HOST; cd $BOARD && ../../arm/.venv/bin/python scripts/emote.py lamp_happy/arm --execute"

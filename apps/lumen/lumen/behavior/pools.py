@@ -2,11 +2,11 @@
 
 Entries are (clip ref, energy) where energy is "low", "mid" or "high"; the expressive layer
 weights high-energy clips up when the lamp is excited and low-energy ones when it is calm.
-Clip refs are motion_lib's "name/variant" (motion_lib/CATALOG.md) or the arm-specific
-"lamp_*/arm" clips in apps/stepper_desk/clips.
+Clip refs are "name/variant": authored clips in arm/clips/authored (browse them in
+tools/motion_lib/CATALOG.md on the dev branch) or the arm-specific "lamp_*/arm" clips in arm/clips/lamp.
 
 A pool marked PROCEDURAL is generated in code instead (look-at, hold, sweep, adjust); its
-clips, if any, are flourishes played on top. Keep clips the real arm can do: check them with
+clips, if any, are flourishes played on top. Keep clips the real arm can do: try them with
 apps/stepper_desk/scripts/emote.py first (lamp_wake needs more shoulder torque than it has).
 """
 

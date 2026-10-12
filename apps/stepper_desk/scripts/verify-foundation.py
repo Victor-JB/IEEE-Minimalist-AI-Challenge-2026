@@ -1,6 +1,6 @@
 """Run on Q: no JOG/POSE/HOLD; pad test only with physical SLEEP low."""
 import sys,json,time
-sys.path.insert(0,'/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/python')
+sys.path.insert(0,'/home/arduino/IEEE-Minimalist-AI-Challenge-2026/arm/python')
 from arduino.router_bridge import Bridge
 from arm_gateway import ArmGateway
 b=Bridge();g=ArmGateway(b);report={}

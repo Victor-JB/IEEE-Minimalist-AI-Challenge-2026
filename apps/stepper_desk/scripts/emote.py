@@ -27,46 +27,17 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / 'python'))
-# motion_lib sits next to this app on the Arduino Q (deploy.sh), at the repo root on the Mac.
-sys.path.insert(0, str(ROOT / 'motion_lib' if (ROOT / 'motion_lib').exists() else ROOT.parents[1] / 'motion_lib'))
+sys.path.insert(0, str(ROOT.parents[1] / 'arm' / 'python'))
 from arm_client import ArmError, angles  # noqa: E402
 from arm_motion import ArmMotion  # noqa: E402
-from player import load_clip, play  # noqa: E402
+import arm_config as C  # noqa: E402  (shared with Lumen: home, caps, safe ranges, stream rate)
+from trajectory import trajectory  # noqa: E402  (shared with Lumen)
 
-HOME = (-12.04, 63.46, 5.27)
-SAFE = ((-43, 36), (-70, 77), (-78, 85))   # shoulder, elbow, head: joint limits less the firmware's 2 deg margin
-SHOULDER_STOP = -44.0
-HZ = 25
-HORIZON = {'usb': 0.12, 'tailscale': 0.3}   # Tailscale points can arrive 100-170 ms apart
-
-
-class SimArm:
-    """motion_lib's default robot, just enough for play()."""
-    joint_names = ['base_yaw', 'shoulder_pitch', 'elbow_pitch', 'wrist_pitch', 'wrist_yaw', 'head_roll']
-    home = np.array([0, -10, 70, -60, 0, 0.])
-    rate = 50
-
-
-def trajectory(name, home, amplitude, speeds, accel, gains=(1, 1, 1), elbow_lift=None):
-    """Time (s), pose (deg) and velocity (deg/s) arrays for one clip, plus its time_scale."""
-    local = ROOT / 'clips' / f"{name.replace('/', '__')}.json"
-    clip, sim = load_clip(str(local) if local.exists() else name), SimArm()
-    def render(scale):
-        return play(clip, sim, start=sim.home, amplitude=amplitude, time_scale=scale, enforce_ranges=False)
-    tr = render(1.0)
-    dq = np.gradient(tr.q[:, 1:4], axis=0) * np.array(gains)
-    speed = (np.abs(dq).max(0) * sim.rate / np.array(speeds)).max()
-    if elbow_lift:   # straightening the elbow lifts forearm and head: it stalls above ~15 deg/s
-        speed = max(speed, -dq[:, 1].min() * sim.rate / elbow_lift)
-    acc = np.abs(np.gradient(dq, axis=0)).max() * sim.rate ** 2
-    scale = max(1.0, speed, (acc / accel) ** 0.5)
-    if scale > 1.0:
-        tr = render(scale)
-    q = np.array(home) + (tr.q[:, 1:4] - sim.home[1:4]) * np.array(gains)
-    for j, (lo, hi) in enumerate(SAFE):
-        q[:, j] = np.clip(q[:, j], lo, hi)
-    return tr.t, q, np.gradient(q, axis=0) * sim.rate, scale
+HOME = C.HOME
+SAFE = C.SAFE_RANGES
+SHOULDER_STOP = C.SHOULDER_STOP
+HZ = C.STREAM_HZ
+HORIZON = C.HORIZON
 
 
 def perform(name, home, args, output):
@@ -74,7 +45,7 @@ def perform(name, home, args, output):
     trace = {'t': t.tolist(), 'q': q.tolist(), 'time_scale': scale, 'home': list(home), 'real': []}
     result = {'clip': name, 'time_scale': round(scale, 2), 'seconds': round(float(t[-1]), 2),
               'range': [round(float(np.ptp(q[:, j])), 1) for j in range(3)], 'error': None}
-    arm = ArmMotion(output=output, max_speed=60, max_accel=500, tuck=False)
+    arm = ArmMotion(output=output, max_speed=C.FIRMWARE_MAX_SPEED, max_accel=C.FIRMWARE_MAX_ACCEL, tuck=False)
     with arm:
         try:
             horizon = args.horizon or HORIZON['tailscale' if arm.transport.timeout > 0.3 else 'usb']
@@ -126,18 +97,18 @@ def return_home(home):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('clips', nargs='+', help='motion_lib clip names (nod_yes/medium) or clips/ in this app (lamp_wake/arm)')
+    p.add_argument('clips', nargs='+', help='motion_lib clip names (nod_yes/medium) or real-arm clips (lamp_wake/arm), all in arm/clips')
     p.add_argument('--amplitude', type=float, default=1.0, help='motion_lib amplitude (1.6 = exaggerated)')
     p.add_argument('--home', type=float, nargs=3, default=HOME, metavar=('SH', 'EL', 'HD'),
                    help='pose the clip offsets are applied around (-12 52 12 gives the elbow room)')
     p.add_argument('--gains', type=float, nargs=3, default=(1, 1, 1), metavar=('SH', 'EL', 'HD'),
                    help='extra per-joint amplitude on top of --amplitude, e.g. 1 2 0.6 to exaggerate the elbow')
-    p.add_argument('--speeds', type=float, nargs=3, default=(30, 25, 22), metavar=('SH', 'EL', 'HD'),
+    p.add_argument('--speeds', type=float, nargs=3, default=C.SPEED_CAPS, metavar=('SH', 'EL', 'HD'),
                    help='per-joint speed caps in deg/s (default 30 25 22)')
-    p.add_argument('--elbow-lift', type=float, default=14,
+    p.add_argument('--elbow-lift', type=float, default=C.ELBOW_LIFT_CAP,
                    help='speed cap in deg/s while the elbow straightens (lifts); folding uses --speeds')
     p.add_argument('--horizon', type=float, help='streaming look-ahead in s (default 0.12 on USB, 0.3 on Tailscale)')
-    p.add_argument('--accel', type=float, default=300, help='acceleration cap in deg/s^2 (firmware: 500)')
+    p.add_argument('--accel', type=float, default=C.ACCEL_CAP, help='acceleration cap in deg/s^2 (firmware: 500)')
     p.add_argument('--traces', default='recordings/emote-traces.json', help='command and measured angles per clip')
     p.add_argument('--execute', action='store_true', help='move the arm; without it, only print the plan')
     args = p.parse_args()

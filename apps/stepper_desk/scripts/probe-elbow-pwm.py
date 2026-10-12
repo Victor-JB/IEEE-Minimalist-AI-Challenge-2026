@@ -2,7 +2,7 @@
 """Bounded elbow-only PWM diagnostic. Does not certify counted pulses or ratios."""
 import argparse,json,sys,time
 from pathlib import Path
-sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'python'))
+sys.path.insert(0,str(Path(__file__).resolve().parents[3]/'arm'/'python'))
 from arm_client import Transport,healthy,angles,finite
 
 def main():

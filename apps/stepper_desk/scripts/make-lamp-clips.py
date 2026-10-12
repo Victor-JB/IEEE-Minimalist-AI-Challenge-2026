@@ -8,12 +8,12 @@ Base yaw and head tilt are dropped (this arm has neither), so look_left/right an
 yaw-only head shake are left out. Segment times follow the lamp's minimum-jerk profile at
 its 2-3 rad/s joint limits; scripts/emote.py slows each clip to this arm's speed caps.
 
-    python3 scripts/make-lamp-clips.py      # writes clips/lamp_*.json
+    python3 scripts/make-lamp-clips.py      # writes arm/clips/lamp/lamp_*.json
 """
 import json
 from pathlib import Path
 
-OUT = Path(__file__).resolve().parents[1] / 'clips'
+OUT = Path(__file__).resolve().parents[3] / 'arm' / 'clips' / 'lamp'
 # (shoulder, elbow, wrist) from lamp_demo.POSE, yaw and head_tilt dropped.
 POSE = {
     'sleep': (10, 90, 80), 'tall': (0, 0, 0), 'yawn': (-8, -10, -25), 'look': (15, 45, 55),

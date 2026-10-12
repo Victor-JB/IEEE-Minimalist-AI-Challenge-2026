@@ -21,7 +21,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / 'python'))
+sys.path.insert(0, str(ROOT.parents[1] / 'arm' / 'python'))
 from arm_client import ArmError, angles  # noqa: E402
 from arm_motion import ArmMotion  # noqa: E402
 

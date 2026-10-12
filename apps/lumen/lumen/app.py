@@ -6,12 +6,11 @@
 """
 import time
 
-from . import paths  # noqa: F401  (sys.path for inference/, perf/, motion_lib/, stepper_desk/)
 from . import config as C
 from .behavior.director import Director
 from .behavior.expressive import Expressive
-from .io.arm import MotionWorker
 from .io.light import Light
+from .motion.worker import MotionWorker
 from .machine import Machine
 from .perception import Perception
 from .perception.book import BookDetector
@@ -21,9 +20,9 @@ from .translog import TransitionLog
 
 
 def run(args):
-    from camera import Camera, FpsCounter            # inference/camera.py
-    from perfstats import count, timed               # perf/perfstats.py (no-op unless PERF=1)
     from . import hud
+    from .io.camera import Camera, FpsCounter
+    from .perfstats import count, timed              # no-op unless PERF=1
 
     expressive = Expressive()
     worker = MotionWorker(expressive, fake=args.fake_arm)
@@ -38,7 +37,7 @@ def run(args):
     log = TransitionLog()
     streamer = None
     if args.stream:
-        from stream import FrameStreamer             # inference/stream.py
+        from .io.stream import FrameStreamer
         streamer = FrameStreamer(args.stream)
 
     def entered(state, m):

@@ -1,7 +1,7 @@
 #!/bin/bash
-# From the Mac: copy Lumen + the shared code it uses to the board, install its venv,
-# install/restart the boot service. Does NOT flash the MCU: the arm firmware comes from
-# apps/stepper_desk/scripts/deploy.sh (run that once, and again only when firmware changes).
+# From the Mac: copy Lumen (apps/lumen) and the shared arm module (arm/) to the board, install its venv,
+# install/restart the boot service. Does NOT flash the MCU: the firmware comes from
+# arm/scripts/deploy.sh (run that once, and again only when arm/sketch changes).
 #   bash apps/lumen/scripts/deploy.sh            # USB if plugged in, else Tailscale (daboard)
 #   LUMEN_NO_START=1 bash apps/lumen/scripts/deploy.sh   # install but don't (re)start
 set -euo pipefail
@@ -20,13 +20,11 @@ SSH=(ssh -p "$PORT" -o BatchMode=yes -o ConnectTimeout=5 "$HOST")
 REPO=/home/arduino/IEEE-Minimalist-AI-Challenge-2026
 
 "${SSH[@]}" "test -d $REPO/.git || git clone -q https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026 $REPO"
-# Working tree -> board clone (uncommitted changes deploy too, like stepper_desk's deploy).
+# Working tree -> board clone (uncommitted changes deploy too): the app + the shared arm module.
 ( cd "$REPO_LOCAL" && COPYFILE_DISABLE=1 tar czf - \
     --exclude='.venv' --exclude='__pycache__' --exclude='apps/lumen/logs' \
-    --exclude='motion_lib/review' --exclude='motion_lib/gamma_comparison' \
-    apps/lumen inference perf motion_lib \
-    apps/stepper_desk/python apps/stepper_desk/scripts/emote.py \
-    apps/stepper_desk/calibration apps/stepper_desk/clips ) \
+    --exclude='arm/build*' --exclude='arm/recordings' \
+    apps/lumen arm ) \
   | "${SSH[@]}" "tar xzf - -C $REPO"
 
 "${SSH[@]}" "set -e; cd $REPO/apps/lumen

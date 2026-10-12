@@ -1,0 +1,113 @@
+# The real stepper arm (apps/stepper_desk), measured on 2026-10-11. Same format as robot.toml.
+#
+#   python tools/sim/view.py --config tools/sim/stepper_desk.toml
+#   ROBOT_CONFIG=tools/sim/stepper_desk.toml python motion_lib/demo.py --clip nod_yes/medium
+#
+# Geometry follows the app's 3D view (apps/stepper_desk/mac/ArmCAD.swift, Fusion ARM v29):
+# 18.5 cm shoulder->elbow and elbow->head pivots, 4.5 cm head. The real arm has no base yaw,
+# wrist yaw or head roll; motion_lib clips drop those joints when played on this model.
+# Joint names keep motion_lib's names; wrist_pitch is the arm's "head" joint. All three
+# joints turn the same way, as in the app's view: positive leans/folds toward the front.
+# Angles match the arm's calibrated sensor angles (apps/stepper_desk/calibration).
+# Masses are estimates (the CAD model carries no mass data).
+
+name = "stepper_desk_arm"
+
+[motion]
+# Closed-loop firmware limits that passed the speed sweep (recordings/closedloop-limits-*):
+# all joints clean at 60 deg/s and 500 deg/s^2 over 15 deg moves, endpoint error <= 0.3 deg.
+max_speed_deg_s = 60
+control_hz = 50
+max_accel_deg_s2 = 500
+max_jerk_deg_s3 = 20000
+limit_margin_deg = 2   # the firmware keeps targets 2 deg inside the hard limits
+
+[defaults]
+mass = 0.12
+radius = 0.02
+kp = 1000.0      # stiff: the real closed loop holds within about 0.1 deg
+damping = 0.65   # CAD drive model (arm_mujoco shoulder/elbow)
+armature = 0.0014  # CAD drive model: 1.382e-3 kg m^2 reflected through the cycloid drives
+
+[base]
+size = [0.10, 0.09, 0.03]  # the app's pedestal
+mass = 0.8
+
+[[joint]]
+name = "shoulder_pitch"
+axis = "y"
+# Firmware hard limits (the user's). On 2026-10-11 the shoulder could not lift back from below
+# about -36 deg or from +21 deg (elbow 51), so a -34 floor was used for a while; a recheck on
+# 2026-10-12 after hardware work lifted cleanly from -31..+36 at 30 deg/s, and the floor was removed.
+range = [-45, 38]
+home = -12
+link = [0, 0, 0.185]
+mass = 0.25
+# Fitted to the real stalls with the CAD masses: holds at least 1.96 N m (held at +21.3 / elbow 51.7),
+# but lifting stalled from about 1.28 N m (+22 elbow 0, +21.3 elbow 52) while 1.25 N m lifted (+3).
+# max_torque is the holding limit; [measured] shoulder_lift_torque_nm is the moving limit.
+# The back-side stall at -36 needed only 0.4-0.7 N m: position-dependent friction, not torque.
+max_torque = 2.3
+
+[[joint]]
+name = "elbow_pitch"
+axis = "y"
+range = [-72, 79]
+home = 63.5
+link = [0, 0, 0.185]
+mass = 0.18
+max_torque = 2.0   # clean across the range, which needs up to 1.2 N m (CAD masses)
+
+[[joint]]
+name = "wrist_pitch"  # the arm's head joint
+axis = "y"
+# Holds anywhere in range; lifting out of the bottom (below about -70) stalls above 3 deg/s.
+range = [-80, 87]
+home = 5.3
+link = [0, 0, 0.045]
+mass = 0.08
+max_torque = 1.0   # passed 60 deg/s and 500 deg/s^2 (0.35 N m static); the -72 lift stall needed only 0.13 (friction zone)
+
+[head]
+size = [0.08, 0.09, 0.06]
+mass = 0.12
+
+# Measured behaviour the kinematic sim does not model (for reference and future torque limits).
+[measured]
+date = "2026-10-11"
+shoulder_lift_stall_deg = [-36.5, 21.3]   # cannot lift back past these from further out
+# With the CAD masses the forward stalls fit a lifting limit of about 1.27 N m; the back-side
+# stall (-36: 0.4-0.7 N m) and the head's -72 stall (0.13 N m) need extra friction near the ends.
+shoulder_friction_zones_deg = [[-90, -34], [20, 90]]
+shoulder_lift_torque_nm = 1.27   # moving (lifting) limit; holding is higher (max_torque)
+head_lift_slow_zone_deg = [-78, -70]      # lift at <= 3 deg/s here
+learned_pulses_per_degree = { shoulder = [141.6, 166.6], elbow = [155.3, 158.5], head = [150.6, 169.1] }  # [forward, reverse]
+streaming_lag_deg_at_58_deg_s = { shoulder = 9.0, elbow = 6.7, head = 3.8 }
+
+# Visual shells: the ARM v29 meshes and part transforms the app's 3D view uses, imported from
+# branch full-model-animations@ef1b0d2 by apps/stepper_desk/scripts/import-cad.py.
+[cad]
+manifest = "apps/stepper_desk/mac/Resources/ArmCAD/model.json"
+
+# Masses: the CAD model's own mass budget (arm_mujoco/build_mjcf.py + expected_masses.json on
+# full-model-animations@ef1b0d2): PLA 1240 kg/m^3 x 0.55 fill, steel pins/bearings 7850,
+# 17HS4401 steppers 0.28 kg each (2 in the first link), 17HS4023 0.14 kg, HPS-2027 servo 0.066 kg.
+# Densities below spread that over the app's visual parts; body_mass_kg then scales each body
+# to the CAD body totals, which include the cycloid cams and plates the app does not draw:
+#   shoulder link = first_link 0.725 + shoulder & elbow cams/plates 0.130
+#   elbow link    = second_link 0.316 + wrist cam/plates 0.093
+#   head          = head 0.164 + head_tilt (servo, shade) 0.181
+# kg/m^3, first matching file-name prefix wins.
+[cad.density]
+"17hs4023" = 3270      # 0.14 kg over 42.8 cm^3
+"stepper" = 4520       # 17HS4401: 0.28 kg over 62 cm^3
+"01_housing" = 2000    # servo: 0.066 kg over 33 cm^3
+"02_output" = 2000
+"pin" = 7850
+"bearing" = 7850
+default = 682          # PLA at 55 % fill
+
+[cad.body_mass_kg]
+shoulder_pitch = 0.855
+elbow_pitch = 0.409
+wrist_pitch = 0.345

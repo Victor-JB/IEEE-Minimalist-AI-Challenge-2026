@@ -35,7 +35,7 @@
 *.app
 
 __pycache__/
-sim/build/
+tools/sim/build/
 adding_emotion.txt
 infer_out_on_arduino.log
 
@@ -46,9 +46,12 @@ apps/stepper_desk/recordings/
 .DS_Store
 
 # Board-side builds (the Arduino Q runs from a clone of this repo)
-apps/stepper_desk/build/
-apps/stepper_desk/build-*/
+arm/build/
+arm/build-*/
 apps/stepper_desk/diagnostics/build-*/
 
 # Lumen runtime logs (transition CSVs, arm session JSONL)
 apps/lumen/logs/
+
+# Arm session recordings written by arm_client when no output path is given
+arm/recordings/

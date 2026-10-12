@@ -1,4 +1,11 @@
-"""Every tunable number from docs/STATE_MACHINE.md in one place. Tune against the power meter."""
+"""Every tunable behavior number from docs/STATE_MACHINE.md in one place. Tune against the power meter.
+
+Arm parameters (home, caps, safe ranges, stream rate) are NOT defined here: they come from the
+shared arm/python/arm_config.py, so Lumen and the manual tools always agree.
+"""
+from . import paths  # noqa: F401  (puts arm/python on sys.path)
+from arm_config import (ACCEL_CAP, ELBOW_LIFT_CAP, FIRMWARE_MAX_ACCEL,  # noqa: F401  re-exported
+                        FIRMWARE_MAX_SPEED, HOME, SAFE_RANGES, SPEED_CAPS, STREAM_HZ)
 
 # --- Perception debouncing -------------------------------------------------
 FACE_SEEN_K, FACE_SEEN_N = 1, 1          # IDLE -> NOTICE on the first face
@@ -32,9 +39,3 @@ HOLD_DRIFT_HZ = 0.3
 ENERGY_START, ENERGY_REST = 0.3, 0.3
 ENERGY_BUMP = 0.15                       # per interaction
 ENERGY_DECAY_S = 180.0                   # time constant back to rest
-
-# --- Arm (shoulder, elbow, head); mirrors apps/stepper_desk/CLOSED_LOOP.md ----
-HOME = (-12.04, 63.46, 5.27)
-SPEED_CAPS = (30.0, 25.0, 22.0)          # deg/s, emote.py defaults after the evening slowdown
-ACCEL_CAP = 300.0
-STREAM_HZ = 25

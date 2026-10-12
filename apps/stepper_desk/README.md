@@ -1,10 +1,16 @@
 # Stepper Desk Q
 
+> **Layout (Oct 2026 refactor):** the firmware, Python arm API, calibration and clips now live in the
+> shared [`arm/`](../../arm/README.md) module (`arm/sketch`, `arm/python`, `arm/calibration`,
+> `arm/clips`), used by both this app and Lumen. Paths below that say `sketch/`, `python/` or
+> `scripts/flash-local.sh` refer to those `arm/` folders. On the board, the gateway runs from
+> `arm/.venv` and `arm/python/gateway.py`. Rebuild the Mac app (`zsh mac/build.sh`) to pick that up.
+
 Three DRV8825 stepper channels on Arduino UNO Q, controlled by a native macOS app. Status is on the Mac only. The original nRF9151 project is unchanged.
 
 ## Current commissioning status
 
-**Closed-loop motion (11 October 2026, evening):** the STM32 position loop on the AS5600 angles is validated on the arm: endpoints within 0.3° up to 60 °/s and 500 °/s², streamed `motion_lib` emotes via `scripts/emote.py`, a −34° shoulder floor after the shoulder proved unable to lift back from below about −36°, and Tailscale (`daboard`) as a fallback link. See [CLOSED_LOOP.md](CLOSED_LOOP.md). The sim model of this arm is `sim/stepper_desk.toml`.
+**Closed-loop motion (11 October 2026, evening):** the STM32 position loop on the AS5600 angles is validated on the arm: endpoints within 0.3° up to 60 °/s and 500 °/s², streamed `motion_lib` emotes via `scripts/emote.py`, a −34° shoulder floor after the shoulder proved unable to lift back from below about −36°, and Tailscale (`daboard`) as a fallback link. See [CLOSED_LOOP.md](CLOSED_LOOP.md). The sim model of this arm is `tools/sim/stepper_desk.toml`.
 
 Read [the complete commissioning record](COMMISSIONING_REPORT.md) for the current wiring, calibration, experiments, evidence, commands, safeguards, and remaining work. It supersedes the older dated bring-up status paragraphs below; those remain as historical test records.
 

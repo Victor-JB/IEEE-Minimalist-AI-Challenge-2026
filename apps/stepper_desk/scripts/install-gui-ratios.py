@@ -2,7 +2,7 @@
 """Validate CLI ratio evidence and install GUI preferences while the app is closed."""
 import argparse,json,plistlib,subprocess,sys,uuid
 from pathlib import Path
-sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'python'))
+sys.path.insert(0,str(Path(__file__).resolve().parents[3]/'arm'/'python'))
 from arm_client import validate_ratio_data,JOINTS,MOTOR
 DOMAIN='dev.tongtong.stepperdeskq'
 def prepare(data,prefs):
