@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CALIBRATION = ROOT/'calibration/arm-calibration-2026-10-11.json'
 JOINTS = ('shoulder','elbow','head')
 MOTOR = (1,0,2)
-LIMITS = ((-34,38),(-72,79),(-80,87))
+LIMITS = ((-45,38),(-72,79),(-80,87))
 
 ROUTER_SOCKET='/var/run/arduino-router.sock'
 

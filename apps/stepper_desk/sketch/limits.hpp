@@ -5,7 +5,7 @@
 #include "sensors.hpp"
 namespace joint_limit {
 constexpr unsigned SENSOR_FOR_MOTOR[3] = {1,0,2};
-constexpr int MIN_MDEG[3] = {-72000,-34000,-80000}; // shoulder floor: arm cannot lift back from below about -36 deg (2026-10-11)
+constexpr int MIN_MDEG[3] = {-72000,-45000,-80000};
 constexpr int MAX_MDEG[3] = {79000,38000,87000};
 constexpr uint32_t MAX_SENSOR_AGE_MS = 100;
 enum State { READY=0, UNCONFIGURED=1, SENSOR_UNAVAILABLE=2, LOWER=3, UPPER=4 };

@@ -11,7 +11,7 @@
 // not endpoint accuracy. Portable: no hardware access, tested on the host.
 namespace servo {
 using Vec=std::array<double,3>;
-constexpr double LOWER[3]={-72,-34,-80}, UPPER[3]={79,38,87};
+constexpr double LOWER[3]={-72,-45,-80}, UPPER[3]={79,38,87};
 constexpr double MARGIN=2;                   // targets stay this far inside hard limits
 constexpr unsigned MAX_RATE=12000, MIN_RATE=20; // STEP pulses/s per joint (closed loop only)
 constexpr double MAX_SECONDS=60;
