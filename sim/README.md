@@ -13,6 +13,7 @@ python sim/view.py --config sim/stepper_desk.toml    # the real arm, with its CA
 python sim/view.py --config sim/stepper_desk.toml --torque
 ROBOT_CONFIG=sim/stepper_desk.toml python motion_lib/demo.py --clip nod_yes/medium
 python sim/compare_real.py apps/stepper_desk/recordings/emote-traces.json
+python sim/longest_line.py --plot      # longest straight line for the head pivot
 ```
 
 Needs `pip install mujoco numpy` (and `matplotlib` for `compare_real.py` plots). Generating from `robot.toml` rewrites the expressive_robot constants; any other config only writes `sim/build/<name>.xml`.
