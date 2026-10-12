@@ -1,0 +1,168 @@
+{
+    "model_id": "mediapipe_hand_gesture",
+    "model_name": "MediaPipe-Hand-Gesture-Recognition",
+    "runtime": "tflite",
+    "precision": "w8a8",
+    "tool_versions": {
+        "qairt": "2.50.0.260828221209"
+    },
+    "model_files": {
+        "palm_detector.tflite": {
+            "inputs": {
+                "image": {
+                    "shape": [
+                        1,
+                        256,
+                        256,
+                        3
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 0.003921568859368563,
+                        "zero_point": 0
+                    },
+                    "io_type": "image",
+                    "image_metadata": {},
+                    "value_range": [
+                        0.0,
+                        1.0
+                    ]
+                }
+            },
+            "outputs": {
+                "box_coords": {
+                    "shape": [
+                        1,
+                        2944,
+                        18
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 1.6416609287261963,
+                        "zero_point": 50
+                    }
+                },
+                "box_scores": {
+                    "shape": [
+                        1,
+                        2944
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 0.00390625,
+                        "zero_point": 0
+                    }
+                }
+            }
+        },
+        "hand_landmark_detector.tflite": {
+            "inputs": {
+                "image": {
+                    "shape": [
+                        1,
+                        224,
+                        224,
+                        3
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 0.003921568859368563,
+                        "zero_point": 0
+                    },
+                    "io_type": "image",
+                    "image_metadata": {},
+                    "value_range": [
+                        0.0,
+                        1.0
+                    ]
+                }
+            },
+            "outputs": {
+                "landmarks": {
+                    "shape": [
+                        1,
+                        63
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 1.1388968229293823,
+                        "zero_point": 48
+                    }
+                },
+                "scores": {
+                    "shape": [
+                        1,
+                        1
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 0.00390625,
+                        "zero_point": 0
+                    }
+                },
+                "lr": {
+                    "shape": [
+                        1,
+                        1
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 0.00390625,
+                        "zero_point": 0
+                    }
+                },
+                "world_landmarks": {
+                    "shape": [
+                        1,
+                        63
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 0.0009373725042678416,
+                        "zero_point": 122
+                    }
+                }
+            }
+        },
+        "canned_gesture_classifier.tflite": {
+            "inputs": {
+                "hand": {
+                    "shape": [
+                        1,
+                        64
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 0.013154414482414722,
+                        "zero_point": 147
+                    }
+                },
+                "mirrored_hand": {
+                    "shape": [
+                        1,
+                        64
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 0.013154414482414722,
+                        "zero_point": 147
+                    }
+                }
+            },
+            "outputs": {
+                "Identity": {
+                    "shape": [
+                        1,
+                        8
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 0.00390625,
+                        "zero_point": 0
+                    }
+                }
+            }
+        }
+    },
+    "use_case": "Object Detection"
+}

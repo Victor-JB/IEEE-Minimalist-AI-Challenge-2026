@@ -49,3 +49,6 @@ apps/stepper_desk/recordings/
 apps/stepper_desk/build/
 apps/stepper_desk/build-*/
 apps/stepper_desk/diagnostics/build-*/
+
+# Lumen runtime logs (transition CSVs, arm session JSONL)
+apps/lumen/logs/
