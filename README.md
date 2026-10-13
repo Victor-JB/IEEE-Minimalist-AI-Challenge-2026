@@ -5,9 +5,10 @@ The Arduino UNO Q runs camera perception and behavior on Linux, with light and m
 
 ## Start here
 
-- **Main app:** `bash apps/luxoiii/scripts/run.sh`, then open `http://127.0.0.1:8082/`.
+- **Main app on the UNO Q:** open `http://100.78.199.105:8082/`.
   Live camera, two-hand gestures, expressive full X-ray model, subject tracking and digital D7 On/Off.
-- **Board connection:** [tools/spatial/README.md](tools/spatial/README.md) covers the observer and SSH tunnel.
+- **Optional Mac server:** `bash apps/luxoiii/scripts/run.sh` at `http://127.0.0.1:8082/`.
+- **Board connection:** [tools/spatial/README.md](tools/spatial/README.md) covers the observer and optional SSH tunnel.
 - **Offline model:** `PYTHONPATH=apps/luxoiii python3 -m luxoiii --offline`.
 - **App and board commands:** [apps/luxoiii/README.md](apps/luxoiii/README.md).
 - **Hardware/API:** [arm/README.md](arm/README.md).
@@ -37,8 +38,8 @@ spot in the simulated scene; the real light has a separate face/physical-orienta
 The older controller is now explicitly `python -m luxoiii.legacy`; its `--fake-arm` skips the hardware connection entirely. Book detection remains
 unimplemented; this demo does not claim to detect a book.
 
-The app and arm source include the newer board-side behavior and hand tracking work recovered before
-this refactor. The running board has not been renamed, redeployed or reflashed by the refactor.
+The board runs the `luxoiii` web app and observer at boot. The observer captures the USB camera
+directly, so the old 8080/8081 services are no longer needed. This migration preserves the MCU firmware.
 
 ## Verify
 

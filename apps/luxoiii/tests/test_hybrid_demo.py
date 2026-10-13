@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 ROOT=Path(__file__).resolve().parents[3]
 sys.path[:0]=[str(ROOT/'tools/spatial'),str(ROOT/'arm/python'),str(ROOT/'apps/luxoiii')]
-from behavior import Demo
+from behavior import Demo, GestureHold, palm_footprint
 from hybrid import Outputs
 from pointing import target_from_hand,physical_aim,simulated_aim,adjust_pose
 from kinematics import beam_hit, fk, ray_plane
@@ -20,7 +20,60 @@ def hand(gesture='point',x=300):
     return dict(points=points,gesture=gesture,score=.95)
 
 
+def sized_hand(gesture='point',x=300,scale=1.,score=.95):
+    h=hand(gesture,x);origin=h['points'][0]
+    h['points']=[[origin[i]+scale*(p[i]-origin[i]) for i in range(3)] for p in h['points']]
+    h['score']=score
+    return h
+
+
 class BehaviorTests(unittest.TestCase):
+    def test_initial_pointer_and_command_selection_prefers_larger_palm_over_score(self):
+        for gesture in ('point','open_palm','thumbs_up'):
+            with self.subTest(gesture=gesture):
+                hold=GestureHold()
+                small=sized_hand(gesture,150,scale=.7,score=.99)
+                large=sized_hand(gesture,440,scale=1.5,score=.65)
+                self.assertIs(hold.select(10,[small,large]),large)
+                self.assertIs(hold.select(10,[large,small]),large)
+
+    def test_palm_priority_is_rotation_invariant_and_not_changed_by_fingertips(self):
+        h=sized_hand(scale=1.5);area=palm_footprint(h)
+        for index in (4,8,12,16,20):h['points'][index]=[2000,3000,0]
+        self.assertEqual(palm_footprint(h),area)
+        h['points']=[[-p[1]+500,p[0]-200,p[2]] for p in h['points']]
+        self.assertAlmostEqual(palm_footprint(h),area)
+
+    def test_nearly_equal_hands_stay_associated_but_clearly_larger_hand_takes_over(self):
+        d=Demo(simulated_aim);old=sized_hand(x=180);near=sized_hand(x=220,scale=1.1,score=.99)
+        first=dict(point=[.4,.2,0]);second=dict(point=[.4,-.2,0])
+        d.update(10,[],[old],target=first);d.update(10.5,[],[old],target=first)
+        for i in range(3):
+            now=10.6+i*.15
+            self.assertIs(d.select_pointing_hand(now,[near,old]),old)
+            d.update(now,[],[near,old],target=first)
+        large=sized_hand(x=220,scale=1.6,score=.6)
+        saved=list(d.target)
+        self.assertIs(d.select_pointing_hand(11.1,[old,large]),large)
+        d.update(11.1,[],[large,old],target=second)
+        self.assertEqual(d.target,saved);self.assertFalse(d.point_following)
+        # Close wrists still require a new hold when a distinctly larger hand
+        # takes over; the old hand's accumulated confirmation cannot transfer.
+        d.update(11.6,[],[old,large],target=second)
+        self.assertLess(d.target[1],saved[1]);self.assertTrue(d.point_following)
+
+    def test_small_open_palm_still_interrupts_larger_pointing_hand(self):
+        d=Demo(simulated_aim)
+        pointer=sized_hand('point',180,scale=2.)
+        palm=sized_hand('open_palm',450,scale=.7)
+        spot=dict(point=[.4,0,0])
+        for t in (10,10.5,11.4):d.update(t,[],[pointer],target=spot)
+        d.update(11.6,[],[pointer,palm],target=spot)
+        snapshot=d.update(12.1,[],[palm,pointer],target=spot)
+        self.assertEqual(snapshot['state'],'ATTENTIVE')
+        self.assertEqual(snapshot['event'],'Open palm · hello back')
+        self.assertFalse(snapshot['light_requested']);self.assertIsNone(snapshot['desk_target'])
+
     def test_point_needs_a_desk_intersection_and_a_hold(self):
         d=Demo(simulated_aim);h=hand();target=dict(point=[.4,0,0],pose=[0,-18,65,70,0])
         d.update(10,[],[h],target=target)
@@ -121,6 +174,57 @@ class BehaviorTests(unittest.TestCase):
             for i in range(1,40):d.update(10.5+i*.25,[],[h])
             self.assertNotEqual(d.state,'STOPPED');self.assertEqual(d.serial,serial)
 
+    def test_open_palm_releases_lit_pointing_focus_and_welcomes_before_reacquiring(self):
+        d=Demo(simulated_aim);pointer=hand(x=180);palm=hand('open_palm',x=450)
+        spot=dict(point=[.4,.1,0],mode='virtual_pointer',source='Virtual desk pointer')
+        for t in (10,10.5,11,11.5):d.update(t,[],[pointer],target=spot)
+        self.assertTrue(d.snapshot(11.5)['light_requested']);self.assertTrue(d.point_following)
+        d.update(11.7,[],[pointer,palm],target=spot)
+        welcome=d.update(12.2,[],[palm,pointer],target=spot)
+        self.assertEqual(welcome['state'],'ATTENTIVE')
+        self.assertEqual(welcome['event'],'Open palm · hello back')
+        self.assertFalse(welcome['light_requested']);self.assertFalse(welcome['point_following'])
+        self.assertIsNone(welcome['desk_target']);self.assertIsNone(welcome['point_preview'])
+        self.assertIsNone(d.aim_pose);self.assertIsNone(d.target_mode)
+        serial=d.serial
+        # A continuously held second-hand point cannot cancel the greeting, even
+        # if the palm leaves the frame. No new point acknowledgments are emitted.
+        for t in (12.4,12.8,13.2,13.6,14,14.4,14.8,15.2,15.6,16,16.4,16.8):
+            snapshot=d.update(t,[],[pointer],target=spot)
+            self.assertEqual(snapshot['state'],'ATTENTIVE')
+            self.assertFalse(snapshot['light_requested']);self.assertIsNone(snapshot['desk_target'])
+            self.assertEqual(d.serial,serial)
+        d.update(17.3,[],[pointer],target=spot);self.assertEqual(d.state,'ATTENTIVE')
+        d.update(17.8,[],[pointer],target=spot);self.assertEqual(d.state,'ACK')
+        self.assertEqual(d.target,spot['point']);self.assertTrue(d.point_following)
+
+    def test_held_open_palm_keeps_priority_over_second_hand_point_after_welcome(self):
+        d=Demo(simulated_aim);hands=[hand('open_palm',450),hand('point',180)]
+        spot=dict(point=[.4,0,0])
+        d.update(10,[],hands,target=spot);d.update(10.5,[],hands,target=spot)
+        serial=d.serial
+        for i in range(1,30):
+            snapshot=d.update(10.5+i*.25,[],hands,target=spot)
+            self.assertEqual(snapshot['state'],'ATTENTIVE')
+            self.assertFalse(snapshot['light_requested']);self.assertIsNone(snapshot['desk_target'])
+            self.assertEqual(d.serial,serial)
+
+    def test_arrivals_during_palm_welcome_update_count_without_interrupting(self):
+        d=Demo(simulated_aim);palm=hand('open_palm')
+        face=SimpleNamespace(x=200,w=80,h=80)
+        d.update(10,[],[palm]);d.update(10.5,[],[palm]);serial=d.serial
+        d.update(11,[face,face],[])
+        d.update(12,[face,face],[])
+        self.assertEqual(d.group_count,2)
+        self.assertEqual(d.serial,serial);self.assertEqual(d.event,'Open palm · hello back')
+        # Those arrivals are not replayed after the welcome ends.
+        d.update(15.8,[face,face],[])
+        self.assertEqual(d.serial,serial)
+        # A subsequent, genuinely new arrival still receives the group greeting.
+        d.update(16,[face,face,face],[]);d.update(16.9,[face,face,face],[])
+        self.assertEqual(d.group_count,3);self.assertEqual(d.serial,serial+1)
+        self.assertTrue(d.event.startswith('More company'))
+
     def test_two_hands_point_and_adjust_on_independent_hold_timers(self):
         d=Demo(simulated_aim);pointer=hand(x=180);thumb=hand('thumbs_up',x=450)
         spot=dict(point=[.4,0,0])
@@ -204,6 +308,7 @@ class Bridge:
     def call(self,method,args=None,**kw):
         self.calls.append((method,args))
         if method=='arm_light':return [4,1,args[0],args[0],0,0,0]
+        if method=='arm_roll_status':return [3,1,0,0,1500,0]
         r=[0]*38;r[0]=1;r[2]=self.owner;r[8]=1
         if method=='arm_command':
             if args[0]==0:self.owner=args[1]
@@ -316,11 +421,113 @@ class OutputTests(unittest.TestCase):
         self.assertTrue(all(a[0]==0 for a in light));self.assertEqual(self.o.last_target,4)
         with self.assertRaises(ValueError):self.o.command(11,0)
 
-    def test_heartbeat_and_bad_encoders_disable_outputs(self):
+    def test_heartbeat_disables_outputs_but_pitch_loss_only_blocks_light(self):
         self.o.step(self.data,100,100);self.o.step(self.data,104,104)
         self.assertFalse(self.o.requested);self.assertFalse(self.o.claimed)
         self.o.requested=True;self.o.heartbeat=105;self.data['joints'][0]['healthy']=False
-        self.o.step(self.data,105,105);self.assertFalse(self.o.requested)
+        self.o.step(self.data,105,105)
+        self.assertTrue(self.o.requested);self.assertTrue(self.o.claimed)
+        self.assertEqual(self.o.level,0)
+        self.assertIn('Shoulder angle unavailable',self.o.lamp_reason)
+
+    def test_missing_elbow_keeps_tracking_with_light_off_before_swivel(self):
+        self.data['joints'][1].update(healthy=False,angle=None,reason='Elbow magnet not detected')
+        self.o.step(self.data,100,100)
+        self.assertTrue(self.o.requested);self.assertTrue(self.o.claimed)
+        self.assertEqual(self.o.last_target,4);self.assertEqual(self.o.level,0)
+        self.assertIn('Elbow magnet not detected',self.o.lamp_reason)
+        moves=[i for i,(m,a) in enumerate(self.b.calls) if m=='arm_command' and a[0]==16]
+        off=[i for i,(m,a) in enumerate(self.b.calls) if m=='arm_light' and a[0]==0]
+        self.assertTrue(moves and off);self.assertLess(off[-1],moves[0])
+        self.assertFalse(any(a[0]>0 for m,a in self.b.calls if m=='arm_light'))
+
+    def test_released_servo_at_limit_can_wake_with_bad_elbow_and_lamp_off(self):
+        self.data['joints'][1].update(healthy=False,angle=None,reason='Elbow magnet not detected')
+        self.data['pivot'].update(enabled=False,current=45,target=45)
+        self.data['tracking']['target']=45
+        self.o.step(self.data,100,100)
+        self.assertTrue(self.o.requested);self.assertTrue(self.o.claimed)
+        self.assertEqual(self.o.last_target,45);self.assertEqual(self.o.level,0)
+        moves=[a for m,a in self.b.calls if m=='arm_command' and a[0]==16]
+        self.assertEqual(moves[0][2],45000)
+        self.assertFalse(any(a[0]>0 for m,a in self.b.calls if m=='arm_light'))
+
+    def test_pitch_loss_cuts_lit_lamp_and_recovery_still_requires_face_and_beam_gates(self):
+        self.illuminate();self.b.calls.clear()
+        self.data['joints'][1].update(healthy=False,angle=None)
+        self.data['tracking']['target']=4
+        self.frame(101.4)
+        self.assertEqual(self.b.calls[0],('arm_light',[0,0]))
+        self.assertTrue(self.o.requested);self.assertEqual(self.o.last_target,4)
+        self.assertEqual(self.o.level,0);self.assertIsNone(self.o.beam_top_deg)
+        self.data['joints'][1].update(healthy=True,angle=90)
+        self.data['detections']=[dict(score=.9)]
+        self.frame(101.6);self.assertEqual(self.o.level,0)
+        self.data['detections']=[]
+        self.data['joints'][2]['angle']=5
+        for t in (101.8,102.2,102.6,103):self.frame(t)
+        self.assertEqual(self.o.level,0)
+        self.data['joints'][2]['angle']=90
+        self.frame(103.2)
+        self.assertEqual(self.o.level,1.)
+        self.assertEqual([a for m,a in self.b.calls if m=='arm_light'][-1],[1000,0,800])
+
+    def test_pitch_read_failure_fetches_fresh_swivel_after_light_off(self):
+        self.illuminate();self.b.calls.clear()
+        def unavailable(_):raise TimeoutError('Pitch RPC failed')
+        self.o.read_pose=unavailable;self.data['tracking']['target']=4
+        self.frame(101.4)
+        self.assertTrue(self.o.requested);self.assertTrue(self.o.claimed)
+        self.assertEqual(self.o.level,0);self.assertEqual(self.o.last_target,4)
+        off=next(i for i,(m,a) in enumerate(self.b.calls) if m=='arm_light' and a[0]==0)
+        read=next(i for i,(m,a) in enumerate(self.b.calls) if m=='arm_roll_status')
+        move=next(i for i,(m,a) in enumerate(self.b.calls) if m=='arm_command' and a[0]==16)
+        self.assertLess(off,read);self.assertLess(read,move)
+
+    def test_pitch_rpc_failure_cannot_use_stale_camera_swivel_if_fresh_swivel_fails(self):
+        self.illuminate();self.b.calls.clear()
+        def unavailable(_):raise TimeoutError('Pitch RPC failed')
+        self.o.read_pose=unavailable
+        call=self.b.call
+        def no_servo(method,args=None,**kw):
+            if method=='arm_roll_status':raise TimeoutError('Servo RPC failed')
+            return call(method,args,**kw)
+        self.b.call=no_servo;self.data['tracking']['target']=4
+        self.frame(101.4)
+        self.assertFalse(self.o.requested);self.assertFalse(self.o.claimed)
+        self.assertEqual(self.o.level,0)
+        self.assertFalse(any(m=='arm_command' and a[0]==16 for m,a in self.b.calls))
+
+    def test_invalid_swivel_or_firmware_rejection_still_disables_everything(self):
+        for failure in ('fault','missing','nonfinite','out_of_range','firmware_power_lock'):
+            with self.subTest(failure=failure):
+                self.setUp();self.data['joints'][1].update(healthy=False,angle=None)
+                if failure=='fault':self.data['pivot']['fault']=-1
+                elif failure=='missing':self.data.pop('pivot')
+                elif failure=='nonfinite':self.data['pivot']['current']=math.nan
+                elif failure=='out_of_range':self.data['pivot']['target']=60
+                else:
+                    call=self.b.call
+                    def locked(method,args=None,**kw):
+                        result=call(method,args,**kw)
+                        if method=='arm_command' and args[0]==16:result[1]=-1
+                        return result
+                    self.b.call=locked
+                self.o.step(self.data,100,100)
+                self.assertFalse(self.o.requested);self.assertFalse(self.o.claimed)
+                self.assertEqual(self.o.level,0)
+
+    def test_camera_and_stop_guards_still_disable_with_missing_pitch(self):
+        for failure in ('stale','camera_error','stopped'):
+            with self.subTest(failure=failure):
+                self.setUp();self.data['joints'][1].update(healthy=False,angle=None)
+                self.o.step(self.data,100,100)
+                self.o.heartbeat=101
+                if failure=='camera_error':self.data['error']='Camera unavailable'
+                elif failure=='stopped':self.data['demo']['state']='STOPPED'
+                self.o.step(self.data,98 if failure=='stale' else 101,101)
+                self.assertFalse(self.o.requested);self.assertFalse(self.o.claimed)
+                self.assertEqual(self.o.level,0)
 
     def test_face_or_upward_pose_never_lights(self):
         for case in ('face','up'):

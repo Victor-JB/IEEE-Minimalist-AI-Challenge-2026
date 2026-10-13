@@ -1,6 +1,6 @@
 # luxoiii
 
-The **main app is the live web experience at http://127.0.0.1:8082/**: Big Caslon interface,
+The **main app is the live web experience at http://100.78.199.105:8082/ on the UNO Q**: Big Caslon interface,
 full X-ray model, camera, two-hand gestures, digital personality, real-head subject tracking,
 and automatic physical lamp On/Off.
 
@@ -16,8 +16,10 @@ PYTHONPATH=apps/luxoiii python3 -m luxoiii
 
 On the Mac it uses the existing observer tunnel at `http://127.0.0.1:18083`. On the board it
 uses `http://127.0.0.1:8083`. Override with `--observer-url URL` or `LUXOIII_OBSERVER_URL`.
-The web server binds only to loopback. See [observer setup](../../tools/spatial/README.md)
-for the camera/AI process and the SSH tunnel.
+The manual launcher binds to loopback by default. The board's boot service uses `--host 0.0.0.0`
+so browsers can connect directly at `http://<board-address>:8082/`, without a Mac server or SSH tunnel.
+The observer remains on board loopback. See [observer setup](../../tools/spatial/README.md)
+for the camera/AI process and optional Mac-side SSH tunnel.
 
 ```sh
 PYTHONPATH=apps/luxoiii python3 -m luxoiii --offline  # model only; no physical outputs
@@ -35,16 +37,20 @@ it off. The board enforces an 800 ms light lease independently of the web app.
 
 The physical swivel tracks subjects within ±45°. The failed stepper joints stay asleep;
 the full simulated arm performs greetings, curiosity, idle loops and pointing responses.
+Missing pitch encoder readings keep the physical lamp off but do not prevent image-based
+swivel tracking. The page names the faulty joint and keeps automatic light armed for recovery.
 Tracking and gestures start by default with fresh data, unless explicitly stopped or disabled.
 The simulated desk light is independent of D7 and retains its visual brightness and spotlight.
 
 ## Board deployment
 
-The web app uses two supporting services: `luxoiii-desk` supplies the camera stream on 8081,
-and `luxoiii-observer` runs camera AI plus the working swivel and lamp on 8083.
-`luxoiii.service` starts both dependencies and serves the main app on loopback port 8082.
-The manual desk is a separate diagnostic tool; do not enable full-arm movement while the
-steppers are broken.
+The web app uses one supporting service: `luxoiii-observer` owns the USB camera and runs
+camera AI plus the working swivel and lamp. Its internal API stays on loopback port 8083.
+`luxoiii.service` starts this dependency and serves the only web app on network port 8082.
+The browser renders the 3D model on the viewing device. Camera inference, behavior decisions,
+spatial estimates and physical controls run on the UNO Q.
+Deployment removes the old 8080/8081 boot services. The old manual desk remains source-only
+for diagnostics and must not run alongside the main app because both need the camera.
 
 ```sh
 LUXOIII_NO_START=1 bash apps/luxoiii/scripts/deploy.sh  # install without changing running services
@@ -55,7 +61,7 @@ Before migrating a board running a standalone observer (including one from `/tmp
 observer and preserve local board edits; only one process may listen on 8083. App deployment
 copies the app, shared arm code and observer, but does not flash the MCU. Keep the verified D7
 firmware; its source and flashing instructions are in [arm/](../../arm/README.md).
-The current Mac app can continue using an existing legacy board observer during migration.
+The Mac server and SSH tunnel are optional after migration. Browsers connect directly to the board.
 
 ## Older full-arm controller
 

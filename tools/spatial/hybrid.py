@@ -49,6 +49,37 @@ class Outputs:
         ready=self.clear_frames>=3 and now-self.clear_since>=1.
         return ready,'No faces detected' if ready else 'Waiting for one clear second'
 
+    @staticmethod
+    def pitch_problem(pose):
+        """Pitch encoders gate the beam, independently of the swivel servo."""
+        joints=pose.get('joints',[])
+        if not isinstance(joints,(list,tuple)) or len(joints)!=3:
+            return 'Physical pitch readings unavailable · lamp off'
+        for name,j in zip(('Shoulder','Elbow','Head'),joints):
+            if not isinstance(j,dict):return name+' angle unavailable · lamp off'
+            angle,age=j.get('angle'),j.get('age_ms')
+            if not (j.get('healthy') and isinstance(angle,(int,float)) and math.isfinite(angle)
+                    and isinstance(age,(int,float)) and math.isfinite(age) and 0<=age<=100):
+                reason=j.get('reason')
+                return (reason if isinstance(reason,str) and reason else name+' angle unavailable')+' · lamp off'
+        return None
+
+    def read_swivel(self):
+        """Fresh servo telemetry even when a pitch-encoder RPC failed."""
+        r=self.bridge.call('arm_roll_status',timeout=.2)
+        if len(r)!=6 or r[0]!=3:raise ValueError('Head swivel telemetry unavailable')
+        return dict(enabled=bool(r[1]),target=r[2]/1000,current=r[3]/1000,fault=r[5])
+
+    @staticmethod
+    def check_swivel(pose):
+        p=pose.get('pivot') or {}
+        if p.get('fault'):raise ValueError('Head swivel fault · outputs off')
+        if any(not isinstance(p.get(k),(int,float)) or not math.isfinite(p[k])
+               or abs(p[k])>SubjectTracker.LIMIT+.5 for k in ('current','target')):
+            raise ValueError('Head swivel pose unavailable · outputs off')
+        # Released is a valid starting state: op16 wakes the servo at its last
+        # command and firmware still checks power.enabled and rollFault.
+
     def downward_cone(self,pose,target):
         self.beam_top_deg=None;self.axis_elevation_deg=None
         p=pose.get('pivot') or {}
@@ -89,12 +120,10 @@ class Outputs:
             if now-self.heartbeat>3:
                 self.reason='Connection expired · outputs off';self.disable();return
             demo=data.get('demo') or {}
-            joints=data.get('joints',[])
-            healthy=len(joints)==3 and all(j.get('healthy') and isinstance(j.get('angle'),(int,float)) and math.isfinite(j['angle']) and 0<=j.get('age_ms',999)<=100 for j in joints)
-            if not 0<=age<=1.5 or not healthy or data.get('error') or demo.get('state')=='STOPPED':
+            if not 0<=age<=1.5 or data.get('error') or demo.get('state')=='STOPPED':
                 self.reason='Stopped or stale camera · outputs off';self.disable();return
             face_clear,face_reason=self.clear_faces(data,now)
-            if self.connected and self.level and not face_clear:
+            if self.connected and self.level and (not face_clear or self.pitch_problem(data)):
                 self.light(0);self.level=0.
             # Never seize a running arm. Claiming a quiet arm does not configure or move steppers.
             if not self.connected:
@@ -112,23 +141,35 @@ class Outputs:
                 self.command(17,1500,7407,-45000,45000,-1,round(SubjectTracker.SPEED*1000))
             status=self.command(4)
             if status[6] or status[7]:raise RuntimeError('Unexpected stepper activity · hybrid stopped')
-            pose=self.read_pose(self.bridge) if self.read_pose else data
-            joints=pose.get('joints',[])
-            if len(joints)!=3 or not all(j.get('healthy') and isinstance(j.get('angle'),(int,float)) and math.isfinite(j['angle']) and 0<=j.get('age_ms',999)<=100 for j in joints):
-                raise ValueError('Physical angle readings unavailable · lamp off')
+            try:
+                pose=self.read_pose(self.bridge) if self.read_pose else data
+                if not isinstance(pose,dict):raise ValueError('Invalid physical pose')
+                pitch_reason=self.pitch_problem(pose)
+            except Exception:
+                # Loss of pitch telemetry cannot authorize light. Check the
+                # independent servo status after switching D7 off, then permit
+                # only swivel tracking if that fresh status is still valid.
+                self.light(0);self.level=0.
+                pose=dict(joints=[],pivot=self.read_swivel())
+                pitch_reason='Physical pitch readings unavailable · lamp off'
+            self.check_swivel(pose)
             tracking=data.get('tracking') or {}
             value=tracking.get('target')
             if not isinstance(value,(int,float)) or not math.isfinite(value):
                 raise ValueError('Subject tracking unavailable')
             target=max(-SubjectTracker.LIMIT,min(SubjectTracker.LIMIT,value))
-            downward,direction_reason=self.downward_cone(pose,target)
+            if pitch_reason:
+                self.beam_top_deg=None;self.axis_elevation_deg=None
+                downward,direction_reason=False,pitch_reason
+            else:
+                downward,direction_reason=self.downward_cone(pose,target)
             level=self.LIGHT_LEVEL if face_clear and downward else 0.
             if not level:self.light(0);self.level=0.
             if self.last_target is None or abs(target-self.last_target)>.5:
                 self.command(16,round(target*1000),round(SubjectTracker.SPEED*1000));self.last_target=target
             if level:self.light(level,lease=self.LIGHT_LEASE_MS)
             self.level=level
-            self.lamp_reason='No faces · whole beam below horizon' if level else face_reason if not face_clear else direction_reason
+            self.lamp_reason=pitch_reason or ('No faces · whole beam below horizon' if level else face_reason if not face_clear else direction_reason)
             self.reason=tracking.get('status','Tracking subject')+' · '+self.lamp_reason+' · real lamp '+('on' if level else 'off')
         except Exception as exc:
             self.reason=str(exc)

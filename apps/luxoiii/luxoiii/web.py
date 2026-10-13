@@ -89,6 +89,8 @@ def default_observer_url():
 
 def parse_args(argv=None, observer_default=None):
     parser = argparse.ArgumentParser(prog="luxoiii", description=__doc__)
+    parser.add_argument("--host", default="127.0.0.1",
+                        help="listen address (default: 127.0.0.1; use 0.0.0.0 on the board)")
     parser.add_argument("--port", type=int, default=8082, help="local web app port (default: 8082)")
     source = parser.add_mutually_exclusive_group()
     source.add_argument("--observer-url", default=default_observer_url() if observer_default is None else observer_default,
@@ -103,9 +105,9 @@ def parse_args(argv=None, observer_default=None):
 
 def main(argv=None, observer_default=None):
     args = parse_args(argv, observer_default)
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
+    server = ThreadingHTTPServer((args.host, args.port), Handler)
     server.observer_url = args.observer_url
-    print(f"luxoiii: http://127.0.0.1:{args.port}/", flush=True)
+    print(f"luxoiii: http://{args.host}:{args.port}/", flush=True)
     print(f"Observer: {args.observer_url}" if args.observer_url else "Offline model · physical outputs unavailable", flush=True)
     try:
         server.serve_forever()

@@ -18,8 +18,8 @@ already sigmoided. palm_anchors() + decode_raw() reproduce that step for a raw B
 Pipeline: palm detector -> NMS -> rotated square crop from the wrist -> middle-finger keypoints
 (MediaPipe: shift up half a box, scale 2.6) -> landmark model -> 21 points back in frame pixels,
 kept only if the hand-presence score passes. Tracking (on by default): the next frame's crop comes
-from this frame's landmarks (MediaPipe: scale 2.0, shift 0.1), so the palm detector only runs
-when the hand is new or the presence score drops.
+from this frame's landmarks (MediaPipe: scale 2.0, shift 0.1). Discovery and dropped tracks
+run the palm detector again; optional largest-palm priority also refreshes occupied slots.
 """
 import math
 import os
@@ -233,13 +233,17 @@ class HandLandmarker:
         interpreters=None,          # (palm, landmark) to inject, e.g. fakes in tests
         discovery_interval=1,       # >1 is experimental: can reduce temporal accuracy
         track_timeout=0.5,          # reacquire after a gap rather than reuse an old crop
+        prioritize_largest=False,  # use apparent palm area as a proximity proxy
+        priority_refresh_s=1.,      # periodically let nearer hands replace occupied tracks
     ):
         self.tracking, self.max_hands, self.palm_decoded = tracking, max_hands, palm_decoded
         self.palm_threshold, self.landmark_threshold = palm_threshold, landmark_threshold
         self.last, self._tracks, self.anchors = [], [], palm_anchors()
-        if discovery_interval < 1 or track_timeout <= 0:
+        if discovery_interval < 1 or track_timeout <= 0 or priority_refresh_s <= 0:
             raise ValueError('Positive discovery interval and track timeout required')
         self.discovery_interval, self.track_timeout = discovery_interval, track_timeout
+        self.prioritize_largest, self.priority_refresh_s = prioritize_largest, priority_refresh_s
+        self._last_palm_at = None
         self._since_palm, self._last_at = 0, None
         self.palm_calls = self.landmark_calls = 0
         try:
@@ -259,6 +263,7 @@ class HandLandmarker:
         """Forget the tracked hands; the next call runs the palm detector."""
         self._tracks = []
         self._since_palm, self._last_at = 0, None
+        self._last_palm_at = None
 
     @timed("hands.total")
     def detect(self, frame, roi=None, *, now=None):
@@ -277,14 +282,21 @@ class HandLandmarker:
         # second-hand discovery delay; an empty/lost track still reacquires now.
         missing_slot = len(self._tracks) < self.max_hands
         discovery_due = missing_slot and self._since_palm >= self.discovery_interval - 1
+        # Otherwise two successfully tracked background hands could monopolize
+        # both slots forever. Recheck size periodically, retaining cheap ROI
+        # tracking between these scans and the same landmark-call limit.
+        if self.prioritize_largest and (self._last_palm_at is None or now-self._last_palm_at >= self.priority_refresh_s):
+            discovery_due = True
         tracked = self.tracking and bool(self._tracks) and not discovery_due
         rects = self._tracks if tracked else self._palms(frame, roi)
+        if not tracked:self._last_palm_at = now
         self._since_palm = self._since_palm + 1 if tracked else 0
         hands = [h for h in (self._landmarks(frame, r, tracked) for r in rects) if h]
         if tracked and len(hands) < len(rects):     # lost one: look for palms again on this frame
             count("hands.track_lost")
             hands = [h for h in (self._landmarks(frame, r) for r in self._palms(frame, roi)) if h]
             self._since_palm = 0
+            self._last_palm_at = now
         self.last = hands
         self._tracks = [rect_from_landmarks(h.points) for h in hands] if self.tracking else []
         return [h.points for h in hands]
@@ -305,13 +317,18 @@ class HandLandmarker:
         return [rect_from_palm(d) for d in self.decode_palms(scale, (x, y))]
 
     def decode_palms(self, scale, offset):
-        """Read the palm outputs -> (K, 18) detections in frame pixels, best first, after NMS."""
+        """Read palm outputs -> (K, 18) frame-pixel detections, after confidence NMS."""
         coords, scores = _deq(self.palm, self.palm_out["box_coords"]), _deq(self.palm, self.palm_out["box_scores"])
         if not self.palm_decoded:
             coords, scores = decode_raw(coords, scores, self.anchors)
         good = (scores >= self.palm_threshold) & (coords[:, 2] > coords[:, 0]) & (coords[:, 3] > coords[:, 1])
         coords, scores = coords[good], scores[good]
-        keep = nms(coords[:, :4], scores, top_k=self.max_hands)
+        keep = nms(coords[:, :4], scores, top_k=len(scores) if self.prioritize_largest else self.max_hands)
+        if self.prioritize_largest:
+            # Suppress duplicates by confidence first, then give the largest
+            # qualifying palms the limited landmark slots. No extra model calls.
+            area = (coords[:, 2]-coords[:, 0]) * (coords[:, 3]-coords[:, 1])
+            keep = sorted(keep, key=lambda i:(area[i], scores[i]), reverse=True)[:self.max_hands]
         # Padding is only on the bottom/right, so model pixels -> roi pixels is just / scale.
         return coords[keep] / scale + np.tile(np.asarray(offset, np.float32), 9)
 

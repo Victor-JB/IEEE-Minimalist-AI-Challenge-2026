@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""UNO Q face/hand observer and optional hybrid demo. Reuses the desk camera stream.
+"""UNO Q face/hand observer and optional hybrid demo. Owns the USB camera directly.
 
 The observation path only reads: arm_roll_status and stepper_command op 4, without HELLO or
 claim. Unclaimed status returns EACCES plus raw encoder samples; apply saved
@@ -11,12 +11,39 @@ import base64
 import importlib
 import json
 from pathlib import Path
+import signal
 import sys
 import threading
 import time
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.request import urlopen
+
+
+def capture_camera(video, stop, publish, clock=time.monotonic):
+    """Publish actual captured frames; cached sequences and timeouts fail closed.
+
+    VideoFeed increments its sequence only after a successful camera read and
+    JPEG encode, so a stationary scene with identical image bytes is still fresh.
+    Its own capture worker retries a failed/unplugged camera automatically.
+    """
+    try:
+        with video.watch() as feed:
+            sequence = 0
+            while not stop.is_set():
+                new_sequence, jpeg = feed.next_frame(sequence, timeout=.5)
+                if stop.is_set():
+                    break
+                if jpeg is not None and new_sequence != sequence:
+                    sequence = new_sequence
+                    publish(jpeg, clock())
+                else:
+                    publish(None, 0.)
+                    # next_frame returns immediately while a camera error is
+                    # present; let its retry worker recover without busy-polling.
+                    if feed.error:
+                        stop.wait(.1)
+    finally:
+        publish(None, 0.)
 
 
 def encoder(raw, joint, calibration):
@@ -25,7 +52,14 @@ def encoder(raw, joint, calibration):
     count, magnet, error, age = raw[14:18]
     good = 0 <= count < 4096 and magnet & 0x28 == 0x20 and error == 0 and 0 <= age <= 100
     angle = ((count*360/4096-calibration['zero'])*(-1 if calibration['reversed'] else 1)+180)%360-180
-    return dict(angle=angle if good else None, healthy=good, age_ms=age,
+    name = ('Shoulder', 'Elbow', 'Head pitch')[joint]
+    reason = None
+    if error: reason = name + ' sensor read failed'
+    elif not 0 <= age <= 100: reason = name + ' reading is stale'
+    elif not magnet & 0x20: reason = name + ' magnet not detected'
+    elif magnet & 0x08: reason = name + ' magnet field too strong'
+    elif not 0 <= count < 4096: reason = name + ' angle is invalid'
+    return dict(angle=angle if good else None, healthy=good, age_ms=age, reason=reason,
                 source='raw encoder + saved calibration')
 
 
@@ -37,6 +71,7 @@ def main():
     p.add_argument('--repo', type=Path, required=True)
     p.add_argument('--package', default='luxoiii', choices=['luxoiii','lumen'])
     p.add_argument('--port', type=int, default=8083)
+    p.add_argument('--camera',default='auto',help='USB camera: auto, an index, or a /dev/video path')
     p.add_argument('--hybrid',action='store_true',help='Allow UI activation of subject tracking and face/downward-beam-gated light')
     scheduling=p.add_mutually_exclusive_group()
     scheduling.add_argument('--parallel-inference',dest='parallel_inference',action='store_true',help='Experimental concurrent models; measured with two threads each')
@@ -49,6 +84,7 @@ def main():
     hands_module=importlib.import_module(args.package+'.perception.hands')
     gestures=importlib.import_module(args.package+'.perception.gestures')
     MotionGate=importlib.import_module(args.package+'.perception.motion_gate').MotionGate
+    VideoFeed=importlib.import_module(args.package+'.desk.video').VideoFeed
     from pointing import target_from_hand, simulated_aim
     from hybrid import Outputs
     from arduino.router_bridge import Bridge
@@ -66,7 +102,7 @@ def main():
     # preprocessing stays single-threaded to avoid another competing worker pool.
     cv2.setNumThreads(1)
     detector=FaceDetector(num_threads=args.inference_threads)
-    hands=hands_module.HandLandmarker(num_threads=args.inference_threads,max_hands=2,landmark_threshold=.65)
+    hands=hands_module.HandLandmarker(num_threads=args.inference_threads,max_hands=2,landmark_threshold=.65,prioritize_largest=True)
     gesture_model='landmark-mlp-v1' if getattr(gestures,'_classifier',lambda:None)() is not None else 'legacy-rules'
     inference=Inference(detector,hands,parallel=args.parallel_inference)
     tracker=SubjectTracker();demo=Demo(simulated_aim);gate=MotionGate(4.0)
@@ -77,33 +113,22 @@ def main():
     lock=threading.Lock()
     current={'data':{'error':'Waiting for first camera frame'},'time':0}
     latest={'jpeg':None,'time':0}
+    stopped=threading.Event()
+    video=VideoFeed(args.camera)
+    def publish_camera(jpeg,stamp):
+        with lock:latest.update(jpeg=jpeg,time=stamp)
     def capture():
-        while True:
+        while not stopped.is_set():
             try:
-                with urlopen('http://127.0.0.1:8081/video.mjpg',timeout=5) as stream:
-                    buf=b''
-                    while True:
-                        chunk=stream.read(4096)
-                        if not chunk: raise ConnectionError('Camera stream ended')
-                        buf+=chunk
-                        while True:
-                            start=buf.find(b'\xff\xd8'); end=buf.find(b'\xff\xd9',max(start,0))
-                            if start<0 or end<0: break
-                            frame=buf[start:end+2];buf=buf[end+2:]
-                            with lock:
-                                # Older desk servers repeat their cached JPEG on capture
-                                # failure. Receiving bytes does not prove a fresh frame.
-                                if frame != latest['jpeg']:
-                                    latest.update(jpeg=frame,time=time.monotonic())
-                        if len(buf)>2_000_000: buf=b''
+                capture_camera(video,stopped,publish_camera)
             except Exception:
-                with lock: latest.update(jpeg=None,time=0)
-                time.sleep(1)
+                publish_camera(None,0)
+                stopped.wait(1)
     def detect():
         bridge=Bridge()
         connected=False
         last_infer=-1e9; active_until=0; last_stamp=0
-        while True:
+        while not stopped.is_set():
             started=time.monotonic()
             try:
                 with lock: jpeg,stamp=latest['jpeg'],latest['time']
@@ -119,7 +144,7 @@ def main():
                     joints=[];telemetry_error=str(exc)
                     bridge.disconnect();connected=False
                 if stamp==last_stamp:
-                    time.sleep(.03);continue
+                    stopped.wait(.03);continue
                 last_stamp=stamp
                 moving=gate.update(frame)
                 if moving:active_until=started+2
@@ -165,15 +190,16 @@ def main():
                 with lock: current.update(data=data,time=stamp)
             except Exception as exc:
                 with lock: current.update(data=dict(error=str(exc)),time=0)
-            time.sleep(max(.02,.25-(time.monotonic()-started)))
+            stopped.wait(max(.02,.25-(time.monotonic()-started)))
+        bridge.disconnect()
     def control():
-        while True:
+        while not stopped.is_set():
             with lock:data,stamp=current['data'],current['time']
             now=time.monotonic()
             with demo_lock:data={**data,'demo':demo.snapshot(now)}
             with output_lock:
                 if output:output.step(data,stamp,now)
-            time.sleep(.1)
+            stopped.wait(.1)
     class Handler(BaseHTTPRequestHandler):
         def do_POST(self):
             if self.path!='/control':return self.send_error(404)
@@ -218,10 +244,27 @@ def main():
             try: self.wfile.write(body)
             except (BrokenPipeError,ConnectionResetError): pass
         def log_message(self,*args): pass
-    threading.Thread(target=control,daemon=True).start()
-    threading.Thread(target=capture,daemon=True).start()
-    threading.Thread(target=detect,daemon=True).start()
-    ThreadingHTTPServer(('127.0.0.1',args.port),Handler).serve_forever()
+    server=ThreadingHTTPServer(('127.0.0.1',args.port),Handler)
+    workers=[threading.Thread(target=fn,daemon=True) for fn in (control,capture,detect)]
+    def terminate(*_):
+        stopped.set()
+        # shutdown must run outside the serve_forever thread.
+        threading.Thread(target=server.shutdown,daemon=True).start()
+    signal.signal(signal.SIGTERM,terminate)
+    try:
+        for worker in workers:worker.start()
+        server.serve_forever(poll_interval=.25)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        stopped.set()
+        with output_lock:
+            if output:
+                try:output.disable()
+                except Exception:pass
+        for worker in workers:worker.join(timeout=4)
+        inference.close()
+        server.server_close()
 
 
 if __name__=='__main__': main()

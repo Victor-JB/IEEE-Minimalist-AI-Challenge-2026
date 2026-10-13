@@ -20,6 +20,7 @@ class MainLaunch(unittest.TestCase):
             args = web.parse_args([])
         self.assertIs(__main__.main, web.main)
         self.assertEqual((args.port, args.observer_url), (8082, 'http://127.0.0.1:18083'))
+        self.assertEqual(args.host, '127.0.0.1')
         self.assertNotIn('luxoiii.app', sys.modules)
 
     def test_board_default_override_and_offline(self):
@@ -35,6 +36,14 @@ class MainLaunch(unittest.TestCase):
         with patch.object(preview, 'run_app') as launch:
             preview.main()
         launch.assert_called_once_with(observer_default='')
+
+    def test_board_network_binding_reaches_the_server(self):
+        with patch.object(web, 'ThreadingHTTPServer') as server:
+            web.main(['--host', '0.0.0.0', '--observer-url', 'http://127.0.0.1:8083'])
+        server.assert_called_once_with(('0.0.0.0', 8082), web.Handler)
+        self.assertEqual(server.return_value.observer_url, 'http://127.0.0.1:8083')
+        server.return_value.serve_forever.assert_called_once_with()
+        server.return_value.server_close.assert_called_once_with()
 
 
 class Observer(BaseHTTPRequestHandler):

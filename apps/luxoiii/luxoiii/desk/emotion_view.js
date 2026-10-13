@@ -113,9 +113,9 @@ class Emotions {
      if(event.startsWith('Hello'))this.play('polite_greet',now);
      else if(event.startsWith('More company')){this.play('look_around',now);this.layer('nod',now+.8,.5);}
      else if(event.startsWith('Open palm')) {
-      if(!task)this.play(this.cycle++%2?'joy':'greet',now);
-      this.layer('shake',now+.2,task?.35:1);
-      this.layer('bounce',now+.65,task?.12:.6);
+      this.play('greet',now);
+      this.layer('shake',now+.2,1);
+      this.layer('bounce',now+.65,.6);
       this.label='Hello back!';
      } else if(event.startsWith('Point accepted')) {
       this.layer('nod',now,.6);this.label='That spot? Got it';
@@ -128,7 +128,7 @@ class Emotions {
   }
   // Active pointing owns the beam. The outer frame-rate smoother handles pose
   // continuity; no acknowledgment or return blend can pull it off the finger.
-  if(following){this.current=null;this.returning=null;this.layers=[];}
+  if(following && this.current?.ref!=='greet'){this.current=null;this.returning=null;this.layers=[];}
   if(showcase && now>=this.until) {
    const choices=['wake','curious','peek','nod','shake','joy','look_around','sleep'];
    const ref=choices[this.cycle++%choices.length];this.play(ref,now);

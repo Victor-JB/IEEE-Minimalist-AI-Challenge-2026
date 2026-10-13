@@ -7,7 +7,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[3]/'tools/spatial'))
 from tracking import SubjectTracker
 
 
-def face(x,w=80):return SimpleNamespace(x=x-w/2,w=w,h=w)
+def face(x,w=80,h=None):return SimpleNamespace(x=x-w/2,w=w,h=w if h is None else h)
 def hand(x):return dict(points=[[x,240,0] for _ in range(21)],score=.9)
 def pivot(q):return dict(enabled=True,current=q,fault=0)
 def pixel(error):return 320+320*math.tan(math.radians(error))/math.tan(math.radians(50))
@@ -56,7 +56,7 @@ class TrackingTests(unittest.TestCase):
         s=t.update(1.2,[],[hand(50)],pivot(3));self.assertEqual(s['subject'],'hand');self.assertEqual(s['target'],3)
         s=t.update(1.5,[],[hand(50)],pivot(3));self.assertLess(s['target'],3)
 
-    def test_limits_lost_target_and_stable_selection(self):
+    def test_limits_lost_target_and_largest_face_selection(self):
         t=SubjectTracker()
         for i in range(40):
             s=t.update(i*.25,[face(600)],[],pivot(t.target));self.assertLessEqual(abs(s['target']),45)
@@ -65,7 +65,44 @@ class TrackingTests(unittest.TestCase):
         self.assertEqual(s['target'],-45)
         lost=t.update(26,[],[],pivot(-30));self.assertEqual(lost['target'],-30);self.assertFalse(lost['visible'])
         t=SubjectTracker();t.update(0,[face(200)],[],pivot(0))
-        t.update(.25,[face(205),face(500,200)],[],pivot(0));self.assertAlmostEqual(t.center,205/640)
+        t.update(.25,[face(205),face(500,200)],[],pivot(0));self.assertAlmostEqual(t.center,500/640)
+
+    def test_larger_head_overrides_visible_previous_subject_and_resets_motion_history(self):
+        t=SubjectTracker()
+        t.update(0,[face(580)],[],pivot(0))
+        first=t.update(.3,[face(580)],[],pivot(0))
+        self.assertGreater(first['target'],0)
+        # A closer/larger head enters left while the old right-hand head stays.
+        switched=t.update(.6,[face(580),face(50,160)],[],pivot(first['target']))
+        self.assertAlmostEqual(t.center,50/640)
+        self.assertEqual(switched['target'],first['target'])
+        self.assertEqual(t.error_rate,0)
+        self.assertFalse(t.moving);self.assertEqual(t.pending_frames,1)
+        confirmed=t.update(.9,[face(580),face(50,160)],[],pivot(first['target']))
+        self.assertLess(confirmed['target'],first['target'])
+        self.assertLessEqual(first['target']-confirmed['target'],6)
+
+    def test_head_size_changes_reselect_largest_area_each_frame(self):
+        t=SubjectTracker()
+        t.update(0,[face(80,120),face(560,80)],[],pivot(0))
+        self.assertAlmostEqual(t.center,80/640)
+        # Area, rather than width alone, determines the largest face.
+        t.update(.3,[face(80,140,40),face(560,90,90)],[],pivot(0))
+        self.assertAlmostEqual(t.center,560/640)
+        self.assertEqual(t.pending_sign,1);self.assertEqual(t.pending_frames,1)
+        t.update(.6,[face(560,80),face(80,150)],[],pivot(0))
+        self.assertAlmostEqual(t.center,80/640)
+        self.assertEqual(t.pending_sign,-1);self.assertEqual(t.pending_frames,1)
+
+    def test_hand_fallback_keeps_nearest_hand_when_confidences_change(self):
+        t=SubjectTracker();left,right=hand(80),hand(560)
+        left['score']=.95;right['score']=.8
+        t.update(0,[],[left,right],pivot(0))
+        self.assertEqual(t.kind,'hand');self.assertAlmostEqual(t.center,80/640)
+        left['score']=.7;right['score']=.99
+        t.update(.3,[],[right,left],pivot(0))
+        self.assertAlmostEqual(t.center,80/640)
+        self.assertEqual(t.kind,'hand')
 
     def test_delayed_noisy_stationary_subject_settles_without_oscillation(self):
         # Model a camera delayed two observations and a slew-limited servo. A stationary

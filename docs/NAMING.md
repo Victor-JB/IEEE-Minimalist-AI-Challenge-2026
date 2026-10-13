@@ -6,7 +6,7 @@ The product name, Python package and service prefix are **luxoiii** (lowercase).
 |---|---|
 | `apps/lumen/` | `apps/luxoiii/` |
 | `python -m lumen` | `python -m luxoiii` |
-| `lumen.service`, `lumen-desk.service` | `luxoiii.service`, `luxoiii-desk.service` |
+| `lumen.service`, `lumen-desk.service` | `luxoiii.service`, `luxoiii-observer.service` |
 | `LUMEN_LIGHT`, `LUMEN_LIGHT_*` | `LUXOIII_LIGHT`, `LUXOIII_LIGHT_*` |
 | `STEPPER_HOST`, `STEPPER_LINK`, `STEPPER_VENV`, `STEPPER_BUILD_DIR` | `LUXOIII_HOST`, `LUXOIII_LINK`, `LUXOIII_VENV`, `LUXOIII_BUILD_DIR` |
 | `LUMEN_NO_START` | `LUXOIII_NO_START` |
@@ -26,11 +26,13 @@ The deployment default is the known board address, `100.78.199.105`, with `LUXOI
 The repo contains the board's newer source plus the Mac's desk light controls. The main app is now the live 8082 web experience (`python -m luxoiii`). The older full-arm
 controller requires `python -m luxoiii.legacy`; it is not started by the main service.
 
-The running board was left unchanged. Before deploying, preserve any additional board edits made since
+Before deploying, preserve any additional board edits made since
 this snapshot. `LUXOIII_NO_START=1 bash apps/luxoiii/scripts/deploy.sh` installs the new app and units
 without stopping or enabling services. A normal deployment stops/disables legacy units and starts
-`luxoiii.service`. The main service starts `luxoiii-observer` and `luxoiii-desk` as dependencies. Stop any
-standalone observer on 8083 before this migration; the new units conflict with the old camera/arm services.
+`luxoiii.service` on the board's network port 8082. The main service starts `luxoiii-observer`, which
+owns the USB camera directly and exposes its API only on loopback 8083. The old 8080/8081 service
+files are removed. Stop any standalone observer on 8083 before this migration; the new units conflict
+with the old camera/arm services.
 Application deployment does not flash firmware. `arm/scripts/deploy.sh` does flash unless
 `ARM_NO_FLASH=1` is specified; avoid reflashing the verified hardware just for naming changes.
 

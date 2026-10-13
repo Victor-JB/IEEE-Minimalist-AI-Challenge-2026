@@ -84,4 +84,13 @@ class Spatial(unittest.TestCase):
         raw[16]=1
         self.assertIsNone(observer.encoder(raw,0,dict(zero=22.5,reversed=False))['angle'])
 
+    def test_encoder_explains_missing_magnet_without_publishing_an_angle(self):
+        raw=[7,1,0,-13]+[0]*10+[3710,16,0,7]+[0]*13
+        joint=observer.encoder(raw,1,dict(zero=0,reversed=False))
+        self.assertFalse(joint['healthy'])
+        self.assertIsNone(joint['angle'])
+        self.assertEqual(joint['reason'],'Elbow magnet not detected')
+        raw[15]=32
+        self.assertIsNone(observer.encoder(raw,1,dict(zero=0,reversed=False))['reason'])
+
 if __name__=='__main__':unittest.main()

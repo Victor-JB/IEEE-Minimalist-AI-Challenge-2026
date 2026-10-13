@@ -1,10 +1,8 @@
 # Board perception + working head swivel + gated digital D7 on/off. No stepper commands.
 [Unit]
 Description=luxoiii camera AI and physical outputs
-Requires=luxoiii-desk.service
-After=luxoiii-desk.service
 PartOf=luxoiii.service
-Conflicts=lumen.service
+Conflicts=lumen.service lumen-desk.service luxoiii-desk.service
 
 [Service]
 WorkingDirectory=/home/arduino/IEEE-Minimalist-AI-Challenge-2026

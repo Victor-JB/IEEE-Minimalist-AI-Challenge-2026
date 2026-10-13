@@ -45,7 +45,18 @@ class SubjectTracker:
             self.error=0.;self.reset_motion()
         else:
             same=kind==self.kind and now-self.last_seen<1.5
-            x=(min(candidates,key=lambda c:abs(c[0]-self.center)) if self.center is not None and same else max(candidates,key=lambda c:c[1]))[0]
+            nearest=min(candidates,key=lambda c:abs(c[0]-self.center)) if self.center is not None and same else None
+            if kind=='face':
+                # The largest visible head always wins, including when the old
+                # subject remains visible. Association is only used to detect a
+                # switch, never to keep following a smaller face.
+                selected=max(candidates,key=lambda c:c[1])
+                if nearest is not None and (selected is not nearest or abs(selected[0]-self.center)>.35):
+                    same=False
+            else:
+                # Keep hand identity stable when detection order/score changes.
+                selected=nearest if nearest is not None else max(candidates,key=lambda c:c[1])
+            x=selected[0]
             if not same:self.reset_motion()
             self.center=x;self.kind=kind;self.last_seen=now
             error=math.degrees(math.atan((x-.5)*2*math.tan(math.radians(self.HFOV/2))))

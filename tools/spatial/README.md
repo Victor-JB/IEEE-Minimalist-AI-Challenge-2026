@@ -1,12 +1,12 @@
 # luxoiii main app · board observer
 
-The Mac web view at port 8082 combines the full CAD assembly with read-only encoder readings,
+The main web view at the UNO Q's port 8082 combines the full CAD assembly with read-only encoder readings,
 head-pivot command telemetry, a camera frustum and approximate face positions. Detection runs
 on the UNO Q using the existing quantized face model. The default observer is read-only. With `--hybrid`, the UI can explicitly activate only the physical
-head pivot for subject tracking and D7 under a face/downward-beam gate. Failed stepper joints are animated in the browser. The observer starts with outputs disabled; the preview enables tracking and automatic lighting once camera and encoders are fresh.
+head pivot for subject tracking and D7 under a face/downward-beam gate. Failed stepper joints are animated in the browser. The observer starts with outputs disabled; the preview enables tracking and arms automatic lighting once the camera is fresh. Missing pitch encoder readings block the physical lamp, while image-based swivel tracking can continue with valid servo telemetry.
 
-The observer shares the standalone desk's MJPEG feed at port 8081 (does not open the USB camera
-again). It holds one frame in memory and runs face detection with four threads at a bounded active loop. In hybrid mode, every processed frame runs face detection, including quiet scenes: an unchecked frame never counts as face-free. A motion gate can still skip the hand model, with a three-second
+The observer owns the USB camera directly, with no separate 8080/8081 app. It holds one frame in
+memory and runs face detection with four threads at a bounded active loop. In hybrid mode, every processed frame runs face detection, including quiet scenes: an unchecked frame never counts as face-free. A motion gate can still skip the hand model, with a three-second
 probe to recover stationary arrivals. Active hand tracking reuses landmark crops; UI counters expose
 actual model calls, gated frames and measured timing.
 Up to two hands are detected. Pointing and command gestures have independent hold timers:
@@ -16,7 +16,7 @@ This is short-term spatial association, not persistent hand/person identity. Cro
 hands can confuse it. Two opposite thumbs cancel. Keep both hands fully visible and separated.
 Images and detections are not saved. The main app deployment installs this as `luxoiii-observer.service`; the foreground command below is also supported.
 
-From the repo on the board, while the standalone desk is running:
+From the repo on the board, with the observer service and any other camera app stopped:
 
 ```sh
 apps/luxoiii/.venv/bin/python tools/spatial/observe.py --repo "$PWD" --hybrid
@@ -26,7 +26,8 @@ For the existing, unmigrated board deployment, use `--package lumen` and its exi
 `apps/lumen/.venv/bin/python`. Copy all Python files from this folder together if running from `/tmp`; it imports the
 installed detector without replacing the running application.
 
-On the Mac, in one terminal:
+The boot service serves the main app directly at `http://100.78.199.105:8082/`. No Mac server
+or SSH tunnel is required. To run an optional Mac-side viewer instead, in one terminal:
 
 ```sh
 ssh -N -L 18083:127.0.0.1:8083 arduino@100.78.199.105
@@ -55,20 +56,22 @@ and differences in face width can cause large errors. Cropped/tiny faces and est
 0.15–5 m optical depth are omitted. Camera coordinates are right/up/forward. Robot coordinates are
 forward/left/up; the browser maps them to right/up/back. Joint geometry is shared with `kinematics.py`.
 
-Raw encoder samples use the saved October 11 calibration, applied off-board from unclaimed status
+Raw encoder samples use the saved October 11 calibration, applied by the observer from unclaimed status
 reads. Read-only status may return EACCES/EBUSY alongside valid samples; these are not motor claims.
 Unhealthy or >100 ms old encoder samples never produce world coordinates. Frames older than two
 seconds clear face markers. The servo has no encoder: powered readings are commanded angles,
 and a released servo uses the visible manual estimate. The geometric hand estimates select a desk target for the hybrid demo. The real head tracks subjects independently; no gesture or digital animation commands its position.
 
-Stopping the observer, SSH tunnel, or preview does not stop or alter the existing desk process.
+Stopping the observer releases its camera and physical outputs. Closing the browser lets the
+physical-output heartbeat expire. The old desk process is no longer part of the running app.
 
 
 ## Social behavior, gestures and subject tracking
 
 The real swivel is exclusively an image-based subject tracker. The preview grants
-it a quiet-arm session by default once observations are fresh. Faces take priority over hands; among multiple faces it follows the nearest
-previous image-space subject. After a one-second face-loss grace period, a visible palm can become
+it a quiet-arm session by default once observations are fresh. Faces take priority over hands;
+among multiple faces it follows the largest bounding box in each frame. A clear change of subject
+resets the controller's motion history. After a one-second face-loss grace period, a visible palm can become
 the target. It corrects horizontal camera error using current servo command telemetry and a 100°
 HFOV assumption. The middle 40% of the image is a hold zone; tracking resumes outside the
 middle 52% after two consistent observations. PD velocity control (Kp 1.8, Kd 0.35) brakes
@@ -99,7 +102,10 @@ is required; its two-argument manual light commands also switch fully on/off, wi
 
 Lighting gestures affect the digital scene only. The hardware motion RPC allowlist contains claim/status/release and pivot config/move/off;
 no stepper configuration, move, stream, jog or power-enable commands are sent. An owned or awake
-arm is refused. Browser heartbeat expiry (3 s), stale camera/encoders and Stop disable outputs.
+arm is refused. Browser heartbeat expiry (3 s), stale camera, invalid swivel telemetry and Stop
+disable outputs. Missing or stale pitch readings switch D7 off before any swivel command,
+without cancelling tracking. Automatic lighting stays armed and can recover only after fresh
+physical angles, face checks and the downward-beam gate all pass.
 
 The digital arm uses the full-model branch’s absolute choreography with blended additive expressions. Gestures take priority over social loops:
 
@@ -129,7 +135,14 @@ The digital arm uses the full-model branch’s absolute choreography with blende
   subsequent pointing. Lamp power stays constant, with natural distance falloff in the rendering.
 - Show an open palm for 0.4 s (at least two detections): the simulated arm greets back, in any
   active state. No lateral movement is required. A held palm triggers once; lower and show it again
-  to repeat, with a three-second cooldown. Palm detections never pause gestures or tracking.
+  to repeat, with a three-second cooldown. This releases the selected desk spot and its simulated
+  light, giving the welcome animation five seconds to finish. A held palm takes priority over a
+  second pointing hand; after the welcome, pointing needs a fresh hold. Physical tracking continues.
+- We prioritize the two largest qualifying palm detections as a proxy for proximity. Confidence
+  thresholds and duplicate suppression still apply. Occupied tracks are rediscovered once per
+  second so background hands cannot keep both slots indefinitely; intervening frames reuse ROIs.
+  Within a gesture channel, a palm more than 25% larger takes over after a fresh hold. Similar
+  palm sizes retain the current hand to reduce switching. This is apparent size, not measured depth.
 - Gestures stay active by default. Only the on-screen **Stop & lamp off** button latches Stop;
   **Resume gestures** restores social interaction and the saved tracking preference.
 
@@ -186,11 +199,13 @@ These previews are digital only; **AI-driven simulated arm** returns to interact
 
 Camera capture now retries after USB disconnection while a viewer remains connected. A capture
 error clears its cached image and FPS; a timeout never retransmits the previous JPEG. The observer
-also refuses to timestamp repeated identical JPEGs as fresh, covering older desk deployments.
+uses the direct capture sequence to prove freshness. A stationary scene can produce identical
+JPEGs, but only a successful new capture refreshes its timestamp.
 
 
 Automatic defaults: the preview opens in AI animation mode and enables subject tracking and gated lighting after
-fresh camera and encoder data arrive. A manual tracking-off selection is saved in this browser.
+fresh camera data arrive. The physical light still requires healthy measured angles.
+A manual tracking-off selection is saved in this browser.
 Reloading never clears a latched Stop; **Resume gestures** resumes the social loops and restores
 tracking when the saved preference is on. Stale data or heartbeat expiry still disables hardware;
 a failed activation is not retried repeatedly. The camera image shows the center hold zone.

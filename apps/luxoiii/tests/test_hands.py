@@ -232,6 +232,46 @@ class Pipeline(unittest.TestCase):
         self.lm.set("scores", [0.3])
         self.assertEqual(self.make().detect(self.frame), [])
 
+    def test_largest_palms_win_slots_after_confidence_filter_and_duplicate_suppression(self):
+        coords, scores = np.zeros((2944, 18), np.float32), np.zeros(2944, np.float32)
+        for i, (box, score) in enumerate([
+            ((10, 10, 30, 30), .99),       # small background hand, highest confidence
+            ((60, 20, 120, 80), .8),       # largest qualifying hand
+            ((150, 20, 190, 60), .7),
+            ((58, 18, 122, 82), .6),       # duplicate of the large hand
+            ((10, 120, 130, 240), .3),     # huge but below threshold
+        ]):
+            coords[i] = palm_detection(*box); scores[i] = score
+        self.palm.set('box_coords', coords); self.palm.set('box_scores', scores)
+        h = self.make(max_hands=2, prioritize_largest=True)
+        np.testing.assert_allclose(h.decode_palms(1, (0, 0))[:, :4],
+                                   [[60, 20, 120, 80], [150, 20, 190, 60]])
+        self.assertEqual(len(h.detect(self.frame, now=0)), 2)
+        self.assertEqual(h.landmark_calls, 2)
+
+    def test_larger_new_hand_replaces_full_tracks_on_bounded_refresh(self):
+        coords, scores = np.zeros((2944, 18), np.float32), np.zeros(2944, np.float32)
+        coords[0] = palm_detection(10, 10, 30, 30)
+        coords[1] = palm_detection(50, 10, 80, 40)
+        scores[:2] = [.95, .9]
+        self.palm.set('box_coords', coords); self.palm.set('box_scores', scores)
+        h = self.make(max_hands=2, prioritize_largest=True)
+        h.detect(self.frame, now=0)
+        coords[2] = palm_detection(140, 50, 210, 120); scores[2] = .8
+        self.palm.set('box_coords', coords); self.palm.set('box_scores', scores)
+        for t in (.2, .4, .6, .8):
+            h.detect(self.frame, now=t)
+            self.assertTrue(all(hand.tracked for hand in h.last))
+        self.assertEqual(h.palm_calls, 1)  # keep the cheap ROI frames
+        h.detect(self.frame, now=1.)
+        self.assertEqual(h.palm_calls, 2)
+        self.assertEqual(h.landmark_calls, 12)  # still only two per observation
+        self.assertFalse(h.last[0].tracked)
+        self.assertAlmostEqual(h.last[0].rect.cx, 175/.4)
+        h.detect(self.frame, now=1.2)
+        self.assertTrue(all(hand.tracked for hand in h.last))
+        self.assertEqual(h.palm_calls, 2)
+
     def test_no_palm_no_landmark_run(self):
         self.palm.set("box_scores", np.zeros(2944))
         self.assertEqual(self.make().detect(self.frame), [])
