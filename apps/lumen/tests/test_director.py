@@ -58,12 +58,23 @@ class FakePerception:
         self.target, self.hand_lm, self.wave_t = None, [], None
 
 
+class FakePower:
+    def __init__(self):
+        self.calls = []
+
+    def sleep(self):
+        self.calls.append("sleep")
+
+    def wake(self):
+        self.calls.append("wake")
+
+
 class Rig:
     """Machine + director wired the way app.py wires them, on a fake clock."""
     def __init__(self, seed=1):
-        self.w, self.light = FakeWorker(), FakeLight()
+        self.w, self.light, self.power = FakeWorker(), FakeLight(), FakePower()
         self.x = Expressive(random.Random(seed))
-        self.d = Director(self.w, self.light, self.x, rng=random.Random(seed))
+        self.d = Director(self.w, self.light, self.x, rng=random.Random(seed), power=self.power)
         self.p = FakePerception()
         self.t = 0.0
         self.m = Machine(on_enter=self.d.on_enter, on_exit=self.d.on_exit, rng=random.Random(seed))
@@ -127,6 +138,45 @@ class ModifierWiring(unittest.TestCase):
         self.assertEqual(plan[-1][1], r.d.aim_pose)
         r.finish(E.MOVE_DONE)
         self.assertEqual(r.m.state, "HOLD")
+
+
+class Sleep(unittest.TestCase):
+    def asleep(self):
+        r = Rig()
+        r.to(E.READY, E.NO_MOTION)
+        self.assertEqual(r.m.state, "SLEEP")
+        return r
+
+    def test_saves_power_and_slumps_once(self):
+        r = self.asleep()
+        self.assertEqual(r.power.calls, ["sleep"])
+        name, (plan, tok), kw = r.w.last()
+        self.assertEqual(name, "seq")
+        self.assertEqual(plan, [("play", "go_to_sleep/drowsy", 1.0, 1.0), ("rebase",)])
+
+    def test_then_breathes_very_slowly(self):
+        r = self.asleep()
+        r.finish()                                         # go_to_sleep done
+        self.assertEqual(r.m.state, "SLEEP")
+        for _ in range(60):                                # gap is at most 2 s
+            r.tick()
+        name, (plan, tok), kw = r.w.last()
+        self.assertEqual(name, "seq")
+        self.assertTrue(plan)
+        for step in plan:
+            self.assertEqual(step, ("play", "idle_breathe/calm", 0.3, 2.0))
+        n = len(r.w.cmds)
+        r.finish()
+        for _ in range(60):
+            r.tick()
+        self.assertGreater(len(r.w.cmds), n)               # and keeps breathing
+        self.assertNotIn("go_to_sleep/drowsy", str(r.w.cmds[n:]))
+
+    def test_motion_wakes_and_restores_power(self):
+        r = self.asleep()
+        r.ev(E.MOTION)
+        self.assertEqual(r.m.state, "IDLE")
+        self.assertEqual(r.power.calls, ["sleep", "wake"])
 
 
 if __name__ == "__main__":

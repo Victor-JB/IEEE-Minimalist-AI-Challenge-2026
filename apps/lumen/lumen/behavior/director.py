@@ -12,16 +12,19 @@ from .look_at import LookAt, face_error
 ONE_SHOT = {"NOTICE", "ACK", "NOT_FOUND", "CHECKIN", "GOODBYE", "FAULT"}   # CLIP_DONE ends the state
 LOOK_AT = {"NOTICE", "STANDBY", "LOST", "CHECKIN"}                          # follow the target face
 GAP_S = {"bored": (2.0, 6.0), "attentive": (1.5, 4.0), "holding": (4.0, 9.0),
-         "looking_around": (0.5, 1.5), "asleep": (20.0, 40.0)}               # pause between looping clips
+         "looking_around": (0.5, 1.5), "asleep": (0.5, 2.0)}                 # pause between looping clips
 CENTER_FIRST = {"NOTICE", "STANDBY"}   # center the face before any clip plays here
 CENTER_TIMEOUT_S = 4.0                 # ...but start the clips anyway after this long
 INTERACTIONS = {E.POINT, E.CLOSER, E.FURTHER, E.PALM, E.FACE_CONFIRMED}
 ADJUST_STEP = (3.0, -4.0, 1.0)   # (shoulder, elbow, head) deg per CLOSER; TODO: tune on the arm
+SLEEP_ENTRY = "go_to_sleep/drowsy"     # once on entering SLEEP; the lamp stays slumped after it
+SLEEP_BREATHE = (0.3, 2.0)             # (amplitude, time_scale) of the slow breathe while asleep
+SLEEP_BREATHE_S = 16.0                 # breathing per loop (whole 8 s breaths)
 
 
 class Director:
-    def __init__(self, worker, light, expressive, rng=None):
-        self.w, self.light, self.x = worker, light, expressive
+    def __init__(self, worker, light, expressive, rng=None, power=None):
+        self.w, self.light, self.x, self.power = worker, light, expressive, power
         self.rng = rng or random.Random()
         self.token, self.busy, self.next_clip_at = 0, False, 0.0
         self.faults, self.last_fault_t, self.fault_reason = 0, -1e9, None
@@ -69,14 +72,17 @@ class Director:
         elif state in CENTER_FIRST:         # hold still and center the face; tick() starts the clips
             self.w.set_base(C.HOME)
             self.busy = False
-        elif state in ("IDLE", "SLEEP"):
+        elif state == "SLEEP":
+            self._enter_sleep(tok)
+        elif state == "IDLE":
             self.w.set_base(C.HOME)
             self._play(spec.pool, tok)
         else:
             self._play(spec.pool, tok)
 
     def on_exit(self, state, m):
-        pass
+        if state == "SLEEP" and self.power:
+            self.power.wake()
 
     # -- per frame ---------------------------------------------------------------
     def tick(self, now, m, perception, frame_shape):
@@ -94,7 +100,7 @@ class Director:
                 and now >= self.next_clip_at):
             self.token += 1
             self.busy = True
-            self._play(pool, self.token)
+            self._loop_clip(pool, self.token)
         # TODO(victor): mirror mode in STANDBY: when perception.gesture is a wave, offset the head
         # with the hand's x/y and play from the "mirror" pool.
 
@@ -139,6 +145,22 @@ class Director:
             return
         ref, amp, ts = choice
         self.w.play(ref, amp, ts, tok)
+
+    def _loop_clip(self, pool, tok):
+        """The next clip of a looping pool."""
+        if pool == "asleep":                          # a very slow, shallow breathe (IdleBreathe)
+            amp, ts = SLEEP_BREATHE
+            self.w.seq(M.idle_breathe(SLEEP_BREATHE_S, self.rng, 0.0, amp, ts), tok)
+        else:
+            self._play(pool, tok)
+
+    # -- SLEEP ------------------------------------------------------------------------
+    def _enter_sleep(self, tok):
+        """Save power (camera to SLEEP_CAMERA_FPS, opt-in CPU governor), slump once, then breathe
+        slowly around the slumped pose (rebase: the hold must not pull the lamp back up)."""
+        if self.power:
+            self.power.sleep()
+        self.w.seq([("play", SLEEP_ENTRY, 1.0, 1.0), ("rebase",)], tok)
 
     # -- modifier rules (behavior/modifiers.py) ---------------------------------------
     def _arm_pose(self):

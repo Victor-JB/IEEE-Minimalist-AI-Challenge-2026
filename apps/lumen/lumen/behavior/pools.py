@@ -14,7 +14,7 @@ PROCEDURAL = {"attentive", "holding", "searching", "adjust", "found"}
 
 POOLS = {
     "boot":           [("home/gentle", "mid")],
-    "asleep":         [("go_to_sleep/drowsy", "low")],
+    "asleep":         [("idle_breathe/calm", "low")],    # after go_to_sleep/drowsy once (director)
     "bored":          [("idle_breathe/calm", "low"), ("scan_room/calm", "low"),
                        ("relaxed_sit_down/calm", "low"), ("stretch_reach_limit/short_try", "mid"),
                        ("tail_wag/small", "mid"), ("sad_droop/slight", "low"),

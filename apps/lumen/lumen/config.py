@@ -21,6 +21,9 @@ BOOK_LOST_MISSES = 3                     # ...and only call it lost after this m
 RESET_HOLD_S = 3.0                       # open palm this long in FAULT clears a latched fault
 MOTION_THRESHOLD = 6.0                   # mean abs diff (0-255) on the 80x60 gray frame
 NO_MOTION_SLEEP_S = 300.0                # IDLE -> SLEEP
+SLEEP_CAMERA_FPS = 2.0                   # camera frames per second in SLEEP (the gate runs on each)
+SLEEP_CPU_GOVERNOR = None                # e.g. "powersave" while asleep; needs write access to
+                                         # cpufreq/scaling_governor (udev rule), skipped otherwise
 NOBODY_S = 180.0                         # ILLUMINATE -> GOODBYE: no face, hand or motion
 
 # --- State timers -----------------------------------------------------------

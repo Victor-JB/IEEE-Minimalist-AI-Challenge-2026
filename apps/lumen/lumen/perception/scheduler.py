@@ -3,6 +3,9 @@
 rates: {"face": 5, "hand": 10, "book": "per_pose", ...} straight from machine.STATES.
 """
 
+SLACK_S = 0.01   # a frame this much early still counts: at 2 fps in SLEEP the frames are ~0.5 s apart
+                 # with a few ms of jitter, and a 2 Hz model must not skip every other one
+
 
 class ModelScheduler:
     def __init__(self):
@@ -16,7 +19,7 @@ class ModelScheduler:
             if hz == "per_pose":
                 ok = at_pause_pose
             else:
-                ok = now - self.last.get(name, -1e9) >= 1.0 / hz
+                ok = now - self.last.get(name, -1e9) >= 1.0 / hz - SLACK_S
             if ok:
                 run.append(name)
                 self.last[name] = now
