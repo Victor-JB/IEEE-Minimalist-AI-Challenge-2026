@@ -1,0 +1,233 @@
+{
+ "sad_droop/slight": {
+  "real_rms": [
+   0.15,
+   0.31,
+   0.42
+  ],
+  "real_rms_latency_removed": [
+   0.16,
+   0.19,
+   0.27
+  ],
+  "sim_rms": [
+   0.07,
+   0.11,
+   0.03
+  ],
+  "real_vs_sim_rms": [
+   0.18,
+   0.37,
+   0.43
+  ],
+  "real_latency_s": 0.04,
+  "real_max_err": [
+   0.5,
+   0.82,
+   1.41
+  ],
+  "sim_max_err": [
+   0.2,
+   0.34,
+   0.11
+  ]
+ },
+ "perk_up/small": {
+  "real_rms": [
+   0.19,
+   0.51,
+   0.63
+  ],
+  "real_rms_latency_removed": [
+   0.19,
+   0.23,
+   0.33
+  ],
+  "sim_rms": [
+   0.06,
+   0.05,
+   0.03
+  ],
+  "real_vs_sim_rms": [
+   0.22,
+   0.53,
+   0.62
+  ],
+  "real_latency_s": 0.06,
+  "real_max_err": [
+   0.8,
+   2.04,
+   2.61
+  ],
+  "sim_max_err": [
+   0.17,
+   0.11,
+   0.14
+  ]
+ },
+ "nod_yes/medium": {
+  "real_rms": [
+   0.09,
+   0.01,
+   0.98
+  ],
+  "real_rms_latency_removed": [
+   0.08,
+   0.01,
+   0.44
+  ],
+  "sim_rms": [
+   0.04,
+   0.08,
+   0.03
+  ],
+  "real_vs_sim_rms": [
+   0.1,
+   0.08,
+   1.0
+  ],
+  "real_latency_s": 0.07,
+  "real_max_err": [
+   0.38,
+   0.09,
+   2.74
+  ],
+  "sim_max_err": [
+   0.07,
+   0.2,
+   0.07
+  ]
+ },
+ "shrug_fail/small": {
+  "real_rms": [
+   0.11,
+   0.87,
+   0.95
+  ],
+  "real_rms_latency_removed": [
+   0.14,
+   0.4,
+   0.41
+  ],
+  "sim_rms": [
+   0.06,
+   0.13,
+   0.05
+  ],
+  "real_vs_sim_rms": [
+   0.12,
+   0.95,
+   0.96
+  ],
+  "real_latency_s": 0.07,
+  "real_max_err": [
+   0.31,
+   2.35,
+   2.82
+  ],
+  "sim_max_err": [
+   0.12,
+   0.39,
+   0.22
+  ]
+ },
+ "excited_bounce/medium": {
+  "real_rms": [
+   0.31,
+   1.06,
+   1.11
+  ],
+  "real_rms_latency_removed": [
+   0.22,
+   0.57,
+   0.56
+  ],
+  "sim_rms": [
+   0.07,
+   0.12,
+   0.08
+  ],
+  "real_vs_sim_rms": [
+   0.33,
+   1.12,
+   1.08
+  ],
+  "real_latency_s": 0.05,
+  "real_max_err": [
+   0.84,
+   2.59,
+   2.59
+  ],
+  "sim_max_err": [
+   0.21,
+   0.43,
+   0.29
+  ]
+ },
+ "hesitate/unsure": {
+  "real_rms": [
+   0.71,
+   0.02,
+   0.66
+  ],
+  "real_rms_latency_removed": [
+   0.54,
+   0.02,
+   0.39
+  ],
+  "sim_rms": [
+   0.1,
+   0.07,
+   0.02
+  ],
+  "real_vs_sim_rms": [
+   0.77,
+   0.08,
+   0.66
+  ],
+  "real_latency_s": 0.05,
+  "real_max_err": [
+   3.77,
+   0.09,
+   2.4
+  ],
+  "sim_max_err": [
+   0.32,
+   0.19,
+   0.07
+  ]
+ },
+ "lean_in_interest/subtle": {
+  "real_rms": [
+   0.71,
+   0.3,
+   0.3
+  ],
+  "real_rms_latency_removed": [
+   0.56,
+   0.24,
+   0.25
+  ],
+  "sim_rms": [
+   0.13,
+   0.09,
+   0.02
+  ],
+  "real_vs_sim_rms": [
+   0.78,
+   0.31,
+   0.3
+  ],
+  "real_latency_s": 0.04,
+  "real_max_err": [
+   2.76,
+   0.64,
+   1.14
+  ],
+  "sim_max_err": [
+   0.4,
+   0.27,
+   0.05
+  ]
+ }
+}

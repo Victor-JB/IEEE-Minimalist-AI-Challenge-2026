@@ -1,0 +1,131 @@
+{
+ "name": "nod_yes",
+ "variant": "lamp",
+ "description": "Two clear nods down toward the desk.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": 0.6,
+  "arousal": 0.5,
+  "source": "apps/stepper_desk/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.289,
+   "joints": {
+    "wrist_pitch": -4.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.439,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.96,
+   "joints": {
+    "wrist_pitch": 20.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.11,
+   "joints": {
+    "shoulder_pitch": 1.0,
+    "elbow_pitch": 2.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.562,
+   "joints": {
+    "wrist_pitch": -3.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.712,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.885,
+   "joints": {
+    "wrist_pitch": 16.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.035,
+   "joints": {
+    "shoulder_pitch": 1.0,
+    "elbow_pitch": 2.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.999,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.149,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 6.149
+}

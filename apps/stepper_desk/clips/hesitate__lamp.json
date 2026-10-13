@@ -1,0 +1,131 @@
+{
+ "name": "hesitate",
+ "variant": "lamp",
+ "description": "Starts to go, stops, pulls back a little, thinks, gives up.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": -0.1,
+  "arousal": 0.3,
+  "source": "apps/stepper_desk/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.836,
+   "joints": {
+    "wrist_pitch": 12.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.986,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 3.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.136,
+   "joints": {
+    "wrist_pitch": 12.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.286,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 3.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.721,
+   "joints": {
+    "wrist_pitch": 5.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.871,
+   "joints": {
+    "shoulder_pitch": -2.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.521,
+   "joints": {
+    "wrist_pitch": 5.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.671,
+   "joints": {
+    "shoulder_pitch": -2.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.869,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.019,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 3.019
+}

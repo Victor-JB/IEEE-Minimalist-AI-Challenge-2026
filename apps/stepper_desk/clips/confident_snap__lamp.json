@@ -1,0 +1,131 @@
+{
+ "name": "confident_snap",
+ "variant": "lamp",
+ "description": "One firm nod with a wind-up.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": 0.6,
+  "arousal": 0.7,
+  "source": "apps/stepper_desk/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.488,
+   "joints": {
+    "wrist_pitch": -7.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.588,
+   "joints": {
+    "wrist_pitch": -7.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.638,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.738,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.329,
+   "joints": {
+    "wrist_pitch": 18.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.479,
+   "joints": {
+    "shoulder_pitch": 1.0,
+    "elbow_pitch": 3.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.729,
+   "joints": {
+    "wrist_pitch": 18.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.879,
+   "joints": {
+    "shoulder_pitch": 1.0,
+    "elbow_pitch": 3.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.982,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.132,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 4.132
+}

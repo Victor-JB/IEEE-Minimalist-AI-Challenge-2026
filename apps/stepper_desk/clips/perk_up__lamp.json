@@ -1,0 +1,146 @@
+{
+ "name": "perk_up",
+ "variant": "lamp",
+ "description": "Dips, then rises and lifts the shade, a little overshoot, holds bright-eyed.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": 0.6,
+  "arousal": 0.7,
+  "source": "apps/stepper_desk/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.418,
+   "joints": {
+    "wrist_pitch": 6.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.518,
+   "joints": {
+    "wrist_pitch": 6.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.568,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 5.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.668,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 5.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.607,
+   "joints": {
+    "wrist_pitch": -20.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.757,
+   "joints": {
+    "shoulder_pitch": -2.0,
+    "elbow_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.896,
+   "joints": {
+    "wrist_pitch": -16.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.046,
+   "joints": {
+    "shoulder_pitch": -2.0,
+    "elbow_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.696,
+   "joints": {
+    "wrist_pitch": -16.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.846,
+   "joints": {
+    "shoulder_pitch": -2.0,
+    "elbow_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.81,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.96,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 4.96
+}

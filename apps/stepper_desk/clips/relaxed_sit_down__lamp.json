@@ -1,0 +1,146 @@
+{
+ "name": "relaxed_sit_down",
+ "variant": "lamp",
+ "description": "Settles in: sinks into a crouch with a little wiggle, then comes back up.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": 0.3,
+  "arousal": 0.1,
+  "source": "apps/stepper_desk/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.03,
+   "joints": {
+    "wrist_pitch": 4.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.18,
+   "joints": {
+    "shoulder_pitch": -6.0,
+    "elbow_pitch": 12.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.23,
+   "joints": {
+    "wrist_pitch": 4.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.38,
+   "joints": {
+    "shoulder_pitch": -6.0,
+    "elbow_pitch": 12.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.647,
+   "joints": {
+    "wrist_pitch": 1.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.797,
+   "joints": {
+    "shoulder_pitch": -6.0,
+    "elbow_pitch": 9.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.959,
+   "joints": {
+    "wrist_pitch": 5.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.109,
+   "joints": {
+    "shoulder_pitch": -7.0,
+    "elbow_pitch": 13.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.459,
+   "joints": {
+    "wrist_pitch": 5.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.609,
+   "joints": {
+    "shoulder_pitch": -7.0,
+    "elbow_pitch": 13.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.27,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.42,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 5.42
+}

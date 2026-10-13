@@ -1,0 +1,101 @@
+{
+ "name": "lean_in_interest",
+ "variant": "lamp",
+ "description": "Lowers the shade closer to what it watches and holds there.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": 0.4,
+  "arousal": 0.3,
+  "source": "apps/stepper_desk/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.123,
+   "joints": {
+    "wrist_pitch": -9.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.273,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 12.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.523,
+   "joints": {
+    "wrist_pitch": -9.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.673,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 12.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.195,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.345,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 4.345
+}

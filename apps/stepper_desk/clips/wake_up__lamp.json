@@ -1,0 +1,161 @@
+{
+ "name": "wake_up",
+ "variant": "lamp",
+ "description": "Stirs: little shakes of the shade, a stretch up, then settles.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": 0.3,
+  "arousal": 0.4,
+  "source": "apps/stepper_desk/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.557,
+   "joints": {
+    "wrist_pitch": -8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.707,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.254,
+   "joints": {
+    "wrist_pitch": 2.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.404,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.259,
+   "joints": {
+    "wrist_pitch": -20.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.409,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": -12.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.859,
+   "joints": {
+    "wrist_pitch": -20.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.009,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": -12.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.556,
+   "joints": {
+    "wrist_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.706,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": -6.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.756,
+   "joints": {
+    "wrist_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.906,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": -6.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.452,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.602,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 5.602
+}
