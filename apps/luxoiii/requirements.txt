@@ -1,0 +1,6 @@
+# luxoiii's venv on the Arduino Q (apps/luxoiii/.venv). Same pins as tools/animation where shared.
+arduino-router-bridge==0.5.1   # talks to the flashed stepper firmware through the router
+msgpack==1.2.3
+numpy==2.3.3
+opencv-python-headless>=4.8
+ai-edge-litert>=2.0             # TFLite runtime for the face / hand / book models

@@ -11,6 +11,7 @@ WorkingDirectory=/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/lumen
 ExecStartPre=/bin/sh -c 'for i in $(seq 30); do [ -S /var/run/arduino-router.sock ] && exit 0; sleep 1; done; exit 1'
 ExecStart=/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/lumen/.venv/bin/python -m lumen --headless --stream 8080
 Environment=PYTHONUNBUFFERED=1
+Environment=LUMEN_LIGHT=firmware
 Restart=on-failure
 RestartSec=3
 

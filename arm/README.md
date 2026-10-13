@@ -1,15 +1,15 @@
 # arm: the shared arm module
 
-Everything about the physical arm lives here, so Lumen (`apps/lumen`) and every manual or test
+Everything about the physical arm lives here, so luxoiii (`apps/luxoiii`) and every manual or test
 tool use the same firmware, protocol, parameters and clips.
 
 ```
 arm/
 ├── sketch/          STM32 firmware: 1 kHz closed loop on the AS5600 joint encoders, joint limits,
 │                    300 ms motion lease, driver sleep (folder name must match sketch.ino)
-│                    + head-tilt servo (roll.hpp). Pins: STEP D3/D5/D9, DIR D6/D4/D7 (elbow,
+│                    + head-tilt servo (roll.hpp). Pins: STEP D3/D5/D9, DIR D6/D4/D12 (elbow,
 │                    shoulder, head), SLEEP D8, roll servo D2 (TIM2, 50 Hz), encoders I2C D20/D21
-│                    + lamp LED (light.hpp), off by default: LIGHT_ENABLED 1 = LED on D7, head DIR on D12
+│                    + lamp LED (light.hpp), LIGHT_ENABLED 1 (default) = LED on D7, head DIR on D12
 ├── python/          flat modules, imported by plain name once arm/python is on sys.path
 │   ├── arm_config.py   ★ the one place for HOME, SAFE_RANGES, speed/accel caps, stream rate
 │   ├── arm_client.py · arm_motion.py   Python API (ArmMotion.move_to / stream_point / relax)
@@ -37,25 +37,28 @@ from trajectory import trajectory
 ```
 
 Changing a cap or range in `arm_config.py` changes it for the app and the manual tools together.
-The Mac app (dev branch, `apps/stepper_desk/mac`) keeps its own Swift copy of the joint limits
-(`ArmModel.swift`): update both if the firmware limits change.
+Historical Mac tools on the `dev` branch used their own Swift limits; current app and desk use the shared Python configuration.
 
-## Lamp LED (not wired yet, not flashed)
+## Lamp LED (wired and flashed 2026-10-13: LED on D7, head DIR on D12)
 
-`arm_light` RPC, gateway `LIGHT <0-1000> [fade ms]` / `LIGHTSTAT`, `ArmMotion.light()`. The level
-is a duty in per mille, already gamma-corrected by Lumen (`apps/lumen/lumen/io/light.py`); the MCU
-fades linearly to it over `fade ms` and drives a 20 kHz PWM. No session owner needed, and the level
-stays when the session ends. Firmware built with `LIGHT_ENABLED 0` (the default) or older
-firmware answers `supported: False` and the light is a no-op, so nothing else breaks.
+`arm_light` RPC, gateway `LIGHT <0-1000> [fade ms]` / `LIGHTSTAT`, `ArmMotion.light()`.
+**D7 is a plain digital on/off output: HIGH on, LOW off. No PWM or fades.**
+The existing request shape remains compatible: any positive level turns the lamp fully on,
+zero or negative turns it off, and the response reports 1000 or 0. Fade values are validated
+but ignored. `LIGHT_ENABLED 0` disables the lamp for the old wiring.
 
-**Pin: D7 (PB2, TIM8 CH4N).** TIM8 drives no other header pin, so the LED gets its own timer.
-Every other PWM pin shares a timer that is taken: TIM3 (D3, D6, D8), TIM1 (D5, D11-D13) and TIM4
-(D9, D10) run the STEP pulse trains, whose period and mode change constantly; TIM2 (D2, D20, D21)
-is the roll servo's fixed 50 Hz (visible flicker, bands on camera) and the encoder I2C. D7 is the
-head DIR today, so turning the light on means moving that wire:
+Automatic lighting uses `arm_light([level, fade_ms, lease_ms])`, with a 1–2000 ms lease.
+The independent MCU tick forces D7 LOW when the lease expires, even if the Linux observer
+stops. Read requests do not renew it. Omitted/zero lease retains manual on/off behavior.
+The hybrid observer uses an 800 ms lease and checks fresh face results plus the physical
+beam's horizon clearance before every renewal. Older firmware that rejects the lease
+cannot activate automatic lighting.
+
+**Pin: D7 (PB2), with head DIR on D12.** D7 no longer uses TIM8.
+The following wiring is already verified on the current board:
 
 1. Head driver DIR: **D7 -> D12**. D12 only runs as a plain GPIO, the same way D6 already does.
-2. Set `#define LIGHT_ENABLED 1` at the top of `sketch/sketch.ino` (or pass it as a build flag),
+2. Build with `LIGHT_ENABLED 1` (the default in `sketch/sketch.ino`; 0 only for the old wiring),
    run `bash arm/scripts/test.sh`, then `bash arm/scripts/deploy.sh`.
 3. LED driver, low side, with a logic-level N-MOSFET that is fully on at a 3.3 V gate (AO3400,
    IRLB8721, IRLZ44N; not IRF540 or IRFZ44N):
@@ -66,4 +69,4 @@ head DIR today, so turning the light on means moving that wire:
      constant-current LED driver with a PWM/DIM input is better, wired the same way.
    - Anything over about 0.5 A gets its own supply (or the servo's buck), not the board's 5 V.
 
-The other option is Linux-side PWM/GPIO on the QRB2210: see `apps/lumen/lumen/io/light.py`.
+The other option is Linux-side PWM/GPIO on the QRB2210: see `apps/luxoiii/luxoiii/io/light.py`.

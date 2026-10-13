@@ -6,7 +6,7 @@ where the lamp faces at HOME), +y the lamp's left, +z up. The desk top is z = 0.
 
 Joints, as everywhere in arm/ (degrees): shoulder, elbow, head are pitch joints about the lateral
 axis, measured from straight up, each relative to the previous link, positive leaning toward the
-front (arm/calibration "zero_pose"/"positive_direction"; apps/stepper_desk ik_line.py; the desk
+front (arm/calibration "zero_pose"/"positive_direction"; tools/animation ik_line.py; the desk
 page's side view). The pitch of the head link in the world is phi = shoulder + elbow + head
 (0 = up, 90 = level forward, 180 = straight down).
 J5, the head tilt ("roll", arm_config.ROLL_*), turns the shade about an axis across the head link

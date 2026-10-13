@@ -3,6 +3,9 @@
     camera frame ─► Perception.step(rates of the current state) ─► events
                                                                     │
     MotionWorker (thread, 25 Hz) ◄─ Director ◄─ Machine.handle(event) ◄┘
+
+With --stream the desk (manual arm control) is on the same port at /desk. Its Connect pauses
+all of the above but the camera (lumen/desk/shared.py); Disconnect resumes from BOOT.
 """
 import time
 
@@ -37,10 +40,12 @@ def run(args):
     perception = Perception(face=face, hands=HandLandmarker(), book=BookDetector(),
                             gate=MotionGate(C.MOTION_THRESHOLD))
     log = TransitionLog()
-    streamer = None
+    streamer = handoff = None
     if args.stream:
+        from .desk.shared import Handoff
         from .io.stream import FrameStreamer
-        streamer = FrameStreamer(args.stream)
+        handoff = Handoff(worker)
+        streamer = FrameStreamer(args.stream, desk=handoff, video=handoff.feed)
 
     def entered(state, m):
         director.on_enter(state, m)
@@ -58,10 +63,19 @@ def run(args):
             with timed("camera.read"):
                 frame = cam.read()                   # paced in SLEEP (io/power.py)
             now = time.monotonic()                   # after the read: the frame's own time
-            if frame is None:
-                print("Camera frame grab failed")
-                break
+            if frame is None:                        # e.g. the USB camera dropped off the bus
+                raise SystemExit("Camera frame grab failed")   # exit 1: systemd restarts Lumen
             count("frames")
+
+            if handoff and (handoff.manual or handoff.resume):
+                if handoff.manual:                   # the desk owns the arm: camera only
+                    fps.tick()
+                    handoff.feed.publish(frame)
+                    streamer.update(frame)
+                    continue
+                handoff.resume = False               # back from the desk: start over at BOOT
+                machine = Machine(on_enter=entered, on_exit=director.on_exit, now=now)
+                print(f"Manual control ended: state {machine.path}")
 
             with timed("perception"):
                 events = perception.step(frame, now, machine.models, machine.ctx)
@@ -85,6 +99,7 @@ def run(args):
             if streamer:
                 hud.draw(frame, machine, perception, light, expressive.energy, fps.fps)
                 streamer.update(frame)
+                handoff.feed.publish(frame)
             if args.headless and now - last_print > 5:
                 last_print = now
                 print(f"[{machine.path}] {fps.fps:.1f} fps, inferences {perception.sched.counts}")

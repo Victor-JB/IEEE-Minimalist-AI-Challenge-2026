@@ -226,6 +226,35 @@ class ArmMotionTests(unittest.TestCase):
             arm.halt()
             self.assertEqual(arm.stream_point([1, 62, 4])['state'], 'streaming')
 
+    def stream_head(self, arm, head_measured, head_target):
+        """One stream point with the fake reporting the head (motor axis 2) at head_measured."""
+        self.fake.s['axes'][2]['angle'] = round(head_measured*1000)
+        return arm.stream_point([-12, 63, head_target])
+
+    def test_runaway_joint_is_halted(self):
+        # Measured on 2026-10-13: head DIR not where the firmware drives it; commanded ~-15, it ran off.
+        with self.session() as arm:
+            with self.assertRaisesRegex(client.ArmError, 'head is running away'):
+                for measured in (-16.9, -21.0, -29.3, -34.5, -38.1, -41.1, -46.0, -51.6, -57.5):
+                    self.stream_head(arm, measured, -15.0)
+            self.assertGreater(measured, -60)      # caught well before the -80 hard limit
+            self.assertTrue(self.fake.sent('HALT'))
+
+    def test_past_limit_going_outward_is_halted(self):
+        with self.session() as arm:
+            self.stream_head(arm, -80.5, -78.0)
+            with self.assertRaisesRegex(client.ArmError, 'past its limit'):
+                self.stream_head(arm, -82.0, -78.0)
+
+    def test_stuck_or_returning_joint_is_not_a_runaway(self):
+        with self.session() as arm:
+            for target in range(0, 60, 5):          # setpoint leaves a stuck head behind
+                self.stream_head(arm, 0.0, target)
+        with self.session() as arm:
+            for measured in (-90.0, -88.0, -85.0, -82.0, -79.0):   # past the limit, coming back in
+                self.stream_head(arm, measured, -78.0)
+        self.assertFalse(self.fake.sent('HALT'))
+
     def test_scale_halt_relax(self):
         with self.session() as arm:
             arm.scale(0.5)

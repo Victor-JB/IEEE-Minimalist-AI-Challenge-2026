@@ -23,5 +23,33 @@ int main(){
     assert(l.set(333,0,3000)==0&&l.compare(1000)==333);
     Light w;w.set(1000,100,0xFFFFFFF0u);w.tick(0x00000022u);  // millis() wraps mid-fade (50 ms in)
     assert(w.current==500);w.tick(0x00000060u);assert(w.current==1000);
+    Light automatic;
+    assert(automatic.set(400,0,100,800)==0&&automatic.current==400);
+    automatic.tick(899);assert(automatic.current==400);
+    automatic.tick(900);assert(automatic.current==0&&automatic.to==0); // expires even at steady brightness
+    automatic.set(400,0,1000,800);automatic.set(400,0,1700,800);
+    automatic.tick(1800);assert(automatic.current==400);             // renewal extends the lease
+    automatic.tick(2500);assert(automatic.current==0);
+    automatic.set(400,1000,3000,100);automatic.tick(3100);
+    assert(automatic.current==0&&automatic.remaining(3100)==0);      // expiry interrupts a fade
+    automatic.set(400,0,0xFFFFFFF0u,100);automatic.tick(0x00000054u);
+    assert(automatic.current==0);                                  // expiry across millis wrap
+    assert(automatic.set(400,0,4000,-1)==-EINVAL);
+    assert(automatic.set(400,0,4000,MAX_LEASE_MS+1)==-EINVAL);
+    automatic.set(400,0,4000,800);automatic.set(0,0,4010);
+    assert(automatic.current==0&&automatic.lease==0);               // immediate off cancels the lease
+    automatic.set(400,0,5000);automatic.tick(10000);
+    assert(automatic.current==400);                                // existing manual API is unchanged
+    Light switched;
+    assert(switched.setSwitch(400,500,100,800)==0);
+    assert(switched.current==1000&&switched.to==1000&&switched.remaining(100)==0);
+    switched.tick(899);assert(switched.current==1000);
+    switched.tick(900);assert(switched.current==0);           // binary output still expires off
+    assert(switched.setSwitch(1,0,1000,800)==0&&switched.current==1000);
+    assert(switched.setSwitch(1000,-1,1700,800)==-EINVAL);
+    switched.tick(1800);assert(switched.current==0);         // invalid fade cannot renew the lease
+    switched.setSwitch(1000,0,2000,800);
+    assert(switched.setSwitch(0,500,2010)==0&&switched.current==0); // off never waits for a fade
+    assert(switched.setSwitch(-5,0,2020)==0&&switched.current==0);
     std::puts("light tests passed");
 }

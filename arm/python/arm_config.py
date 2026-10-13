@@ -1,6 +1,6 @@
 """One source of truth for the arm's motion parameters.
 
-Lumen (apps/lumen) and every manual / test tool (emote.py, armctl.py, ik_line.py on the dev branch)
+luxoiii (apps/luxoiii) and every manual / test tool (emote.py, armctl.py, ik_line.py on the dev branch)
 import these, so the app and the bench can never disagree about the arm.
 Values measured on the real arm on 2026-10-11 (CLOSED_LOOP.md on the dev branch).
 """

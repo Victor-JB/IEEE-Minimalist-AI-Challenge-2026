@@ -158,7 +158,7 @@ What was added (in `/private/tmp/claude-501/-Users-tongtong-Nextcloud-Projects-I
 it works from any browser and needs no Swift build.
 
 Run it with `cd apps/lumen && ../../.venv/bin/python -m lumen.desk`, then open
-`http://daboard:8081/`. Stop Lumen first: only one program can own the arm and camera.
+`http://luxo3:8081/`. Stop Lumen first: only one program can own the arm and camera.
 
 What's on the page:
 

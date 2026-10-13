@@ -28,6 +28,12 @@ REASONS = {0:'none', 1:'complete', 2:'unsettled', 3:'lease', 4:'sensor', 5:'limi
            7:'stall', 8:'obstruction', 9:'halted', 10:'relaxed', 11:'hold_timeout'}
 ACTIVE = (13, 15)
 MARGIN = 2.0                       # firmware keeps targets this far inside hard limits
+# Streaming guard (stream_point): halt and raise when a joint is measured past a hard limit and still
+# going outward, or keeps running away from its setpoint (a DIR line on the wrong pin, a slipped
+# magnet): the firmware's stall check only catches a joint that doesn't move at all.
+LIMIT_SLACK = 1.0                  # deg past a hard limit before the outward check applies
+RUNAWAY_DEG = 15.0                 # deg from the setpoint ...
+RUNAWAY_SAMPLES = 4                # ... and further away on this many points in a row
 # Feedforward hints only, from the commissioning profile (shoulder, elbow, head).
 DEFAULT_PPD = (146.0, 140.0, 143.1)
 
@@ -244,7 +250,32 @@ class ArmMotion(ArmSession):
             raise ArmError(f"Firmware rejected command: {s['error']}")
         if s['state'] == 18:
             self._outcome(s, None)
+        if s['state'] != 16:
+            self._guard_limits(s, pose)
         return {'state': STATES.get(s['state'], s['state']), 'angles': angles(s)}
+
+    def _guard_limits(self, s, pose):
+        """Halt and raise if a joint leaves its hard limits outward or runs away (see LIMIT_SLACK)."""
+        if not healthy(s):
+            return
+        now = angles(s)
+        prev, runs = getattr(self, '_guard_prev', None), getattr(self, '_guard_runs', [0]*3)
+        why = None
+        for j, (a, target) in enumerate(zip(now, pose)):
+            lo, hi = LIMITS[j]
+            if prev and ((a < lo-LIMIT_SLACK and a < prev[j][0]-0.5) or (a > hi+LIMIT_SLACK and a > prev[j][0]+0.5)):
+                why = f'{JOINTS[j]} at {a:.1f} deg is past its limit {lo}..{hi} and still going outward'
+            err = abs(a-target)
+            fleeing = prev and (a-prev[j][0])*(a-target) > 0 and abs(a-prev[j][0]) > 0.2   # moving away itself,
+            runs[j] = runs[j]+1 if fleeing and err > RUNAWAY_DEG else 0                      # not just left behind
+            if runs[j] >= RUNAWAY_SAMPLES:
+                why = f'{JOINTS[j]} is running away from its setpoint ({a:.1f} deg, wanted {target:.1f})'
+        self._guard_prev = [(a, abs(a-t)) for a, t in zip(now, pose)]
+        self._guard_runs = runs
+        if why:
+            self._guard_prev, self._guard_runs = None, [0]*3
+            self.halt()                    # hold powered where it is: a stepper holding can't run away
+            raise ArmError(f'Stopped: {why}. Check its wiring (DIR pin) and sensor before moving again.')
 
     def scale(self, factor):
         """Live shared slowdown for the running move (0.05-1); path unchanged.
@@ -253,6 +284,7 @@ class ArmMotion(ArmSession):
 
     def halt(self):
         """Stop where it is and hold that pose powered."""
+        self._guard_prev = None
         return self._outcome(self._request('HALT'), None)
 
     def relax(self):

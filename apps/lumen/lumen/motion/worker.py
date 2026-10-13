@@ -84,6 +84,7 @@ class MotionWorker(threading.Thread):
         self.give_ups = []                  # times commands were abandoned after failed retries
         self.light_cmd = None               # lamp per mille wanted (main thread writes, we read)
         self.light_sent, self.light_at = None, -1e9
+        self.released = False               # release()d: closed on purpose, no session until connect()
         self._stop = threading.Event()
 
     # -- commands (call from the main thread) ------------------------------------
@@ -120,6 +121,11 @@ class MotionWorker(threading.Thread):
         """(Re)open the arm session if a fault closed it; no-op when connected or fake."""
         self.cmds.put(("connect",))
 
+    def release(self):
+        """Close the arm session (drivers sleep) without a FAULT, so another owner can take the arm
+        (manual control from the desk page); connect() takes it back."""
+        self.cmds.put(("release",))
+
     def set_base(self, pose):
         """Pose holds and clips are relative to; a 4th value sets the base roll (else ROLL_HOME)."""
         self.base = list(pose[:3])
@@ -151,7 +157,8 @@ class MotionWorker(threading.Thread):
                 connected = self._wait_for_connect()
                 continue
             try:
-                self._loop()
+                self._loop()                          # returns on stop() or release()
+                connected = False
             except Exception as e:                    # ArmError, link loss, closed-loop fault
                 traceback.print_exc()
                 self._disconnect()
@@ -203,7 +210,10 @@ class MotionWorker(threading.Thread):
             cmd = self.cmds.get(timeout=0.5)
         except queue.Empty:
             return False
-        return cmd[0] == "connect" and self._connect()
+        if cmd[0] == "connect" and self._connect():
+            self.released = False
+            return True
+        return False
 
     def _loop(self):
         while not self._stop.is_set():
@@ -215,6 +225,10 @@ class MotionWorker(threading.Thread):
             kind = cmd[0]
             if kind == "connect":
                 continue                              # already connected
+            if kind == "release":
+                self._disconnect()
+                self.released = True
+                return
             if kind == "relax":
                 if self.arm:
                     self.arm.relax()

@@ -1,11 +1,15 @@
-"""Static gestures from 21 MediaPipe hand landmarks, by rules (no model needed).
+"""Static gestures from 21 MediaPipe hand landmarks.
 
 Landmark ids: 0 wrist; thumb 1-4; index 5-8; middle 9-12; ring 13-16; pinky 17-20.
-A finger is extended when its tip is farther from the wrist than its middle joint.
-Image y grows downward. If rules prove flaky, swap in a tiny MLP on the 63 values
-(the distillation rung of the optimization ladder) behind the same classify() signature.
+A small, trained landmark classifier handles foreshortened pointing and rejects
+non-command hand poses. The original rules remain an explicit fallback if the
+optional model cannot load. Image y grows downward.
 """
 import math
+import logging
+from functools import lru_cache
+
+from ..paths import MODELS
 
 POINT, THUMBS_UP, THUMBS_DOWN, OPEN_PALM, NONE = "point", "thumbs_up", "thumbs_down", "open_palm", None
 FINGERS = {"index": (6, 8), "middle": (10, 12), "ring": (14, 16), "pinky": (18, 20)}
@@ -55,9 +59,34 @@ class WaveDetector:
         return False
 
 
+@lru_cache(maxsize=1)
+def _classifier():
+    try:
+        from .gesture_features import LandmarkClassifier
+        return LandmarkClassifier(MODELS / 'gesture_landmarks_v1.npz')
+    except (ImportError, OSError, ValueError, KeyError) as exc:
+        logging.getLogger(__name__).warning('Gesture model unavailable; using legacy rules: %s', exc)
+        return None
+
+
 def classify(lm):
-    """One hand's 21 landmarks -> gesture name or None."""
-    if not lm or len(lm) != 21:
+    """One hand's 21 landmarks -> command or None, with no temporal state."""
+    try:
+        if lm is None or len(lm) != 21 or any(
+                len(p) < 2 or not all(math.isfinite(float(v)) for v in p) for p in lm):
+            return NONE
+        xs, ys = [float(p[0]) for p in lm], [float(p[1]) for p in lm]
+        if min(max(xs)-min(xs), max(ys)-min(ys)) < 1e-6:
+            return NONE
+    except (TypeError, ValueError, OverflowError):
+        return NONE
+    model = _classifier()
+    return model.classify(lm) if model is not None else classify_rules(lm)
+
+
+def classify_rules(lm):
+    """Legacy wrist-distance baseline, retained for comparison and fallback."""
+    if lm is None or len(lm) != 21:
         return NONE
     wrist = lm[0]
     ext = {f: _d(lm[tip], wrist) > _d(lm[pip], wrist) * 1.1 for f, (pip, tip) in FINGERS.items()}

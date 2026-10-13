@@ -3,9 +3,11 @@
 # the older /opt/openocd/bin/arduino-flash.sh uses a different sketch address.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CORE=/home/arduino/.arduino15/packages/arduino/hardware/zephyr/1.0.0
+# Pinned core 1.0.0 (sketch.yaml): a global install, or where `compile --profile` unpacks it.
+for CORE in /home/arduino/.arduino15/packages/arduino/hardware/zephyr/1.0.0 \
+            /home/arduino/.arduino15/internal/arduino_zephyr_1.0.0_*; do [[ -d "$CORE" ]] && break; done
 LOADER="$CORE/firmwares/zephyr-arduino_uno_q_stm32u585xx.elf"
-BUILD_DIR="${STEPPER_BUILD_DIR:-$ROOT/build}"
+BUILD_DIR="${LUXOIII_BUILD_DIR:-${STEPPER_BUILD_DIR:-$ROOT/build}}"
 SKETCH="$BUILD_DIR/sketch.ino.elf-zsk.bin"
 RECIPE="$CORE/variants/arduino_uno_q_stm32u585xx/flash_sketch.cfg"
 [[ -f "$LOADER" && -f "$SKETCH" && -f "$RECIPE" ]] || { echo 'Build artifacts or pinned core missing.' >&2; exit 1; }

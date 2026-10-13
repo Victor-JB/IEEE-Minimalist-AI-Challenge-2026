@@ -27,16 +27,16 @@ bash apps/lumen/scripts/deploy.sh                # copy apps/lumen + arm/, venv,
 
 # Board, every change
 bash apps/lumen/scripts/deploy.sh
-ssh arduino@daboard journalctl --user -u lumen -f                                       # live logs
-ssh arduino@daboard bash IEEE-Minimalist-AI-Challenge-2026/apps/lumen/scripts/run.sh   # foreground
+ssh arduino@luxo3 journalctl --user -u lumen -f                                       # live logs
+ssh arduino@luxo3 bash IEEE-Minimalist-AI-Challenge-2026/apps/lumen/scripts/run.sh   # foreground
 ```
 
 Manual control: `python -m lumen.desk` (stop Lumen first; one arm owner), then
-`http://daboard:8081/`. It has the camera, live joints and sensors, enable/lock, arm/disarm,
+`http://luxo3:8081/`. It has the camera, live joints and sensors, enable/lock, arm/disarm,
 hold-to-jog, pose targets, taught poses, clips, head tilt, the measured-vs-commanded plot, and
 recordings with replay. It's the Stepper Desk Mac app's job, on the closed-loop firmware.
 
-HUD stream: `http://daboard:8080/` (state, active models, light, energy, detections).
+HUD stream: `http://luxo3:8080/` (state, active models, light, energy, detections).
 Transition log: `apps/lumen/logs/transitions-<date>.csv` on the board. Every state change with
 the models running and the cumulative inference counts, which is your scorecard data.
 

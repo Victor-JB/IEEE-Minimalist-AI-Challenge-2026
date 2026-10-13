@@ -1,4 +1,4 @@
-"""The shared pieces Lumen and the manual tools both rely on: config, clips, trajectories."""
+"""The shared pieces luxoiii and the manual tools both rely on: config, clips, trajectories."""
 import sys
 import unittest
 from pathlib import Path

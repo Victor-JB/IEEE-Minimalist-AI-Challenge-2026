@@ -1,0 +1,15 @@
+# Main web app on the board's network address. The observer stays on loopback.
+[Unit]
+Description=luxoiii live web app (port 8082)
+Requires=luxoiii-observer.service
+After=luxoiii-observer.service
+Conflicts=lumen.service
+
+[Service]
+WorkingDirectory=/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/luxoiii
+ExecStart=/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/luxoiii/.venv/bin/python -u -m luxoiii --host 0.0.0.0 --port 8082 --observer-url http://127.0.0.1:8083
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

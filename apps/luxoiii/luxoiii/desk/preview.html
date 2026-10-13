@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>luxoiii · Emotive robotic lamp</title>
+<style>
+
+:root { color-scheme:light; --paper:#fcfaf6; --panel2:#fcfaf6; --ink:#514839; --muted:#817767; --rule:#d9d2c5; --amber:#a96b25; --serif:"Big Caslon","Baskerville",Georgia,serif; font:14px/1.55 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; background:var(--paper); color:var(--ink); }
+* { box-sizing:border-box; } body { margin:0; overflow-x:clip; } main { max-width:1560px; margin:auto; padding:0 clamp(20px,4.5vw,76px); }
+header { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:25px 0; border-bottom:1px solid var(--rule); }
+.wordmark { font:32px/1 var(--serif); letter-spacing:-1.6px; } .header-note,.eyebrow { font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:2px; } .header-note { margin-left:auto; color:var(--muted); }
+h1,h2,h3 { font-family:var(--serif); font-weight:400; } h1 { margin:22px 0 25px; font-size:clamp(56px,6.4vw,104px); line-height:.98; letter-spacing:-3px; } h2 { font-size:clamp(32px,3vw,46px); line-height:1.1; margin:9px 0 20px; letter-spacing:-1px; } h3 { font-size:28px; margin:5px 0 9px; line-height:1.2; }
+p { margin:12px 0; } .small { font-size:12px; color:var(--muted); } .eyebrow { margin:0; color:var(--amber); } .state { color:var(--amber); }
+button,select,input { font:inherit; color:inherit; border-radius:0; } button { cursor:pointer; background:transparent; border:1px solid transparent; border-bottom-color:var(--rule); padding:9px 12px; line-height:1.3; transition:background .16s,color .16s; } button:hover { background:#ece6da; } button[aria-pressed=true] { background:var(--ink); color:var(--paper); border-color:var(--ink); } button:focus-visible,summary:focus-visible,a:focus-visible { outline:2px solid var(--amber); outline-offset:4px; } #stopDemo { border:1px solid #a88b75; color:#80533d; flex:none; } #stopDemo:hover { background:#f1ded0; }
+.hero { display:grid; grid-template-columns:.9fr 1.35fr; align-items:center; position:relative; padding:32px 0 12px; isolation:isolate; }
+.hero-copy { position:relative; z-index:1; padding:30px 0 50px; } .hero-copy:before { content:""; position:absolute; z-index:-1; pointer-events:none; inset:10% -90% -2% -50vw; background:linear-gradient(120deg,#fce7bf00 15%,#fce7bf80 72%,#fce7bf00); clip-path:polygon(100% 18%,92% 92%,0 100%,0 65%); }
+.intro { max-width:290px; font-size:15px; color:var(--muted); } .byline { font:22px var(--serif); margin-top:32px; }
+.model-area { min-width:0; position:relative; z-index:2; } .stage { position:relative; } #cad { display:block; width:100%; height:clamp(410px,43vw,610px); background:transparent; touch-action:none; cursor:grab; } #labels { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+.model-bar { display:flex; justify-content:space-between; gap:12px; align-items:center; border-bottom:1px solid var(--rule); padding:0 0 12px; flex-wrap:wrap; } .toolbar { display:flex; align-items:end; flex-wrap:wrap; gap:8px; margin:16px 0; } .model-bar .toolbar { margin:0; gap:2px; } .model-bar button { font-size:11px; padding:7px 9px; border-bottom:0; } .orbit-note { font-size:10px; letter-spacing:.4px; color:var(--muted); margin:8px 0; text-align:right; }
+.scene-status { padding:19px 0 23px; display:grid; grid-template-columns:1fr 1fr; gap:40px; border-bottom:1px solid var(--rule); } .scene-status p { margin:5px 0; } #demoStatus { font:24px/1.25 var(--serif); } #personalityDetail { max-width:680px; } .lamp-label { font-size:10px; letter-spacing:1.6px; text-transform:uppercase; color:var(--amber); } #lampGate { color:var(--ink); }
+.section { padding:42px 0; border-bottom:1px solid var(--rule); } .section-heading { display:flex; align-items:baseline; justify-content:space-between; gap:25px; } .section-heading p { max-width:360px; }
+.gestures { display:grid; grid-template-columns:repeat(3,1fr); gap:42px; margin:16px 0 28px; } .gesture { padding-top:17px; border-top:1px solid var(--rule); } .gesture p { color:var(--muted); font-size:13px; max-width:270px; } .gesture-index { color:var(--amber); font-size:11px; letter-spacing:1px; display:block; margin-bottom:15px; } .gesture-index span { float:right; font:22px var(--serif); }
+.point-feedback { max-width:850px; } #pointStatus { margin-bottom:7px; } progress { display:block; appearance:none; border:0; width:100%; max-width:360px; height:2px; background:#e5ddcd; color:var(--amber); } progress::-webkit-progress-bar { background:#e5ddcd; } progress::-webkit-progress-value { background:var(--amber); } progress::-moz-progress-bar { background:var(--amber); }
+.live { display:grid; grid-template-columns:1fr 1fr; gap:clamp(25px,5vw,80px); align-items:start; } .videoFrame { position:relative; background:#e9e2d5; min-height:180px; } #video { display:block; width:100%; aspect-ratio:4/3; object-fit:contain; } #faceBoxes { position:absolute; inset:0; pointer-events:none; } .faceBox { position:absolute; border:2px solid #80f9d8; color:#80f9d8; font-size:11px; } #handOverlay { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; } #trackingZone { position:absolute;left:30%;width:40%;top:0;height:100%;border:1px dashed #dac49a;background:#e6bc690b;pointer-events:none; } #frameInfo { margin-top:10px; } #health { color:#61705b; } #handsText { color:#776484; } #pipeline { overflow-wrap:anywhere; }
+.telemetry { margin-top:28px; display:grid; grid-template-columns:repeat(2,1fr); gap:18px; } .telemetry label { border-top:1px solid var(--rule); padding-top:12px; font-size:11px; color:var(--muted); } .telemetry output { display:block; color:var(--ink); font-variant-numeric:tabular-nums; font-size:13px; }
+details { border-bottom:1px solid var(--rule); padding:18px 0; } details details { border-bottom:0; } summary { cursor:pointer; list-style:none; font-family:var(--serif); font-size:24px; line-height:1.4; } summary::-webkit-details-marker { display:none; } summary:after { content:"+"; float:right; font:22px var(--serif); color:var(--muted); } details[open]>summary:after { content:"−"; } details>p { max-width:920px; } .view-options { border:0; padding:4px 0; } .view-options summary { font:12px/1.5 -apple-system,BlinkMacSystemFont,sans-serif; color:var(--muted); } .view-options .toolbar { margin-bottom:6px; }
+.sliders { display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:24px; padding:20px 0 10px; } label { display:grid; gap:7px; font-size:12px; } input { width:100%; accent-color:var(--amber); } input[type=number],select { background:transparent; border:1px solid var(--rule); padding:10px; min-width:0; } output { color:var(--amber); } #cadmsg { margin:15px 0 0; } #exampleNote { color:var(--amber); } footer { padding:28px 0 40px; display:flex; justify-content:space-between; gap:20px; color:var(--muted); font-size:11px; } .credits { font:23px var(--serif); color:var(--ink); }
+@media(max-width:850px) { .hero { grid-template-columns:1fr; padding-top:36px; } .hero-copy { padding:0; } h1 { font-size:76px; margin:17px 0; max-width:620px; } h1 br { display:none; } .intro { max-width:390px; } .byline { margin:16px 0; } #cad { height:460px; } .hero-copy:before { inset:0 -4% -280px -30%; } .scene-status { gap:25px; } .live { gap:30px; } .gestures { gap:25px; } }
+@media(max-width:560px) { header { padding:20px 0;gap:12px; } .header-note { display:none; } #stopDemo { margin-left:auto;font-size:11px; } h1 { font-size:60px; letter-spacing:-2px; max-width:360px; } #cad { height:390px; } .hero { padding-top:28px; } .scene-status,.live { grid-template-columns:1fr; gap:22px; } .scene-status { padding:17px 0 25px; } .gestures { grid-template-columns:1fr; gap:8px; } .gesture { display:grid; grid-template-columns:70px 1fr; column-gap:12px;padding:16px 0; } .gesture-index { grid-row:1/3; margin-top:6px; } .gesture-index span { float:none;display:block;margin-top:12px; } .gesture h3,.gesture p { margin:0; } .gesture p { margin-top:8px;max-width:100%; } .section-heading { display:block; } .section { padding:30px 0; } .section-heading p { margin-bottom:25px; } .model-bar { gap:5px; } button { font-size:12px; } footer { flex-wrap:wrap; } }
+@media(prefers-reduced-motion:reduce) { button { transition:none; } }
+</style>
+
+<main>
+<header><span class="wordmark">luxoiii</span><span class="header-note">Minimalist AI Challenge · 2026</span><button id="stopDemo">Stop &amp; lamp off</button></header>
+<section class="hero" aria-labelledby="title">
+ <div class="hero-copy"><p class="eyebrow">A light with a little life</p><h1 id="title">Emotive<br> robotic lamp.</h1><p class="intro">A familiar presence. A curious glance.<br>A little light, right where you point.</p><p class="byline">Tongtong &amp; Victor</p></div>
+ <div class="model-area">
+  <div class="stage"><canvas id="cad" aria-label="Full luxoiii arm and base with transparent shells and animated internal cams"></canvas><canvas id="labels" aria-hidden="true"></canvas></div>
+  <div class="model-bar"><div class="toolbar" aria-label="Case appearance"><button data-shell="xray" aria-pressed="true">X-ray case</button><button data-shell="solid" aria-pressed="false">Solid case</button><button data-shell="hidden" aria-pressed="false">Hide case</button></div><div class="toolbar" aria-label="Camera angle"><button data-cam="3d">3D</button><button data-cam="side">Side</button><button data-cam="front">Front</button></div></div>
+  <p class="orbit-note">Drag to explore · Scroll to zoom</p>
+  <details class="view-options"><summary>More ways to explore</summary><div class="toolbar"><button id="peopleView">People + robot</button><button id="example" aria-pressed="false">Example person</button><button id="follow" aria-pressed="false">Follow measured joints</button><button id="play" aria-pressed="false">Show emotions</button><button id="reset">Reset pose</button><button id="lightTest" aria-pressed="false">Preview desk light</button></div><p id="exampleNote" hidden>EXAMPLE PERSON · Illustrative marker 1 m forward and 0.2 m right of the camera. This is not a detection.</p><p id="cadmsg" class="small">Loading full assembly…</p><p class="small" id="state">Waiting for measured joints</p></details>
+ </div>
+</section>
+<div class="scene-status"><div><p class="eyebrow">Digital personality</p><p id="demoStatus">Waiting for the on-board AI…</p><p id="personalityDetail" class="small state" role="status">Full-model personality is waking up…</p></div><div><p class="lamp-label">Physical lamp · automatic on / off</p><p class="small" id="lampGate" role="status">Waiting for fresh face and angle checks.</p></div></div>
+<section class="section" aria-labelledby="interaction-title">
+ <div class="section-heading"><div><p class="eyebrow">01 / An unspoken conversation</p><h2 id="interaction-title">Say hello. Stay a while.</h2></div><p class="small">It settles when alone, greets you with a nod, and grows curious when you linger.</p></div>
+ <div class="gestures"><div class="gesture"><div class="gesture-index">01 <span>✋</span></div><h3>Say hello</h3><p>Show an open palm. A simple hello is all it takes to get a greeting back.</p></div><div class="gesture"><div class="gesture-index">02 <span>☝</span></div><h3>Guide the light</h3><p>Point, pause briefly, then move your finger across the virtual desk. Lower your hand to leave the light there.</p></div><div class="gesture"><div class="gesture-index">03 <span>↕</span></div><h3>Close, or far</h3><p>Thumb up to move farther away. Thumb down to come closer. Try pointing with your other hand, too.</p></div></div>
+ <div class="point-feedback"><p class="small" id="pointStatus" role="status">Point to preview a spot on the virtual desk.</p><progress id="gestureProgress" max="1" value="0" aria-label="Gesture hold progress"></progress></div>
+ <div class="toolbar"><button id="aiMode" aria-pressed="true">AI-driven simulated arm</button><button id="hardware" aria-pressed="false">Enable tracking + auto light</button><button id="resumeDemo">Resume gestures</button></div>
+ <details class="view-options"><summary>How the real lamp responds</summary><p class="small" id="lampDetails"></p><p class="small" id="outputStatus">Automatic tracking starts with fresh camera data.</p><p class="small">The real swivel follows the subject within ±45°, with a quiet zone at the center. The digital arm has its own personality. Gestures stay on; Stop pauses the demo.</p><p class="small">The physical lamp switches fully on, without PWM, after one second with no detected faces and only when the entire estimated beam is below horizontal. A face, upward tilt, stale data, or Stop switches it off. Beam direction uses the measured joints and shade geometry, assuming a level base. Swivel and beam width are estimates.</p><p class="small">Keep both hands fully visible and apart. If both point, the light stays with its selected hand. If the estimated finger ray misses the desk, fingertip position guides a virtual cursor instead.</p></details>
+</section>
+<section class="section live" aria-labelledby="perception-title">
+ <div><div class="videoFrame"><img id="video" alt="Latest image from the robot camera, used for face detection"><div id="faceBoxes"></div><div id="trackingZone" aria-label="Tracking center deadzone" hidden></div><svg id="handOverlay" viewBox="0 0 640 480"></svg></div><div class="small" id="frameInfo">Waiting for camera…</div></div>
+ <div><p class="eyebrow">02 / Through its eyes</p><h2 id="perception-title">A sense of your presence.</h2><p id="health" class="small" role="status">Connecting to the UNO Q…</p><p id="people">Waiting for detections…</p><p id="handsText">Waiting for hand detection…</p><p class="small">Mint marks faces, violet marks hands, and amber shows the physical camera. Distances and finger direction are estimates.</p>
+ <div class="telemetry" aria-label="Live physical joint angles"><label>Shoulder <output id="realShoulder">Waiting…</output></label><label>Elbow <output id="realElbow">Waiting…</output></label><label>Head pitch <output id="realHead">Waiting…</output></label><label>Head swivel <output id="realPivot">Waiting…</output></label></div>
+ <details class="view-options"><summary>Live reading details</summary><p id="pipeline" class="small"></p><p class="small">Pitch angles are measured by encoders; swivel is the servo command, without position feedback. Depth assumes face and palm width. Symbols mark faces, not tracked body joints. The real steppers remain asleep.</p></details></div>
+</section>
+<section class="section" style="border:0;padding-bottom:12px"><p class="eyebrow">03 / A closer look</p><h2>Explore the details.</h2>
+<details><summary>Camera calibration & assumptions</summary>
+<p class="small">The camera moves with the head pivot. Starting assumptions: 100° horizontal view, 16 cm face width, camera 5 cm along the shade axis, base yaw fixed at zero. Adjust these to match the actual camera. A turned face or palm can make distance too large. Board gesture targeting currently uses the default 100° / 8 cm / 5 cm mount calibration; these controls adjust visualization only.</p>
+<div class="sliders">
+<label>Horizontal field of view (°)<input id="hfov" type="number" min="20" max="150" value="100"></label>
+<label>Assumed palm width (cm)<input id="palmWidth" type="number" min="4" max="14" value="8"></label>
+<label>Assumed face width (cm)<input id="faceWidth" type="number" min="8" max="30" value="16"></label>
+<label>Released pivot estimate (°)<input id="pivotFallback" type="number" min="-90" max="90" value="0"></label>
+<label>Camera along shade (cm)<input id="cameraOffset" type="number" min="-20" max="30" value="5"></label>
+<label>Camera mount pitch (°)<input id="cameraPitch" type="number" min="-90" max="90" value="0"></label>
+<label>Camera mount yaw (°)<input id="cameraYaw" type="number" min="-180" max="180" value="0"></label>
+</div></details>
+<details><summary>Try an animation mix</summary>
+<p class="small">Preview a full-body action with an extra expression. This moves the digital model. Choose AI-driven simulated arm to return to live interaction.</p>
+<div class="toolbar">
+<label>Body action <select id="bodyAction" aria-label="Body action"><option value="polite_greet">Arrival · polite nod</option><option value="greet">Playful greeting</option><option value="wake">Wake up</option><option value="curious">Curious tilt</option><option value="peek">Lean in</option><option value="joy">Happy bounce</option><option value="look_around">Look around</option><option value="nod">Nod</option><option value="shake">Shake</option><option value="stretch">Stretch</option><option value="sleep">Settle down</option><option value="full_show">Original full show</option></select></label>
+<label>Mix in <select id="expressionAccent" aria-label="Mix in"><option value="nod">A small nod</option><option value="shake">Head wag</option><option value="bounce">Happy bounce</option><option value="dance,sway">Dance + sway</option><option value="">Breathing only</option></select></label>
+<button id="previewMix">Preview mix</button></div></details>
+<details><summary>Simulated arm controls</summary><p class="small">Animation and sliders move only this model. The amber physical camera and face estimates stay tied to live readings.</p>
+<div class="sliders">
+ <label>Base yaw <output id="yawValue">0°</output><input id="yaw" aria-label="Base yaw" type="range" min="-180" max="180" value="0" step="0.1"></label>
+ <label>Shoulder <output id="shoulderValue">15°</output><input id="shoulder" aria-label="Shoulder" type="range" min="-90" max="90" value="15" step="0.1"></label>
+ <label>Elbow <output id="elbowValue">45°</output><input id="elbow" aria-label="Elbow" type="range" min="-135" max="135" value="45" step="0.1"></label>
+ <label>Head pitch <output id="headValue">55°</output><input id="head" aria-label="Head pitch" type="range" min="-180" max="180" value="55" step="0.1"></label>
+ <label>Head pivot <output id="rollValue">0°</output><input id="roll" aria-label="Head pivot" type="range" min="-135" max="135" value="0" step="0.1"></label>
+</div>
+</details><details><summary>About the model</summary><p class="small">Model and choreography: full-model-animations · ef1b0d2. Full-body poses from lamp_demo; additive expressions from ELEGNT. Browser animation blends these kinematically; it is not a physics simulation. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; the real swivel tracks the subject after activation. The physical lamp requires no detected faces and a downward beam. No stepper movement commands are sent. Finger-ray targets are approximate. The virtual cursor maps fingertip image position onto the simulated desk; it does not locate a real object.</p>
+</details>
+</section><footer><span class="credits">luxoiii</span><span>Tongtong &amp; Victor · Minimalist AI Challenge 2026</span></footer>
+</main>
+<script src="/cad-view.js"></script>
+<script src="/emotion-view.js"></script>
+<script>
+const cad = createLuxoiiiCAD({canvas:document.getElementById('cad'),status:document.getElementById('cadmsg'),labels:document.getElementById('labels')});
+const keys=['yaw','shoulder','elbow','head','roll'];
+const home=[0,15,45,55,0];
+const emotions=new LuxoiiiEmotions();
+fetch('/emotions.json').then(r=>{if(!r.ok)throw Error('Clips unavailable');return r.json();}).then(c=>emotions.clips=c).catch(()=>{document.getElementById('state').textContent='Motion library unavailable';});
+let playing=false, following=false, aiReact=true, elapsed=0, last=null, live=null, example=false, receivedAt=0;
+let displayPose=[...home], wantHardware=false, enabledAt=0, previewingLight=false;
+let preferTracking=true, defaultTrackingPending=true;
+try {preferTracking=localStorage.getItem('luxoiii.subjectTracking')!=='off';}catch(_){}
+function saveTrackingPreference(value) {
+ preferTracking=value;try {localStorage.setItem('luxoiii.subjectTracking',value?'on':'off');}catch(_){}
+}
+async function startDefaultTracking() {
+ if(!defaultTrackingPending || !live?.fresh || !live.demo || !live.outputs)return;
+ if(live.demo.state==='STOPPED' || !preferTracking){defaultTrackingPending=false;return;}
+ if(!live.camera || live.age_s>1.2)return;
+ defaultTrackingPending=false;
+ try {
+  if(!live.outputs.enabled)await control('enable');
+  wantHardware=true;enabledAt=performance.now();
+ } catch(e){wantHardware=false;document.getElementById('outputStatus').textContent=e.message;}
+}
+function show(v) {
+ displayPose=[...v];
+ keys.forEach((k,i)=>{ document.getElementById(k).value=v[i]; document.getElementById(k+'Value').textContent=v[i].toFixed(1)+'°'; });
+ cad.pose(v.slice(1,4),v[4],v[0]);
+}
+function setPlaying(value) { if(value){setLightPreview(false);emotions.reset(performance.now()/1000);cad.fitRobot();} playing=value; const b=document.getElementById('play'); b.textContent=value?'Pause emotions':'Show emotions'; b.setAttribute('aria-pressed',String(value)); }
+keys.forEach(k=>document.getElementById(k).addEventListener('input',()=>{aiReact=false;following=false; updateFollow(); setPlaying(false); document.getElementById('state').textContent='Manual preview';show(keys.map(k=>Number(document.getElementById(k).value)));}));
+document.getElementById('play').onclick=()=>{aiReact=false;following=false;updateFollow();setPlaying(!playing);};
+document.getElementById('previewMix').onclick=()=>{
+ aiReact=false;following=false;updateFollow();setPlaying(true);
+ emotions.preview(document.getElementById('bodyAction').value,document.getElementById('expressionAccent').value.split(',').filter(Boolean),performance.now()/1000);
+};
+function setLightPreview(value) {
+ previewingLight=value;cad.previewLight(value);
+ document.getElementById('lightTest').setAttribute('aria-pressed',String(value));
+ document.getElementById('lightTest').textContent=value?'End light preview':'Preview desk light';
+}
+document.getElementById('lightTest').onclick=()=>{
+ const value=!previewingLight;aiReact=false;following=false;setPlaying(false);updateFollow();
+ setLightPreview(value);if(value){show([0,20,55,60,0]);cad.fitRobot();}
+ document.getElementById('state').textContent=value?'Desk light preview · digital only':'Manual preview';
+};
+document.getElementById('reset').onclick=()=>{setLightPreview(false);aiReact=false;following=false;updateFollow();setPlaying(false);elapsed=0;show(home);document.getElementById('state').textContent='Desk pose';};
+function tick(t) {
+ const dt=last===null?0:Math.min((t-last)/1000,.1);
+ if(last!==null && playing) elapsed+=Math.min((t-last)/1000,0.1); last=t;
+ if(aiReact && live?.fresh && live.demo && performance.now()-receivedAt<2000) {
+  const target=emotions.sample(live,t/1000), alpha=1-Math.exp(-dt*9);
+  if(target && live.demo.state!=='STOPPED')show(displayPose.map((v,i)=>v+(target[i]-v)*alpha));
+  document.getElementById('state').textContent='AI simulation · '+emotions.label;
+ } else if(playing) {
+  const target=emotions.sample(live,t/1000,true),alpha=1-Math.exp(-dt*9);
+  if(target)show(displayPose.map((v,i)=>v+(target[i]-v)*alpha));
+  document.getElementById('state').textContent='Simulation showcase · '+emotions.label;
+ }
+ document.getElementById('personalityDetail').textContent=previewingLight?'Digital light preview · move the simulated joints to aim the spotlight':aiReact||playing?emotions.detail:'Manual model preview';
+ requestAnimationFrame(tick);
+}
+function updateFollow() { document.getElementById('follow').setAttribute('aria-pressed',String(following));document.getElementById('aiMode').setAttribute('aria-pressed',String(aiReact)); }
+document.getElementById('follow').onclick=()=>{setLightPreview(false);aiReact=false;following=true;setPlaying(false);updateFollow();applyLive();};
+document.getElementById('aiMode').onclick=()=>{setLightPreview(false);aiReact=true;following=false;setPlaying(false);updateFollow();};
+async function control(action,extra={}) {
+ const r=await fetch('/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...extra}),signal:AbortSignal.timeout(2500)});
+ const d=await r.json();if(!r.ok || !d.ok)throw new Error(d.error||'Control failed');return d;
+}
+document.getElementById('hardware').onclick=async()=>{
+ defaultTrackingPending=false;
+ try {const action=live?.outputs?.enabled?'disable':'enable';await control(action);wantHardware=action==='enable';saveTrackingPreference(wantHardware);enabledAt=performance.now();}
+ catch(e){wantHardware=false;document.getElementById('outputStatus').textContent=e.message;}
+};
+document.getElementById('stopDemo').onclick=async()=>{setLightPreview(false);defaultTrackingPending=false;wantHardware=false;aiReact=true;following=false;setPlaying(false);updateFollow();try{await control('stop');}catch(e){document.getElementById('outputStatus').textContent='Stop connection failed; output lease will expire.';}};
+document.getElementById('resumeDemo').onclick=async()=>{setLightPreview(false);try{await control('resume');aiReact=true;following=false;setPlaying(false);updateFollow();defaultTrackingPending=true;}catch(e){document.getElementById('demoStatus').textContent=e.message;}};
+setInterval(()=>{if(wantHardware)control('heartbeat').catch(()=>{wantHardware=false;});},700);
+document.getElementById('peopleView').onclick=()=>cad.fitPeople();
+function renderSpatial() {
+ if(example && live?.camera && live.fresh) {
+  const c=live.camera, xyz=[.2,0,1], p={camera:xyz,depth_m:1,range_m:Math.hypot(...xyz),
+   world:c.position.map((v,i)=>v+xyz[0]*c.right[i]+xyz[2]*c.forward[i])};
+  cad.spatial({...live,people:[p],example:true});
+ } else cad.spatial(live);
+}
+document.getElementById('example').onclick=()=>{example=!example;document.getElementById('example').setAttribute('aria-pressed',String(example));renderSpatial();cad.fitPeople();document.getElementById('exampleNote').hidden=!example;};
+function applyLive() {
+ ['realShoulder','realElbow','realHead'].forEach((id,i)=>{
+  const j=live?.joints?.[i];document.getElementById(id).textContent=live?.fresh&&j?.healthy&&Number.isFinite(j.angle)?j.angle.toFixed(1)+'° · measured':'Unavailable';
+ });
+ const p=live?.pivot;
+ document.getElementById('realPivot').textContent=live?.fresh&&p?.enabled&&!p.fault?`${p.current.toFixed(1)}° · commanded`:'Released · angle unknown';
+
+ if(following) {
+  if(live?.fresh && live.camera) {show([0,...live.camera.joints,live.camera.roll]);document.getElementById('state').textContent='Measured pitch joints · '+live.pivot_source;}
+  else document.getElementById('state').textContent='No fresh joint readings · model held';
+ }
+}
+async function poll() {
+ try {
+  const val=id=>Number(document.getElementById(id).value);
+  const qs=new URLSearchParams({hfov:val('hfov'),face_width:val('faceWidth')/100,palm_width:val('palmWidth')/100,pivot_fallback:val('pivotFallback'),camera_offset:val('cameraOffset')/100,camera_pitch:val('cameraPitch'),camera_yaw:val('cameraYaw')});
+  const response=await fetch('/spatial?'+qs,{signal:AbortSignal.timeout(3500)});live=await response.json();receivedAt=performance.now();
+  renderSpatial();applyLive();
+  const d=live.demo;
+  document.getElementById('demoStatus').textContent=live.fresh && d ? d.event : 'Waiting for fresh AI observations';
+  document.getElementById('gestureProgress').value=live.fresh && d ? d.hold_progress : 0;
+  const point=d?.point_preview;
+  document.getElementById('pointStatus').textContent=!live.fresh?'Pointing: waiting for a fresh camera frame':point?
+   `${point.mode==='virtual_pointer'?'Virtual desk pointer':'Estimated finger ray'} · ${d.point_following?'Following your finger · lower your hand to hold this spot':'Hold briefly to select the blue cursor'}${point.mode==='virtual_pointer'?' · Move left/right for sideways, up/down for far/near. This is a simulated selection.':''}`:
+   d?.desk_target?`${d.target_source||'Desk target'} · holding your spot. Point again to guide the light.`:
+   d?.gesture==='point'?'Point detected · keep your fingertip and palm inside the camera view':'Extend your index finger with the others curled. A blue cursor will preview the desk spot.';
+
+  await startDefaultTracking();
+  const o=live.outputs;
+  if(o && !o.enabled && performance.now()-enabledAt>2000)wantHardware=false;
+  const hb=document.getElementById('hardware');hb.setAttribute('aria-pressed',String(!!o?.enabled));hb.textContent=o?.enabled?'Disable tracking + auto light':'Enable tracking + auto light';
+  document.getElementById('outputStatus').textContent=o ? `${o.reason} · Swivel ${o.swivel_mode||'auto'} ${Number.isFinite(o.swivel_target)?o.swivel_target.toFixed(1)+'°':''} · Real lamp ${o.brightness>0?'on':'off'} · Steppers disabled` : 'Physical output status unavailable';
+  const gate=o?.lamp_gate,top=gate?.beam_top_deg;
+  document.getElementById('lampGate').textContent=!live.fresh?'Waiting for fresh readings':gate?
+   `${o.brightness>0?'On':'Off'} · ${gate.reason}`:'Waiting for the lamp controller';
+  document.getElementById('lampDetails').textContent=Number.isFinite(top)?
+   `Estimated upper beam edge: ${Math.abs(top).toFixed(1)}° ${top>0?'above':'below'} horizontal. The whole beam needs 5° of clearance below horizontal to switch on.`:'';
+  const hs=live.hands||[];
+  document.getElementById('handsText').textContent=!live.fresh?'Hand data unavailable':!live.hands_available?'Hand model unavailable':hs.length?hs.map((h,i)=>`Hand ${i+1}: ${h.gesture==='open_palm'?'open palm · say hello':(h.gesture||'tracking').replaceAll('_',' ')} · ${Math.round(h.score*100)}% detection score`).join(' | '):'No hands detected. Keep the whole hand in the camera view.';
+  const pm=live.pipeline;
+  document.getElementById('pipeline').textContent=pm?`${pm.mode} · ${pm.model_ms} ms models · face calls ${pm.face_calls} · hand calls ${pm.hand_calls} · gated frames ${pm.gated_frames}`:'';
+  const svg=document.getElementById('handOverlay');svg.replaceChildren();
+  if(live.fresh) {
+   svg.setAttribute('viewBox',`0 0 ${live.size[0]} ${live.size[1]}`);
+   const links=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[0,17],[17,18],[18,19],[19,20]];
+   if(point?.image_tip) {
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    [['cx',point.image_tip[0]*live.size[0]],['cy',point.image_tip[1]*live.size[1]],['r',10],['fill','none'],['stroke','#8ad9ff'],['stroke-width',3]].forEach(([k,v])=>c.setAttribute(k,v));svg.append(c);
+   }
+   hs.forEach(h=>{links.forEach(([a,b])=>{const l=document.createElementNS('http://www.w3.org/2000/svg','line');[['x1',h.points[a][0]],['y1',h.points[a][1]],['x2',h.points[b][0]],['y2',h.points[b][1]],['stroke','#c5a5ff'],['stroke-width',3]].forEach(([k,v])=>l.setAttribute(k,v));svg.append(l);});h.points.forEach(p=>{const c=document.createElementNS('http://www.w3.org/2000/svg','circle');[['cx',p[0]],['cy',p[1]],['r',3],['fill','#fff']].forEach(([k,v])=>c.setAttribute(k,v));svg.append(c);});});
+  }
+  document.getElementById('health').textContent=live.fresh ? (live.camera?'Live encoders · ':'Camera-relative only · encoders unavailable · ')+live.pivot_source : (live.error || 'Live data unavailable');
+  document.getElementById('people').textContent=live.fresh ? (live.people.length ? live.people.map((p,i)=>`Face ${i+1}: ~${p.range_m.toFixed(2)} m away · ${Math.abs(p.camera[0]).toFixed(2)} m ${p.camera[0]>=0?'right':'left'} · ${Math.abs(p.camera[1]).toFixed(2)} m ${p.camera[1]>=0?'above':'below'} camera`).join(' | ') : 'No complete faces detected in this frame.') : 'Waiting for fresh camera data. Old face markers are hidden.';
+  const boxes=document.getElementById('faceBoxes');boxes.replaceChildren();
+  if(live.fresh) live.people.forEach((p,i)=>{const b=document.createElement('div');b.className='faceBox';b.textContent='Face '+(i+1);const [x,y,w,h]=p.bbox;b.style.cssText=`left:${x/live.size[0]*100}%;top:${y/live.size[1]*100}%;width:${w/live.size[0]*100}%;height:${h/live.size[1]*100}%`;boxes.append(b);});
+  document.getElementById('trackingZone').hidden=!live.fresh;
+  const holdZone=live.tracking?.deadzone_fraction||.4;
+  document.getElementById('trackingZone').style.left=(50-holdZone*50)+'%';
+  document.getElementById('trackingZone').style.width=(holdZone*100)+'%';
+  const img=document.getElementById('video');
+  if(live.fresh && live.frame_jpeg) {img.src='data:image/jpeg;base64,'+live.frame_jpeg;img.style.opacity=1;} else {img.removeAttribute('src');}
+  document.getElementById('frameInfo').textContent=live.fresh ? `${live.source} · ${Math.round(live.inference_ms)} ms read + inference · frame age ${live.age_s.toFixed(1)} s` : 'Camera unavailable';
+ } catch(e) {
+  live=null;document.getElementById('lampGate').textContent='Physical lamp: connection lost · automatic light expires off';document.getElementById('trackingZone').hidden=true;cad.spatial(null);applyLive();document.getElementById('health').textContent='Live connection unavailable';document.getElementById('people').textContent='Old face markers are hidden.';document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
+ }
+ setTimeout(poll,150);
+}
+// Expire markers even if a request stalls or the browser loses its connection.
+setInterval(()=>{
+ if(live?.fresh && (performance.now()-receivedAt)/1000+live.age_s>=2) {
+  document.getElementById('trackingZone').hidden=true;live={...live,fresh:false,people:[],camera:null};cad.spatial(null);applyLive();
+  document.getElementById('health').textContent='Camera data is stale';
+  document.getElementById('lampGate').textContent='Physical lamp: stale camera · automatic light expires off';
+  document.getElementById('people').textContent='Waiting for fresh camera data. Old face markers are hidden.';
+  document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
+  document.getElementById('frameInfo').textContent='Camera unavailable';document.getElementById('handsText').textContent='Hand data unavailable';document.getElementById('demoStatus').textContent='AI paused · stale camera';document.getElementById('gestureProgress').value=0;
+ }
+},250);
+show(home);requestAnimationFrame(tick);poll();
+</script>
+</html>
