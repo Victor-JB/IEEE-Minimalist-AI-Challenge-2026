@@ -67,6 +67,22 @@ struct Settings {
     // set under that, the loop corrects the rest. 0 disables. Off on all joints
     // until the head's tight spot near +14 deg is fixed and an A/B test shows it helps.
     double slackDeg[3]={0,0,0};unsigned slackRate=2000;double slackMinRunDeg=1.0;
+    // Backlash compensation for stall detection (motor order elbow, shoulder, head). A gear-
+    // slack observer tracks where the motor sits inside a backlashDeg band. After a direction
+    // reversal the first pulses only cross the slack and cannot move the joint: they don't count
+    // in the stall windows, and the following-error limit grows by the slack still to cross.
+    // Then the gear engages gently: until the joint is back within settleTol of its reference
+    // (or engageMs after the observer says the slack is crossed), the correction speed is capped
+    // at the reference speed (x speedGain) plus engageSpeed deg/s. Without that, the error built
+    // up while crossing the slack slammed the gear in at ~7 deg/s, the head's tight spot near
+    // +14 deg lost steps, and small slow hold/look-at reversals read as stalls (2026-10-12: a
+    // FAULT every ~30 s with hold drift on). Neither adds travel (slackDeg does), so a band set
+    // too wide cannot make the loop hunt; it only delays stall detection by that much motor
+    // travel and slows the first moments after a reversal. 0 disables it on that joint.
+    // Head gear slack measured ~2-2.5 deg (elbow/shoulder values are guesses, as in the sim).
+    // Not yet validated on hardware: see apps/lumen/lumen/config.py HOLD_DRIFT_GAIN.
+    double backlashDeg[3]={0.5,0.8,2.5};
+    double engageSpeed=2.0;uint32_t engageMs=600;
 };
 constexpr unsigned SHOULDER=1,ELBOW=0;      // motor-order indices
 struct JointConfig { int forwardSign=1; double ppd=142.2,vmax=12,amax=40; };
@@ -83,16 +99,32 @@ struct Joint {
     double ppdEst[2]={142.2,142.2};       // learned per driver direction
     long pulses=0,pulsesAtSample=0;       // issued, signed in joint-angle sense
     unsigned lastCount=0,dir=0,rate=0,sinceReverse=0,slackLeft=0;
+    bool engaging=false;uint32_t engagedAt=0;   // gentle gear engagement after a reversal
+    long play=-1;                         // pulses from the reverse-engaged flank of the slack band (-1: unknown)
     uint32_t sampleMs=0,dirReadyAt=0;
     bool engaged=false,hasSample=false;
     // Stall window
-    unsigned windowPulses=0,badWindows=0;double windowStart=0;uint32_t windowMs=0;
+    unsigned windowPulses=0,windowSlack=0,badWindows=0;double windowStart=0;uint32_t windowMs=0;
     bool following=false;uint32_t followSince=0;
     // Grind (streaming stall recovery)
     bool grinding=false;unsigned grinds=0;double grindFrom=0;uint32_t grindUntil=0;
     void clearGrind(){grinding=false;grinds=0;}
     double angleSign(unsigned d)const{return cfg.forwardSign*(d?-1.0:1.0);}
     double ppd()const{return ppdEst[dir];}
+    long band(double deg)const{return std::lround(std::max(0.0,deg)*cfg.ppd);}
+    // Slack still to cross in the current driver direction before the gear engages, degrees.
+    double gapDeg(double deg)const{
+        long b=band(deg),p=play<0?b/2:std::min(play,b);
+        return double(dir?p:b-p)/cfg.ppd;
+    }
+    // Pulses issued in the current direction that went into the slack band (moved nothing).
+    unsigned absorb(unsigned delta,double deg){
+        long b=band(deg);if(b<=0)return 0;
+        if(play<0||play>b)play=b/2;           // unknown at start: assume mid-band
+        long room=dir?play:b-play,taken=std::min<long>(long(delta),room);
+        play+=dir?-taken:taken;
+        return unsigned(taken);
+    }
     double estimate()const{
         double moved=double(pulses-pulsesAtSample)/ppd();
         return meas+std::max(-1.0,std::min(1.0,moved));
@@ -231,16 +263,21 @@ struct Controller {
         bool judged=moving()&&phase!=PAUSE&&x.windowPulses>=set.stallMinPulses&&x.sinceReverse>=set.backlashPulses;
         if(judged){
             double progress=(q-x.windowStart)*x.angleSign(x.dir);
+            // Only pulses past the gear slack should have moved the joint.
+            unsigned drive=x.windowPulses-std::min(x.windowPulses,x.windowSlack);
+            if(drive>=set.stallMinPulses){
+                double eff=std::max(0.0,progress)*x.cfg.ppd/drive;
+                x.badWindows=eff<set.stallEfficiency?x.badWindows+1:0;
+            }else x.badWindows=0;
             double eff=std::max(0.0,progress)*x.cfg.ppd/x.windowPulses;
-            x.badWindows=eff<set.stallEfficiency?x.badWindows+1:0;
             if(eff>0.5&&progress>=0.5){
                 double r=x.windowPulses/progress,lo=x.cfg.ppd*0.6,hi=x.cfg.ppd*1.6;
                 x.ppdEst[x.dir]=0.8*x.ppdEst[x.dir]+0.2*std::max(lo,std::min(hi,r));
             }
         }else if(x.windowPulses<set.stallMinPulses)x.badWindows=0;
-        x.windowPulses=0;x.windowStart=q;x.windowMs=now;
+        x.windowPulses=x.windowSlack=0;x.windowStart=q;x.windowMs=now;
     }
-    void resetWindow(unsigned a,uint32_t now){auto &x=j[a];x.windowPulses=0;x.windowStart=x.meas;x.windowMs=now;x.badWindows=0;}
+    void resetWindow(unsigned a,uint32_t now){auto &x=j[a];x.windowPulses=x.windowSlack=0;x.windowStart=x.meas;x.windowMs=now;x.badWindows=0;}
 
     void onStall(unsigned a,uint32_t now){
         Vec est;for(unsigned i=0;i<3;++i)est[i]=j[i].estimate();
@@ -311,7 +348,9 @@ struct Controller {
         for(unsigned a=0;a<3;++a){auto &x=j[a];
             unsigned delta=counts[a]>=x.lastCount?counts[a]-x.lastCount:0;x.lastCount=counts[a];
             unsigned slack=std::min(delta,x.slackLeft);x.slackLeft-=slack;   // takes up gear slack, moves nothing
+            unsigned band=x.absorb(delta,set.backlashDeg[a]);                // observer: not evidence of a stall
             x.pulses+=long(delta-slack)*long(x.angleSign(x.dir));x.windowPulses+=delta-slack;x.sinceReverse+=delta;
+            x.windowSlack+=band>slack?band-slack:0;
         }
         if(!active()){
             for(unsigned a=0;a<3;++a)if(std::isfinite(measured[a])){j[a].meas=measured[a];j[a].pulsesAtSample=j[a].pulses;j[a].sampleMs=sampled[a];}
@@ -350,7 +389,7 @@ struct Controller {
         if(moving()&&phase!=PAUSE){
             for(unsigned a=0;a<3;++a){auto &x=j[a];
                 if(x.grinding)continue;
-                bool far=std::abs(x.ref-x.estimate())>set.maxFollow;
+                bool far=std::abs(x.ref-x.estimate())>set.maxFollow+x.gapDeg(set.backlashDeg[a]);
                 if(far&&!x.following){x.following=true;x.followSince=now;}else if(!far)x.following=false;
                 if(x.badWindows>=set.stallWindows||(x.following&&uint32_t(now-x.followSince)>=set.followMs)){
                     x.badWindows=0;x.following=false;onStall(a,now);break;
@@ -369,6 +408,15 @@ struct Controller {
             // Stay slow until the joint gets through (grinds resets on progress), not just during
             // the grind window: full rate against a stall only loses more steps.
             if(x.grinds)vLimit=std::min(vLimit,set.grindSpeed/x.grinds);
+            // Engage gently after a reversal: the error built up while the motor crossed the slack
+            // is not a reason to slam the gear in at full correction speed (a tight spot then
+            // loses steps and reads as a stall). Ends once the joint is back on its reference.
+            if(x.engaging){
+                double gap=x.gapDeg(set.backlashDeg[a]);
+                if(gap>0)x.engagedAt=now;
+                else if(std::abs(e)<=set.settleTol||uint32_t(now-x.engagedAt)>=set.engageMs)x.engaging=false;
+                if(x.engaging)vLimit=std::min(vLimit,std::abs(x.refV)*set.speedGain+set.engageSpeed);
+            }
             vt=std::max(-vLimit,std::min(vLimit,vt));
             double dv=x.cfg.amax*set.accelGain*dt,v=x.vCmd,next=v+std::max(-dv,std::min(dv,vt-v));
             if(std::abs(v)<=set.startSpeed){
@@ -386,6 +434,7 @@ struct Controller {
                         bool ran=x.sinceReverse>=unsigned(set.slackMinRunDeg*x.ppd());
                         x.slackLeft=ran?unsigned(std::lround(set.slackDeg[a]*x.cfg.ppd)):0;
                         x.dir=want;x.dirReadyAt=now+set.dirSetupMs;x.sinceReverse=0;resetWindow(a,now);
+                        x.engaging=set.backlashDeg[a]>0&&set.engageSpeed>0;x.engagedAt=now;
                     }
                 }
                 if(next!=0&&int32_t(now-x.dirReadyAt)>=0){

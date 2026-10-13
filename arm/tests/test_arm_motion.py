@@ -196,6 +196,35 @@ class ArmMotionTests(unittest.TestCase):
         with self.session() as arm, self.assertRaisesRegex(client.ArmError, 'sensor'):
             arm.move_to([0, 60, 0])
 
+    def test_sensor_fault_is_sensor_stale(self):
+        self.fake.finish = (18, 4)
+        with self.session() as arm, self.assertRaises(client.SensorStale):
+            arm.move_to([0, 60, 0])
+        self.fake.finish = (18, 5)                 # a limit fault is a plain ArmError
+        with self.session() as arm, self.assertRaises(client.ArmError) as caught:
+            arm.move_to([0, 60, 0])
+        self.assertNotIsInstance(caught.exception, client.SensorStale)
+
+    def test_stale_encoder_while_streaming_is_sensor_stale_not_a_stall(self):
+        with self.session() as arm:
+            arm.stream_point([1, 62, 5])
+            self.fake.s['axes'][client.MOTOR[2]].update(age=250)          # head sample 250 ms old
+            with self.assertRaisesRegex(client.SensorStale, r'head \(age 250 ms\)'):
+                arm.stream_point([1, 62, 5])
+            with self.assertRaises(client.SensorStale):
+                arm.angles()                                              # never garbage angles
+        self.fake.s['axes'][client.MOTOR[2]].update(age=10)
+        with self.session() as arm:
+            arm.stream_point([1, 62, 5])
+            self.fake.s.update(state=16)
+            self.assertEqual(arm.stream_point([1, 62, 4])['state'], 'stalled')   # stall: returned
+
+    def test_stale_joints_explains(self):
+        s = copy.deepcopy(self.fake.s)
+        s['axes'][client.MOTOR[0]].update(angle=-2**31, sensor_error=3)
+        s['axes'][client.MOTOR[1]].update(magnet=0x08)
+        self.assertEqual(client.stale_joints(s), ['shoulder (no angle, sensor error 3)', 'elbow (magnet 0x08)'])
+
     def test_locked_or_unhealthy_arm_refuses(self):
         self.fake.s['enabled'] = 0
         with self.session() as arm, self.assertRaisesRegex(client.ArmError, 'locked'):

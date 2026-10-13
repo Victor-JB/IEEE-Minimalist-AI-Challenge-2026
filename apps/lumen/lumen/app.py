@@ -71,11 +71,14 @@ def run(args):
 
             for tr in [machine.handle(ev, now) for ev in events] + [machine.tick(now)]:
                 if tr:
-                    log.write(tr, machine.models, expressive.energy, perception.sched.counts)
-                    print(f"{tr.src:>10} --{tr.event}--> {machine.path}")
-                    if tr.dst == "FAULT":
-                        latched = "" if director.faults <= 1 else " (latched: hold an open palm 3 s, or restart Lumen)"
+                    why = None
+                    if tr.dst == "FAULT":               # reason: 'CODE: detail' (motion/worker.py)
                         why = director.fault_reason if tr.event == "FAULT" else f"{tr.src} {tr.event}"
+                        director.fault_reason = why    # the HUD shows it while in FAULT
+                    log.write(tr, machine.models, expressive.energy, perception.sched.counts, why)
+                    print(f"{tr.src:>10} --{tr.event}--> {machine.path}")
+                    if why:
+                        latched = "" if director.faults <= 1 else " (latched: hold an open palm 3 s, or restart Lumen)"
                         print(f"FAULT #{director.faults}: {why}{latched}")
 
             director.tick(now, machine, perception, frame.shape)
@@ -83,7 +86,8 @@ def run(args):
             fps.tick()
 
             if streamer:
-                hud.draw(frame, machine, perception, light, expressive.energy, fps.fps)
+                hud.draw(frame, machine, perception, light, expressive.energy, fps.fps,
+                         fault=director.fault_reason if machine.state == "FAULT" else None)
                 streamer.update(frame)
             if args.headless and now - last_print > 5:
                 last_print = now

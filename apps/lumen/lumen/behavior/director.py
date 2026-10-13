@@ -178,7 +178,8 @@ class Director:
             m.ctx["at_pause_pose"] = True              # lets the book model run on the next frame
             self.pause_frames -= 1
         if m.state == "FAULT" and self.faults <= 1 and now - m.entered_at > C.FAULT_COOLDOWN_S:
-            out.append(E.RECOVERED)
+            if not getattr(self.w, "hot", False):   # OVERTEMP: and cooled below OVERTEMP_CLEAR_C
+                out.append(E.RECOVERED)
         return out
 
     def note_events(self, events, now):

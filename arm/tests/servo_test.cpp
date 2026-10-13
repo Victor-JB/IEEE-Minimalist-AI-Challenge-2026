@@ -20,11 +20,12 @@ struct SimJoint {
         rateAcc+=rate/1000.0;unsigned n=unsigned(rateAcc);rateAcc-=n;count+=n;
         for(unsigned i=0;i<n;++i){
             if(now>=slipFrom&&now<slipTo)continue;           // rotor slipping: no motion
-            if(q>=tightFrom&&q<=tightTo&&rate>tightRate)continue; // too fast for the torque needed here
             double s=forwardSign*(dir?-1.0:1.0);
             if(loss>0&&s>0){lossAcc+=loss;if(lossAcc>=1){lossAcc-=1;continue;}} // load-dependent lost steps
             double nm=m+s/ppd(),nq=q;
             if(nm-nq>backlash/2)nq=nm-backlash/2;else if(nq-nm>backlash/2)nq=nm+backlash/2;
+            // Too fast for the torque needed here; inside the gear slack the motor turns freely.
+            if(nq!=q&&q>=tightFrom&&q<=tightTo&&rate>tightRate)continue;
             if(std::isfinite(obstacle)&&((s>0&&q<=obstacle&&nq>obstacle)||(s<0&&q>=obstacle&&nq<obstacle))){
                 nq=obstacle;continue;                          // blocked output stalls the motor
             }
@@ -275,6 +276,57 @@ static void streamingGrindsThroughTightSpot(){
     assert(r.c.stalls>=1&&r.c.state==HOLDING&&std::abs(r.s[2].q-20)<1);
 }
 
+// Lumen's hold drift on the real head: 25 Hz setpoints wandering +/-1.5 deg around +13 deg,
+// a new random target every 2-5 s, smoothed over 0.6 s. The head has ~2.5 deg of gear slack
+// and a tight spot near +14 deg that loses steps above ~4 deg/s. Each slow reversal winds the
+// loop up while the motor crosses the slack, then slams the gear in fast and loses steps: on
+// the arm (2026-10-12) a FAULT every ~30 s with drift on. jam = an obstacle the drift pushes
+// into (a real stall). worst = worst tracking error.
+struct DriftResult { unsigned stalls; bool stalled; double worst; };
+static DriftResult holdDrift(double band,unsigned maxGrinds,bool jam=false){
+    Rig r;r.s[2].backlash=2.5;r.s[2].tightFrom=11;r.s[2].tightTo=15;r.s[2].tightRate=600;
+    r.c.set.backlashDeg[2]=band;r.c.set.maxGrinds=maxGrinds;
+    const double base=13;uint32_t id=0,seed=7;
+    auto rnd=[&seed]{seed=seed*1103515245u+12345u;return double((seed>>8)&0xffff)/65535.0;};
+    for(int k=0;k<100;++k){                                 // stream up to the hold pose
+        double h=4.307+(base-4.307)*k/99.0;
+        assert(r.c.stream(++id,Rig::motor(-12.041,63.281,h),Vec{0,0,0},120,r.reading,r.now)==0);r.run(40,false);
+    }
+    unsigned before=r.c.stalls;
+    if(jam)r.s[2].obstacle=r.s[2].q-0.3;                   // something wedged just below the head
+    double target=0,s1=0,s2=0,next=0,worst=0,last=base;bool stalled=false;
+    for(int k=0;k<1500;++k){                                // 60 s
+        double t=k*0.04;
+        if(t>=next){target=1.5*(2*rnd()-1);next=t+2+3*rnd();}
+        s1+=(target-s1)*0.04/0.6;s2+=(s1-s2)*0.04/0.6;     // HOLD_DRIFT_SMOOTH_S, two stages
+        int e=r.c.stream(++id,Rig::motor(-12.041,63.281,base+s2),Vec{0,0,0},120,r.reading,r.now);
+        if(e==-EBUSY){stalled=true;break;}                  // STALLED: refused until the host HALTs
+        assert(e==0);
+        r.run(40,false);
+        if(k>25&&!jam)worst=std::max(worst,std::abs(r.s[2].q-last));
+        last=base+s2;
+    }
+    return {r.c.stalls-before,stalled||r.c.state==STALLED,worst};
+}
+static void holdDriftThroughBacklash(){
+    // Before: no slack band, no gentle engagement. Without grinds (the firmware that was on the
+    // arm) a reversal stall is a STALLED; with grinds it still stalls every few seconds.
+    DriftResult old0=holdDrift(0,0),old=holdDrift(0,3);
+    assert(old0.stalled&&old.stalls>=3);
+    // Now (default 2.5 deg band on the head): reversals cross the slack, engage gently, no stall.
+    Settings defaults;assert(defaults.backlashDeg[2]>=2.0);
+    DriftResult now0=holdDrift(defaults.backlashDeg[2],0),now=holdDrift(defaults.backlashDeg[2],3);
+    assert(!now0.stalled&&now0.stalls==0&&!now.stalled&&now.stalls==0);
+    assert(now.worst<1.5);
+    // A real jam during the same hold is still detected: every push into it stalls (grinds,
+    // which reset when the drift turns away), and without grinds it is STALLED.
+    DriftResult jam=holdDrift(defaults.backlashDeg[2],3,true),jam0=holdDrift(defaults.backlashDeg[2],0,true);
+    assert(jam.stalls>=3&&jam0.stalled);
+    std::printf("  hold drift, 2.5 deg slack: %u stalls before (STALLED without grinds: %s), %u now, "
+                "worst error %.2f deg; jam: %u stalls (STALLED without grinds: %s)\n",old.stalls,
+                old0.stalled?"yes":"no",now.stalls,now.worst,jam.stalls,jam0.stalled?"yes":"no");
+}
+
 static void liveScaleSlowsPath(){
     Rig a,b;Vec g=Rig::motor(5,45,20);
     assert(a.move(g)==0);uint32_t fast=a.untilDone();
@@ -312,7 +364,7 @@ int main(){setvbuf(stdout,nullptr,_IONBF,0);
     durationIsHonoredAndSynchronized();reversalBacklash();holdsAgainstDisturbance();
     leaseLossHoldsInPlace();loadLossStillReachesTarget();
     std::puts("recovery:");transientSlipRecovers();shoulderRecoversByTuckingElbow();obstructionStopsPushing();
-    std::puts("streaming:");streamingTracksAndStops();streamingGrindsThroughTightSpot();headSlackCompensation();
+    std::puts("streaming:");streamingTracksAndStops();streamingGrindsThroughTightSpot();headSlackCompensation();holdDriftThroughBacklash();
     liveScaleSlowsPath();faultsSleep();reversalWaitsForZeroRate();
     std::puts("servo tests passed");
 }

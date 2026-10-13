@@ -41,7 +41,9 @@ import traceback
 from .. import config as C
 from .. import events as E
 from .. import paths  # noqa: F401  (puts arm/python on sys.path)
+from ..thermal import Overtemp, ThermalMonitor
 import arm_config as A                     # arm/python/arm_config.py (roll servo settings)
+from arm_client import ArmError, LinkLost, SensorStale  # arm/python/arm_client.py (no hardware imports)
 from trajectory import trajectory_with_roll  # arm/python/trajectory.py (shared with emote.py)
 
 DT = 1.0 / C.STREAM_HZ
@@ -50,6 +52,7 @@ STALL_RETRIES = 3                         # slower pushes per setpoint before ab
 RETRY_SPEED = (10.0, 6.0, 4.0)            # deg/s of each successive push
 STALL_SLOWDOWN = 1.5                      # the rest of a clip plays this much slower after a stall
 GIVE_UP_LIMIT, GIVE_UP_WINDOW_S = 6, 60.0 # abandoned commands this close together -> FAULT (jammed)
+KEEPALIVE_S = 0.5                         # relaxed: STATUS this often (the MCU drops a silent owner after 2 s)
 EASE_SPEED = 20.0                         # deg/s when easing onto a clip's first pose
 OFFSET_SLEW = 25.0                        # deg/s: look-at offset changes are smoothed to this
 ROLL_RETURN_SPEED = 60.0                  # deg/s the head tilt eases back to ROLL_HOME after a clip
@@ -61,13 +64,38 @@ class Stalled(Exception):
     """Every retry of a stalled setpoint failed; the arm holds where it stopped."""
 
 
+class Jammed(RuntimeError):
+    """GIVE_UP_LIMIT stalls could not be pushed through within GIVE_UP_WINDOW_S."""
+
+
+def fault_reason(e, context=""):
+    """'CODE: detail' for the FAULT event, HUD and transitions log. Codes follow
+    docs/STATE_MACHINE.md: STALL, SENSOR_STALE, OVERTEMP, LINK_LOST; ARM = another firmware
+    fault (limit, timing), ERROR = a bug."""
+    if isinstance(e, Overtemp):
+        code = "OVERTEMP"               # thermal zone / hwmon over C.OVERTEMP_C (lumen/thermal.py)
+    elif isinstance(e, SensorStale):
+        code = "SENSOR_STALE"           # encoder age > 100 ms / I2C error / magnet: the MCU stopped
+    elif isinstance(e, (LinkLost, ConnectionError, TimeoutError, BrokenPipeError)):
+        code = "LINK_LOST"              # gateway/router/SSH silent or gone (bounded request deadline)
+    elif isinstance(e, Jammed):
+        code = "STALL"
+    elif isinstance(e, ArmError):
+        code = "ARM"
+    else:
+        code = "ERROR"
+        context += type(e).__name__ + " "
+    return f"{code}: {context}{e}"
+
+
 def _minjerk(s):
     return 10 * s**3 - 15 * s**4 + 6 * s**5
 
 
 class MotionWorker(threading.Thread):
-    def __init__(self, expressive, fake=False):
+    def __init__(self, expressive, fake=False, thermal=None):
         super().__init__(daemon=True, name="motion")
+        self.thermal = thermal or ThermalMonitor()   # disabled where there are no sensors (Mac)
         self.x, self.fake = expressive, fake
         self.cmds, self.events = queue.Queue(), queue.Queue()
         self.base = list(C.HOME)            # pose that clips and holds are relative to
@@ -85,6 +113,7 @@ class MotionWorker(threading.Thread):
         self.light_cmd = None               # lamp per mille wanted (main thread writes, we read)
         self.light_sent, self.light_at = None, -1e9
         self._stop = threading.Event()
+        self._last_status = 0.0             # last keepalive STATUS while relaxed
 
     # -- commands (call from the main thread) ------------------------------------
     def play(self, ref, amplitude, time_scale, token):
@@ -143,6 +172,11 @@ class MotionWorker(threading.Thread):
     def stop(self):
         self._stop.set()
 
+    @property
+    def hot(self):
+        """Still too hot (above OVERTEMP_CLEAR_C after an OVERTEMP): FAULT must not recover yet."""
+        return self.thermal.hot
+
     # -- thread ------------------------------------------------------------------
     def run(self):
         connected = self._connect()
@@ -155,7 +189,7 @@ class MotionWorker(threading.Thread):
             except Exception as e:                    # ArmError, link loss, closed-loop fault
                 traceback.print_exc()
                 self._disconnect()
-                self.events.put((E.FAULT, None, repr(e)))
+                self.events.put((E.FAULT, None, fault_reason(e)))
                 connected = False
         self._disconnect()
 
@@ -182,7 +216,7 @@ class MotionWorker(threading.Thread):
                 self.arm = None
                 time.sleep(1.5)
         traceback.print_exception(last)
-        self.events.put((E.FAULT, None, f"connect failed: {last!r}"))
+        self.events.put((E.FAULT, None, fault_reason(last, "connect failed: ")))
         return False
 
     def _disconnect(self):
@@ -198,18 +232,26 @@ class MotionWorker(threading.Thread):
         self.arm = None
 
     def _wait_for_connect(self):
-        """Disconnected: drop every command until connect() asks for a new session."""
+        """Disconnected: drop every command until connect() asks for a new session. While the
+        board is still hot (a RESET can ask early) the connect is refused with an OVERTEMP."""
+        self.thermal.poll()                   # keep sampling so `hot` clears once cooled
         try:
             cmd = self.cmds.get(timeout=0.5)
         except queue.Empty:
             return False
-        return cmd[0] == "connect" and self._connect()
+        if cmd[0] != "connect":
+            return False
+        if self.thermal.hot:
+            self.events.put((E.FAULT, None, fault_reason(Overtemp(self.thermal.reason), "still hot: ")))
+            return False
+        return self._connect()
 
     def _loop(self):
         while not self._stop.is_set():
             try:
                 cmd = self.cmds.get(timeout=DT)
             except queue.Empty:
+                self._watch()
                 self._guard(self._hold_tick)
                 continue
             kind = cmd[0]
@@ -246,6 +288,15 @@ class MotionWorker(threading.Thread):
                 if self._guard(self._sweep, poses, dwell, token) is None:
                     self.events.put((E.SWEEP_DONE, token, None))
 
+    def _watch(self):
+        """Between commands. Relaxed, nothing streams: a STATUS every KEEPALIVE_S keeps ownership
+        and turns a dead link into LINK_LOST now, not at the next move. Raises to FAULT."""
+        self._check_thermal()
+        now = time.monotonic()
+        if self.relaxed and self.arm and now - self._last_status >= KEEPALIVE_S:
+            self._last_status = now
+            self.arm.status()
+
     def _guard(self, fn, *args):
         """Run a motion primitive. If a stall can't be pushed through it ends early (returns None)."""
         try:
@@ -256,8 +307,8 @@ class MotionWorker(threading.Thread):
             print(f"Arm: gave up after {STALL_RETRIES} retries ({e}); holding. "
                   f"{len(self.give_ups)} in the last {GIVE_UP_WINDOW_S:.0f} s")
             if len(self.give_ups) >= GIVE_UP_LIMIT:
-                raise RuntimeError(f"arm jammed: {len(self.give_ups)} stalls could not be pushed "
-                                   f"through in {GIVE_UP_WINDOW_S:.0f} s; last: {e}")
+                raise Jammed(f"arm jammed: {len(self.give_ups)} stalls could not be pushed "
+                             f"through in {GIVE_UP_WINDOW_S:.0f} s; last: {e}")
             return None
 
     def _path(self, segments):
@@ -408,7 +459,14 @@ class MotionWorker(threading.Thread):
         self._off = [o + max(-step, min(step, t - o)) for o, t in zip(self._off, self.offset)]
         return self._off
 
+    def _check_thermal(self):
+        """About 1 Hz (the monitor rate-limits): too hot -> Overtemp -> FAULT, session closed."""
+        self.thermal.poll()
+        if self.thermal.hot:
+            raise Overtemp(self.thermal.reason)
+
     def _interrupted(self):
+        self._check_thermal()                     # every step of a move or clip passes here
         return not self.cmds.empty() or self._stop.is_set()
 
     def _wait(self, seconds, still=False):

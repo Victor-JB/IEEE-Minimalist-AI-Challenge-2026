@@ -8,6 +8,12 @@ from .perception.hands import CONNECTIONS
 GREEN, AMBER, WHITE = (80, 220, 80), (58, 162, 240), (235, 235, 235)
 
 
+def fault_lines(reason, width=46):
+    """The FAULT reason ('CODE: detail') wrapped into at most two short HUD lines."""
+    text = f"fault {reason}"
+    return [text[:width]] + ([text[width:2 * width].strip()] if len(text) > width else [])
+
+
 def draw_hands(frame, hands, label=None):
     """Skeleton of each hand (21 landmarks in frame pixels), label above the first one."""
     for i, lm in enumerate(hands):
@@ -22,7 +28,7 @@ def draw_hands(frame, hands, label=None):
             cv2.putText(frame, label, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, AMBER, 2)
 
 
-def draw(frame, m, perception, light, energy, fps, watts=None):
+def draw(frame, m, perception, light, energy, fps, watts=None, fault=None):
     for d in perception.faces:
         color = AMBER if d is perception.target else GREEN
         cv2.rectangle(frame, (d.x, d.y), (d.x + d.w, d.y + d.h), color, 2)
@@ -39,6 +45,8 @@ def draw(frame, m, perception, light, energy, fps, watts=None):
         lines.append(f"gesture {perception.gesture}")
     if watts is not None:
         lines.append(f"{watts:.2f} W")
+    if fault:
+        lines += fault_lines(fault)
     for i, text in enumerate(lines):
         cv2.putText(frame, text, (10, 28 + 26 * i), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 4)
         cv2.putText(frame, text, (10, 28 + 26 * i), cv2.FONT_HERSHEY_SIMPLEX, 0.7, WHITE if i else AMBER, 2)
