@@ -1,8 +1,12 @@
-"""Demo HUD on the MJPEG stream: state, active models, inference rates, light, energy.
+"""Demo HUD on the MJPEG stream: state, where it can go next, what the arm is doing, active
+models, light, energy.
 
 The deck's demo slide promises this is on screen the whole time."""
+import time
+
 import cv2
 
+from . import thinking
 from .perception.hands import CONNECTIONS
 
 GREEN, AMBER, WHITE = (80, 220, 80), (58, 162, 240), (235, 235, 235)
@@ -28,7 +32,7 @@ def draw_hands(frame, hands, label=None):
             cv2.putText(frame, label, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, AMBER, 2)
 
 
-def draw(frame, m, perception, light, energy, fps, watts=None, fault=None):
+def draw(frame, m, perception, light, energy, fps, watts=None, fault=None, now=None, doing=None):
     for d in perception.faces:
         color = AMBER if d is perception.target else GREEN
         cv2.rectangle(frame, (d.x, d.y), (d.x + d.w, d.y + d.h), color, 2)
@@ -40,7 +44,8 @@ def draw(frame, m, perception, light, energy, fps, watts=None, fault=None):
         cv2.rectangle(frame, (x, y), (x + w, y + h), WHITE, 1)          # where the palm detector looks
     draw_hands(frame, perception.hand_lm, perception.gesture or "hand")
     models = " ".join(f"{k}:{v}" for k, v in m.models.items()) or "none"
-    lines = [f"STATE {m.path}", f"models {models}", f"light {light.level:.0%}  energy {energy:.2f}  {fps:.0f} fps"]
+    lines = thinking.lines(m, time.monotonic() if now is None else now, doing)
+    lines += [f"models {models}", f"light {light.level:.0%}  energy {energy:.2f}  {fps:.0f} fps"]
     if perception.gesture:
         lines.append(f"gesture {perception.gesture}")
     if watts is not None:
