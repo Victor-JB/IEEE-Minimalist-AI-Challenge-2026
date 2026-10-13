@@ -307,5 +307,82 @@ class CheckIn(unittest.TestCase):
         self.assertLess(plan[0][1][2], r.d.aim_pose[2])
 
 
+def plan_seconds(plan):
+    """Plan length, counting a play step as 0 (none in these plans)."""
+    return sum(s[2] if s[0] == "goto" else s[1] if s[0] == "wait" else 0 for s in plan)
+
+
+class Reacquire(unittest.TestCase):
+    def lost(self):
+        r = Rig()
+        r.to(*TO_HOLD)
+        r.finish(E.AT_POSE)
+        r.w.current = list(r.d.aim_pose)
+        r.ev(E.BOOK_LOST)
+        self.assertEqual(r.m.state, "REACQUIRE")
+        return r
+
+    def test_small_widening_sweep_around_the_aim_pose(self):
+        r = self.lost()
+        name, (plan, tok), kw = r.w.last()
+        self.assertEqual(name, "seq")
+        aim = r.d.aim_pose
+        peeks = [s[1] for s in plan if s[0] == "goto"]
+        self.assertEqual(peeks[-1], aim)                   # ends back on the aim pose
+        spread = [max(abs(a - b) for a, b in zip(p, aim)) for p in peeks[:-1]]
+        self.assertLessEqual(max(spread), 10.0)            # local
+        far = [x for x in spread if x > 1.0]               # the peeks (not the micro-retreat)
+        self.assertEqual(far, sorted(far))                 # widening
+        self.assertLessEqual(plan_seconds(plan[:-1]), C.REACQUIRE_TIMEOUT_S)   # every peek before the timeout
+        for step in plan:
+            if step[0] == "goto":
+                for v, (lo, hi) in zip(step[1], C.SAFE_RANGES):
+                    self.assertTrue(lo <= v <= hi)
+
+    def test_found_returns_to_aim_and_holds(self):
+        r = self.lost()
+        r.w.current = [a + 5 for a in r.d.aim_pose]        # mid-peek
+        r.ev(E.BOOK_FOUND)
+        self.assertEqual(r.m.state, "HOLD")
+        name, (plan, tok), kw = r.w.last("seq")
+        self.assertEqual(plan[-1][1], r.d.aim_pose)
+        self.assertNotEqual(tok, r.d.token)                # its done is not an event for HOLD
+        self.assertEqual(r.w.base, r.d.aim_pose)
+
+    def test_not_found_in_4s(self):
+        r = self.lost()
+        r.tick(dt=C.REACQUIRE_TIMEOUT_S + 0.1)
+        self.assertEqual(r.m.state, "NOT_FOUND")
+
+
+class ReacquirePerception(unittest.TestCase):
+    def test_book_model_runs_at_3hz_on_a_widened_crop(self):
+        import numpy as np
+        from lumen.machine import STATES
+        from lumen.perception import Perception
+
+        class Book:
+            def __init__(self):
+                self.present, self.rois, self.times = True, [], []
+
+            def detect(self, frame, roi=None):
+                self.rois.append(roi)
+                return [(300, 200, 100, 80, 0.9)] if self.present else []
+
+        book, ctx = Book(), {}
+        p = Perception(book=book)
+        frame = np.zeros((480, 640, 3), np.uint8)
+        p.step(frame, 0.0, {"book": 3}, ctx)                # seen: crop around it
+        self.assertIsNotNone(ctx["book_roi"])
+        book.present = False
+        n, t = len(book.rois), 0.0
+        while t < 2.0:
+            t += 1 / 15
+            p.step(frame, t, STATES["REACQUIRE"].models, ctx)
+        self.assertIsNone(ctx["book_roi"])                 # widened to the full frame
+        self.assertIn(None, book.rois[n:])
+        self.assertTrue(5 <= len(book.rois) - n <= 7)      # 3 Hz
+
+
 if __name__ == "__main__":
     unittest.main()

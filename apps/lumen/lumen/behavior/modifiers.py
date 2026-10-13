@@ -35,7 +35,8 @@ def gamma_for(energy, social=False):
 
 
 def clamp_pose(pose):
-    return [max(lo, min(hi, v)) for v, (lo, hi) in zip(pose, C.SAFE_RANGES)]
+    """Joints into SAFE_RANGES; a 4th value (the J5 roll some poses carry) passes through."""
+    return [max(lo, min(hi, v)) for v, (lo, hi) in zip(pose, C.SAFE_RANGES)] + list(pose[3:])
 
 
 def move_time(start, end, margin=SPEED_MARGIN):

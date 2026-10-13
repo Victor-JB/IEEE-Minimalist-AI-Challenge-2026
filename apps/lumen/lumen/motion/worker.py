@@ -84,7 +84,7 @@ class MotionWorker(threading.Thread):
     def seq(self, steps, token, done=E.CLIP_DONE):
         """Play a plan (behavior/modifiers.py) as one command; emits `done` once at the end.
 
-        Steps: ("goto", pose, s[, clear_offset]) · ("wait", s) · ("play", ref, amplitude, time_scale)
+        Steps: ("goto", pose, s[, clear_offset]) (so path(segments) is seq of ("goto", pose, s) steps) · ("wait", s) · ("play", ref, amplitude, time_scale)
         · ("mark", i) emits (STEP, token, i) · ("rebase",) makes the pose the arm is at the new base
         (for clips that end somewhere else, like go_to_sleep, so the hold doesn't pull it back).
         """
@@ -243,7 +243,7 @@ class MotionWorker(threading.Thread):
                     self.offset, self._off = [0.0] * 3, [0.0] * 3
                 if not self._goto(step[1], step[2]):
                     return False
-                self.base = list(step[1])
+                self.set_base(step[1])
             elif kind == "wait":
                 if not self._wait(step[1]):
                     return False

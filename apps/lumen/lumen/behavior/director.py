@@ -27,6 +27,10 @@ CAMERA_HALF_VFOV_DEG = 22.0            # a face at the top/bottom edge is this f
 CHECKIN_LOOK_S = 1.5                   # face at 10 Hz this long while looking up
 CHECKIN_DEFAULT_UP = -20.0             # head change when no face was ever seen (- = look up)
 CHECKIN_MAX_UP = 45.0                  # never pitch the head more than this away from the aim pose
+# REACQUIRE: a small local sweep around the aim pose, widening, while the book model runs at 3 Hz
+# on a crop that perception widens to the full frame after a miss. (shoulder, elbow, head) deg.
+REACQUIRE_PEEKS = ((0.0, 0.0, -3.0), (1.5, 0.0, 4.0), (-2.0, 0.0, -6.0))
+REACQUIRE_DWELL_S = 0.2
 FALSE_ALARM_CLIP = "hesitate/subtle"   # NOTICE -> IDLE on TIMEOUT: sheepish "oh, nobody"
 WAKE_CLIP = "wake_up/slow_groggy"      # NOTICE right after SLEEP -> IDLE, instead of the notice pool
 WAKE_AMPLITUDE = 0.7                   # ~18 s on the real arm (the elbow-lift cap slows it ~4x)
@@ -83,6 +87,8 @@ class Director:
             self._expressive_goto(self.aim_pose, 0.8, tok, E.MOVE_DONE, "adjust")
         elif state == "CHECKIN":
             self._enter_checkin(tok)
+        elif state == "REACQUIRE":
+            self._enter_reacquire(tok)
         elif state == "FAULT":
             if m.entered_at - self.last_fault_t > C.FAULT_FORGET_S:
                 self.faults = 0
@@ -101,6 +107,8 @@ class Director:
     def on_exit(self, state, m):
         if state == "SLEEP" and self.power:
             self.power.wake()
+        elif state == "REACQUIRE":
+            self._exit_reacquire()
 
     # -- per frame ---------------------------------------------------------------
     def tick(self, now, m, perception, frame_shape):
@@ -240,10 +248,10 @@ class Director:
         if self.user_pitch is None:
             turn = CHECKIN_DEFAULT_UP
         else:
-            turn = self.user_pitch - sum(aim)                  # head change that centers the face
+            turn = self.user_pitch - sum(aim[:3])              # head change that centers the face
         share = min(1.0, M.jitter(self.rng, 0.6 + 0.4 * M.gamma_for(self.x.energy, social=True)))
         turn = max(-CHECKIN_MAX_UP, min(CHECKIN_MAX_UP, share * turn))
-        return M.clamp_pose([aim[0], aim[1], aim[2] + turn])
+        return M.clamp_pose([aim[0], aim[1], aim[2] + turn] + aim[3:])   # (keeps a roll, if any)
 
     def _enter_checkin(self, tok):
         """Up toward the user, mark 0 (track the face), hold, mark 1, glide back to the aim pose
@@ -270,6 +278,26 @@ class Director:
         err = face_error(perception.target, w, h) if perception.target is not None else None
         self.w.set_offset(self.look.update(err, now, dt))
         self._note_user_pitch(perception, err)
+
+    # -- REACQUIRE ----------------------------------------------------------------------
+    def reacquire_plan(self, start):
+        """Peek around the aim pose, each peek wider; the first one hesitant (it's a guess)."""
+        aim = list(self.aim_pose)
+        peeks = [M.clamp_pose([a + d for a, d in zip(aim, off)] + aim[3:]) for off in REACQUIRE_PEEKS]
+        gamma = M.gamma_for(self.x.energy)
+        plan = M.hesitation(start, peeks[0], 0.3, self.rng, gamma) + [("wait", REACQUIRE_DWELL_S)]
+        for p in peeks[1:]:                       # 0.3 s asks for "as fast as the caps allow"
+            plan += [("goto", p, 0.3), ("wait", REACQUIRE_DWELL_S)]
+        return M.respect_caps(plan + [("goto", aim, 0.3)], start)
+
+    def _enter_reacquire(self, tok):
+        self.w.seq(self.reacquire_plan(self._arm_pose()), tok, done=E.SWEEP_DONE)
+
+    def _exit_reacquire(self):
+        """Found it (or leaving): glide back to the aim pose. Whatever the next state plays
+        interrupts this; HOLD just holds there. Token = REACQUIRE's, so its done is dropped."""
+        self.w.seq(M.respect_caps([("goto", list(self.aim_pose), 0.5)], self._arm_pose()), self.token,
+                   done=E.MOVE_DONE)
 
     # -- SLEEP ------------------------------------------------------------------------
     def _enter_sleep(self, tok):
