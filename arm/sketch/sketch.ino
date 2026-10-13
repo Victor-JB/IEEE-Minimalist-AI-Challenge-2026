@@ -10,6 +10,7 @@
 #include "trajectory.hpp"
 #include "servo.hpp"
 #include "roll.hpp"
+#include "light.hpp"
 #include <zephyr/irq.h>
 #include "sensors.hpp"
 #include "limits.hpp"
@@ -25,7 +26,19 @@ static uint32_t armOwner=0,armSeen=0;
 static unsigned armConfigured=0,armVerified=0;
 static std::array<double,3> armPPD{};
 constexpr uint8_t STEP_PINS[AXES] = {3, 5, 9};
-constexpr uint8_t DIR_PINS[AXES] = {6, 4, 7}; // elbow DIR moved D2 -> D6 for the roll servo
+// Lamp LED (light.hpp). LIGHT_ENABLED 1 puts the LED's MOSFET gate on D7 and moves the head
+// DIR from D7 to D12, so it needs a rewire; 0 (default) keeps today's wiring and the arm_light
+// RPC reports "not enabled". Why D7: it is TIM8 CH4N, and TIM8 drives no other header pin.
+// Every other PWM-capable header pin shares a timer that is already taken: D3/D6/D8 (TIM3),
+// D5/D11/D12/D13 (TIM1) and D9/D10 (TIM4) belong to the STEP pulse trains, which rewrite their
+// timer's prescaler/period and switch to forced/one-pulse modes; D2/D20/D21 (TIM2) are the
+// roll servo's fixed 50 Hz (visible flicker and camera banding) plus the encoder I2C.
+// D12 (PB14) only ever runs as a plain GPIO for DIR, like D6 already does on TIM3.
+#ifndef LIGHT_ENABLED
+#define LIGHT_ENABLED 0
+#endif
+constexpr uint8_t HEAD_DIR_PIN = LIGHT_ENABLED ? 12 : 7;
+constexpr uint8_t DIR_PINS[AXES] = {6, 4, HEAD_DIR_PIN}; // elbow DIR moved D2 -> D6 for the roll servo
 // These are PWM spec indices, not Arduino digital pin numbers.
 static const pwm_dt_spec outputs[AXES] = {
     PWM_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 1), // D3 TIM3 CH3
@@ -39,6 +52,14 @@ static const pwm_dt_spec rollOutput = PWM_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user
 static roll::Roll headRoll;
 static unsigned rollApplied = ~0u;
 static int rollFault = 0;
+constexpr uint8_t LIGHT_PIN = 7;
+constexpr uint32_t LIGHT_PWM_HZ = 20000;   // above hearing and far above camera/eye flicker
+#if LIGHT_ENABLED
+static const pwm_dt_spec lightOutput = PWM_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 4); // D7 TIM8 CH4N
+#endif
+static light::Light lamp;
+static uint32_t lightPeriod = 0, lightApplied = ~0u;   // TIM8 counts per PWM period, compare sent
+static int lightFault = LIGHT_ENABLED ? 0 : -ENODEV;
 static Motor motors[AXES];
 static joint_limit::Guard limits[AXES];
 static uint32_t tickHz[AXES], applied[AXES];
@@ -181,6 +202,37 @@ static void rollTick(uint32_t now) {
     if (err) { rollFault = err; headRoll.release(); }
     else rollApplied = us;
 }
+static void lightTick(uint32_t now) {
+    lamp.tick(now);
+#if LIGHT_ENABLED
+    if (lightFault || !lightPeriod) return;
+    const uint32_t c = lamp.compare(lightPeriod);
+    if (c == lightApplied) return;
+    int err = pwm_set_cycles(lightOutput.dev, lightOutput.channel, lightPeriod, c, lightOutput.flags);
+    if (err) lightFault = err;
+    else lightApplied = c;
+#endif
+}
+static void lightSetup() {
+#if LIGHT_ENABLED
+    analogWrite(LIGHT_PIN, 0); // Initialize PWM and only this pin's mux.
+    uint64_t hz = 0;
+    int err = !pwm_is_ready_dt(&lightOutput) ? -ENODEV
+            : pwm_get_cycles_per_sec(lightOutput.dev, lightOutput.channel, &hz);
+    if (!err) {
+        // Same trick as the STEP timers: recover the timer clock, then run TIM8 undivided so
+        // a 20 kHz period has thousands of counts (fine steps at the dim end of the gamma curve).
+        const uint64_t clock = hz * (LL_TIM_GetPrescaler(TIM8) + 1);
+        LL_TIM_SetPrescaler(TIM8, 0);
+        lightPeriod = uint32_t(clock / LIGHT_PWM_HZ);
+        if (lightPeriod < 1000 || lightPeriod > 65535) err = -ERANGE;
+        else err = pwm_set_cycles(lightOutput.dev, lightOutput.channel, lightPeriod, 0, lightOutput.flags);
+        LL_TIM_GenerateEvent_UPDATE(TIM8);
+    }
+    lightFault = err;
+    lightApplied = 0;
+#endif
+}
 #include "arm_control.hpp"
 
 static void guardMotion(unsigned a, uint32_t now) {
@@ -196,6 +248,7 @@ static void control(void *, void *, void *) {
         syncPower();
         armTick(now);
         rollTick(now);
+        lightTick(now);
         for (unsigned a=0; a<AXES; ++a) applyOrFault(a);
         syncPower(); // A PWM failure may have stopped the final active motor.
         k_mutex_unlock(&lock);
@@ -302,6 +355,7 @@ void setup() {
     analogWrite(ROLL_PIN, 0); // Initialize PWM and only this pin's mux.
     rollFault = !pwm_is_ready_dt(&rollOutput) ? -ENODEV : pwm_set_dt(&rollOutput, PWM_USEC(roll::PERIOD_US), 0);
     rollApplied = 0;
+    lightSetup();
     k_thread_create(&motionThread, motionStack, K_THREAD_STACK_SIZEOF(motionStack),
                     control, nullptr, nullptr, nullptr, 4, 0, K_NO_WAIT);
     k_thread_create(&sensorThread, sensorStack, K_THREAD_STACK_SIZEOF(sensorStack),
@@ -314,9 +368,12 @@ void setup() {
     Bridge.provide("arm_lock",armLock);
     Bridge.provide("arm_servo_status",armServoStatus);
     Bridge.provide("arm_roll_status",armRollStatus);
+    Bridge.provide("arm_light",armLight);
     Bridge.provide("arm_selftest",armSelftest);
     Bridge.provide("arm_pulse_selftest",armPulseSelftest);
     Monitor.begin();
-    Monitor.println("Stepper Desk Q ready: STEP D3/D5/D9, DIR D6/D4/D7; SLEEP D8; roll servo D2; all asleep and stopped");
+    Monitor.println(LIGHT_ENABLED
+        ? "Stepper Desk Q ready: STEP D3/D5/D9, DIR D6/D4/D12; SLEEP D8; roll servo D2; light D7; all asleep and stopped"
+        : "Stepper Desk Q ready: STEP D3/D5/D9, DIR D6/D4/D7; SLEEP D8; roll servo D2; all asleep and stopped");
 }
 void loop() { delay(100); }
