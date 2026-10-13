@@ -125,7 +125,7 @@ AI rates are starting points to tune against the power meter. Every rate cut is 
 | SLEEP | camera paced to 2 fps (`SLEEP_CAMERA_FPS`; a frame skip in `Camera.read()`, since V4L2 can't change fps live), CPU governor to `SLEEP_CPU_GOVERNOR` if set and this user may write it (off by default, no sudo), light off; all restored on exit | motion gate at 2 fps, no NN | asleep: `go_to_sleep__drowsy` once (the lamp stays slumped: the worker rebases on its end pose), then a very slow breathe around it (`idle_breathe__calm`, amplitude 0.3, time_scale 2, `IdleBreathe`) | motion → IDLE |
 | IDLE | light off | gate at 10 fps; face at 1 Hz only when the gate fires | bored: `idle_breathe__calm`, `scan_room__calm`, `relaxed_sit_down__calm`, `stretch_reach_limit__short_try`, `tail_wag__small`, `sad_droop__slight` (a sigh), rare `dance_90__groove` | face 3/5 frames → NOTICE · no motion 5 min → SLEEP |
 | NOTICE | freeze the current clip and look toward the face | face at 10 Hz | notice: `double_take__subtle`, `perk_up__small`; from SLEEP (SLEEP → IDLE → NOTICE with IDLE ≤ 5 s, from `ctx["prev"]`) use `wake_up__slow_groggy` (amplitude 0.7, ~18 s on the arm; STANDBY lets it finish before centering). Woken by motion with nobody there, IDLE stays slumped 5 s, then plays the same wake-up | face confirmed → STANDBY · gone in 1.5 s → IDLE (sheepish `hesitate__subtle`) |
-| STANDBY | lock onto the target face | face at 5 Hz + hand at 10 Hz on a crop around the face, interleaved F H H F H H | attentive: procedural look-at on the face, `idle_breathe__alert`, `curious_head_tilt__single`/`__double`, `lean_in_interest__subtle`, `lamp_curious`. Mirror: head follows a waving hand; `tail_wag__small` | POINT held 0.4 s → ACK · no face 4 s → LOST |
+| STANDBY | lock onto the target face | face at 5 Hz + hand at 10 Hz on a crop around the face, interleaved F H H F H H | attentive: procedural look-at on the face, `idle_breathe__alert`, `curious_head_tilt__single`/`__double`, `lean_in_interest__subtle`, `lamp_curious`. Mirror: on a `WAVE`, one clip from the mirror pool (`tail_wag__small`, `excited_bounce__medium`), the head follows the hand (pitch; x waits for yaw) for 3 s instead of the face, energy bump | POINT held 0.4 s → ACK · no face 4 s → LOST |
 | LOST USER | — | face at 5 Hz | `scan_room__alert`, `look_at_user_return__*` | face back → STANDBY · 10 s → IDLE |
 | ACK | — | none (it's 0.5 s) | acknowledge: `nod_yes__small_calm`, `nod_yes__medium`, `lamp_yes`, `confident_snap__firm` | clip done → SEARCH |
 | SEARCH | plan a sweep of 3–5 pause poses over the desk | book at each pause (1–2 inferences per pose); hand at 2 Hz for STOP | searching: `scan_room__alert`, `point_with_head__left_small`/`__right_big`, `glance_then_reach__left`/`__right`, `approach_object__cautious`, `hesitate__subtle` between poses | book 2 consecutive frames → AIM · sweep done → NOT FOUND · STOP → STANDBY |
@@ -152,6 +152,7 @@ The state machine never sees raw detections. A perception layer turns them into 
 | `POINT` | index finger extended, others curled, held 0.4 s | the "find book" command |
 | `CLOSER` / `FURTHER` | gesture held 0.4 s; repeats every 1 s while held | each repeat is one brightness step |
 | `STOP` / `EXIT` | open palm held 1 s | the same gesture means "stop" in SEARCH and "done" in ILLUMINATE |
+| `WAVE` | wrist x reverses direction ≥ 2 times within 1.2 s, each swing ≥ half a hand size | no transition: the director mirrors it in STANDBY |
 | `BOOK_FOUND` | book confidence ≥ 0.5 on 2 consecutive inferences | |
 | `BOOK_LOST` | 3 misses in a row and no book for 2 s | a miss raises the book rate to 3 Hz to confirm quickly; one missed 0.5 Hz check is not a loss |
 | `RESET` | open palm held 3 s | clears a latched FAULT |
@@ -168,7 +169,7 @@ Static hand poses are far more reliable to classify from the 21 hand landmarks t
 | 👍 Thumbs up | closer / brighter | ILLUMINATE | beckon (fingers curling) |
 | 👎 Thumbs down | further / dimmer | ILLUMINATE | push (open palm moving toward lamp) |
 | ✋ Open palm, 1 s | stop / exit | SEARCH, ILLUMINATE | wave goodbye |
-| 👋 Wave | nothing; it's mirrored for fun | STANDBY | — |
+| 👋 Wave | nothing; it's mirrored for fun (the one moving gesture: `WaveDetector` on the wrist landmark) | STANDBY | — |
 
 Camera placement matters. The camera rides in the lamp head, so in STANDBY it sees your face and chest: the POINT gesture must happen near your face. In ILLUMINATE it is looking at the book: gestures happen over the book, and your face is out of frame. That's why ILLUMINATE checks in by looking up, and why "no face" alone must never end ILLUMINATE: someone reading has their head down. Only no face, no hand and no motion for 3 minutes ends it.
 

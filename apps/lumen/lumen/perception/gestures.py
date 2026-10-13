@@ -15,6 +15,46 @@ def _d(a, b):
     return math.hypot(a[0] - b[0], a[1] - b[1])
 
 
+def hand_size(lm):
+    """Wrist to middle-finger knuckle, in the landmarks' units: a scale-free yardstick."""
+    return _d(lm[0], lm[9])
+
+
+class WaveDetector:
+    """A wave: the wrist's x reverses direction `reversals` times within `window` s, each swing at
+    least `swing` hand sizes (so a hand drifting or jittering isn't one). The only moving gesture;
+    it is mirrored for fun in STANDBY."""
+
+    def __init__(self, reversals=2, window=1.2, swing=0.5):
+        self.reversals, self.window, self.swing = reversals, window, swing
+        self.reset()
+
+    def reset(self):
+        self.ext, self.dir, self.times = None, 0, []
+
+    def update(self, x, size, now):
+        """x: wrist x this hand frame (None = no hand). True once per detected wave."""
+        self.times = [t for t in self.times if now - t <= self.window]
+        if x is None:
+            return False
+        if self.ext is None:
+            self.ext = x
+            return False
+        need = self.swing * size
+        if self.dir == 0:                               # first swing: just pick a direction
+            if abs(x - self.ext) >= need:
+                self.dir, self.ext = (1 if x > self.ext else -1), x
+        elif (x - self.ext) * self.dir > 0:             # still going the same way: extend
+            self.ext = x
+        elif (self.ext - x) * self.dir >= need:         # came back far enough: a reversal
+            self.times.append(now)
+            self.dir, self.ext = -self.dir, x
+        if len(self.times) >= self.reversals:
+            self.reset()
+            return True
+        return False
+
+
 def classify(lm):
     """One hand's 21 landmarks -> gesture name or None."""
     if not lm or len(lm) != 21:

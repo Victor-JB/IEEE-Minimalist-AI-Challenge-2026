@@ -15,7 +15,7 @@ GAP_S = {"bored": (2.0, 6.0), "attentive": (1.5, 4.0), "holding": (4.0, 9.0),
          "looking_around": (0.5, 1.5), "asleep": (0.5, 2.0)}                 # pause between looping clips
 CENTER_FIRST = {"NOTICE", "STANDBY"}   # center the face before any clip plays here
 CENTER_TIMEOUT_S = 4.0                 # ...but start the clips anyway after this long
-INTERACTIONS = {E.POINT, E.CLOSER, E.FURTHER, E.PALM, E.FACE_CONFIRMED}
+INTERACTIONS = {E.POINT, E.CLOSER, E.FURTHER, E.PALM, E.FACE_CONFIRMED, E.WAVE}
 ADJUST_STEP = (3.0, -4.0, 1.0)   # (shoulder, elbow, head) deg per CLOSER; TODO: tune on the arm
 SLEEP_ENTRY = "go_to_sleep/drowsy"     # once on entering SLEEP; the lamp stays slumped after it
 SLEEP_BREATHE = (0.3, 2.0)             # (amplitude, time_scale) of the slow breathe while asleep
@@ -31,6 +31,7 @@ CHECKIN_MAX_UP = 45.0                  # never pitch the head more than this awa
 # on a crop that perception widens to the full frame after a miss. (shoulder, elbow, head) deg.
 REACQUIRE_PEEKS = ((0.0, 0.0, -3.0), (1.5, 0.0, 4.0), (-2.0, 0.0, -6.0))
 REACQUIRE_DWELL_S = 0.2
+MIRROR_S = 3.0                         # after a wave in STANDBY, the head follows the hand this long
 FALSE_ALARM_CLIP = "hesitate/subtle"   # NOTICE -> IDLE on TIMEOUT: sheepish "oh, nobody"
 WAKE_CLIP = "wake_up/slow_groggy"      # NOTICE right after SLEEP -> IDLE, instead of the notice pool
 WAKE_AMPLITUDE = 0.7                   # ~18 s on the real arm (the elbow-lift cap slows it ~4x)
@@ -50,6 +51,7 @@ class Director:
         self.wake_tok = None                # token of a wake-up still playing (it may outlive NOTICE)
         self.user_pitch = None              # camera pitch (sum of joints) that last centered the face
         self.checkin_phase = None           # CHECK-IN plan: "up" -> "look" -> "back"
+        self.mirror_until, self.last_wave_t = 0.0, None
 
     # -- state machine callbacks ------------------------------------------------
     def on_enter(self, state, m):
@@ -115,7 +117,8 @@ class Director:
         self.x.update(now)
         dt, self.last_tick = (0.0 if self.last_tick is None else min(0.2, now - self.last_tick)), now
         # Steer only between clips: a clip moves the head (and camera) itself.
-        if m.state in LOOK_AT and not self.busy:
+        mirroring = self._mirror(m, perception, frame_shape, now, dt)
+        if m.state in LOOK_AT and not self.busy and not mirroring:
             h, w = frame_shape[:2]
             err = face_error(perception.target, w, h) if perception.target is not None else None
             self.w.set_offset(self.look.update(err, now, dt))
@@ -129,8 +132,6 @@ class Director:
             self.token += 1
             self.busy = True
             self._loop_clip(pool, self.token)
-        # TODO(victor): mirror mode in STANDBY: when perception.gesture is a wave, offset the head
-        # with the hand's x/y and play from the "mirror" pool.
 
     def poll_events(self, now, m, perception=None):
         """Arm reports -> machine events. Stale reports from interrupted commands are dropped."""
@@ -234,6 +235,33 @@ class Director:
         """The groggy wake-up from the slumped pose; rebases on its end (home)."""
         self.slumped, self.wake_tok = False, tok
         self.w.seq([("play", WAKE_CLIP, WAKE_AMPLITUDE, 1.0), ("rebase",)], tok)
+
+    # -- mirror mode (STANDBY) ------------------------------------------------------------
+    def _mirror(self, m, perception, frame_shape, now, dt):
+        """A wave in STANDBY: play from the "mirror" pool and let the head follow the hand for
+        MIRROR_S (the energy bump comes from E.WAVE in INTERACTIONS). True while mirroring.
+        Pitch only: hand x is ignored until the yaw joint exists."""
+        if m.state != "STANDBY":
+            self.mirror_until = 0.0
+            return False
+        wave_t = getattr(perception, "wave_t", None)
+        if wave_t is not None and wave_t != self.last_wave_t and now - wave_t < 0.5:   # a fresh one
+            self.last_wave_t = wave_t
+            self.mirror_until = now + MIRROR_S
+            self.token += 1
+            self.busy = True
+            self._play("mirror", self.token)
+        if now >= self.mirror_until:
+            return False
+        hand = perception.hand_lm[0] if getattr(perception, "hand_lm", None) else None
+        err = None
+        if hand:
+            h, w = frame_shape[:2]
+            cx = sum(p[0] for p in hand) / len(hand)
+            cy = sum(p[1] for p in hand) / len(hand)
+            err = (2 * cx / w - 1, 2 * cy / h - 1)
+        self.w.set_offset(self.look.update(err, now, dt))      # the worker keeps it during the clip
+        return True
 
     # -- CHECK-IN -----------------------------------------------------------------------
     def _note_user_pitch(self, perception, err):

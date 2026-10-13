@@ -195,5 +195,51 @@ class Nobody(unittest.TestCase):
             self.assertTrue(C.NOBODY_S - 2.5 <= nobody[0] - 30 <= C.NOBODY_S + 1.0, (seed, nobody))
 
 
+def hand_at(x, y=300, size=40):
+    """21 landmarks: wrist at (x, y), middle knuckle `size` above it."""
+    lm = [(x, y, 0)] * 21
+    lm[9] = (x, y - size, 0)
+    return lm
+
+
+class Wave(unittest.TestCase):
+    def feed(self, xs, hz=10, t0=0.0):
+        from lumen.perception.gestures import WaveDetector
+        w, fired = WaveDetector(C.WAVE_REVERSALS, C.WAVE_WINDOW_S, C.WAVE_SWING), []
+        for i, x in enumerate(xs):
+            t = t0 + i / hz
+            if w.update(x, 40, t):
+                fired.append(round(t, 2))
+        return fired
+
+    def test_a_quick_wave_fires_once(self):
+        xs = [300, 320, 340, 320, 300, 320, 340, 360, 340]      # right, left, right: 2 reversals in 0.8 s
+        self.assertEqual(len(self.feed(xs)), 1)
+
+    def test_jitter_and_drift_are_not_waves(self):
+        self.assertEqual(self.feed([300, 305, 298, 306, 299, 304, 300, 305] * 3), [])     # < half a hand
+        self.assertEqual(self.feed(list(range(200, 400, 10))), [])                        # one way only
+
+    def test_too_slow_is_not_a_wave(self):
+        xs = [300] + [340] * 13 + [300] * 13 + [340] * 3        # reversals 1.3 s apart
+        self.assertEqual(self.feed(xs), [])
+
+    def test_missing_frames_dont_break_it(self):
+        xs = [300, 340, None, 300, None, 340]
+        self.assertEqual(len(self.feed(xs)), 1)
+
+    def test_perception_emits_wave_from_hand_landmarks(self):
+        xs = [300, 340, 300, 340, 300]
+        hands = Scripted(lambda t: [hand_at(xs[min(len(xs) - 1, int(t * 10 + 1e-6))])])
+        p, ctx, events, t = Perception(hands=hands), {}, [], 0.0
+        for _ in range(6):
+            hands.t = t
+            events += p.step(FRAME, t, {"hand": 10}, ctx)
+            t += 0.1
+        self.assertIn(E.WAVE, events)
+        self.assertIsNotNone(p.wave_t)
+        self.assertIsNone(Machine(start="STANDBY").handle(E.WAVE, 1.0))   # no transition
+
+
 if __name__ == "__main__":
     unittest.main()

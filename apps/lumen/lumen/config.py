@@ -13,6 +13,8 @@ FACE_CONFIRM_K, FACE_CONFIRM_N = 3, 5    # NOTICE -> STANDBY
 FACE_LOST_S = 4.0                        # STANDBY -> LOST USER
 GESTURE_HOLD_S = 0.4                     # POINT / CLOSER / FURTHER must be held this long
 GESTURE_REPEAT_S = 1.0                   # CLOSER / FURTHER repeat while held
+WAVE_REVERSALS, WAVE_WINDOW_S = 2, 1.2   # wave = this many wrist direction reversals within this long
+WAVE_SWING = 0.5                         # ...each swing at least this many hand sizes
 PALM_HOLD_S = 1.0                        # open palm = STOP / EXIT
 BOOK_FOUND_CONSECUTIVE = 2
 BOOK_LOST_S = 2.0

@@ -6,6 +6,7 @@ FACE_SEEN, FACE_CONFIRMED, FACE_LOST = "FACE_SEEN", "FACE_CONFIRMED", "FACE_LOST
 MOTION, NO_MOTION, NOBODY = "MOTION", "NO_MOTION", "NOBODY"
 POINT, CLOSER, FURTHER, PALM = "POINT", "CLOSER", "FURTHER", "PALM"   # PALM = STOP in SEARCH, EXIT in ILLUMINATE
 BOOK_FOUND, BOOK_LOST = "BOOK_FOUND", "BOOK_LOST"
+WAVE = "WAVE"     # wrist waving side to side; no transition, the director mirrors it in STANDBY
 # Behavior / motion
 CLIP_DONE, MOVE_DONE, SWEEP_DONE, AT_POSE = "CLIP_DONE", "MOVE_DONE", "SWEEP_DONE", "AT_POSE"
 STEP = "STEP"     # a "mark" inside a worker plan; the director consumes it, the machine never sees it

@@ -9,6 +9,7 @@ from lumen import config as C                      # noqa: E402
 from lumen import events as E                      # noqa: E402
 from lumen.behavior.director import Director       # noqa: E402
 from lumen.behavior.expressive import Expressive   # noqa: E402
+from lumen.behavior.pools import POOLS             # noqa: E402
 from lumen.machine import Machine                  # noqa: E402
 
 
@@ -355,6 +356,65 @@ class ReacquirePerception(unittest.TestCase):
         self.assertIsNone(ctx["book_roi"])                 # widened to the full frame
         self.assertIn(None, book.rois[n:])
         self.assertTrue(5 <= len(book.rois) - n <= 7)      # 3 Hz
+
+
+class Mirror(unittest.TestCase):
+    def standby(self):
+        r = Rig()
+        r.to(E.READY, E.FACE_SEEN, E.FACE_CONFIRMED)
+        self.assertEqual(r.m.state, "STANDBY")
+        return r
+
+    def wave(self, r, hand_y):
+        r.p.hand_lm = [[(320, hand_y, 0)] * 21]
+        r.p.wave_t = r.t + 0.05
+        r.d.note_events([E.WAVE], r.t + 0.05)
+
+    def test_wave_plays_mirror_and_head_follows_the_hand(self):
+        r = self.standby()
+        energy = r.x.energy
+        self.wave(r, hand_y=60)                            # hand high in the frame
+        r.tick()
+        name, (ref, *_), kw = r.w.last("play")
+        self.assertIn(ref, [c for c, _ in POOLS["mirror"]])
+        self.assertGreater(r.x.energy, energy)
+        for _ in range(10):
+            r.tick()
+        self.assertLess(r.w.offset[2], 0)                  # head up toward the hand
+        n = len(r.w.cmds)
+        r.tick()
+        self.assertEqual(len(r.w.cmds), n)                 # one clip per wave
+
+    def test_mirroring_ends_and_the_face_takes_over(self):
+        r = self.standby()
+        self.wave(r, hand_y=60)
+        r.tick()
+        r.finish()
+        r.p.hand_lm, r.p.target = [], Det(320, 400)        # face low in the frame
+        for _ in range(int(3.5 / 0.05)):
+            r.tick()
+        self.assertGreater(r.w.offset[2], -10)             # steering back down to the face
+
+    def test_waves_outside_standby_are_ignored(self):
+        r = Rig()
+        r.to(*TO_HOLD)
+        r.finish(E.AT_POSE)
+        n = len(r.w.cmds)
+        self.wave(r, hand_y=60)
+        r.tick()
+        mirror = [c for c, _ in POOLS["mirror"]]
+        self.assertFalse(any(c[0] == "play" and c[1][0] in mirror for c in r.w.cmds[n:]))
+        self.assertEqual(r.d.mirror_until, 0.0)
+
+    def test_stale_wave_from_another_state_does_not_fire_later(self):
+        r = Rig()
+        r.to(E.READY, E.FACE_SEEN)
+        self.wave(r, hand_y=60)                            # seen in NOTICE
+        r.t += 2.0
+        r.to(E.FACE_CONFIRMED)
+        n = len(r.w.cmds)
+        r.tick()
+        self.assertEqual(len(r.w.cmds), n)
 
 
 if __name__ == "__main__":
