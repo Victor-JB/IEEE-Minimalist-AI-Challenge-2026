@@ -18,6 +18,7 @@ class FakeWorker:
     def __init__(self):
         self.cmds, self.events = [], []
         self.base, self.current, self.offset = list(C.HOME), list(C.HOME), [0.0, 0.0, 0.0]
+        self.base_roll = 0.0                     # head tilt (lumen-geometry): AIM plans from it
 
     def __getattr__(self, name):                 # play, goto, sweep, seq, relax, connect
         if name.startswith("_"):
@@ -47,6 +48,9 @@ class FakeLight:
 
     def step(self, delta):
         self.level += delta
+
+    def couple(self, scale):                    # LightCoupling (lumen-light): CHECK-IN dims
+        self.scale = scale
 
 
 class Det:

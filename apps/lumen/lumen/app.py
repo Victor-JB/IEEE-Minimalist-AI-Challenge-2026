@@ -9,7 +9,7 @@ import time
 from . import config as C
 from .behavior.director import Director
 from .behavior.expressive import Expressive
-from .io.light import Light
+from .io.light import Light, make_backend
 from .io.power import Power
 from .motion.worker import MotionWorker
 from .machine import Machine
@@ -27,7 +27,7 @@ def run(args):
 
     expressive = Expressive()
     worker = MotionWorker(expressive, fake=args.fake_arm)
-    light = Light()
+    light = Light(make_backend(C.LIGHT_BACKEND, worker))   # env LUMEN_LIGHT; sim by default
     power = Power()
     director = Director(worker, light, expressive, power=power)
     face = None
@@ -79,6 +79,7 @@ def run(args):
                         print(f"FAULT #{director.faults}: {why}{latched}")
 
             director.tick(now, machine, perception, frame.shape)
+            light.update(now)                                # advance the light's ramp, write the LED
             fps.tick()
 
             if streamer:
