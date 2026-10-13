@@ -3,7 +3,23 @@
 The deck's demo slide promises this is on screen the whole time."""
 import cv2
 
+from .perception.hands import CONNECTIONS
+
 GREEN, AMBER, WHITE = (80, 220, 80), (58, 162, 240), (235, 235, 235)
+
+
+def draw_hands(frame, hands, label=None):
+    """Skeleton of each hand (21 landmarks in frame pixels), label above the first one."""
+    for i, lm in enumerate(hands):
+        pts = [(int(x), int(y)) for x, y, *_ in lm]
+        for a, b in CONNECTIONS:
+            cv2.line(frame, pts[a], pts[b], GREEN, 2)
+        for p in pts:
+            cv2.circle(frame, p, 3, AMBER, -1)
+        if label and i == 0:
+            x, y = min(p[0] for p in pts), max(min(p[1] for p in pts) - 10, 20)
+            cv2.putText(frame, label, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 4)
+            cv2.putText(frame, label, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, AMBER, 2)
 
 
 def draw(frame, m, perception, light, energy, fps, watts=None):
@@ -12,6 +28,11 @@ def draw(frame, m, perception, light, energy, fps, watts=None):
         cv2.rectangle(frame, (d.x, d.y), (d.x + d.w, d.y + d.h), color, 2)
     for (x, y, w, h, *_ ) in perception.books:
         cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (240, 160, 60), 2)
+    roi = m.ctx.get("hand_roi")
+    if roi is not None and m.models.get("hand"):
+        x, y, w, h = (int(v) for v in roi[:4])
+        cv2.rectangle(frame, (x, y), (x + w, y + h), WHITE, 1)          # where the palm detector looks
+    draw_hands(frame, perception.hand_lm, perception.gesture or "hand")
     models = " ".join(f"{k}:{v}" for k, v in m.models.items()) or "none"
     lines = [f"STATE {m.path}", f"models {models}", f"light {light.level:.0%}  energy {energy:.2f}  {fps:.0f} fps"]
     if perception.gesture:
