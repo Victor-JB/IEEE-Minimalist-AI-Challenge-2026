@@ -20,6 +20,17 @@ outputs, preventing timing/noise differences from changing their input.
 | 140-image official validation sample | 80/168 = 47.6% | 114/168 = 67.9% | 14/40 → 25/40 |
 | **Fresh 210-image test sample** | **119/259 = 45.9%** | **174/259 = 67.2%** | **18/60 → 30/60** |
 
+The [before/after chart](gesture-comparison.svg) shows our fresh-test results on
+a full 0–100% scale: overall correct recall improved by 21.2 percentage points,
+and pointing improved by 20.0 percentage points. Both measures include missed
+hands. We tested 210 held-out still photographs from 189 subjects; these results
+do not measure live camera accuracy. A [PNG copy](gesture-comparison.png) is
+available for slides. The plot reads counts directly from the two
+`test-*-score.json` files and verifies that their manifest and landmark-cache
+hashes match each other and the committed source files. Rebuild the exports
+and the embedded website chart with Matplotlib:
+`python3 tools/efficiency/plot_gesture_comparison.py --embed-preview`.
+
 On the fresh test sample, classification accuracy conditional on successful
 localization rose from 119/177 (67.2%) to 174/177 (98.3%). All 30 localized
 pointing hands were recognized, including 16 forward-pointing hands versus
