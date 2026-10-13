@@ -4,6 +4,7 @@
                                                                     │
     MotionWorker (thread, 25 Hz) ◄─ Director ◄─ Machine.handle(event) ◄┘
 """
+import socket
 import time
 
 from .light import config as light_cfg
@@ -37,10 +38,11 @@ def run(args):
     perception = Perception(face=face, hands=HandLandmarker(), book=BookDetector(),
                             gate=MotionGate())
     log = TransitionLog()
-    streamer = None
-    if args.stream:
-        from .ui.stream import FrameStreamer
-        streamer = FrameStreamer(args.stream)
+    web = None
+    if args.stream:                                   # the one web page: HUD + desk + Auto/Manual
+        from .ui.web import WebPage
+        web = WebPage(args.stream, fake_arm=args.fake_arm)
+        print(f"Web page at http://{socket.gethostname()}:{args.stream}/ (starts in {web.requested})")
 
     def entered(state, m):
         director.on_enter(state, m)
@@ -67,6 +69,8 @@ def run(args):
                 events = perception.step(frame, now, machine.models, machine.ctx)
             machine.ctx["at_pause_pose"] = False
             events += director.poll_events(now, machine, perception)
+            if web:
+                events += web.events(machine, worker)
             director.note_events(events, now)
 
             for tr in [machine.handle(ev, now) for ev in events] + [machine.tick(now)]:
@@ -85,11 +89,13 @@ def run(args):
             light.update(now)                                # advance the light's ramp, write the LED
             fps.tick()
 
-            if streamer:
-                hud.draw(frame, machine, perception, light, expressive.energy, fps.fps,
-                         fault=director.fault_reason if machine.state == "FAULT" else None,
-                         now=now, doing=worker.doing)
-                streamer.update(frame)
+            if web:
+                web.update(machine, now, worker.doing)
+                if web.feed.watched:
+                    hud.draw(frame, machine, perception, light, expressive.energy, fps.fps,
+                             fault=director.fault_reason if machine.state == "FAULT" else None,
+                             now=now, doing=worker.doing)
+                    web.feed.publish(frame)
             if args.headless and now - last_print > 5:
                 last_print = now
                 print(f"[{machine.path}] {fps.fps:.1f} fps, inferences {perception.sched.counts}")

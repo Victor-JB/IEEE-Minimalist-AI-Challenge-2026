@@ -5,15 +5,18 @@ expressive motion and light. The behavior spec is [docs/STATE_MACHINE.md](../../
 this folder implements it.
 
 Lumen is Python on the Linux side only. Everything about the arm (firmware, API, parameters,
-clips) comes from the shared [arm/](../../arm/README.md) module. It and the Lumen Desk page are
-systemd user services, and exactly one starts at boot (they share the arm and camera):
-[apps/README.md](../README.md) explains why it is not an App Lab app.
+clips) comes from the shared [arm/](../../arm/README.md) module, and Lumen starts at boot as a
+systemd user service: [apps/README.md](../README.md) explains why it is not an App Lab app.
 
-**What boots (board `luxo3`, the luxoIII board):** the **desk page** (`lumen-desk.service`,
-`http://luxo3:8081/`), with Lumen installed but off. `LUMEN_BOOT=lumen bash apps/lumen/scripts/deploy.sh`
-switches the boot service to **Lumen and its HUD** (`lumen.service`, `http://luxo3:8080/`);
-plain `deploy.sh` switches back. By hand: `systemctl --user start lumen` (stops the desk) or
-`systemctl --user start lumen-desk`. A fresh board is set up with `scripts/luxoIII-board-setup.sh`.
+**One web page: `http://luxo3:8080/`** (board `luxo3`, the luxoIII board). It shows the camera
+with Lumen's HUD (state, where it can go next, the animation playing, AI boxes) and the desk
+controls, with an **Auto / Manual** switch at the top:
+- **Auto:** Lumen runs the state machine and owns the arm; the controls are greyed out (STOP works).
+- **Manual:** Lumen goes to MANUAL and releases the arm; jog, poses, clips, head tilt and the light
+  drive it. Back to Auto: the desk lets go, Lumen goes through BOOT (reconnect, home).
+
+It starts in **Manual** (`lumen/ui/config.py` `START_MODE`), so nothing moves after a power-up
+until someone presses Auto. A fresh board is set up with `scripts/luxoIII-board-setup.sh`.
 
 ## Run it
 
@@ -28,8 +31,7 @@ python3 -m unittest discover -s apps/lumen/tests
 
 # Board, first time
 bash arm/scripts/deploy.sh                       # flash the arm firmware + arm venv (skip if done)
-bash apps/lumen/scripts/deploy.sh                # copy apps/lumen + arm/, venv, boot service (desk page), start
-LUMEN_BOOT=lumen bash apps/lumen/scripts/deploy.sh   # ...or boot into Lumen + HUD instead
+bash apps/lumen/scripts/deploy.sh                # copy apps/lumen + arm/, venv, boot service, start
 #   then in App Lab: make sure no app shows the DEFAULT badge
 
 # Board, every change
@@ -38,12 +40,11 @@ ssh arduino@luxo3 journalctl --user -u lumen -f                                 
 ssh arduino@luxo3 bash IEEE-Minimalist-AI-Challenge-2026/apps/lumen/scripts/run.sh   # foreground
 ```
 
-Manual control: the desk page, `http://luxo3:8081/` (the boot service; by hand
-`python -m lumen.desk` with Lumen stopped: one arm owner). It has the camera, live joints and
-sensors, enable/lock, arm/disarm, hold-to-jog, pose targets, taught poses, clips, head tilt, the
-lamp light (D7), the measured-vs-commanded plot, and recordings with replay. It's the Stepper Desk Mac app's job, on the closed-loop firmware.
+Manual mode (the switch on the page) has the live joints and sensors, enable/lock, hold-to-jog,
+pose targets, taught poses, clips, head tilt, the lamp light (D7), the measured-vs-commanded plot,
+and recordings with replay. `python -m lumen.desk` still runs the controls on their own (:8081)
+for bench work with Lumen stopped. It's the Stepper Desk Mac app's job, on the closed-loop firmware.
 
-HUD stream: `http://luxo3:8080/` (state, active models, light, energy, detections).
 Transition log: `apps/lumen/logs/transitions-<date>.csv` on the board. Every state change with
 the models running and the cumulative inference counts, which is your scorecard data. Transitions
 into FAULT also have a `reason` (`STALL`, `SENSOR_STALE`, `LINK_LOST`, `OVERTEMP`, `ARM`, `ERROR`,
@@ -84,8 +85,9 @@ apps/lumen/
     │   └── director.py             turns states into movement and light
     ├── light/      config.py · light.py      brightness ramps, gamma, coupling, LED backend
     ├── io/         config.py · camera.py · power.py · thermal.py   camera, SLEEP power, overtemp
-    ├── ui/         hud.py · thinking.py · stream.py   the :8080 web view (state, next, arm, AI boxes)
-    ├── desk/                       Lumen Desk: browser control page (python -m lumen.desk, :8081)
+    ├── ui/         config.py · web.py · hud.py · thinking.py · stream.py   the one :8080 page: HUD feed,
+    │                                desk controls, Auto/Manual handover (START_MODE in config.py)
+    ├── desk/                       the desk controls (Manual mode on the page; standalone: python -m lumen.desk)
     └── events.py · paths.py · translog.py · perfstats.py
 ```
 

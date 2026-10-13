@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lumen Desk</title>
+<title>Lumen</title>
 <style>
 :root {
   --bg: #0f1216; --panel: #171b21; --panel2: #1e232b; --line: #2b313b; --text: #e6e9ee; --muted: #8b94a3;
@@ -75,25 +75,36 @@ canvas { width: 100%; height: 220px; display: block; background: var(--panel2); 
 .replaybar { display: none; margin-top: 10px; }
 body.replaying .replaybar { display: block; }
 body.replaying .live-only { opacity: .35; pointer-events: none; }
+/* Auto: Lumen owns the arm, so the desk controls are off (STOP stays live) */
+body.auto .live-only:not(#bStop):not(.always) { opacity: .35; pointer-events: none; }
+.modesw { display: inline-flex; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+.modesw button { border: 0; border-radius: 0; margin: 0; }
+.modesw button[aria-pressed="true"] { background: var(--accent); color: var(--bg, #000); font-weight: 700; }
+#lumenLine { font-family: ui-monospace, Menlo, monospace; font-size: 12px; white-space: pre; padding: 4px 12px; opacity: .85; }
 .tag { font: 600 10px ui-monospace, monospace; letter-spacing: .08em; padding: 2px 6px; border-radius: 5px; background: var(--panel2); color: var(--muted); }
 .tag.live { color: var(--ok); } .tag.replay { color: var(--roll); }
 </style>
 </head>
 <body>
 <header>
-  <h1>Lumen Desk</h1>
+  <h1>Lumen</h1>
+  <div class="modesw" role="group" aria-label="Mode">
+    <button id="bAuto" aria-pressed="false" title="Lumen runs the state machine and the arm">Auto</button>
+    <button id="bManual" aria-pressed="false" title="Lumen releases the arm to these controls">Manual</button>
+  </div>
   <span id="conn" class="pill">OFFLINE</span>
   <span id="pwr" class="pill">—</span>
   <span id="st" class="pill">—</span>
   <div class="spacer"></div>
-  <div class="row live-only">
-    <button id="bConnect" class="primary">Connect</button>
-    <button id="bPower">Enable movement</button>
-    <button id="bRelax" title="Stop and let the drivers sleep">Relax</button>
+  <div class="row">
+    <button id="bConnect" class="primary live-only">Connect</button>
+    <button id="bPower" class="live-only">Enable movement</button>
+    <button id="bRelax" class="live-only" title="Stop and let the drivers sleep">Relax</button>
     <button id="bStop" class="stop" title="Escape">STOP</button>
   </div>
 </header>
 <div id="notice">Loading…</div>
+<div id="lumenLine"></div>
 
 <main>
   <div class="col">
@@ -101,7 +112,7 @@ body.replaying .live-only { opacity: .35; pointer-events: none; }
       <h2>Camera <span class="right" id="vinfo"></span></h2>
       <div class="video"><img id="video" alt="Camera in the lamp head"><div class="msg" id="vmsg" hidden></div></div>
       <div class="row" style="margin-top:8px"><button id="bVideo">Pause video</button>
-        <span class="hint" style="margin:0">The camera rides in the head. It's free only while Lumen is stopped.</span></div>
+        <span class="hint" style="margin:0">The camera rides in the head; Lumen's HUD is drawn on it (state, next states, animation, AI boxes).</span></div>
     </section>
 
     <section class="card">
@@ -217,6 +228,8 @@ const fmt = (v, d = 1) => (v === null || v === undefined) ? "—" : (v >= 0 ? "+
 
 // ---- header actions -------------------------------------------------------------------------
 $("bConnect").onclick = () => cmd(S && S.connected ? "disconnect" : "connect");
+$("bAuto").onclick = () => cmd("mode", "auto");
+$("bManual").onclick = () => cmd("mode", "manual");
 $("bPower").onclick = () => cmd("power", !(S && S.enabled));
 $("bRelax").onclick = () => cmd("relax");
 $("bStop").onclick = () => { stopJogs(); cmd("stop"); };
@@ -523,6 +536,13 @@ const CAD = (() => {
 // ---- live state -----------------------------------------------------------------------------
 function render() {
   const s = S, live = !replay;
+  const auto = s.mode === "auto", lum = s.lumen;
+  document.body.classList.toggle("auto", !!lum && auto);
+  $("bAuto").setAttribute("aria-pressed", String(!!lum && auto));
+  $("bManual").setAttribute("aria-pressed", String(!lum || !auto));
+  $("bAuto").disabled = !lum;
+  $("lumenLine").textContent = !lum ? "Lumen isn't running (standalone desk page)."
+    : (lum.requested !== s.mode ? `Switching to ${lum.requested}…\n` : "") + lum.lines.join("\n");
   $("conn").textContent = s.connected ? "CONNECTED" : "OFFLINE"; $("conn").className = "pill " + (s.connected ? "ok" : "");
   $("pwr").textContent = !s.connected ? "—" : !s.enabled ? "LOCKED" : s.awake ? "POWERED" : "ASLEEP";
   $("pwr").className = "pill " + (!s.connected ? "" : !s.enabled ? "warn" : s.awake ? "ok" : "");

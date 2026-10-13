@@ -93,11 +93,12 @@ restore() {
     arduino-cli compile --profile default --build-path $REPO/arm/build sketch | tail -2
     bash scripts/flash-local.sh 2>&1 | grep -iE 'error|verified|wrote' | tail -4"
 
-  echo '== Boot services: the desk web page (on at boot); Lumen installed but off (they conflict)'
+  echo '== Boot service: Lumen with the one web page (:8080: HUD + desk controls, starts in Manual)'
   board "set -e; cd $REPO/apps/lumen; mkdir -p ~/.config/systemd/user logs
-    cp lumen.service lumen-desk.service ~/.config/systemd/user/
-    systemctl --user daemon-reload && systemctl --user enable --now lumen-desk >/dev/null
-    echo \"desk: \$(systemctl --user is-enabled lumen-desk); lumen: \$(systemctl --user is-enabled lumen)\""
+    cp lumen.service ~/.config/systemd/user/
+    systemctl --user disable --now lumen-desk >/dev/null 2>&1 || true; rm -f ~/.config/systemd/user/lumen-desk.service
+    systemctl --user daemon-reload && systemctl --user enable --now lumen >/dev/null
+    echo \"lumen: \$(systemctl --user is-enabled lumen) (web page :8080, starts in Manual)\""
 
   echo '== Notes'
   "${A[@]}" push "$(ls "$REPO_LOCAL"/docs/CHANGES-board-*.md | tail -1)" /home/arduino/CHANGES.md >/dev/null
@@ -116,7 +117,7 @@ board that died on 2026-10-12. Set up by \`scripts/luxoIII-board-setup.sh\` in t
 | \`~/CHANGES.md\` | what changed in the 2026-10-12 work, for teammates |
 
 - Lumen: \`systemctl --user start|stop lumen\`, logs \`journalctl --user -u lumen -f\`, HUD on :8080.
-- Desk page: \`cd ~/IEEE-tongtong-worktree/apps/lumen && ~/IEEE-Minimalist-AI-Challenge-2026/.venv/bin/python -m lumen.desk --port 8081\`.
+- Web page: http://luxo3:8080/ (HUD + desk controls; Auto/Manual switch at the top).
 - Firmware: \`cd arm && arduino-cli compile --profile default --build-path build sketch && bash scripts/flash-local.sh\`.
 - From the Mac over USB: \`adb forward tcp:2222 tcp:22\` then \`ssh -p 2222 arduino@localhost\`.
 EOF

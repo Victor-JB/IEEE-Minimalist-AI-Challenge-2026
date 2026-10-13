@@ -42,6 +42,8 @@ STATES = {
                        timer=(state_cfg.REACQUIRE_TIMEOUT_S, E.TIMEOUT)),
     "GOODBYE":   State({"face": 5}, "done", light=0.0),      # face decides STANDBY vs IDLE after
     "FAULT":     State({"hand": 2}, "fault", light=0.2),     # hand only for the RESET palm
+    # MANUAL: the web page's desk controls own the arm (Lumen released it); no models, no clips.
+    "MANUAL":    State({}, "manual"),
 }
 INITIAL_CHILD = {"ILLUMINATE": "HOLD"}
 PREV_KEEP = 4      # previous states kept in ctx["prev"] (e.g. NOTICE checks for SLEEP -> IDLE -> NOTICE)
@@ -88,6 +90,8 @@ TRANSITIONS = {
     ("*", E.FAULT): "FAULT",
     ("FAULT", E.RECOVERED): "BOOT",
     ("FAULT", E.RESET): "BOOT",
+    ("*", E.MANUAL): "MANUAL",               # web page: Manual
+    ("MANUAL", E.AUTO): "BOOT",              # web page: Auto (reconnect, home, IDLE)
 }
 
 

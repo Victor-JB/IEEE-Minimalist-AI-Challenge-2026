@@ -60,7 +60,11 @@ class Director:
         tok = self.token
         if self._enter_behavior(state, m, tok):   # per-state behaviors below, kept out of this chain
             return
-        if state == "BOOT":
+        if state == "MANUAL":
+            self.w.released = False         # set again once the worker has really let go
+            self.w.release()                # the desk controls take the arm (ui/web.py hands it over)
+            self.busy = False
+        elif state == "BOOT":
             self.w.connect()                # new arm session if a fault closed the last one
             self.w.set_base(move_cfg.HOME)
             self.w.goto(move_cfg.HOME, move_cfg.BOOT_HOME_S, tok)

@@ -111,6 +111,19 @@ stateDiagram-v2
     FAULT --> BOOT : RESET (open palm 3 s)
 ```
 
+**MANUAL is also reachable from every state:** the web page's Auto / Manual switch (`ui/web.py`).
+In MANUAL Lumen releases the arm to the page's desk controls and runs no models; Auto goes back
+through BOOT (reconnect, home). Lumen starts in Manual (`ui/config.py` `START_MODE`).
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    state "any state" as ANY
+    state "MANUAL<br/>AI: none<br/>desk controls own the arm" as MANUAL
+    ANY --> MANUAL : MANUAL (page switch)
+    MANUAL --> BOOT : AUTO (page switch)
+```
+
 The STM32 already stops on its own for stale encoders, joint limits and lease expiry. FAULT is the behavior layer catching up: stop sending targets, show it, recover once.
 
 ---

@@ -32,6 +32,7 @@ PATH["CHECKIN"] = PATH["HOLD"] + [E.CHECKIN_DUE]
 PATH["REACQUIRE"] = PATH["HOLD"] + [E.BOOK_LOST]
 PATH["GOODBYE"] = PATH["HOLD"] + [E.PALM]
 PATH["FAULT"] = [E.FAULT]
+PATH["MANUAL"] = [E.MANUAL]
 # RESET -> BOOT landed on state-machine-fixes (e989877); expected failure on older bases.
 _xfail_without_reset = (lambda f: f) if hasattr(E, "RESET") else unittest.expectedFailure
 LEAF_STATES = [s for s in STATES if s not in INITIAL_CHILD]
@@ -316,3 +317,12 @@ class Timers(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ManualMode(unittest.TestCase):
+    def test_manual_from_anywhere_and_auto_goes_through_boot(self):
+        r = Rig().goto("HOLD")
+        r.ev(E.MANUAL)
+        self.assertEqual(r.m.state, "MANUAL")
+        r.ev(E.AUTO)
+        self.assertEqual(r.m.state, "BOOT")

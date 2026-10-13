@@ -26,6 +26,7 @@ NAME = re.compile(r"^[A-Za-z0-9_.-]+\.jsonl$")
 CAD = paths.ARM / "cad"
 CAD_NAME = re.compile(r"^[A-Za-z0-9_.-]+\.(stl|json)$")
 COMMANDS = {"connect", "disconnect", "power", "relax", "stop", "jog", "goto", "clip", "roll", "roll_off", "light"}
+ARM_COMMANDS = COMMANDS - {"stop"}       # refused in Auto: Lumen owns the arm then (STOP always goes through)
 REPLAY_POINTS = 1500
 
 
@@ -70,7 +71,8 @@ def replay(path):
     return out[::step]
 
 
-def make_handler(desk, video, poses_lock=threading.Lock()):
+def make_handler(desk, video, app=None, poses_lock=threading.Lock()):
+    """app: the Lumen web page (ui/web.py) when the desk runs inside Lumen; None standalone."""
     class Handler(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
 
@@ -95,6 +97,8 @@ def make_handler(desk, video, poses_lock=threading.Lock()):
             if p == "/state":
                 s = desk.snapshot()
                 s["video"] = dict(error=video.error, fps=round(video.fps, 1), viewers=video.clients)
+                s["mode"] = app.mode if app else "manual"
+                s["lumen"] = app.status if app else None
                 return self._send(200, s)
             if p == "/history":
                 since = float(parse_qs(url.query).get("since", ["0"])[0])
@@ -133,8 +137,13 @@ def make_handler(desk, video, poses_lock=threading.Lock()):
                 p = urlparse(self.path).path
                 if p == "/cmd":
                     cmd, args = body.get("cmd"), body.get("args") or []
+                    if cmd == "mode" and app and isinstance(args, list) and args:
+                        app.request(str(args[0]))
+                        return self._send(200, {"ok": True})
                     if cmd not in COMMANDS or not isinstance(args, list):
                         return self._send(400, {"error": f"unknown command {cmd!r}"})
+                    if app and app.mode != "manual" and cmd in ARM_COMMANDS:
+                        return self._send(409, {"error": "Lumen has the arm: switch to Manual first"})
                     desk.send(cmd, *args)
                     return self._send(200, {"ok": True})
                 if p == "/poses":
@@ -187,7 +196,7 @@ def make_handler(desk, video, poses_lock=threading.Lock()):
     return Handler
 
 
-def serve(desk, video, port):
-    server = ThreadingHTTPServer(("0.0.0.0", port), make_handler(desk, video))
+def serve(desk, video, port, app=None):
+    server = ThreadingHTTPServer(("0.0.0.0", port), make_handler(desk, video, app))
     server.daemon_threads = True
     return server

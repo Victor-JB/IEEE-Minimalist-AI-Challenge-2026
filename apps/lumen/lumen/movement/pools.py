@@ -42,4 +42,5 @@ POOLS = {
     "peek":           [("curious_head_tilt/single", "mid")],   # REACQUIRE is a procedural local sweep now
     "done":           [("nod_yes/small_calm", "low"), ("home/gentle", "low")],
     "fault":          [("shrug_fail/small", "low")],
+    "manual":         [],                    # MANUAL: the desk controls move the arm
 }

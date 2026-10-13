@@ -71,6 +71,10 @@ def relock_shoulder(measured):
     A.lock_shoulder(measured)
     return measured
 
+
+class _Released(Exception):
+    """release() was asked: leave _loop and close the session without a FAULT."""
+
 class Stalled(Exception):
     """Every retry of a stalled setpoint failed; the arm holds where it stopped."""
 
@@ -120,6 +124,7 @@ class MotionWorker(threading.Thread):
         self.roll = None                    # last head-tilt angle sent (None: send the next one)
         self.relaxed = False
         self.doing = "hold"                 # what the arm is doing, for the HUD
+        self.released = False               # True after release(), until the next connect
         self.arm = None
         self.give_ups = []                  # times commands were abandoned after failed retries
         self.light_cmd = None               # lamp per mille wanted (main thread writes, we read)
@@ -161,6 +166,10 @@ class MotionWorker(threading.Thread):
         """(Re)open the arm session if a fault closed it; no-op when connected or fake."""
         self.cmds.put(("connect",))
 
+    def release(self):
+        """Close the arm session (MANUAL: the desk controls take the arm) until connect()."""
+        self.cmds.put(("release",))
+
     def set_base(self, pose):
         """Pose holds and clips are relative to; a 4th value sets the base roll (else ROLL_HOME)."""
         self.base = list(pose[:3])
@@ -198,6 +207,10 @@ class MotionWorker(threading.Thread):
                 continue
             try:
                 self._loop()
+            except _Released:                         # MANUAL: hand the arm over, no FAULT
+                self._disconnect()
+                self.released, connected = True, False
+                print("Arm released (manual mode)")
             except Exception as e:                    # ArmError, link loss, closed-loop fault
                 traceback.print_exc()
                 self._disconnect()
@@ -207,6 +220,7 @@ class MotionWorker(threading.Thread):
 
     def _connect(self):
         if self.fake:
+            self.released = False
             return True
         from arm_motion import ArmMotion      # arm/python
         paths.LOGS.mkdir(exist_ok=True)
@@ -219,6 +233,7 @@ class MotionWorker(threading.Thread):
                                      roll=A.ROLL if A.ROLL_ENABLED else None).__enter__()
                 self.current = self.arm.angles()       # start every move from where the arm really is
                 relock_shoulder(self.current[0])
+                self.released = False
                 self.give_ups, self.roll = [], None
                 self.light_sent = None              # resend the lamp level on the new session
                 tilt = "head tilt on" if self.arm.roll_supported else "no head tilt"
@@ -252,6 +267,9 @@ class MotionWorker(threading.Thread):
             cmd = self.cmds.get(timeout=0.5)
         except queue.Empty:
             return False
+        if cmd[0] == "release":
+            self.released = True                  # nothing to release: the desk may take the arm
+            return False
         if cmd[0] != "connect":
             return False
         if self.thermal.hot:
@@ -270,6 +288,8 @@ class MotionWorker(threading.Thread):
             kind = cmd[0]
             if kind == "connect":
                 continue                              # already connected
+            if kind == "release":
+                raise _Released
             self.doing = DOING.get(kind, kind) if kind != "play" else f"clip {cmd[1]}"
             if kind == "relax":
                 if self.arm:

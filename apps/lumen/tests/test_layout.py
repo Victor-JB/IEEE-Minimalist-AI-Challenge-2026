@@ -29,7 +29,7 @@ class Layout(unittest.TestCase):
         """Tunables live in their folder's config.py (README "Layout"); a name in two would drift.
         Each model's config is its own namespace (face_cfg.SCORE_THRESHOLD vs book_cfg....), so
         model configs may share names with each other, but not with the shared configs."""
-        shared = ["movement", "ai", "state", "light", "io"]
+        shared = ["movement", "ai", "state", "light", "io", "ui"]
         models = ["ai/face", "ai/hands", "ai/book", "ai/motion_gate"]
         self.assertFalse((APP / "lumen/config.py").exists(), "use the folder configs, not one global config")
 

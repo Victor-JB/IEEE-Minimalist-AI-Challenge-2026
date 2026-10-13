@@ -4,10 +4,8 @@
 # arm/scripts/deploy.sh (run that once, and again only when arm/sketch changes).
 #   bash apps/lumen/scripts/deploy.sh            # USB if plugged in, else Tailscale (luxo3)
 #   LUMEN_NO_START=1 bash apps/lumen/scripts/deploy.sh   # install but don't (re)start
-#   LUMEN_BOOT=lumen bash apps/lumen/scripts/deploy.sh   # boot into Lumen + HUD (:8080) instead of
-#                                                        # the desk page (:8081, the default on luxoIII)
-# Lumen and the desk page both need the arm and camera (lumen-desk.service Conflicts= lumen),
-# so exactly one is enabled at boot.
+# Boots Lumen (lumen.service) with the one web page on :8080: HUD + desk controls + Auto/Manual
+# (it starts in Manual: lumen/ui/config.py START_MODE). Removes the old separate desk service.
 set -euo pipefail
 REPO_LOCAL="$(cd "$(dirname "$0")/../../.." && pwd)"
 ADB="$(command -v adb || true)"
@@ -22,8 +20,7 @@ else
 fi
 SSH=(ssh -p "$PORT" -o BatchMode=yes -o ConnectTimeout=5 "$HOST")
 REPO=/home/arduino/IEEE-Minimalist-AI-Challenge-2026
-BOOT="${LUMEN_BOOT:-desk}"
-[[ "$BOOT" == desk || "$BOOT" == lumen ]] || { echo "LUMEN_BOOT must be desk or lumen" >&2; exit 1; }
+
 
 "${SSH[@]}" "test -d $REPO/.git || git clone -q https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026 $REPO"
 # Working tree -> board clone (uncommitted changes deploy too): the app + the shared arm module.
@@ -35,15 +32,10 @@ BOOT="${LUMEN_BOOT:-desk}"
 
 "${SSH[@]}" "set -e; cd $REPO/apps/lumen
   python3 -m venv .venv && .venv/bin/pip install -q -r requirements.txt
-  mkdir -p ~/.config/systemd/user logs && cp lumen.service lumen-desk.service ~/.config/systemd/user/
-  systemctl --user daemon-reload
-  if [ '${BOOT}' = lumen ]; then ON=lumen OFF=lumen-desk; else ON=lumen-desk OFF=lumen; fi
-  systemctl --user disable \$OFF >/dev/null 2>&1 || true
-  systemctl --user enable \$ON >/dev/null
-  if [ -z '${LUMEN_NO_START:-}' ]; then systemctl --user restart \$ON; fi
-  sleep 2; systemctl --user --no-pager status \$ON | head -5 || true"
-if [[ "$BOOT" == lumen ]]; then
-  echo "Boot: Lumen. HUD: http://${STEPPER_HOST:-luxo3}:8080/   logs: ssh $HOST journalctl --user -u lumen -f"
-else
-  echo "Boot: desk page http://${STEPPER_HOST:-luxo3}:8081/ (Lumen installed, off: LUMEN_BOOT=lumen to switch)"
-fi
+  mkdir -p ~/.config/systemd/user logs && cp lumen.service ~/.config/systemd/user/
+  systemctl --user disable --now lumen-desk >/dev/null 2>&1 || true     # the old separate desk page
+  rm -f ~/.config/systemd/user/lumen-desk.service
+  systemctl --user daemon-reload && systemctl --user enable lumen >/dev/null
+  if [ -z '${LUMEN_NO_START:-}' ]; then systemctl --user restart lumen; fi
+  sleep 2; systemctl --user --no-pager status lumen | head -5 || true"
+echo "Web page (HUD + controls): http://${STEPPER_HOST:-luxo3}:8080/   logs: ssh $HOST journalctl --user -u lumen -f"

@@ -261,7 +261,7 @@ class ServerTests(unittest.TestCase):
             return e.code, json.loads(e.read())
 
     def test_page_state_and_commands(self):
-        self.assertIn(b"Lumen Desk", self.get("/"))
+        self.assertIn(b"<title>Lumen</title>", self.get("/"))
         self.assertEqual(self.post("/cmd", {"cmd": "connect"})[0], 200)
         import time
         for _ in range(50):
