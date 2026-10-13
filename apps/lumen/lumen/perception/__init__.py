@@ -55,6 +55,7 @@ class Perception:
                 out.append(E.NO_MOTION)
         if "face" in ran and rates.get("gate") and now - self.last_motion_t > 1.0:
             ran = [m for m in ran if m != "face"]               # gated: nothing moved for 1 s, skip the face model
+            self.sched.cancel("face")                           # so the logged count is real inferences
 
         if "face" in ran and self.face:
             self.faces = self.face.detect(frame, now)
