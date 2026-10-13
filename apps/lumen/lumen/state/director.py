@@ -63,10 +63,10 @@ class Director:
         if state == "BOOT":
             self.w.connect()                # new arm session if a fault closed the last one
             self.w.set_base(move_cfg.HOME)
-            self.w.goto(move_cfg.HOME, 3.0, tok)
+            self.w.goto(move_cfg.HOME, move_cfg.BOOT_HOME_S, tok)
         elif state == "SEARCH":
             self.view, self.pause_frames = None, 0
-            self.w.sweep(self._sweep_poses(), dwell=0.6, token=tok)
+            self.w.sweep(self._sweep_poses(), dwell=move_cfg.SWEEP_DWELL_S, token=tok)
         elif state == "AIM":
             self.aim_pose, self.aim_target = self._plan_aim()
             dur = G.move_time(self._current(), self.aim_pose, 1.0)
@@ -76,7 +76,7 @@ class Director:
             self.busy = False
         elif state == "ADJUST":
             sign = 1 if m.ctx.get("adjust") == E.CLOSER else -1
-            self.light.step(0.15 * sign)
+            self.light.step(light_cfg.LIGHT_ADJUST_STEP * sign)
             self.w.path(self._adjust_path(sign * move_cfg.ADJUST_STEP_M), tok)
         elif state == "CHECKIN":
             self._enter_checkin(tok)

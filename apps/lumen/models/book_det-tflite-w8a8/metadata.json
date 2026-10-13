@@ -1,0 +1,75 @@
+{
+    "model_id": "yolox",
+    "model_name": "Yolo-X",
+    "runtime": "tflite",
+    "precision": "w8a8",
+    "tool_versions": {
+        "qairt": "2.50.0.260828221209"
+    },
+    "model_files": {
+        "yolox.tflite": {
+            "inputs": {
+                "image": {
+                    "shape": [
+                        1,
+                        640,
+                        640,
+                        3
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 0.003921568859368563,
+                        "zero_point": 0
+                    },
+                    "io_type": "image",
+                    "image_metadata": {},
+                    "value_range": [
+                        0.0,
+                        1.0
+                    ]
+                }
+            },
+            "outputs": {
+                "boxes": {
+                    "shape": [
+                        1,
+                        8400,
+                        4
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 4.416494846343994,
+                        "zero_point": 51
+                    }
+                },
+                "scores": {
+                    "shape": [
+                        1,
+                        8400
+                    ],
+                    "dtype": "uint8",
+                    "quantization_parameters": {
+                        "scale": 0.0038126425351947546,
+                        "zero_point": 0
+                    }
+                },
+                "class_idx": {
+                    "shape": [
+                        1,
+                        8400
+                    ],
+                    "dtype": "uint8"
+                }
+            }
+        }
+    },
+    "supplementary_files": {
+        "labels.txt": "Mapping of model prediction indices -> string labels."
+    },
+    "use_case": "Object Detection",
+    "lumen": {
+        "source": "Qualcomm AI Hub Yolo-X v0.64.0 (YOLOX-S, COCO 80 classes), w8a8 TFLite, https://huggingface.co/qualcomm/Yolo-X, asset https://qaihub-public-assets.s3.us-west-2.amazonaws.com/qai-hub-models/models/yolox/releases/v0.64.0/yolox-tflite-w8a8.zip",
+        "license": "Apache-2.0 (Qualcomm AI Hub model card; original Megvii YOLOX, https://github.com/Megvii-BaseDetection/YOLOX/blob/main/LICENSE)",
+        "note": "Fed BGR although Qualcomm documents RGB: BGR scored better on COCO val2017 (books recall 0.445 vs 0.384 at score 0.3; persons 0.957 vs 0.904). The network is the original BGR-trained YOLOX."
+    }
+}

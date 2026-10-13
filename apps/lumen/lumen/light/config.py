@@ -4,6 +4,7 @@ import os as _os
 # --- Lamp light (light/light.py) -------------------------------------------------
 # Levels are perceptual (0-1, what the HUD shows); the backend gets duty = level ** LIGHT_GAMMA.
 LIGHT_RAMP_S = 0.5                       # default ramp (ILLUMINATE on, GOODBYE off, FAULT dim)
+LIGHT_ADJUST_STEP = 0.15                 # brightness change per CLOSER / FURTHER
 LIGHT_STEP_RAMP_S = 0.3                  # ADJUST brightness steps
 LIGHT_GAMMA = 2.2
 LIGHT_CHECKIN_SCALE = 0.7                # LightCoupling: dim to 70 % while glancing at the user

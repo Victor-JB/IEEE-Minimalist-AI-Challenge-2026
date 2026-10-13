@@ -26,21 +26,31 @@ class Layout(unittest.TestCase):
             self.assertIs(getattr(move_cfg, name), getattr(arm_config, name))
 
     def test_one_config_per_folder_and_no_value_in_two(self):
-        """Tunables live in their folder's config.py (README "Layout"); a name in two would drift."""
-        configs = ["movement", "ai", "ai/face", "ai/hands", "ai/book", "ai/motion_gate", "state", "light", "io"]
+        """Tunables live in their folder's config.py (README "Layout"); a name in two would drift.
+        Each model's config is its own namespace (face_cfg.SCORE_THRESHOLD vs book_cfg....), so
+        model configs may share names with each other, but not with the shared configs."""
+        shared = ["movement", "ai", "state", "light", "io"]
+        models = ["ai/face", "ai/hands", "ai/book", "ai/motion_gate"]
         self.assertFalse((APP / "lumen/config.py").exists(), "use the folder configs, not one global config")
-        seen = {}
-        for folder in configs:
+
+        def names(folder):
             f = APP / "lumen" / folder / "config.py"
             self.assertTrue(f.exists(), f)
             for m in re.finditer(r"^([A-Z][A-Z0-9_]*(?:\s*,\s*[A-Z][A-Z0-9_]*)*)\s*=", f.read_text(), re.M):
-                for name in re.split(r"\s*,\s*", m.group(1)):
-                    self.assertNotIn(name, seen, f"{name} is in both {seen.get(name)} and {folder}/config.py")
-                    seen[name] = f"{folder}/config.py"
+                yield from re.split(r"\s*,\s*", m.group(1))
+        seen = {}
+        for folder in shared:
+            for name in names(folder):
+                self.assertNotIn(name, seen, f"{name} is in both {seen.get(name)} and {folder}/config.py")
+                seen[name] = f"{folder}/config.py"
+        for folder in models:
+            for name in names(folder):
+                self.assertNotIn(name, seen, f"{name} is in both {seen.get(name)} and {folder}/config.py")
 
     def test_models_present(self):
         self.assertTrue((APP / "models/face_det_lite-tflite-w8a8/face_det_lite.tflite").exists())
         self.assertTrue((APP / "models/mediapipe_hand_gesture-tflite-w8a8/hand_landmark_detector.tflite").exists())
+        self.assertTrue((APP / "models/book_det-tflite-w8a8/yolox.tflite").exists())
 
 
 try:
