@@ -32,6 +32,7 @@ class FakeServo:
                                      ppd_reverse=142200, direction=0, count=0) for _ in range(3)])
         self.left = 0; self.goal = None
         self.roll_supported = True
+        self.light_supported = True
 
     def request(self, command):
         self.commands.append(command)
@@ -47,6 +48,12 @@ class FakeServo:
                 return {'kind': 'roll', 'supported': False}
             return {'kind': 'roll', 'supported': True, 'v': 3, 'enabled': 1, 'target': 12500,
                     'current': 12000, 'pulse_us': 1589, 'fault': 0}
+        if name in ('LIGHT', 'LIGHTSTAT'):
+            if not self.light_supported:
+                return {'kind': 'light', 'supported': False}
+            target = int(words[1]) if name == 'LIGHT' else 0
+            return {'kind': 'light', 'supported': True, 'v': 4, 'enabled': 1, 'target': target,
+                    'current': 0, 'remaining': 0, 'fault': 0, 'refused': 0}
         if name == 'MOVE':
             self.goal = list(map(int, words[2:5]))
             self.left = self.polls
@@ -164,6 +171,25 @@ class ArmMotionTests(unittest.TestCase):
         with self.session() as arm:
             self.assertFalse(arm.roll_supported)
         self.assertEqual(self.fake.sent('ROLLSTAT'), [])
+
+    def test_light_clamps_formats_and_keeps_the_arm_sample(self):
+        with self.session() as arm:
+            before = arm.sample
+            arm.light(463.6, fade_ms=80)
+            arm.light(2000)
+            arm.light(-3, fade_ms=1e9)
+            self.assertIs(arm.sample, before)       # light replies don't replace the arm status
+        self.assertEqual(self.fake.sent('LIGHTSTAT'), ['LIGHTSTAT'])   # asked once
+        self.assertEqual(self.fake.sent('LIGHT'), ['LIGHT 464 80', 'LIGHT 1000 0', 'LIGHT 0 60000'])
+
+    def test_light_is_a_no_op_on_firmware_without_the_lamp(self):
+        self.fake.light_supported = False
+        with self.session() as arm:
+            self.assertIsNone(arm.light(500))
+            self.assertIsNone(arm.light(600))
+            self.assertFalse(arm.light_supported)
+        self.assertEqual(self.fake.sent('LIGHT'), [])
+        self.assertEqual(len(self.fake.sent('LIGHTSTAT')), 1)
 
     def test_fault_raises(self):
         self.fake.finish = (18, 4)
