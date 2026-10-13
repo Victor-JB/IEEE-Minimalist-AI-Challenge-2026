@@ -14,6 +14,7 @@ class Expressive:
         self.energy, self._t = C.ENERGY_START, now
         self.recent = []
         self.drift = [0.0, 0.0, 0.0]
+        self._drift_mid, self._drift_goal, self._drift_left = [0.0] * 3, [0.0] * 3, [0.0] * 3
 
     # -- mood ------------------------------------------------------------------
     def bump(self, now, amount=C.ENERGY_BUMP):
@@ -47,11 +48,15 @@ class Expressive:
 
     # -- hold drift ------------------------------------------------------------
     def drift_step(self, dt):
-        """Ornstein-Uhlenbeck offset per joint (deg): add to any hold so it is never frozen."""
-        theta = 2 * math.pi * C.HOLD_DRIFT_HZ
-        sigma = C.HOLD_DRIFT_DEG * math.sqrt(2 * theta)
+        """Offset per joint (deg) to add to any hold so it is never frozen: each joint glides to a
+        new random target every HOLD_DRIFT_EVERY_S, through two first-order stages (smooth, no
+        overshoot), scaled by HOLD_DRIFT_GAIN (all zero for now; see config)."""
+        k = 1 - math.exp(-dt / C.HOLD_DRIFT_SMOOTH_S)
         for j in range(3):
-            self.drift[j] += -theta * self.drift[j] * dt + sigma * math.sqrt(dt) * self.rng.gauss(0, 1)
-            lim = 2 * C.HOLD_DRIFT_DEG
-            self.drift[j] = max(-lim, min(lim, self.drift[j]))
-        return list(self.drift)
+            self._drift_left[j] -= dt
+            if self._drift_left[j] <= 0:
+                self._drift_left[j] = self.rng.uniform(*C.HOLD_DRIFT_EVERY_S)
+                self._drift_goal[j] = self.rng.gauss(0, C.HOLD_DRIFT_DEG)
+            self._drift_mid[j] += k * (self._drift_goal[j] - self._drift_mid[j])
+            self.drift[j] += k * (self._drift_mid[j] - self.drift[j])
+        return [g * d for g, d in zip(C.HOLD_DRIFT_GAIN, self.drift)]
