@@ -32,11 +32,17 @@ def encoder(raw, joint, calibration):
 def main():
     from behavior import Demo
     from tracking import SubjectTracker
+    from inference import Inference
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--repo', type=Path, required=True)
     p.add_argument('--package', default='luxoiii', choices=['luxoiii','lumen'])
     p.add_argument('--port', type=int, default=8083)
     p.add_argument('--hybrid',action='store_true',help='Allow UI activation of subject tracking and face/downward-beam-gated light')
+    scheduling=p.add_mutually_exclusive_group()
+    scheduling.add_argument('--parallel-inference',dest='parallel_inference',action='store_true',help='Experimental concurrent models; measured with two threads each')
+    scheduling.add_argument('--serial-inference',dest='parallel_inference',action='store_false')
+    p.set_defaults(parallel_inference=False)
+    p.add_argument('--inference-threads',type=int,choices=[1,2,3,4],default=4)
     args=p.parse_args()
     sys.path.insert(0,str(args.repo/'apps'/args.package))
     FaceDetector=importlib.import_module(args.package+'.perception.face_detector').FaceDetector
@@ -56,8 +62,12 @@ def main():
         r=bridge.call('arm_roll_status',timeout=.25)
         if len(r)!=6 or r[0]!=3:raise ValueError('Unsupported head pivot status')
         return dict(joints=joints,pivot=dict(enabled=bool(r[1]),target=r[2]/1000,current=r[3]/1000,fault=r[5]))
-    detector=FaceDetector(num_threads=2)
-    hands=hands_module.HandLandmarker(num_threads=2,max_hands=2,landmark_threshold=.65)
+    # The measured default uses four threads per model, sequentially. OpenCV
+    # preprocessing stays single-threaded to avoid another competing worker pool.
+    cv2.setNumThreads(1)
+    detector=FaceDetector(num_threads=args.inference_threads)
+    hands=hands_module.HandLandmarker(num_threads=args.inference_threads,max_hands=2,landmark_threshold=.65)
+    inference=Inference(detector,hands,parallel=args.parallel_inference)
     tracker=SubjectTracker();demo=Demo(simulated_aim);gate=MotionGate(4.0)
     output=Outputs(Bridge(),read_pose=physical_pose) if args.hybrid else None
     output_lock=threading.Lock();demo_lock=threading.Lock()
@@ -118,11 +128,12 @@ def main():
                 run_faces=run_models or args.hybrid
                 # Empty results from a skipped model are not evidence of no faces.
                 # Automatic physical lighting always has a fresh face check.
-                if run_faces:
-                    faces=detector.detect(frame);metrics['face_calls']+=1
+                palms_before=hands.palm_calls
+                faces=inference.run(frame,run_faces,run_models)
+                if run_faces:metrics['face_calls']+=1
                 if run_models:
-                    hands.detect(frame);metrics['hand_calls']+=int(hands.available)
-                    if not hands.last or any(not h.tracked for h in hands.last):metrics['palm_calls']+=int(hands.available)
+                    metrics['hand_calls']+=int(hands.available)
+                    metrics['palm_calls']+=hands.palm_calls-palms_before
                     for h in hands.last:
                         hand_data.append(dict(points=h.points,score=h.score,gesture=gestures.classify(h.points),tracked=h.tracked,right=h.right))
                     last_infer=started
@@ -147,7 +158,7 @@ def main():
                     frame_jpeg=base64.b64encode(jpeg).decode(),joints=joints,pivot=pivot,
                     hands=hand_data,hands_available=hands.available,max_hands=2,demo=demo_state,
                     tracking=tracker.update(time.monotonic(),faces,hand_data,control_pivot,frame.shape[1],observed_pivot=pivot),
-                    pipeline=dict(**metrics,mode='hand ROI tracking' if hand_data and hand_data[0]['tracked'] else 'face + palm detection' if run_models else 'face guard · hands sleeping' if run_faces else 'motion gate · models sleeping',model_ms=model_ms,uptime_s=round(started-started_at,1)),
+                    pipeline=dict(**metrics,**inference.timings,parallel=args.parallel_inference,threads_per_model=args.inference_threads,mode='hand ROI tracking' if hand_data and hand_data[0]['tracked'] else 'face + palm detection' if run_models else 'face guard · hands sleeping' if run_faces else 'motion gate · models sleeping',model_ms=model_ms,uptime_s=round(started-started_at,1)),
                     inference_ms=round((time.monotonic()-started)*1000,1),
                     telemetry_error=telemetry_error,source='UNO Q · face + hand w8a8',error=None)
                 with lock: current.update(data=data,time=stamp)

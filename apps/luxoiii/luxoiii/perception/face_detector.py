@@ -66,6 +66,10 @@ class FaceDetector:
         self.interpreter.allocate_tensors()
         self.input_index = self.interpreter.get_input_details()[0]["index"]
         self.outputs = {d["name"]: d for d in self.interpreter.get_output_details()}
+        scale, zero = self.outputs['heatmap']['quantization']
+        logits = (np.arange(256, dtype=np.float32) - zero) * scale
+        self._score_lut = 1 / (1 + np.exp(-logits))
+        self._max_kernel = np.ones((3, 3), np.uint8)
 
     @timed("detector.total")
     def detect(self, frame):
@@ -86,6 +90,8 @@ class FaceDetector:
         self.scale = min(INPUT_W / w, INPUT_H / h)
         if self.scale != 1.0:
             gray = cv2.resize(gray, (round(w * self.scale), round(h * self.scale)))
+        if gray.shape == (INPUT_H, INPUT_W):
+            return gray[np.newaxis, :, :, np.newaxis]
         canvas = np.zeros((INPUT_H, INPUT_W), np.uint8)
         canvas[: gray.shape[0], : gray.shape[1]] = gray
 
@@ -100,25 +106,30 @@ class FaceDetector:
 
     @timed("detector.postprocess")
     def _postprocess(self):
-        heatmap = 1 / (1 + np.exp(-self._output("heatmap")[..., 0]))  # logits -> probability
-        bbox = self._output("bbox")
+        # The sigmoid is monotonic: find peaks in uint8 before dequantizing.
+        # Only 256 distinct logits exist, so their exact float32 scores are cached.
+        heatmap = self.interpreter.get_tensor(self.outputs['heatmap']['index'])[0, ..., 0]
+        scores_map = self._score_lut[heatmap]
 
         # A face center is a cell that beats the threshold and is the max of its 3x3 neighbourhood.
-        local_max = heatmap == cv2.dilate(heatmap, np.ones((3, 3), np.uint8))
-        ys, xs = np.nonzero(local_max & (heatmap > self.score_threshold))
+        local_max = heatmap == cv2.dilate(heatmap, self._max_kernel)
+        ys, xs = np.nonzero(local_max & (scores_map > self.score_threshold))
         if len(xs) == 0:
             return []
+        d = self.outputs['bbox']
+        q = self.interpreter.get_tensor(d['index'])[0, ys, xs]
+        scale, zero = d['quantization']
+        selected = (q.astype(np.float32) - zero) * scale
 
         # Cells -> model pixels (x STRIDE) -> frame pixels (/ scale). Padding is
         # only on the bottom/right, so there is no offset to undo.
         k = STRIDE / self.scale
         boxes, scores = [], []
-        for cx, cy in zip(xs, ys):
-            left, top, right, bottom = bbox[cy, cx]
+        for cx, cy, (left, top, right, bottom) in zip(xs, ys, selected):
             x1, y1 = (cx - left) * k, (cy - top) * k
             x2, y2 = (cx + right) * k, (cy + bottom) * k
             boxes.append([int(x1), int(y1), int(x2 - x1), int(y2 - y1)])
-            scores.append(float(heatmap[cy, cx]))
+            scores.append(float(scores_map[cy, cx]))
 
         keep = cv2.dnn.NMSBoxes(boxes, scores, self.score_threshold, self.nms_threshold)
         return [Detection(*boxes[i], scores[i]) for i in np.array(keep).flatten()]

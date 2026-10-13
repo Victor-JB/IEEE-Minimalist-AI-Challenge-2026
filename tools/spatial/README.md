@@ -194,3 +194,21 @@ fresh camera and encoder data arrive. A manual tracking-off selection is saved i
 Reloading never clears a latched Stop; **Resume gestures** resumes the social loops and restores
 tracking when the saved preference is on. Stale data or heartbeat expiry still disables hardware;
 a failed activation is not retried repeatedly. The camera image shows the center hold zone.
+
+## Measured inference settings
+
+The default runs each w8a8 model sequentially with four LiteRT CPU threads and
+one OpenCV preprocessing thread. The thread count was measured on the UNO Q;
+face and hand thresholds, input resolution and model weights are unchanged.
+Use `--inference-threads 2 --parallel-inference` only to reproduce the concurrent
+ablation, or `--inference-threads 2 --serial-inference` for the prior schedule.
+
+Face heatmap peaks are selected directly in uint8, with a 256-entry sigmoid
+lookup and dequantization of candidate boxes only. Hand crops expire after a
+camera/inference gap. The conservative second-hand search remains enabled on
+every frame while only one hand is tracked. Experimental palm skipping is not
+the live default because its temporal accuracy audit lost several matches.
+
+[Evaluation tools and dataset methodology](../efficiency/README.md) and
+[measured scorecard](../../reports/efficiency/README.md) document the before/after
+results, identical still-image predictions, and remaining accuracy limitations.

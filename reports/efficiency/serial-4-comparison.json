@@ -1,0 +1,87 @@
+{
+  "model_weights_unchanged": true,
+  "datasets_identical": true,
+  "latency": {
+    "faces": {
+      "before_mean_ms": 131.9796094625417,
+      "after_mean_ms": 79.29501894579214,
+      "latency_reduction_percent": 39.918734970724735,
+      "speedup": 1.664412358016661,
+      "cpu_reduction_percent": -0.9033294576972439,
+      "paired_bootstrap_95pct_latency_reduction": [
+        39.62811598736245,
+        40.20781053572935
+      ]
+    },
+    "hands": {
+      "before_mean_ms": 315.91746778569706,
+      "after_mean_ms": 206.5617394475859,
+      "latency_reduction_percent": 34.615283891896965,
+      "speedup": 1.5294094086860635,
+      "cpu_reduction_percent": -3.04497259688441,
+      "paired_bootstrap_95pct_latency_reduction": [
+        34.185546350362124,
+        35.02085634257959
+      ]
+    },
+    "temporal": {
+      "before_mean_ms": 277.7413002847248,
+      "after_mean_ms": 146.08938620138665,
+      "latency_reduction_percent": 47.40091370940368,
+      "speedup": 1.9011737095113383,
+      "cpu_reduction_percent": 14.29202536048102,
+      "paired_bootstrap_95pct_latency_reduction": [
+        43.322908332392885,
+        50.92945642565512
+      ]
+    }
+  },
+  "faces_identical_predictions": 240,
+  "faces_samples": 240,
+  "hands_identical_predictions": 210,
+  "hands_samples": 210,
+  "baseline_accuracy": {
+    "face_recall_32px": 0.9173553719008265,
+    "matched_gesture_accuracy": 0.7142857142857143,
+    "end_to_end_gesture_recall": 0.4844961240310077,
+    "faces": {
+      "tp": 744,
+      "fp": 47,
+      "fn": 2476,
+      "precision": 0.9405815423514539,
+      "recall": 0.231055900621118
+    },
+    "hands": {
+      "tp": 175,
+      "fp": 73,
+      "fn": 83,
+      "precision": 0.7056451612903226,
+      "recall": 0.6782945736434108
+    }
+  },
+  "baseline_palm_calls": 93,
+  "baseline_peak_rss_kib": 133232,
+  "optimized_accuracy": {
+    "face_recall_32px": 0.9173553719008265,
+    "matched_gesture_accuracy": 0.7142857142857143,
+    "end_to_end_gesture_recall": 0.4844961240310077,
+    "faces": {
+      "tp": 744,
+      "fp": 47,
+      "fn": 2476,
+      "precision": 0.9405815423514539,
+      "recall": 0.231055900621118
+    },
+    "hands": {
+      "tp": 175,
+      "fp": 73,
+      "fn": 83,
+      "precision": 0.7056451612903226,
+      "recall": 0.6782945736434108
+    }
+  },
+  "optimized_palm_calls": 50,
+  "optimized_peak_rss_kib": 135264,
+  "temporal_label_agreement": 0.7013888888888888,
+  "temporal_hand_count_agreement": 0.7777777777777778
+}

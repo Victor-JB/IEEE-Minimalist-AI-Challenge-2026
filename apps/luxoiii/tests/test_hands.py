@@ -246,7 +246,7 @@ class Pipeline(unittest.TestCase):
         self.assertTrue(h.last[0].tracked)
 
     def test_two_hand_mode_discovers_a_second_hand_then_tracks_both(self):
-        h = self.make(max_hands=2)
+        h = self.make(max_hands=2, discovery_interval=3)
         self.assertEqual(len(h.detect(self.frame)), 1)
         coords, scores = np.zeros((2944, 18), np.float32), np.zeros(2944, np.float32)
         coords[7] = palm_detection(40, 40, 80, 80)
@@ -254,10 +254,44 @@ class Pipeline(unittest.TestCase):
         scores[7], scores[17] = 0.9, 0.85
         self.palm.set("box_coords", coords)
         self.palm.set("box_scores", scores)
+        # A single hand gets two cheap ROI frames, then a full second-hand scan.
+        self.assertEqual(len(h.detect(self.frame)), 1)
+        self.assertEqual(len(h.detect(self.frame)), 1)
         self.assertEqual(len(h.detect(self.frame)), 2)
         self.assertEqual(len(h.detect(self.frame)), 2)
         self.assertTrue(all(hand.tracked for hand in h.last))
-        self.assertEqual((self.palm.invokes, self.lm.invokes), (2, 5))
+        self.assertEqual((self.palm.invokes, self.lm.invokes), (2, 7))
+
+    def test_validated_default_searches_for_second_hand_every_frame(self):
+        h = self.make(max_hands=2)
+        for i in range(4):h.detect(self.frame, now=i*.1)
+        self.assertEqual(h.palm_calls, 4)
+
+    def test_single_hand_in_two_hand_mode_reduces_palm_calls(self):
+        h = self.make(max_hands=2, discovery_interval=3)
+        for i in range(9):
+            self.assertEqual(len(h.detect(self.frame, now=i*.1)), 1)
+        self.assertEqual((h.palm_calls, h.landmark_calls), (3, 9))
+
+    def test_no_hands_are_searched_every_frame(self):
+        h = self.make(max_hands=2)
+        self.palm.set('box_scores', np.zeros(2944))
+        for i in range(4):h.detect(self.frame, now=i*.1)
+        self.assertEqual(h.palm_calls, 4)
+
+    def test_old_roi_is_reacquired_after_camera_or_motion_gate_gap(self):
+        h = self.make(max_hands=2)
+        h.detect(self.frame, now=1)
+        h.detect(self.frame, now=2)
+        self.assertEqual(h.palm_calls, 2)
+        self.assertFalse(h.last[0].tracked)
+
+    def test_reset_forces_detection_on_unrelated_dataset_images(self):
+        h = self.make(max_hands=2)
+        h.detect(self.frame, now=1)
+        h.reset()
+        h.detect(self.frame, now=1.1)
+        self.assertEqual(h.palm_calls, 2)
 
     def test_lost_track_falls_back_to_palm_on_the_same_frame(self):
         h = self.make()

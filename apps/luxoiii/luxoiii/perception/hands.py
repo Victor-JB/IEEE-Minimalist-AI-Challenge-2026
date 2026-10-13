@@ -23,6 +23,7 @@ when the hand is new or the presence score drops.
 """
 import math
 import os
+import time
 from dataclasses import dataclass
 
 import numpy as np
@@ -230,10 +231,17 @@ class HandLandmarker:
         model_dir=MODEL_DIR,
         num_threads=os.cpu_count(),
         interpreters=None,          # (palm, landmark) to inject, e.g. fakes in tests
+        discovery_interval=1,       # >1 is experimental: can reduce temporal accuracy
+        track_timeout=0.5,          # reacquire after a gap rather than reuse an old crop
     ):
         self.tracking, self.max_hands, self.palm_decoded = tracking, max_hands, palm_decoded
         self.palm_threshold, self.landmark_threshold = palm_threshold, landmark_threshold
         self.last, self._tracks, self.anchors = [], [], palm_anchors()
+        if discovery_interval < 1 or track_timeout <= 0:
+            raise ValueError('Positive discovery interval and track timeout required')
+        self.discovery_interval, self.track_timeout = discovery_interval, track_timeout
+        self._since_palm, self._last_at = 0, None
+        self.palm_calls = self.landmark_calls = 0
         try:
             self.palm, self.lm = interpreters or (
                 _load(model_dir / "palm_detector.tflite", num_threads),
@@ -250,9 +258,10 @@ class HandLandmarker:
     def reset(self):
         """Forget the tracked hands; the next call runs the palm detector."""
         self._tracks = []
+        self._since_palm, self._last_at = 0, None
 
     @timed("hands.total")
-    def detect(self, frame, roi=None):
+    def detect(self, frame, roi=None, *, now=None):
         """List of hands; each is a list of 21 (x, y, z) in frame pixels. Details in self.last.
 
         roi (x, y, w, h) limits where the palm detector looks. A tracked hand is followed from
@@ -260,12 +269,22 @@ class HandLandmarker:
         """
         if not self.available:
             return []
-        tracked = self.tracking and len(self._tracks) >= self.max_hands
+        now = time.monotonic() if now is None else now
+        if self._last_at is not None and now - self._last_at > self.track_timeout:
+            self.reset()
+        self._last_at = now
+        # A single visible hand can use its ROI even in two-hand mode. Bound the
+        # second-hand discovery delay; an empty/lost track still reacquires now.
+        missing_slot = len(self._tracks) < self.max_hands
+        discovery_due = missing_slot and self._since_palm >= self.discovery_interval - 1
+        tracked = self.tracking and bool(self._tracks) and not discovery_due
         rects = self._tracks if tracked else self._palms(frame, roi)
+        self._since_palm = self._since_palm + 1 if tracked else 0
         hands = [h for h in (self._landmarks(frame, r, tracked) for r in rects) if h]
         if tracked and len(hands) < len(rects):     # lost one: look for palms again on this frame
             count("hands.track_lost")
             hands = [h for h in (self._landmarks(frame, r) for r in self._palms(frame, roi)) if h]
+            self._since_palm = 0
         self.last = hands
         self._tracks = [rect_from_landmarks(h.points) for h in hands] if self.tracking else []
         return [h.points for h in hands]
@@ -281,6 +300,7 @@ class HandLandmarker:
         canvas = np.zeros((PALM_SIZE, PALM_SIZE, 3), np.uint8)       # letterbox, pad bottom/right
         canvas[:img.shape[0], :img.shape[1]] = _rgb(img)
         self.palm.set_tensor(self.palm_in["index"], canvas[np.newaxis])
+        self.palm_calls += 1
         self.palm.invoke()
         return [rect_from_palm(d) for d in self.decode_palms(scale, (x, y))]
 
@@ -301,6 +321,7 @@ class HandLandmarker:
         A = rect.affine()
         crop = _rgb(self._warp(frame, A, LM_SIZE))
         self.lm.set_tensor(self.lm_in["index"], crop[np.newaxis])
+        self.landmark_calls += 1
         self.lm.invoke()
         score = float(_deq(self.lm, self.lm_out["scores"]).ravel()[0])
         if score < self.landmark_threshold:

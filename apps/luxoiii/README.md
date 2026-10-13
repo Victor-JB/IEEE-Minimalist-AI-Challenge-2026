@@ -79,3 +79,5 @@ node apps/luxoiii/tests/test_desk_light.cjs
 
 `luxoiii/paths.py` centralizes repository paths. Arm geometry and calibration come from `arm/`.
 Tests use simulated hardware; real inference checks require the board and its installed models.
+
+Measured model optimization and public dataset validation: [efficiency scorecard](../../reports/efficiency/README.md).

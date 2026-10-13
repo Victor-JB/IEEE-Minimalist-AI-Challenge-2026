@@ -1,0 +1,47 @@
+{
+  "opencv_threads_for_controlled_runs": 1,
+  "experiments": {
+    "baseline-results.json": {
+      "source_commit": "7119cf6",
+      "lite_threads": 2,
+      "parallel": false,
+      "discovery_interval": 1,
+      "track_timeout": null
+    },
+    "parallel-2-results.json": {
+      "lite_threads": 2,
+      "parallel": true,
+      "discovery_interval": 3,
+      "track_timeout": 0.5,
+      "selected": false
+    },
+    "serial-4-results.json": {
+      "lite_threads": 4,
+      "parallel": false,
+      "discovery_interval": 3,
+      "track_timeout": 0.5,
+      "selected": false
+    },
+    "final-results.json": {
+      "lite_threads": 4,
+      "parallel": false,
+      "discovery_interval": 1,
+      "track_timeout": 0.5,
+      "selected": true
+    },
+    "temporal-baseline.json": {
+      "source_commit": "7119cf6",
+      "lite_threads": 2,
+      "parallel": false,
+      "discovery_interval": 1,
+      "track_timeout": null
+    },
+    "temporal-roi-experiment.json": {
+      "lite_threads": 4,
+      "parallel": false,
+      "discovery_interval": 3,
+      "track_timeout": 0.5,
+      "selected": false
+    }
+  }
+}

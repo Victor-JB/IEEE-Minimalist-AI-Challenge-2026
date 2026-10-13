@@ -11,6 +11,7 @@ The Arduino UNO Q runs camera perception and behavior on Linux, with light and m
 - **Offline model:** `PYTHONPATH=apps/luxoiii python3 -m luxoiii --offline`.
 - **App and board commands:** [apps/luxoiii/README.md](apps/luxoiii/README.md).
 - **Hardware/API:** [arm/README.md](arm/README.md).
+- **Measured efficiency and accuracy:** [UNO Q scorecard](reports/efficiency/README.md).
 - **Naming and deployment migration:** [docs/NAMING.md](docs/NAMING.md).
 
 ## Layout

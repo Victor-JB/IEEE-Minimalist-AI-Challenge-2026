@@ -1,0 +1,239 @@
+{
+  "samples": [
+    {
+      "fresh": true,
+      "age_s": 0.27874125000380445,
+      "inference_ms": 173.7,
+      "pipeline": {
+        "face_calls": 445,
+        "hand_calls": 46,
+        "palm_calls": 46,
+        "gated_frames": 399,
+        "face_ms": 106.56,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face guard \u00b7 hands sleeping",
+        "model_ms": 106.8,
+        "uptime_s": 114.8
+      },
+      "error": null
+    },
+    {
+      "fresh": true,
+      "age_s": 0.6540766249818262,
+      "inference_ms": 181.9,
+      "pipeline": {
+        "face_calls": 446,
+        "hand_calls": 46,
+        "palm_calls": 46,
+        "gated_frames": 400,
+        "face_ms": 87.83,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face guard \u00b7 hands sleeping",
+        "model_ms": 88.0,
+        "uptime_s": 115.1
+      },
+      "error": null
+    },
+    {
+      "fresh": true,
+      "age_s": 0.5332079590007197,
+      "inference_ms": 171.2,
+      "pipeline": {
+        "face_calls": 448,
+        "hand_calls": 46,
+        "palm_calls": 46,
+        "gated_frames": 402,
+        "face_ms": 93.13,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face guard \u00b7 hands sleeping",
+        "model_ms": 93.3,
+        "uptime_s": 115.6
+      },
+      "error": null
+    },
+    {
+      "fresh": true,
+      "age_s": 0.5517489579942776,
+      "inference_ms": 343.3,
+      "pipeline": {
+        "face_calls": 449,
+        "hand_calls": 47,
+        "palm_calls": 47,
+        "gated_frames": 402,
+        "face_ms": 101.04,
+        "hands_ms": 160.89,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face + palm detection",
+        "model_ms": 262.2,
+        "uptime_s": 115.8
+      },
+      "error": null
+    },
+    {
+      "fresh": true,
+      "age_s": 0.28392116699251346,
+      "inference_ms": 168.6,
+      "pipeline": {
+        "face_calls": 451,
+        "hand_calls": 47,
+        "palm_calls": 47,
+        "gated_frames": 404,
+        "face_ms": 98.0,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face guard \u00b7 hands sleeping",
+        "model_ms": 98.2,
+        "uptime_s": 116.4
+      },
+      "error": null
+    },
+    {
+      "fresh": true,
+      "age_s": 0.40311091700277757,
+      "inference_ms": 152.7,
+      "pipeline": {
+        "face_calls": 453,
+        "hand_calls": 47,
+        "palm_calls": 47,
+        "gated_frames": 406,
+        "face_ms": 85.21,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face guard \u00b7 hands sleeping",
+        "model_ms": 85.4,
+        "uptime_s": 116.9
+      },
+      "error": null
+    },
+    {
+      "fresh": true,
+      "age_s": 0.4451881249988219,
+      "inference_ms": 160.6,
+      "pipeline": {
+        "face_calls": 454,
+        "hand_calls": 47,
+        "palm_calls": 47,
+        "gated_frames": 407,
+        "face_ms": 85.83,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face guard \u00b7 hands sleeping",
+        "model_ms": 86.0,
+        "uptime_s": 117.2
+      },
+      "error": null
+    },
+    {
+      "fresh": true,
+      "age_s": 0.24562600000353996,
+      "inference_ms": 158.0,
+      "pipeline": {
+        "face_calls": 456,
+        "hand_calls": 47,
+        "palm_calls": 47,
+        "gated_frames": 409,
+        "face_ms": 90.16,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face guard \u00b7 hands sleeping",
+        "model_ms": 90.3,
+        "uptime_s": 117.7
+      },
+      "error": null
+    },
+    {
+      "fresh": true,
+      "age_s": 0.32700183300767094,
+      "inference_ms": 176.5,
+      "pipeline": {
+        "face_calls": 457,
+        "hand_calls": 47,
+        "palm_calls": 47,
+        "gated_frames": 410,
+        "face_ms": 83.23,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face guard \u00b7 hands sleeping",
+        "model_ms": 83.4,
+        "uptime_s": 117.9
+      },
+      "error": null
+    },
+    {
+      "fresh": true,
+      "age_s": 0.41754279100860003,
+      "inference_ms": 149.9,
+      "pipeline": {
+        "face_calls": 458,
+        "hand_calls": 47,
+        "palm_calls": 47,
+        "gated_frames": 411,
+        "face_ms": 85.0,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face guard \u00b7 hands sleeping",
+        "model_ms": 85.2,
+        "uptime_s": 118.2
+      },
+      "error": null
+    },
+    {
+      "fresh": true,
+      "age_s": 0.3067437089921441,
+      "inference_ms": 183.1,
+      "pipeline": {
+        "face_calls": 460,
+        "hand_calls": 47,
+        "palm_calls": 47,
+        "gated_frames": 413,
+        "face_ms": 98.74,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face guard \u00b7 hands sleeping",
+        "model_ms": 98.9,
+        "uptime_s": 118.7
+      },
+      "error": null
+    },
+    {
+      "fresh": true,
+      "age_s": 0.38780108399805613,
+      "inference_ms": 310.0,
+      "pipeline": {
+        "face_calls": 461,
+        "hand_calls": 48,
+        "palm_calls": 48,
+        "gated_frames": 413,
+        "face_ms": 92.9,
+        "hands_ms": 144.93,
+        "parallel": false,
+        "threads_per_model": 4,
+        "mode": "face + palm detection",
+        "model_ms": 238.1,
+        "uptime_s": 118.9
+      },
+      "error": null
+    }
+  ],
+  "outputs": {
+    "enabled": true,
+    "connected": true,
+    "brightness": 0.0,
+    "reason": "Waiting for a subject \u00b7 Tilt the whole beam farther downward \u00b7 real lamp off",
+    "steppers": "disabled \u00b7 no motion commands",
+    "lamp_gate": {
+      "reason": "Tilt the whole beam farther downward",
+      "beam_top_deg": 92.29518227423983,
+      "axis_elevation_deg": 42.89647691924431,
+      "half_angle_deg": 49.39870535499553,
+      "lease_ms": 800,
+      "clear_frames": 60
+    }
+  },
+  "hands_available": true,
+  "demo_state": "IDLE"
+}
