@@ -88,7 +88,9 @@ arm is refused. Browser heartbeat expiry (3 s), stale camera/encoders and Stop d
 The digital arm uses the full-model branch’s absolute choreography with blended additive expressions. Gestures take priority over social loops:
 
 - After ten seconds without a face or hand: settle into the original sleep pose, breathe and occasionally stretch or look around.
-- First arrival: wake/stretch or a full-body greeting. Another person joining for at least 0.8 s elicits
+- First arrival: ease into the attentive pose over 1.4 s, then give one moderate 17° head nod
+  with a short pause and a slower return. The body stays composed during the nod.
+  Another person joining for at least 0.8 s elicits
   a look-around greeting. The digital arm shares attention across visible face positions every 3.5–5.5 s; proximity matching stabilizes detection ordering, without identity recognition.
 - After eight seconds without an accepted gesture: curious tilts, leaning, happy bounces mixed with
   dance/sway, then a pause for a response. Unanswered invitations grow farther apart. A hand gesture

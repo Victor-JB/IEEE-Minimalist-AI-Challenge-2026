@@ -5,7 +5,16 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const smooth=t=>{const s=clamp(t,0,1);return s*s*s*(10+s*(-15+6*s));};
 const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
 const zero=()=>[0,0,0,0,0];
-const labels={wake:'Oh, hello!',greet:'Hello back!',curious:'What are you thinking?',peek:'Can I help?',nod:'Got it',shake:'Try pointing a little lower',joy:'Happy to see you',look_around:'Hello, everyone',sleep:'Getting comfortable',stretch:'A little stretch',full_show:'Original full-model choreography'};
+const labels={polite_greet:'Hello · a polite nod',wake:'Oh, hello!',greet:'Hello back!',curious:'What are you thinking?',peek:'Can I help?',nod:'Got it',shake:'Try pointing a little lower',joy:'Happy to see you',look_around:'Hello, everyone',sleep:'Getting comfortable',stretch:'A little stretch',full_show:'Original full-model choreography'};
+
+function politeGreeting(look) {
+ const down=[...look];down[3]+=17;
+ // One deliberate head dip and return, with the body in its attentive pose.
+ return {start:[...look],duration:1.6,segments:[
+  {t:0,duration:.5,start:[...look],end:down,stagger:0},
+  {t:.65,duration:.65,start:down,end:[...look],stagger:0}
+ ]};
+}
 
 function trajectory(clip,t) {
  const q=[...clip.start];
@@ -34,9 +43,10 @@ class Emotions {
   this.attentionIndex=0;this.attentionUntil=0;this.attentionPoint=null;
  }
  play(ref,now) {
-  const clip=this.clips.clips?.[ref];if(!clip)return;
-  this.current={ref,clip,started:now,from:[...(this.lastPose||clip.start)],entry:.65};
-  this.until=now+.65+clip.duration+2+this.random()*2;
+  const clip=ref==='polite_greet'&&this.clips.poses?politeGreeting(this.clips.poses.look):this.clips.clips?.[ref];if(!clip)return;
+  const entry=ref==='polite_greet'?1.4:.65;
+  this.current={ref,clip,started:now,from:[...(this.lastPose||clip.start)],entry};
+  this.until=now+entry+clip.duration+2+this.random()*2;
   this.label=labels[ref]||ref;this.returning=null;
  }
  layer(ref,now,weight=1) {
@@ -100,7 +110,7 @@ class Emotions {
     if(/^(Hello|More company|Open palm|Point |Close ·|Far ·)/.test(event)) {
      this.release(now);this.layers=[];this.invites=0;this.until=now+5;
      this.energy=Math.min(1,this.energy+.3);
-     if(event.startsWith('Hello'))this.play(previous==='IDLE'?'wake':'greet',now);
+     if(event.startsWith('Hello'))this.play('polite_greet',now);
      else if(event.startsWith('More company')){this.play('look_around',now);this.layer('nod',now+.8,.5);}
      else if(event.startsWith('Open palm')) {
       if(!task)this.play(this.cycle++%2?'joy':'greet',now);
@@ -154,7 +164,7 @@ class Emotions {
   // Breathing can mix with a body action; a selected desk pose stays steady.
   if(!task)base=base.map((v,i)=>v+breath[i]*(state==='IDLE'?.5:.3));
   const attention=this.lookAt(data,now,dt,!task&&!showcase&&state==='ATTENTIVE');
-  const attentionWeight=task||showcase||state==='IDLE'?0:this.current?.ref==='look_around'?.15:.7;
+  const attentionWeight=task||showcase||state==='IDLE'?0:this.current?.ref==='look_around'?.15:this.current?.ref==='polite_greet'?.25:.7;
   base=base.map((v,i)=>v+attention[i]*attentionWeight);
   for(const layer of this.layers) {
    const offset=oscillation(layer.spec,now-layer.started);
@@ -164,7 +174,7 @@ class Emotions {
    this.label=following?'Following your finger':task?'Holding your spot':state==='IDLE'?'Resting':visible?'Listening to you':'Where did you go?';
   }
   const activeLayers=this.layers.filter(l=>now>=l.started).map(l=>({shake:'head wag',bounce:'happy bounce',nod:'a small nod',dance:'dance',sway:'sway'})[l.ref]||l.ref);
-  this.detail=[this.current?'Full-body expression':following?'Move your finger to guide the light':task?'Steady desk light':'A quiet pause',
+  this.detail=[this.current?.ref==='polite_greet'?'A polite nod':this.current?'Full-body expression':following?'Move your finger to guide the light':task?'Steady desk light':'A quiet pause',
    ...activeLayers,!task?'gentle breathing':null,attentionWeight&&visible?'attention toward you':null].filter(Boolean).join(' · ');
   // CAD joint ranges, independent of the failed steppers and ±45° physical swivel.
   this.lastPose=base.map((v,i)=>clamp(v,i===4?-135:-180,i===4?135:180));

@@ -27,7 +27,7 @@ for(const spec of Object.values(lib.overlays)) {
 const a=engine(),b=engine();
 const hello=data('ATTENTIVE','Hello · ready to help');
 nearly(a.sample(hello,0),b.sample({...hello,camera:{joints:[80,-40,10],roll:40}},0));
-assert.equal(a.current.ref,'greet');
+assert.equal(a.current.ref,'polite_greet');
 const greet=a.sample(hello,.9);assert(greet.every(Number.isFinite));
 const palm=data('ATTENTIVE','Open palm · hello back',2);
 a.sample(palm,1);assert.equal(a.label,'Hello back!');
@@ -91,7 +91,7 @@ const alone=engine();for(let t=0;t<20;t++)alone.sample({...linger,people:[]},t);
 assert.equal(alone.invites,0);
 // Departures settle; arrivals interrupt rest; geometry-based attention turns toward a person.
 const attention=engine();attention.sample(data('IDLE'),0);
-attention.sample(data('ATTENTIVE','Hello',2),1);assert.equal(attention.current.ref,'wake');
+attention.sample(data('ATTENTIVE','Hello',2),1);assert.equal(attention.current.ref,'polite_greet');
 for(let t=1;t<3;t+=.05)attention.sample({...hello,people:[{world:[1,.5,.4]}]},t);
 assert(attention.attention[0]>10);
 console.log('Full-model source poses, layering, interruptions, palm greeting, target hold, stop, attention and social pacing passed');
