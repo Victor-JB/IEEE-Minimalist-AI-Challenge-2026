@@ -25,7 +25,7 @@ static uint32_t armOwner=0,armSeen=0;
 static unsigned armConfigured=0,armVerified=0;
 static std::array<double,3> armPPD{};
 constexpr uint8_t STEP_PINS[AXES] = {3, 5, 9};
-constexpr uint8_t DIR_PINS[AXES] = {6, 4, 7}; // elbow DIR moved D2 -> D6 for the roll servo
+constexpr uint8_t DIR_PINS[AXES] = {6, 4, 12}; // elbow DIR D2 -> D6 (roll servo), head DIR D7 -> D12 (lamp PWM)
 // These are PWM spec indices, not Arduino digital pin numbers.
 static const pwm_dt_spec outputs[AXES] = {
     PWM_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 1), // D3 TIM3 CH3
@@ -37,10 +37,19 @@ static TIM_TypeDef *const timers[AXES] = {TIM3, TIM1, TIM4};
 constexpr uint8_t ROLL_PIN = 2;
 static const pwm_dt_spec rollOutput = PWM_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 0); // D2 TIM2 CH2
 static roll::Roll headRoll;
-// Lamp light (MOSFET gate on D12): on/off only. D12 is TIM1 CH2N, and TIM1 also drives the
-// shoulder STEP pin (D5), whose period changes with every step rate, so it can't be dimmed by PWM.
-constexpr uint8_t LIGHT_PIN = 12;
-static bool lightOn = false;
+// Lamp light (MOSFET gate on D7): dimmed by PWM on TIM8 CH4N, a timer nothing else uses (D12, its
+// old pin, is on TIM1 with the shoulder STEP pin, whose period changes with every step rate).
+// 20 kHz: no visible flicker and no banding in the camera image.
+constexpr uint8_t LIGHT_PIN = 7;
+constexpr uint32_t LIGHT_PERIOD_NS = 50000;
+static const pwm_dt_spec lightOutput = PWM_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 4); // D7 TIM8 CH4N
+static int lightLevel = 0, lightFault = 0;   // level 0-1000 (permille of full brightness)
+static int setLight(int level) {
+    if (lightFault) return lightFault;
+    int err = pwm_set_dt(&lightOutput, LIGHT_PERIOD_NS, LIGHT_PERIOD_NS / 1000 * uint32_t(level));
+    if (!err) lightLevel = level;
+    return err;
+}
 static unsigned rollApplied = ~0u;
 static int rollFault = 0;
 static Motor motors[AXES];
@@ -282,8 +291,6 @@ static std::vector<int> command(std::vector<int> args) {
 void setup() {
     digitalWrite(SLEEP_PIN, LOW);
     pinMode(SLEEP_PIN, OUTPUT);
-    digitalWrite(LIGHT_PIN, LOW);
-    pinMode(LIGHT_PIN, OUTPUT);   // plain GPIO: never analogWrite this pin (TIM1, see above)
     k_mutex_init(&lock);
     for (unsigned a=0; a<AXES; ++a) {
         pinMode(DIR_PINS[a], OUTPUT); digitalWrite(DIR_PINS[a], LOW);
@@ -308,6 +315,8 @@ void setup() {
     analogWrite(ROLL_PIN, 0); // Initialize PWM and only this pin's mux.
     rollFault = !pwm_is_ready_dt(&rollOutput) ? -ENODEV : pwm_set_dt(&rollOutput, PWM_USEC(roll::PERIOD_US), 0);
     rollApplied = 0;
+    analogWrite(LIGHT_PIN, 0); // Initialize PWM and only this pin's mux; boots dark.
+    lightFault = !pwm_is_ready_dt(&lightOutput) ? -ENODEV : pwm_set_dt(&lightOutput, LIGHT_PERIOD_NS, 0);
     k_thread_create(&motionThread, motionStack, K_THREAD_STACK_SIZEOF(motionStack),
                     control, nullptr, nullptr, nullptr, 4, 0, K_NO_WAIT);
     k_thread_create(&sensorThread, sensorStack, K_THREAD_STACK_SIZEOF(sensorStack),

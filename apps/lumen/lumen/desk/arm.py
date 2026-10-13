@@ -79,7 +79,7 @@ class DeskArm(threading.Thread):
         self.motion = None                        # dict(kind, label, points=[(pose, vel, roll)], i)
         self.setpoint = None                      # last streamed pose (joint order), None when idle
         self.roll_sent, self.roll_wide = None, False
-        self.light = False                        # lamp light as last set from the desk (D12)
+        self.light = 0.0                          # lamp brightness 0-1 as last set from the desk (D7)
         self.history = deque(maxlen=int(HISTORY_S * C.STREAM_HZ))
         self._next = dict(status=0.0, servo=0.0, roll=0.0)
         self._stop = threading.Event()
@@ -248,18 +248,19 @@ class DeskArm(threading.Thread):
         lo, hi = ROLL_WIDE if wide else A.ROLL_RANGE
         self._roll(min(hi, max(lo, float(angle))), speed, force=True)
 
-    def _cmd_light(self, on):
+    def _cmd_light(self, level):
         if not self.arm:
             self._say("Connect first to switch the light.")
             return
+        level = min(1.0, max(0.0, float(level)))
         try:
-            self.arm.light(on)
+            self.arm.light(level)
         except Exception as e:
-            self._say(f"Light failed ({e}). Flash arm/sketch for the light on D12.")
+            self._say(f"Light failed ({e}). Flash arm/sketch for the light on D7.")
             return
         with self.lock:
-            self.light = bool(on)
-        self._say(f"Light {'on' if on else 'off'}.")
+            self.light = level
+        self._say(f"Light {round(level * 100)}%." if level else "Light off.")
 
     def _cmd_roll_off(self):
         if self.arm and self.arm.roll_supported:

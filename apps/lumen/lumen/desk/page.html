@@ -159,7 +159,8 @@ body.replaying .live-only { opacity: .35; pointer-events: none; }
       <h2>Light <span class="right" id="lightInfo"></span></h2>
       <div class="row"><span class="big" id="lightV">Off</span><div class="spacer"></div>
         <button id="bLight" aria-pressed="false">Turn on</button></div>
-      <p class="hint">The lamp LED on D12, through its MOSFET. On/off only: D12's timer also drives the shoulder steps, so it can't be dimmed.</p>
+      <input type="range" id="lightSlider" min="0" max="100" step="1" value="0" aria-label="Light brightness">
+      <p class="hint">The lamp LED on D7, through its MOSFET, dimmed by 20 kHz PWM.</p>
     </section>
 
     <section class="card live-only">
@@ -275,7 +276,10 @@ $("rollSlider").oninput = () => { $("rollV").textContent = `${fmt(+$("rollSlider
 document.querySelectorAll("[data-roll]").forEach((b) => (b.onclick = () => { $("rollSlider").value = b.dataset.roll; $("rollSlider").oninput(); }));
 $("rollWide").onchange = () => { const w = $("rollWide").checked, r = S ? S.roll_range : [-45, 45]; $("rollSlider").min = w ? -135 : r[0]; $("rollSlider").max = w ? 135 : r[1]; };
 $("bRollOff").onclick = () => cmd("roll_off");
-$("bLight").onclick = () => cmd("light", !(S && S.light));
+let lightTimer = null, lightLast = 1;
+function sendLight(v) { clearTimeout(lightTimer); lightTimer = setTimeout(() => cmd("light", v), 40); }
+$("lightSlider").oninput = () => { const v = +$("lightSlider").value / 100; $("lightV").textContent = v ? `${Math.round(v * 100)}%` : "Off"; if (v) lightLast = v; sendLight(v); };
+$("bLight").onclick = () => cmd("light", S && S.light ? 0 : lightLast);
 $("bWiggle").onclick = async () => { for (const a of [20, -20, 20, -20, 0]) { await cmd("roll", a, 60, false); await new Promise((r) => setTimeout(r, 700)); } };
 
 // ---- clips ----------------------------------------------------------------------------------
@@ -542,11 +546,15 @@ function render() {
   });
   $("safeHint").textContent = `Targets are clamped to the safe range: ${s.joints.map((j) => `${j.name} ${j.safe[0]}…${j.safe[1]}°`).join(", ")}. Head tilt ${s.roll_range[0]}…${s.roll_range[1]}°.`;
   const r = s.roll;
-  $("lightV").textContent = s.light ? "On" : "Off";
+  if (document.activeElement !== $("lightSlider")) {
+    $("lightSlider").value = Math.round((s.light || 0) * 100);
+    $("lightV").textContent = s.light ? `${Math.round(s.light * 100)}%` : "Off";
+  }
+  $("lightSlider").disabled = !s.connected;
   $("bLight").textContent = s.light ? "Turn off" : "Turn on";
   $("bLight").setAttribute("aria-pressed", String(!!s.light));
   $("bLight").disabled = !s.connected;
-  $("lightInfo").textContent = s.connected ? "D12" : "connect first";
+  $("lightInfo").textContent = s.connected ? "D7" : "connect first";
   $("rollInfo").textContent = !s.connected ? "" : !s.roll_supported ? "no servo in this firmware" : r && r.enabled ? `${r.pulse_us} µs${r.fault ? " · PWM error " + r.fault : ""}` : "limp";
   if (r && r.enabled && document.activeElement !== $("rollSlider")) { $("rollSlider").value = Math.round(r.target); $("rollV").textContent = `${fmt(r.target, 0)}°`; }
   if (!$("rollWide").checked) { $("rollSlider").min = s.roll_range[0]; $("rollSlider").max = s.roll_range[1]; }

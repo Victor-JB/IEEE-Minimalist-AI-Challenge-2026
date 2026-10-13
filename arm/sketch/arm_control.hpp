@@ -130,7 +130,7 @@ static std::vector<int> armServoStatus(){
 // 14 servo hold/tuck config; 15 live speed scale. Angles are millidegrees, motor order.
 // Head tilt: 16 roll to angle (mdeg) at speed (mdeg/s, 0 = max); 17 roll config (center us,
 // us/deg x1000, lower/upper mdeg, sign, max mdeg/s); 18 roll limp. Release and lock also go limp.
-// Light: 19 lamp light on (1) or off (0). Independent of motor power; it stays as set on release.
+// Light: 19 lamp brightness 0-1000 (0 off). Independent of motor power; it stays as set on release.
 static std::vector<int> armCommand(std::vector<int> args){
     k_mutex_lock(&lock,K_FOREVER);
     int err=0;uint32_t now=millis();
@@ -199,10 +199,7 @@ static std::vector<int> armCommand(std::vector<int> args){
             }else if(op==17&&args.size()==8)
                 err=headRoll.configure(args[2],args[3]/1000.0,args[4]/1000.0,args[5]/1000.0,args[6],args[7]/1000.0);
             else if(op==18&&args.size()==2)headRoll.release();
-            else if(op==19&&args.size()==3){
-                if(args[2]!=0&&args[2]!=1)err=-EINVAL;
-                else{lightOn=args[2];digitalWrite(LIGHT_PIN,lightOn?HIGH:LOW);}
-            }
+            else if(op==19&&args.size()==3)err=args[2]<0||args[2]>1000?-EINVAL:setLight(args[2]);
             else if(op==5&&args.size()==3)err=servoCtl.everStarted&&!armMotion.running()?servoCtl.renew(args[2],now):armMotion.hold(args[2],now);
             else if(op==9&&args.size()==3){
                 err=armMotion.pause(args[2],now);

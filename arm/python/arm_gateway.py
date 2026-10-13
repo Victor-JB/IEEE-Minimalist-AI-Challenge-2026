@@ -47,7 +47,7 @@ class ArmGateway:
         if name=='SERVOSTAT' and not args: return self.servo_status()
         if name=='ROLLSTAT' and not args: return self.roll_status()
         # 10-15: closed-loop MOVE, STREAM setpoint, HALT, SERVO axis config, SERVOTIME, SCALE.
-        # 16-18: head-tilt ROLL angle, ROLLCONFIG, ROLLOFF (limp). 19: lamp LIGHT 0|1.
+        # 16-18: head-tilt ROLL angle, ROLLCONFIG, ROLLOFF (limp). 19: lamp LIGHT brightness 0-1000.
         commands={'CONFIG':(1,6),'POSE':(2,5),'JOG':(3,4),'STATUS':(4,0),'HOLD':(5,1),'STOP':(6,0),'POWER':(8,2),'PAUSE':(9,1),
                   'MOVE':(10,7),'STREAM':(11,9),'HALT':(12,0),'SERVO':(13,4),'SERVOTIME':(14,3),'SCALE':(15,1),
                   'ROLL':(16,2),'ROLLCONFIG':(17,6),'ROLLOFF':(18,0),'LIGHT':(19,1)}

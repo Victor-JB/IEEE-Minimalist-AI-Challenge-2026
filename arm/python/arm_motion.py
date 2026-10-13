@@ -41,7 +41,7 @@ class ArmMotion(ArmSession):
         self.roll_config = roll
         self.roll_supported = False
         self.roll_range = None
-        self.light_on = False             # as last commanded; the firmware boots with it off
+        self.light_level = 0.0            # as last commanded (0-1); the firmware boots dark
         self.limits_speed = None
 
     def __enter__(self):
@@ -120,12 +120,13 @@ class ArmMotion(ArmSession):
             s = dict(s, target=s['target']/1000, current=s['current']/1000)
         return s
 
-    # Lamp light (D12) ------------------------------------------------------------
-    def light(self, on):
-        """Switch the lamp light on or off (on/off only; see LIGHT_PIN in sketch.ino). It is
-        independent of motor power and stays as set after the session; the firmware boots dark."""
-        r = self._request(f'LIGHT {int(bool(on))}')
-        self.light_on = bool(on)
+    # Lamp light (D7, PWM) --------------------------------------------------------
+    def light(self, level):
+        """Set the lamp brightness: 0-1 (True = full, False = off). It is independent of motor
+        power and stays as set after the session; the firmware boots dark."""
+        level = finite(float(level), 0, 1, 'Light level')
+        r = self._request(f'LIGHT {round(level*1000)}')
+        self.light_level = level
         return r
 
     # Reads -----------------------------------------------------------------
