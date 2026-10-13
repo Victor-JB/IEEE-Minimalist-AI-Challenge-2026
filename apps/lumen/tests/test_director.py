@@ -5,19 +5,20 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen import config as C                      # noqa: E402
-from lumen import events as E                      # noqa: E402
-from lumen.behavior.director import Director       # noqa: E402
-from lumen.behavior.expressive import Expressive   # noqa: E402
-from lumen.behavior.pools import POOLS             # noqa: E402
-from lumen.machine import Machine                  # noqa: E402
+from lumen.movement import config as move_cfg
+from lumen.state import config as state_cfg
+from lumen import events as E  # noqa: E402
+from lumen.state.director import Director  # noqa: E402
+from lumen.movement.expressive import Expressive  # noqa: E402
+from lumen.movement.pools import POOLS  # noqa: E402
+from lumen.state.machine import Machine  # noqa: E402
 
 
 class FakeWorker:
     """Records commands; finished-events are pushed by the test with finish()."""
     def __init__(self):
         self.cmds, self.events = [], []
-        self.base, self.current, self.offset = list(C.HOME), list(C.HOME), [0.0, 0.0, 0.0]
+        self.base, self.current, self.offset = list(move_cfg.HOME), list(move_cfg.HOME), [0.0, 0.0, 0.0]
         self.base_roll = 0.0                     # head tilt (lumen-geometry): AIM plans from it
 
     def __getattr__(self, name):                 # play, goto, sweep, seq, relax, connect
@@ -260,7 +261,7 @@ class CheckIn(unittest.TestCase):
         self.assertTrue(back[3])                           # the look-at offset is cleared on the way back
         for speeds in [[1.875 * abs(b - a) / plan[0][2] for a, b in zip(aim, up)]]:
             for j, v in enumerate(speeds):
-                self.assertLessEqual(v, C.SPEED_CAPS[j])
+                self.assertLessEqual(v, move_cfg.SPEED_CAPS[j])
 
     def test_tracks_the_face_only_while_looking(self):
         r = self.lit(face_y=120)
@@ -311,10 +312,10 @@ class Reacquire(unittest.TestCase):
         self.assertLessEqual(max(spread), 10.0)            # local
         far = [x for x in spread if x > 1.0]               # the peeks (not the micro-retreat)
         self.assertEqual(far, sorted(far))                 # widening
-        self.assertLessEqual(plan_seconds(plan[:-1]), C.REACQUIRE_TIMEOUT_S)   # every peek before the timeout
+        self.assertLessEqual(plan_seconds(plan[:-1]), state_cfg.REACQUIRE_TIMEOUT_S)   # every peek before the timeout
         for step in plan:
             if step[0] == "goto":
-                for v, (lo, hi) in zip(step[1], C.SAFE_RANGES):
+                for v, (lo, hi) in zip(step[1], move_cfg.SAFE_RANGES):
                     self.assertTrue(lo <= v <= hi)
 
     def test_found_returns_to_aim_and_holds(self):
@@ -329,15 +330,15 @@ class Reacquire(unittest.TestCase):
 
     def test_not_found_in_4s(self):
         r = self.lost()
-        r.tick(dt=C.REACQUIRE_TIMEOUT_S + 0.1)
+        r.tick(dt=state_cfg.REACQUIRE_TIMEOUT_S + 0.1)
         self.assertEqual(r.m.state, "NOT_FOUND")
 
 
 class ReacquirePerception(unittest.TestCase):
     def test_book_model_runs_at_3hz_on_a_widened_crop(self):
         import numpy as np
-        from lumen.machine import STATES
-        from lumen.perception import Perception
+        from lumen.state.machine import STATES
+        from lumen.ai import Perception
 
         class Book:
             def __init__(self):

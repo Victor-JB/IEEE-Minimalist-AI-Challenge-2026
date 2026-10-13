@@ -92,10 +92,8 @@ Never overwrite a row.
   to its inferences: an upper bound. The clean per-model figure comes from `bench_detector.py`.
 - Short states (NOTICE, ADJUST: under a second) may get no meter samples at 1 Hz. Log the meter
   at 10 Hz or more if you want them.
-- Known issue: the logged face count in IDLE includes frames the motion gate skipped (the
-  scheduler counts before the gate check in `perception/__init__.py`; see the expected failure in
-  `tests/test_simulate.py`). Until that is fixed, IDLE face inferences/min are overstated and the
-  gating savings don't show; the simulator prints the real detector calls next to the logged ones.
+- The logged face count only includes face inferences that actually ran: runs the motion gate
+  skipped are not counted (`ModelScheduler.cancel()`), so IDLE's gating saving shows up.
 - The state that is open when the log ends (IDLE after walking away) is not counted, nor is BOOT
   before the first transition. Pass `--end-t <t>` to count the last state's time.
 

@@ -7,11 +7,13 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen import config as C          # noqa: E402
-from lumen import events as E          # noqa: E402
-from lumen.machine import Machine      # noqa: E402
-from lumen.perception import Perception, grow   # noqa: E402
-from lumen.perception.gestures import OPEN_PALM   # noqa: E402
+from lumen.ai.book import config as book_cfg
+from lumen.ai import config as ai_cfg
+from lumen.ai.hands import config as hands_cfg
+from lumen import events as E  # noqa: E402
+from lumen.state.machine import Machine  # noqa: E402
+from lumen.ai import Perception, grow  # noqa: E402
+from lumen.ai.hands.gestures import OPEN_PALM  # noqa: E402
 
 FRAME = np.zeros((480, 640, 3), np.uint8)
 
@@ -74,7 +76,7 @@ class BookLost(unittest.TestCase):
         self.book.present = False
         lost = [t for t, e in run(self.p, self.hold, self.ctx, 4.1, 12) if e == E.BOOK_LOST]
         self.assertEqual(len(lost), 1)
-        self.assertLess(lost[0] - 4.0, C.BOOK_LOST_S + 1.0)          # was a full 0.5 Hz period late or early
+        self.assertLess(lost[0] - 4.0, book_cfg.BOOK_LOST_S + 1.0)          # was a full 0.5 Hz period late or early
 
     def test_book_crop_follows_the_book_and_widens_on_a_miss(self):
         run(self.p, self.hold, self.ctx, 0, 2.1)
@@ -101,12 +103,12 @@ class HandCrop(unittest.TestCase):
 class Reset(unittest.TestCase):
     def test_long_palm_resets_a_latched_fault(self):
         p, ctx = Perception(hands=FakeHands()), {}
-        import lumen.perception as P
+        import lumen.ai as P
         orig = P.classify
         P.classify = lambda lm: OPEN_PALM
         p.hands.detect = lambda frame, roi=None: [[(0, 0, 0)] * 21]
         try:
-            events = [e for _, e in run(p, {"hand": 2}, ctx, 0, C.RESET_HOLD_S + 1)]
+            events = [e for _, e in run(p, {"hand": 2}, ctx, 0, hands_cfg.RESET_HOLD_S + 1)]
         finally:
             P.classify = orig
         self.assertIn(E.RESET, events)
@@ -163,7 +165,7 @@ def illuminate(hand_at, motion_at, seconds, fps=10, seed=0):
 class Nobody(unittest.TestCase):
     """A reader has their head down: no face, ever. Only no face, no hand and no motion for
     NOBODY_S ends ILLUMINATE."""
-    SPAN = C.NOBODY_S + 20
+    SPAN = ai_cfg.NOBODY_S + 20
 
     def test_reader_with_a_hand_on_the_book_never_triggers_nobody(self):
         m, nobody = illuminate(lambda t: True, lambda t: False, self.SPAN)
@@ -184,15 +186,15 @@ class Nobody(unittest.TestCase):
     def test_truly_empty_desk_ends_it_after_three_minutes(self):
         m, nobody = illuminate(lambda t: False, lambda t: False, self.SPAN)
         self.assertEqual(len(nobody), 1)
-        self.assertAlmostEqual(nobody[0], C.NOBODY_S, delta=1.0)
+        self.assertAlmostEqual(nobody[0], ai_cfg.NOBODY_S, delta=1.0)
         self.assertEqual(m.state, "GOODBYE")
 
     def test_reader_leaves_then_it_ends_three_minutes_later(self):
         for seed in range(5):
-            m, nobody = illuminate(lambda t: t < 30, lambda t: False, C.NOBODY_S + 40, seed=seed)
+            m, nobody = illuminate(lambda t: t < 30, lambda t: False, ai_cfg.NOBODY_S + 40, seed=seed)
             self.assertEqual(len(nobody), 1)
             # counted from the last hand seen: up to one check-in (~2 s, no hand model) before 30 s
-            self.assertTrue(C.NOBODY_S - 2.5 <= nobody[0] - 30 <= C.NOBODY_S + 1.0, (seed, nobody))
+            self.assertTrue(ai_cfg.NOBODY_S - 2.5 <= nobody[0] - 30 <= ai_cfg.NOBODY_S + 1.0, (seed, nobody))
 
 
 def hand_at(x, y=300, size=40):
@@ -204,8 +206,8 @@ def hand_at(x, y=300, size=40):
 
 class Wave(unittest.TestCase):
     def feed(self, xs, hz=10, t0=0.0):
-        from lumen.perception.gestures import WaveDetector
-        w, fired = WaveDetector(C.WAVE_REVERSALS, C.WAVE_WINDOW_S, C.WAVE_SWING), []
+        from lumen.ai.hands.gestures import WaveDetector
+        w, fired = WaveDetector(hands_cfg.WAVE_REVERSALS, hands_cfg.WAVE_WINDOW_S, hands_cfg.WAVE_SWING), []
         for i, x in enumerate(xs):
             t = t0 + i / hz
             if w.update(x, 40, t):

@@ -17,14 +17,14 @@ import threading
 import time
 from collections import deque
 
-from .. import config as C
+from ..movement import config as move_cfg
 from .. import paths
 
 import arm_config as A                        # arm/python (paths puts it on sys.path)
 from arm_client import JOINTS, LIMITS, MOTOR, angles, healthy
 from arm_motion import STATES
 
-DT = 1.0 / C.STREAM_HZ
+DT = 1.0 / move_cfg.STREAM_HZ
 JOG_DEADMAN_S = 0.3
 SETTLE_S = 0.4                # hold powered this long after a move ends, then let the drivers sleep
 STATUS_EVERY_S = 0.1          # telemetry + keepalive when nothing streams (firmware drops an owner after 2 s)
@@ -59,7 +59,7 @@ def path_to(start, goal, speed):
 
 
 def clamp_pose(pose):
-    return [min(hi, max(lo, v)) for v, (lo, hi) in zip(pose, C.SAFE_RANGES)]
+    return [min(hi, max(lo, v)) for v, (lo, hi) in zip(pose, move_cfg.SAFE_RANGES)]
 
 
 class DeskArm(threading.Thread):
@@ -79,7 +79,7 @@ class DeskArm(threading.Thread):
         self.motion = None                        # dict(kind, label, points=[(pose, vel, roll)], i)
         self.setpoint = None                      # last streamed pose (joint order), None when idle
         self.roll_sent, self.roll_wide = None, False
-        self.history = deque(maxlen=int(HISTORY_S * C.STREAM_HZ))
+        self.history = deque(maxlen=int(HISTORY_S * move_cfg.STREAM_HZ))
         self._next = dict(status=0.0, servo=0.0, roll=0.0)
         self._stop = threading.Event()
 
@@ -103,7 +103,7 @@ class DeskArm(threading.Thread):
                     magnet=axis["magnet"] if axis else None,
                     magnet_text=magnet_text(axis["magnet"]) if axis else None,
                     age=axis["age"] if axis else None, sensor_error=axis["sensor_error"] if axis else None,
-                    limits=LIMITS[j], safe=C.SAFE_RANGES[j], home=C.HOME[j], motor=MOTOR[j]))
+                    limits=LIMITS[j], safe=move_cfg.SAFE_RANGES[j], home=move_cfg.HOME[j], motor=MOTOR[j]))
             return dict(
                 connected=self.arm is not None, notice=self.notice,
                 busy=("jog" if self.jog else self.motion["label"] if self.motion else None),
@@ -134,7 +134,7 @@ class DeskArm(threading.Thread):
 
     def _open_real(self, output):
         from arm_motion import ArmMotion
-        return ArmMotion(output=output, max_speed=C.FIRMWARE_MAX_SPEED, max_accel=C.FIRMWARE_MAX_ACCEL,
+        return ArmMotion(output=output, max_speed=move_cfg.FIRMWARE_MAX_SPEED, max_accel=move_cfg.FIRMWARE_MAX_ACCEL,
                          tuck=False, roll=dict(A.ROLL, limits=ROLL_WIDE) if A.ROLL_ENABLED else None).__enter__()
 
     def _say(self, text):

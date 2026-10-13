@@ -5,9 +5,9 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen import events as E           # noqa: E402
-from lumen import thinking as T         # noqa: E402
-from lumen.machine import Machine       # noqa: E402
+from lumen import events as E  # noqa: E402
+from lumen.ui import thinking as T  # noqa: E402
+from lumen.state.machine import Machine  # noqa: E402
 
 
 class Thinking(unittest.TestCase):
@@ -50,8 +50,8 @@ class Thinking(unittest.TestCase):
 
 class WorkerDoing(unittest.TestCase):
     def test_worker_reports_the_clip_then_hold(self):
-        from lumen.behavior.expressive import Expressive
-        from lumen.motion.worker import MotionWorker
+        from lumen.movement.expressive import Expressive
+        from lumen.movement.worker import MotionWorker
         w = MotionWorker(Expressive(random.Random(1)), fake=True)
         seen = []
         w._play = lambda *a: seen.append(w.doing) or True

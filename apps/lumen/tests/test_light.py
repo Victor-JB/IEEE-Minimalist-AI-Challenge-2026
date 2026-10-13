@@ -8,13 +8,14 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen import config as C                      # noqa: E402
-from lumen import events as E                      # noqa: E402
-from lumen.behavior.director import Director       # noqa: E402
-from lumen.behavior.expressive import Expressive   # noqa: E402
-from lumen.io import light as L                    # noqa: E402
-from lumen.machine import Machine                  # noqa: E402
-from lumen.motion import worker as W               # noqa: E402
+from lumen.light import config as light_cfg
+from lumen.movement import config as move_cfg
+from lumen import events as E  # noqa: E402
+from lumen.state.director import Director  # noqa: E402
+from lumen.movement.expressive import Expressive  # noqa: E402
+from lumen.light import light as L  # noqa: E402
+from lumen.state.machine import Machine  # noqa: E402
+from lumen.movement import worker as W  # noqa: E402
 
 
 class Recorder:
@@ -93,7 +94,7 @@ class Ramps(unittest.TestCase):
         light.set(0.5, ramp_s=0)
         light.step(0.15)
         self.assertAlmostEqual(light.target, 0.65)
-        clock.t += C.LIGHT_STEP_RAMP_S
+        clock.t += light_cfg.LIGHT_STEP_RAMP_S
         self.assertAlmostEqual(light.update(), 0.65)
         for _ in range(5):
             light.step(0.15)
@@ -127,7 +128,7 @@ class Gamma(unittest.TestCase):
         light, _, rec = make_light()
         light.set(0.7, ramp_s=0)
         self.assertAlmostEqual(light.level, 0.7)
-        self.assertAlmostEqual(rec.writes[-1][0], 0.7 ** C.LIGHT_GAMMA)
+        self.assertAlmostEqual(rec.writes[-1][0], 0.7 ** light_cfg.LIGHT_GAMMA)
 
 
 class FakeWorker:
@@ -135,7 +136,7 @@ class FakeWorker:
     fake = True
 
     def __init__(self):
-        self.current = list(C.HOME)          # data, not commands: AIM/ADJUST plan from these
+        self.current = list(move_cfg.HOME)          # data, not commands: AIM/ADJUST plan from these
         self.base_roll = 0.0
 
     def __getattr__(self, name):
@@ -166,7 +167,7 @@ class Coupling(unittest.TestCase):
         self.settle()
         self.m.handle(E.CHECKIN_DUE, 1.0)
         self.assertEqual(self.m.state, "CHECKIN")
-        self.assertAlmostEqual(self.settle(), C.LIGHT_CHECKIN_SCALE)
+        self.assertAlmostEqual(self.settle(), light_cfg.LIGHT_CHECKIN_SCALE)
         self.assertEqual(self.light.target, 1.0)                 # the set level is untouched
         self.m.handle(E.CLIP_DONE, 2.0)
         self.assertEqual(self.m.state, "HOLD")
@@ -178,7 +179,7 @@ class Coupling(unittest.TestCase):
         self.assertAlmostEqual(self.light.target, 0.85)
         self.m.handle(E.MOVE_DONE, 1.5)
         self.m.handle(E.CHECKIN_DUE, 2.0)
-        self.assertAlmostEqual(self.settle(), 0.85 * C.LIGHT_CHECKIN_SCALE)
+        self.assertAlmostEqual(self.settle(), 0.85 * light_cfg.LIGHT_CHECKIN_SCALE)
         self.m.handle(E.CLIP_DONE, 3.0)
         self.assertAlmostEqual(self.settle(), 0.85)
 
@@ -203,7 +204,7 @@ class Selection(unittest.TestCase):
 
     def test_default_is_sim(self):
         if "LUMEN_LIGHT" not in os.environ:
-            self.assertEqual(C.LIGHT_BACKEND, "sim")
+            self.assertEqual(light_cfg.LIGHT_BACKEND, "sim")
         self.assertIsInstance(L.make_backend("sim", log=self.quiet()), L.SimBackend)
         self.assertIsInstance(L.Light().backend, L.SimBackend)
 
@@ -259,15 +260,15 @@ class FirmwarePath(unittest.TestCase):
         self.assertEqual(self.w.light_cmd, 0)
 
     def test_worker_sends_changes_rate_limited_with_a_fade(self):
-        fade = round(C.LIGHT_FIRMWARE_EVERY_S * 1000)
+        fade = round(light_cfg.LIGHT_FIRMWARE_EVERY_S * 1000)
         self.w.set_light(300)
         self.w._send([0.0, 60.0, 5.0])
         self.w.set_light(400)
         self.w._send([0.0, 60.0, 5.0])                 # too soon: held back
         self.assertEqual(self.w.arm.sent, [f"LIGHT 300 {fade}"])
-        self.w.light_at -= C.LIGHT_FIRMWARE_EVERY_S
+        self.w.light_at -= light_cfg.LIGHT_FIRMWARE_EVERY_S
         self.w._send([0.0, 60.0, 5.0])
-        self.w.light_at -= C.LIGHT_FIRMWARE_EVERY_S
+        self.w.light_at -= light_cfg.LIGHT_FIRMWARE_EVERY_S
         self.w._send([0.0, 60.0, 5.0])                 # unchanged: nothing sent
         self.assertEqual(self.w.arm.sent, [f"LIGHT 300 {fade}", f"LIGHT 400 {fade}"])
 

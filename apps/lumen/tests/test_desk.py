@@ -8,8 +8,8 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen import config as C                      # noqa: E402
-from lumen.desk import arm as D                    # noqa: E402
+from lumen.movement import config as move_cfg
+from lumen.desk import arm as D  # noqa: E402
 
 try:
     import numpy  # noqa: F401
@@ -149,14 +149,14 @@ class DeskTests(unittest.TestCase):
         self.assertEqual(self.fake.calls.count("relax"), 1)
 
     def test_jog_stays_in_the_safe_range(self):
-        self.fake.pose = [C.SAFE_RANGES[0][1] - 0.1, 63.5, 5.3]; self.fake.status(); self.desk.sample = self.fake.sample
+        self.fake.pose = [move_cfg.SAFE_RANGES[0][1] - 0.1, 63.5, 5.3]; self.fake.status(); self.desk.sample = self.fake.sample
         for _ in range(20):
             self.desk.send("jog", 0, 1, 20); self.tick()
-        self.assertLessEqual(max(p[0] for p in self.fake.streamed()), C.SAFE_RANGES[0][1])
+        self.assertLessEqual(max(p[0] for p in self.fake.streamed()), move_cfg.SAFE_RANGES[0][1])
 
     def test_goto_reaches_the_clamped_target_with_head_tilt(self):
         self.desk.send("goto", [-5.0, 60.0, 500.0], 15, 12); self.tick(400)
-        self.assertEqual(self.fake.streamed()[-1], [-5.0, 60.0, C.SAFE_RANGES[2][1]])
+        self.assertEqual(self.fake.streamed()[-1], [-5.0, 60.0, move_cfg.SAFE_RANGES[2][1]])
         self.assertIn(("roll", 12.0, None), self.fake.calls)
         self.assertIn("done", self.desk.snapshot()["notice"])
 
@@ -178,7 +178,7 @@ class DeskTests(unittest.TestCase):
     def test_roll_is_clamped_unless_wide(self):
         self.desk.send("roll", 100, None, False); self.desk.send("roll", 100, None, True); self.tick()
         rolls = [c for c in self.fake.calls if isinstance(c, tuple) and c[0] == "roll"]
-        self.assertEqual([r[1] for r in rolls], [C.SAFE_RANGES and D.A.ROLL_RANGE[1], 100.0])
+        self.assertEqual([r[1] for r in rolls], [move_cfg.SAFE_RANGES and D.A.ROLL_RANGE[1], 100.0])
 
     def test_head_tilt_goes_limp_when_idle(self):
         self.desk.send("roll", 30, 60, False); self.tick()

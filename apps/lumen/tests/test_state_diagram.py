@@ -13,8 +13,8 @@ from pathlib import Path
 
 APP = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(APP))
-from lumen import events as E                                         # noqa: E402
-from lumen.machine import INITIAL_CHILD, Machine, STATES, TRANSITIONS  # noqa: E402
+from lumen import events as E  # noqa: E402
+from lumen.state.machine import INITIAL_CHILD, Machine, STATES, TRANSITIONS  # noqa: E402
 
 DOC = APP.parents[1] / "docs" / "STATE_MACHINE.md"
 ALIAS = {"NOTFOUND": "NOT_FOUND", "REACQ": "REACQUIRE", "ILLUM": "ILLUMINATE", "ANY": "*"}

@@ -36,7 +36,7 @@ APP = Path(__file__).resolve().parents[1]
 if str(APP) not in sys.path:
     sys.path.insert(0, str(APP))
 try:
-    from lumen.machine import STATES
+    from lumen.state.machine import STATES
 except Exception:                     # the scorecard must work on a copy of the logs anywhere
     STATES = {}
 

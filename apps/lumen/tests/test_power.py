@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen import config as C                                # noqa: E402
+from lumen.io import config as io_cfg
 from lumen.io.power import CpuGovernor, FrameThrottle, Power  # noqa: E402
 
 
@@ -88,7 +88,7 @@ class PowerHooks(unittest.TestCase):
         cam, p = FakeCamera(), Power(governor=CpuGovernor(None))
         p.sleep()                                # camera not open yet: applied on attach
         p.attach(cam)
-        self.assertEqual(cam.fps, C.SLEEP_CAMERA_FPS)
+        self.assertEqual(cam.fps, io_cfg.SLEEP_CAMERA_FPS)
         p.wake()
         self.assertIsNone(cam.fps)
 

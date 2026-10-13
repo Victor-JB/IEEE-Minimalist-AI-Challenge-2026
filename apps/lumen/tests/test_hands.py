@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 try:
     import numpy as np
-    from lumen.perception import hands as H          # noqa: E402
+    from lumen.ai.hands import landmarker as H  # noqa: E402
     HAVE_NUMPY = True
 except ImportError:
     HAVE_NUMPY = False

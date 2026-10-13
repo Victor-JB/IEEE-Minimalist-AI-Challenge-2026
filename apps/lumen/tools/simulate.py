@@ -26,14 +26,14 @@ APP = Path(__file__).resolve().parents[1]
 if str(APP) not in sys.path:
     sys.path.insert(0, str(APP))
 
-from lumen import events as E                      # noqa: E402
-from lumen.behavior.director import Director       # noqa: E402
-from lumen.behavior.expressive import Expressive   # noqa: E402
-from lumen.io.light import Light                   # noqa: E402
-from lumen.machine import Machine                  # noqa: E402
-from lumen.perception import Perception            # noqa: E402
-from lumen.perception import gestures as G         # noqa: E402
-from lumen.translog import TransitionLog           # noqa: E402
+from lumen import events as E  # noqa: E402
+from lumen.state.director import Director  # noqa: E402
+from lumen.movement.expressive import Expressive  # noqa: E402
+from lumen.light.light import Light  # noqa: E402
+from lumen.state.machine import Machine  # noqa: E402
+from lumen.ai import Perception  # noqa: E402
+from lumen.ai.hands import gestures as G  # noqa: E402
+from lumen.translog import TransitionLog  # noqa: E402
 
 FPS = 15.0                 # about what the board's camera loop does
 FRAME_SHAPE = (480, 640, 3)

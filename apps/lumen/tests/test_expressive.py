@@ -4,8 +4,8 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen.behavior.expressive import Expressive   # noqa: E402
-from lumen.behavior.pools import POOLS             # noqa: E402
+from lumen.movement.expressive import Expressive  # noqa: E402
+from lumen.movement.pools import POOLS  # noqa: E402
 
 
 class ExpressiveTest(unittest.TestCase):
@@ -22,9 +22,9 @@ class ExpressiveTest(unittest.TestCase):
 
     def test_hold_drift_is_smooth(self):
         x = Expressive(random.Random(1))
-        from lumen import config as C
-        C.HOLD_DRIFT_GAIN, saved = (1.0, 1.0, 0.5), C.HOLD_DRIFT_GAIN
-        self.addCleanup(setattr, C, "HOLD_DRIFT_GAIN", saved)
+        from lumen.movement import config as move_cfg
+        move_cfg.HOLD_DRIFT_GAIN, saved = (1.0, 1.0, 0.5), move_cfg.HOLD_DRIFT_GAIN
+        self.addCleanup(setattr, move_cfg, "HOLD_DRIFT_GAIN", saved)
         steps = []
         for _ in range(25 * 60):
             before = list(x.drift)
