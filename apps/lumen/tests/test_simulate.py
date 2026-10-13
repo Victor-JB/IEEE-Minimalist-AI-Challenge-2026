@@ -85,9 +85,8 @@ class FullDemo(unittest.TestCase):
 
 
 class PerceptionFindings(unittest.TestCase):
-    """Found while building the scorecard; perception/__init__.py is not this branch's to edit."""
+    """Found while building the scorecard; fixed by ModelScheduler.cancel() (8e35768)."""
 
-    @unittest.expectedFailure
     def test_logged_face_count_matches_face_model_calls(self):
         """ModelScheduler.due() counts 'face' before Perception.step drops it for the motion gate,
         so inferences_so_far in the transitions CSV over-counts face in IDLE: the gating savings
