@@ -1,0 +1,3290 @@
+{
+  "dataset": "HaGRIDv2",
+  "split": "val",
+  "per_category": 20,
+  "selection": "SHA256 luxoiii-gesture-v2, one image per subject per category; exclude all original evaluation subjects",
+  "excluded_manifest_sha256": "c7878726e700b52f4475853a1159879c6b884b4a784fee617a05f1138675e714",
+  "excluded_subjects": 193,
+  "annotation_url": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/annotations_with_landmarks/annotations.zip",
+  "rows": [
+    {
+      "id": "cb36fe3d-0c95-4033-9104-d6ca07deeff3",
+      "path": "images/palm/cb36fe3d-0c95-4033-9104-d6ca07deeff3.png",
+      "sha256": "09a92e6532bee2f6a859d41acd9a159232997a89197059f930a2e9fe940f0f95",
+      "category": "palm",
+      "boxes": [
+        [
+          0.18963154,
+          0.47129814,
+          0.151564,
+          0.08547409
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "0431a5d73791495dff60b82a1e501cdb5e0862b5262e39070b8fd0ad05a10057",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/cb36fe3d-0c95-4033-9104-d6ca07deeff3.jpg",
+      "source_sha256": "7690684f475d84d7fbacd2acb6857fa6f8c7d5bd932e22ee75e80af08beba362"
+    },
+    {
+      "id": "a6eda430-691f-4221-bb32-323fd27c76f1",
+      "path": "images/palm/a6eda430-691f-4221-bb32-323fd27c76f1.png",
+      "sha256": "2adbec43ca40e9fd7bbd429d75ae62fd50c34404119e5a79b9f6351cbb232a9f",
+      "category": "palm",
+      "boxes": [
+        [
+          0.1055361,
+          0.28188297,
+          0.32645573,
+          0.24050968
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "82de760547e6ac4f0dd67307dcb37169e57a55a0c04fb807818f6a2aabb77919",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/a6eda430-691f-4221-bb32-323fd27c76f1.jpg",
+      "source_sha256": "46a49b8ee3b080b36722bb20a793a5de3b1c3e4039c91b9063bff52933c3d0fb"
+    },
+    {
+      "id": "7a8eb139-dbb0-4b1d-8ac8-11a27f75ca81",
+      "path": "images/palm/7a8eb139-dbb0-4b1d-8ac8-11a27f75ca81.png",
+      "sha256": "6f30bca9f515958a6e412210d691d1924d80b7f5d607cb3959cd1a4d47d2d41c",
+      "category": "palm",
+      "boxes": [
+        [
+          0.58193201,
+          0.45221146,
+          0.18983632,
+          0.14303074
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "572212d543cabb16e3204967116d947103f8de0dc100288e0be0d76ce9bf97ce",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/7a8eb139-dbb0-4b1d-8ac8-11a27f75ca81.jpg",
+      "source_sha256": "9a49761002e319cf8644ea5381f4f9e844f8c9821f323aaa1b6aa4e2a9aaa821"
+    },
+    {
+      "id": "873e94e3-50b3-4f35-a301-832e9588b925",
+      "path": "images/palm/873e94e3-50b3-4f35-a301-832e9588b925.png",
+      "sha256": "bfbf5cb632fc78632dd63ba580e8974897965ac01dc0dd14ee81304ed4e85c68",
+      "category": "palm",
+      "boxes": [
+        [
+          0.26826671,
+          0.28647345,
+          0.23535661,
+          0.27110553
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "fdf4fb9f2ea77f6dafac7fcc61f073f6a630c329221532edd61479ee681a05a6",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/873e94e3-50b3-4f35-a301-832e9588b925.jpg",
+      "source_sha256": "824c7bfbb03c970ac9204ba1edbb53c16325eae44d68744c644bd261e3e06532"
+    },
+    {
+      "id": "6f9be6a1-e78c-4aad-a20b-bef3caf78bb0",
+      "path": "images/palm/6f9be6a1-e78c-4aad-a20b-bef3caf78bb0.png",
+      "sha256": "92fd96b0330101ecfabd9f44149114f4f0d4fe844bc3f1a828b0be6838f6309c",
+      "category": "palm",
+      "boxes": [
+        [
+          0.41407777,
+          0.55961581,
+          0.1495039,
+          0.12559835
+        ],
+        [
+          0.64105968,
+          0.87180446,
+          0.12663248,
+          0.11428643
+        ]
+      ],
+      "labels": [
+        "palm",
+        "no_gesture"
+      ],
+      "subject_hash": "f6bc7e10af1b42210fa54fb6f89a4e2a3468c29374fd3370b8cb56cc1ac54e85",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/6f9be6a1-e78c-4aad-a20b-bef3caf78bb0.jpg",
+      "source_sha256": "d9081a5bcebe3aa26da21cad7d1461fb55737382add2f9e9a678508b30f8ac11"
+    },
+    {
+      "id": "3018e496-0f40-478d-8525-9949334ff57f",
+      "path": "images/palm/3018e496-0f40-478d-8525-9949334ff57f.png",
+      "sha256": "ce52b9b3861047d154bf8f649b30cf2105c7814191429a7547af5d9c80b7eba7",
+      "category": "palm",
+      "boxes": [
+        [
+          0.15420322,
+          0.27098502,
+          0.28464056,
+          0.25289792
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "ac8d83f10025ad829deb45e96d380b8de05caded3763fd64e712b2d9c06b0733",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/3018e496-0f40-478d-8525-9949334ff57f.jpg",
+      "source_sha256": "27035a7302982467f909a70b35a348589b2efdb7dbd5b21601d35c4f43d22eec"
+    },
+    {
+      "id": "bb581635-fdfd-4ab9-bef7-43c6ec75ed47",
+      "path": "images/palm/bb581635-fdfd-4ab9-bef7-43c6ec75ed47.png",
+      "sha256": "1930258e6989805d57a377bbeffe187ead7c932ce5b75fd66555ecf42035c0b4",
+      "category": "palm",
+      "boxes": [
+        [
+          0.64365882,
+          0.25626236,
+          0.13329775,
+          0.20502316
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "e8419ba187f539102724df7df355e4993795b65ac5d0626e9af6b44abf670876",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/bb581635-fdfd-4ab9-bef7-43c6ec75ed47.jpg",
+      "source_sha256": "8ac9aa1b77652da9cf498c7123eb0c9c98e3493564f547ea15597910ef83786c"
+    },
+    {
+      "id": "9aaeeaf0-1b2b-4138-a2f7-55a5afff9eb8",
+      "path": "images/palm/9aaeeaf0-1b2b-4138-a2f7-55a5afff9eb8.png",
+      "sha256": "2242ad748e3bd4bca5890dd9ef95c93633f99d11b152f344b37e9818605ab8cb",
+      "category": "palm",
+      "boxes": [
+        [
+          0.27479582,
+          0.21520086,
+          0.06670995,
+          0.09230474
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "fb9bebf8af06066d56f9dcf89568e0c5e06c16cdcb6a2df07afd5d93bdf8b58a",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/9aaeeaf0-1b2b-4138-a2f7-55a5afff9eb8.jpg",
+      "source_sha256": "de91d2fb7bde6be7222486a4cf8795981f08b56a1f31ea6289d88c1a36a7f466"
+    },
+    {
+      "id": "c1b05428-3bf3-4048-a325-06ae55d5819b",
+      "path": "images/palm/c1b05428-3bf3-4048-a325-06ae55d5819b.png",
+      "sha256": "c1210ad0bf18c0dcdd927f0e5f7bf5956320e26f61c38bd23c4c33e59c78f56f",
+      "category": "palm",
+      "boxes": [
+        [
+          0.32850313,
+          0.28948012,
+          0.27418941,
+          0.32571212
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "df6f69b589ba70ec3b986131c87b0061e977cc747cfe30d99b64504015beee7f",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/c1b05428-3bf3-4048-a325-06ae55d5819b.jpg",
+      "source_sha256": "590d4740fa0837d0db282c85fdf842f1aeeae8039543b16d5d079f6e4b825748"
+    },
+    {
+      "id": "5a448d5e-5c8a-4510-adff-2698158c119e",
+      "path": "images/palm/5a448d5e-5c8a-4510-adff-2698158c119e.png",
+      "sha256": "57cdf3a094cf1f95ecdf508cfdb78244735c48481edbd540793c2e24e4fcc3c8",
+      "category": "palm",
+      "boxes": [
+        [
+          0.28013734,
+          0.82661368,
+          0.05303566,
+          0.07465588
+        ],
+        [
+          0.53218564,
+          0.50803711,
+          0.07007063,
+          0.13720483
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "palm"
+      ],
+      "subject_hash": "d6115fe7b8dd50a8c9f9eff4ae11a03314440e4e5929292844d989f298a3cb7f",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/5a448d5e-5c8a-4510-adff-2698158c119e.jpg",
+      "source_sha256": "8a3875ad165388611685b747c5c004b68ca35528586dfde63b455b6339f63c12"
+    },
+    {
+      "id": "b504ab2c-ee31-4ff0-9251-2c3e789a5f64",
+      "path": "images/palm/b504ab2c-ee31-4ff0-9251-2c3e789a5f64.png",
+      "sha256": "cf4b2c4e933c9d858949eb2b9ced052841808ec3d977f10602b63d44530ab3ee",
+      "category": "palm",
+      "boxes": [
+        [
+          0.33408967,
+          0.3468951,
+          0.12662352,
+          0.10505843
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "2d8bb28050c7e0b7ecd13479ce3307a2f681bffd8f6817de9cfa54fd6a1b31cd",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/b504ab2c-ee31-4ff0-9251-2c3e789a5f64.jpg",
+      "source_sha256": "59e5d3eefe63388304b2eb71aa7459e72d1318eab592da0a71560d566db3ce3e"
+    },
+    {
+      "id": "b8c16876-6ed6-4cb9-bab5-31a497550c11",
+      "path": "images/palm/b8c16876-6ed6-4cb9-bab5-31a497550c11.png",
+      "sha256": "ee1390798df1510ff09a135381549479bd864a6af236c336079833f9841b9cfb",
+      "category": "palm",
+      "boxes": [
+        [
+          0.26705758,
+          0.31175307,
+          0.14550982,
+          0.19132867
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "966f09df0ae9cffe11c18033f1e9ac93b228c952dc8efd1bbdd2f8f1333800a9",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/b8c16876-6ed6-4cb9-bab5-31a497550c11.jpg",
+      "source_sha256": "a972740b0d7a597de0e07242d741ae71bc4ed475a3affa19c9a4cb1a316108a6"
+    },
+    {
+      "id": "cf6bd480-6d77-4b5a-84fd-d65ee5c60bb5",
+      "path": "images/palm/cf6bd480-6d77-4b5a-84fd-d65ee5c60bb5.png",
+      "sha256": "9a89bd9f2bc45ead7e50880fe50cf249d975c8519fb818e2a60f559131418cb1",
+      "category": "palm",
+      "boxes": [
+        [
+          0.64724144,
+          0.34638481,
+          0.14472007,
+          0.11824755
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "e98629ea1c2fd11bbe876ae873000523023d997ae14e2dd7a1c1972980b4db64",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/cf6bd480-6d77-4b5a-84fd-d65ee5c60bb5.jpg",
+      "source_sha256": "1d75cfaf8b3de892a047273603e51cae16ad79c9b2613280c6de45841852eb6c"
+    },
+    {
+      "id": "e1caffd7-6045-4623-9732-e7ad50d073f0",
+      "path": "images/palm/e1caffd7-6045-4623-9732-e7ad50d073f0.png",
+      "sha256": "d45ed6f2abedd45dfa1bf011fde24e039be0b417c6ee31437e18dcc3a21bee38",
+      "category": "palm",
+      "boxes": [
+        [
+          0.25261716,
+          0.54569732,
+          0.16595199,
+          0.15902539
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "270fc2c7445054c2b939eb4aefa5aac3f030f0c525d91229a747de09214de4be",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/e1caffd7-6045-4623-9732-e7ad50d073f0.jpg",
+      "source_sha256": "760ed89a935ad830b08b23f1067703293c0a5b72cc307ae733ebe358b831b249"
+    },
+    {
+      "id": "621ac808-3699-43ef-a848-b862ff26b222",
+      "path": "images/palm/621ac808-3699-43ef-a848-b862ff26b222.png",
+      "sha256": "fca1a8b1c8fb888d76b5440667304be13256147d095305fb0cee5965c20e9903",
+      "category": "palm",
+      "boxes": [
+        [
+          0.33276885,
+          0.82381814,
+          0.06900277,
+          0.16283587
+        ],
+        [
+          0.72383964,
+          0.19503435,
+          0.14479876,
+          0.22100396
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "palm"
+      ],
+      "subject_hash": "7fc396b46488de231f45f8ed584ebb17e0b3e1e0f8a0ae0b492e98792414a5cc",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/621ac808-3699-43ef-a848-b862ff26b222.jpg",
+      "source_sha256": "ccf242eb03f7f5e8fdda5610eed5a35632ee09b7c2e65c610780159244f5b8d8"
+    },
+    {
+      "id": "98024e73-2628-4568-92b7-2e2060a583b5",
+      "path": "images/palm/98024e73-2628-4568-92b7-2e2060a583b5.png",
+      "sha256": "63e2eae7c6d52743c101dee3cd83a37927e6628b8e238ff0d676c36a8102180c",
+      "category": "palm",
+      "boxes": [
+        [
+          0.3405445,
+          0.27475249,
+          0.1039094,
+          0.21289326
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "ddcc08640abc58fb46fbeec56072480e4cebb2f8c762225a9b6dd2ce3e5bf1a6",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/98024e73-2628-4568-92b7-2e2060a583b5.jpg",
+      "source_sha256": "46b98e8255f3ab79877951fd40be1a040e936ded847f13b863687e58aa3fbaca"
+    },
+    {
+      "id": "80cee52a-cd34-427a-9b1a-0129490a0121",
+      "path": "images/palm/80cee52a-cd34-427a-9b1a-0129490a0121.png",
+      "sha256": "21a579a73f690a8bcfdf97393b7f2045683258b930c078e6fb5a05817e4c28c4",
+      "category": "palm",
+      "boxes": [
+        [
+          0.22969452,
+          0.26264301,
+          0.16287756,
+          0.13862988
+        ],
+        [
+          0.72173979,
+          0.74751703,
+          0.07629475,
+          0.10938477
+        ]
+      ],
+      "labels": [
+        "palm",
+        "no_gesture"
+      ],
+      "subject_hash": "23f95e71c4a8f0c5cd4184faaf5ed4e43799c123f8e775a0fcbb5eb5a7d54e9b",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/80cee52a-cd34-427a-9b1a-0129490a0121.jpg",
+      "source_sha256": "704b6d24ff342eb6df0729981753b8249dde1f42ddffaff111f72139b07cad1a"
+    },
+    {
+      "id": "3002ba98-35f9-4743-89bd-c508f23291d7",
+      "path": "images/palm/3002ba98-35f9-4743-89bd-c508f23291d7.png",
+      "sha256": "d7527d7af0e106031e7f8955a7375a0317c763e71cc68eff809c650e0cc29c71",
+      "category": "palm",
+      "boxes": [
+        [
+          0.35675012,
+          0.49912612,
+          0.14613015,
+          0.11119745
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "049945f6853a6490189b4bf37354402fa3a46a6c6a671071f68ee050a043ae2e",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/3002ba98-35f9-4743-89bd-c508f23291d7.jpg",
+      "source_sha256": "ddbfad170654783cfb6f1a19f801cf9084756f614e2227a74fc895cda624405d"
+    },
+    {
+      "id": "ea5d608f-b870-4bc4-b889-5ca800c8cfbe",
+      "path": "images/palm/ea5d608f-b870-4bc4-b889-5ca800c8cfbe.png",
+      "sha256": "3d7fc78d958cd11c881c9b84d74dc2ba874441307260fb6e711ab3f113ec47da",
+      "category": "palm",
+      "boxes": [
+        [
+          0.76546176,
+          0.61688229,
+          0.11946715,
+          0.14347414
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "49aa74e00887cce330abcdf095286ce0e339237fe64b0e578d6268c07cb6d543",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/ea5d608f-b870-4bc4-b889-5ca800c8cfbe.jpg",
+      "source_sha256": "577875802ac93c285a9df9cc2af63db7890d7771fb7e6109c86b59fc05e8ac13"
+    },
+    {
+      "id": "058ff460-52dc-47d8-97d2-8c43ae638a9c",
+      "path": "images/palm/058ff460-52dc-47d8-97d2-8c43ae638a9c.png",
+      "sha256": "757122c8042330c8294d19bbcac83586a040239d136065ec0837906fa4aa91a1",
+      "category": "palm",
+      "boxes": [
+        [
+          0.64185255,
+          0.32867133,
+          0.21491467,
+          0.17573372
+        ]
+      ],
+      "labels": [
+        "palm"
+      ],
+      "subject_hash": "dc3249c90ce7de75e53c31ba0fd8d6cf95e1e74c8241befaf0db287751b73144",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/palm.zip",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48",
+      "source_path": "images/palm/058ff460-52dc-47d8-97d2-8c43ae638a9c.jpg",
+      "source_sha256": "4ade1e6a48bcd4daec29c973df89f3a31cbf646a84f1fbe6b125928a2960016f"
+    },
+    {
+      "id": "b050f3fa-f549-4356-a45c-25b4d0c25467",
+      "path": "images/like/b050f3fa-f549-4356-a45c-25b4d0c25467.png",
+      "sha256": "e58d552014e112ff159c1ee92ca72de9565c9a9791d87bc40121586d524cd07a",
+      "category": "like",
+      "boxes": [
+        [
+          0.57621854,
+          0.61675528,
+          0.18606491,
+          0.21178948
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "5d51ed1f1058cb47ea2a941b73810ecf582b73de92d7d08382e6a4e6692cb42c",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/b050f3fa-f549-4356-a45c-25b4d0c25467.jpg",
+      "source_sha256": "c6ef592db29bd3e4f77d7dbd7dcf16202831eccc5874392dd42b429004babf04"
+    },
+    {
+      "id": "01afa762-d979-4b7c-b5e2-0b7e5da5d42f",
+      "path": "images/like/01afa762-d979-4b7c-b5e2-0b7e5da5d42f.png",
+      "sha256": "be2d58ab0c5544acd9575e5829f8439bbb8413182fae7f9f5398a297157682ce",
+      "category": "like",
+      "boxes": [
+        [
+          0.65214864,
+          0.28142672,
+          0.15121148,
+          0.15175262
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "e2b680aeb42ee21fb3f235ae925fc33b1ee2232c2dd4ea3b425e9351048e0bdf",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/01afa762-d979-4b7c-b5e2-0b7e5da5d42f.jpg",
+      "source_sha256": "2ae5df643590994a272b8ad2e9e511be8d68e580c4cb77d4e004978b34d370f7"
+    },
+    {
+      "id": "e2395235-7f4a-40cd-bd24-e4e710e606de",
+      "path": "images/like/e2395235-7f4a-40cd-bd24-e4e710e606de.png",
+      "sha256": "46e905247a2891f499980fd907e308b3a96c173f16079a2853843d491c78d4bb",
+      "category": "like",
+      "boxes": [
+        [
+          0.44185861,
+          0.46109637,
+          0.11337002,
+          0.17041156
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "5b0dee1d47346ea42f37916b70264131db725d44fbc7cf03d9b84da58fd043a8",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/e2395235-7f4a-40cd-bd24-e4e710e606de.jpg",
+      "source_sha256": "ecd0de4ec10be8e3b03627e3eaa81a21b296889fcc135e240659e3f5385f11e8"
+    },
+    {
+      "id": "fb365112-217a-4c8e-887a-49c64533538d",
+      "path": "images/like/fb365112-217a-4c8e-887a-49c64533538d.png",
+      "sha256": "4232036c945c085c62e290742d7446519b051337c162258ea8ca5b2d95463a3f",
+      "category": "like",
+      "boxes": [
+        [
+          0.47606993,
+          0.60760335,
+          0.06901248,
+          0.11427464
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "2eb122949a00aee035d5f8024aa4ec530235e83d8ad40339e0d44b490d72b2f8",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/fb365112-217a-4c8e-887a-49c64533538d.jpg",
+      "source_sha256": "603891e99a4f818315fb23ea51fcdd5e3d89c057688657412f781d464e16df7b"
+    },
+    {
+      "id": "8d002ce2-e85f-4fc7-90f7-b8dd819538c3",
+      "path": "images/like/8d002ce2-e85f-4fc7-90f7-b8dd819538c3.png",
+      "sha256": "7763e346328870ac7ae2d79913e02ae1148e1752c19aa07f18ed9a1aeffd9fdf",
+      "category": "like",
+      "boxes": [
+        [
+          0.29852247,
+          0.7494506,
+          0.05728517,
+          0.10049635
+        ],
+        [
+          0.60022243,
+          0.30561835,
+          0.08715815,
+          0.09084671
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "like"
+      ],
+      "subject_hash": "9dee93f95384ce3743fddc4a21780f309eafea75ac8377cb754d27832699a13f",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/8d002ce2-e85f-4fc7-90f7-b8dd819538c3.jpg",
+      "source_sha256": "242e1f4bcd934c4221244367113b9e43b631c8b81643b3132fda6a40df403651"
+    },
+    {
+      "id": "5e3451b4-c7f6-43ec-a4fb-b2bb64a194d2",
+      "path": "images/like/5e3451b4-c7f6-43ec-a4fb-b2bb64a194d2.png",
+      "sha256": "2232489bbb58c90e1441e5d60904579090eb9320abe84d6b4b92de67f3d1c286",
+      "category": "like",
+      "boxes": [
+        [
+          0.4295944,
+          0.42177927,
+          0.05037131,
+          0.04360113
+        ],
+        [
+          0.57625231,
+          0.59415203,
+          0.03529367,
+          0.0443026
+        ]
+      ],
+      "labels": [
+        "like",
+        "no_gesture"
+      ],
+      "subject_hash": "a9757166cfdd29572b163c5ece15e535d7e2da08122524f407f8b381e84641db",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/5e3451b4-c7f6-43ec-a4fb-b2bb64a194d2.jpg",
+      "source_sha256": "cbdd12e30190e9238112de5fd05afc1cbd96c94b8366a5eb76918551b006ff67"
+    },
+    {
+      "id": "c2d99428-c40d-4721-96e3-9d39d37daa03",
+      "path": "images/like/c2d99428-c40d-4721-96e3-9d39d37daa03.png",
+      "sha256": "af5fe0b579ed64c3d89f9117bccfa0575b8747fb91dd06763d0e99f47e7d127e",
+      "category": "like",
+      "boxes": [
+        [
+          0.3163179,
+          0.61797286,
+          0.13033071,
+          0.08786861
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "0431a5d73791495dff60b82a1e501cdb5e0862b5262e39070b8fd0ad05a10057",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/c2d99428-c40d-4721-96e3-9d39d37daa03.jpg",
+      "source_sha256": "5c8765ae241ed4b5944edbbbfcd2533c18d7ce802e8a373e66b7c420a36ea28c"
+    },
+    {
+      "id": "5b43ff0e-a388-4ab1-ab0c-0c1e51a3e282",
+      "path": "images/like/5b43ff0e-a388-4ab1-ab0c-0c1e51a3e282.png",
+      "sha256": "83467eb8ba0c3c7514445d4d867100db4e3b190d3cf3e86de3510d4de136fbc6",
+      "category": "like",
+      "boxes": [
+        [
+          0.41246061,
+          0.55174092,
+          0.1519237,
+          0.17481757
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "716929ad890a5c3b02d46e616eec50d36b1ebba73b54321d0b4547078118ec04",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/5b43ff0e-a388-4ab1-ab0c-0c1e51a3e282.jpg",
+      "source_sha256": "e4b45770acbeea122e9ad36b582b6e82c7c07316715a7a268c32e4fd4dc592e3"
+    },
+    {
+      "id": "e4327609-90fb-485a-9422-79f024dcebc9",
+      "path": "images/like/e4327609-90fb-485a-9422-79f024dcebc9.png",
+      "sha256": "e520d843105b2f2be7ac1140f0d740ad559c62655b3712fb2589e90ad7d177e3",
+      "category": "like",
+      "boxes": [
+        [
+          0.41929605,
+          0.3485842,
+          0.12529757,
+          0.13309281
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "84305ddfcf9d33a069c1c593c084f1a6e21be1bc11c4894325dc9bb7dd6ec897",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/e4327609-90fb-485a-9422-79f024dcebc9.jpg",
+      "source_sha256": "27d1bf7ea2796f2108556813633845724071d2a6a2f250bce9af80a5192dda51"
+    },
+    {
+      "id": "fe2d000f-dbe1-4049-9148-c1fbf0da1a80",
+      "path": "images/like/fe2d000f-dbe1-4049-9148-c1fbf0da1a80.png",
+      "sha256": "250ee57358d2773876fcebfd3a2bebf06e1b112c90cff6d1a0b0b1dd5ab3420e",
+      "category": "like",
+      "boxes": [
+        [
+          0.34302601,
+          0.35368407,
+          0.08887805,
+          0.18835151
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "ddcc08640abc58fb46fbeec56072480e4cebb2f8c762225a9b6dd2ce3e5bf1a6",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/fe2d000f-dbe1-4049-9148-c1fbf0da1a80.jpg",
+      "source_sha256": "8c454dff6a43e4b6a91cc30f3a4b53aa751b459b24dcc28c871bb35f9624f52f"
+    },
+    {
+      "id": "e2d29121-758c-45a7-b871-0b46c7168682",
+      "path": "images/like/e2d29121-758c-45a7-b871-0b46c7168682.png",
+      "sha256": "a4585a8f70cc088447863de01f4d938c5318b2e8fca39eacb1d97ac40218121f",
+      "category": "like",
+      "boxes": [
+        [
+          0.41959101,
+          0.52885393,
+          0.11702362,
+          0.30195589
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "967ce645b1729bc7bc4578c4bec45ef929650496ab4a8935a1315a74c3d06490",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/e2d29121-758c-45a7-b871-0b46c7168682.jpg",
+      "source_sha256": "76b8bece582c315ad0d6b2ebdf29b29a185ebe4c76c31e927d86f196b0cd8193"
+    },
+    {
+      "id": "525d1463-f2eb-45a9-8071-551ba46c9a4c",
+      "path": "images/like/525d1463-f2eb-45a9-8071-551ba46c9a4c.png",
+      "sha256": "36649967762a5136c1e5532ee2976d2adc0fae18126e5f110ba44b304fa25670",
+      "category": "like",
+      "boxes": [
+        [
+          0.44938775,
+          0.6860649,
+          0.15815318,
+          0.16262215
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "3b0e180496b6170c39734657b9440b903f160738a377539d46fb329cf48442fb",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/525d1463-f2eb-45a9-8071-551ba46c9a4c.jpg",
+      "source_sha256": "55bf44e856ad76e19e2107da36c303aab1f976137c835ac4c96649265faa606d"
+    },
+    {
+      "id": "3346f466-7ac7-406f-a4d4-8302e9f2338c",
+      "path": "images/like/3346f466-7ac7-406f-a4d4-8302e9f2338c.png",
+      "sha256": "c5b02da1824168fcf9254d87666ba8039fd9a95c863cbdf5a03b42656999fa27",
+      "category": "like",
+      "boxes": [
+        [
+          0.29101777,
+          0.36913365,
+          0.16287703,
+          0.16144648
+        ],
+        [
+          0.60181334,
+          0.67008316,
+          0.10579022,
+          0.11876177
+        ]
+      ],
+      "labels": [
+        "like",
+        "no_gesture"
+      ],
+      "subject_hash": "35d187857812d7f353d0f2d29bc21b7eb9a64de0cc8b9edb4f020b16dd49461d",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/3346f466-7ac7-406f-a4d4-8302e9f2338c.jpg",
+      "source_sha256": "81d5255b5590739f19ffa69e82e33a66ecb94d3455be14e47484e195ef9aafb2"
+    },
+    {
+      "id": "7728b126-884f-4da9-a479-6a14138dd6a4",
+      "path": "images/like/7728b126-884f-4da9-a479-6a14138dd6a4.png",
+      "sha256": "f260d2d5b8ed716a040560bb382e1319f33b87631679a3c0b1c2daea31591ae2",
+      "category": "like",
+      "boxes": [
+        [
+          0.52881873,
+          0.55965173,
+          0.07439009,
+          0.07390286
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "b015604ef173ae3e1e5d3535d7e4504a43c11668402a1ad68bd3ff59b668f2f0",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/7728b126-884f-4da9-a479-6a14138dd6a4.jpg",
+      "source_sha256": "2aaf433dfcdf18fcaf6d803a982c2622ab903e6e287ec121a1f8e26eefbcb428"
+    },
+    {
+      "id": "a70b5dd1-3fc2-4d69-aeff-7a981b233312",
+      "path": "images/like/a70b5dd1-3fc2-4d69-aeff-7a981b233312.png",
+      "sha256": "218119a1b8497931fca28268162b295e40b0be16e0d7f0d22337b75fc89d18ae",
+      "category": "like",
+      "boxes": [
+        [
+          0.03172734,
+          0.40465382,
+          0.31027573,
+          0.36978306
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "ac8d83f10025ad829deb45e96d380b8de05caded3763fd64e712b2d9c06b0733",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/a70b5dd1-3fc2-4d69-aeff-7a981b233312.jpg",
+      "source_sha256": "d5a10f21c72fc28eb79ee6268c0f3b2373e8c5b20f89f0eb41f80b143ce3a040"
+    },
+    {
+      "id": "e07b8ceb-ec5e-42db-aa73-7f815696496c",
+      "path": "images/like/e07b8ceb-ec5e-42db-aa73-7f815696496c.png",
+      "sha256": "8096d6a2a7be25bd91bd519c5b9ec21a4260d514a0147712a669c8e289df4c88",
+      "category": "like",
+      "boxes": [
+        [
+          0.23402397,
+          0.54094065,
+          0.26944146,
+          0.30960923
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "53f986af011120560edd333ab17576bb670c5a83c684d008095c6385125292be",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/e07b8ceb-ec5e-42db-aa73-7f815696496c.jpg",
+      "source_sha256": "33afb3af4982dd42d5391416d3bfbaf32b87752a0a853277309f0615e1342dcb"
+    },
+    {
+      "id": "bdb740fd-1312-4f67-83cf-7a2e85628142",
+      "path": "images/like/bdb740fd-1312-4f67-83cf-7a2e85628142.png",
+      "sha256": "9d9aa606c2637372be35facdf4deabe2f580aba31bd35e4dc5fbb908222275ef",
+      "category": "like",
+      "boxes": [
+        [
+          0.38430617,
+          0.56114315,
+          0.1187968,
+          0.1242848
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "0a5c8dafdc8aff984ba0a337c903e58fa3de75dc76c3e811037fb33214166c15",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/bdb740fd-1312-4f67-83cf-7a2e85628142.jpg",
+      "source_sha256": "da1ee261abdcd38916db0b6bc6361eac218818f50aa154d69286b371dc5b1251"
+    },
+    {
+      "id": "b0ee3d6f-48e7-496d-a9fb-4526ccfffdea",
+      "path": "images/like/b0ee3d6f-48e7-496d-a9fb-4526ccfffdea.png",
+      "sha256": "2852d0a27be35358dd3215194897cbd43c7f6309dff1efd2fddd2585be551869",
+      "category": "like",
+      "boxes": [
+        [
+          0.48712253,
+          0.29540285,
+          0.08307215,
+          0.08045885
+        ],
+        [
+          0.64071753,
+          0.52372022,
+          0.06119195,
+          0.07313207
+        ]
+      ],
+      "labels": [
+        "like",
+        "no_gesture"
+      ],
+      "subject_hash": "1297a0c38fbb29ad831babf354118258bc2976c5f6360655f1002a7d39392c69",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/b0ee3d6f-48e7-496d-a9fb-4526ccfffdea.jpg",
+      "source_sha256": "048c1045f6c7a3dd1f192be60570c338b800e01bce1d27f76d43b83200ac2980"
+    },
+    {
+      "id": "a734f3cb-be18-4b9b-a3bd-2900f20a9606",
+      "path": "images/like/a734f3cb-be18-4b9b-a3bd-2900f20a9606.png",
+      "sha256": "d2f5f73fc4de582b1e90e08867f5ec6f018dd4c147e3418feee62e924fd39051",
+      "category": "like",
+      "boxes": [
+        [
+          0.49103953,
+          0.66218415,
+          0.18222419,
+          0.11898744
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "b1cb4ec9c18084ddb4471b3aca81ce46780850a1c8e49758039553d8dde6f357",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/a734f3cb-be18-4b9b-a3bd-2900f20a9606.jpg",
+      "source_sha256": "122d3564c0b985bc932ff1351848a1f3283d308c872c866b1a7e7ae51bb1b4cb"
+    },
+    {
+      "id": "e8c32845-5c80-497e-99a4-acaa5f64c1dc",
+      "path": "images/like/e8c32845-5c80-497e-99a4-acaa5f64c1dc.png",
+      "sha256": "896be5c26b810a8f66ae5233e3bbb7583ce63ca4164931e01a88dffc3ee67459",
+      "category": "like",
+      "boxes": [
+        [
+          0.41544919,
+          0.50873842,
+          0.08036385,
+          0.0848384
+        ]
+      ],
+      "labels": [
+        "like"
+      ],
+      "subject_hash": "2d8bb28050c7e0b7ecd13479ce3307a2f681bffd8f6817de9cfa54fd6a1b31cd",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/like.zip",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe",
+      "source_path": "images/like/e8c32845-5c80-497e-99a4-acaa5f64c1dc.jpg",
+      "source_sha256": "450b61ceffdb426c4354c9e9ef68a2e0a0711792fc8ec0f051ebaae22144fbe4"
+    },
+    {
+      "id": "f6061d14-c72e-4956-9e6e-384b1fb9319b",
+      "path": "images/dislike/f6061d14-c72e-4956-9e6e-384b1fb9319b.png",
+      "sha256": "c6c5fdf85cca615e059ed3ccfb93dd7e9531aea8b6c6e296529f0d3939aa638b",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.21170904,
+          0.84136241,
+          0.06943568,
+          0.09200271
+        ],
+        [
+          0.52855457,
+          0.40688099,
+          0.09467991,
+          0.10793588
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "dislike"
+      ],
+      "subject_hash": "1d2667db4281152e6aad6875016431ce83cfecc7c18c64c6ca7f19e22c007464",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/f6061d14-c72e-4956-9e6e-384b1fb9319b.jpg",
+      "source_sha256": "d31a7aba535ac4e90f0f7be82c0c45650067abf2776c0a59885e354f149ebe86"
+    },
+    {
+      "id": "91758aaf-d8c4-48fe-a66b-3b5123edc3bc",
+      "path": "images/dislike/91758aaf-d8c4-48fe-a66b-3b5123edc3bc.png",
+      "sha256": "e6481527c24941e58fcd76ad6c5fa836db6b0c62f04dcd5395a12736f3d3cb1c",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.64731593,
+          0.43541895,
+          0.24158798,
+          0.2533556
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "4b7c116e829af95dbd355bf065170998b0fbdebaa845082516a1d1af879bab1e",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/91758aaf-d8c4-48fe-a66b-3b5123edc3bc.jpg",
+      "source_sha256": "3a6cec231dfaa3ad21afde2d127ca9697a144c5362cde3c5513a14a358a3e523"
+    },
+    {
+      "id": "b1aadf41-4fbb-40b9-900e-546b2a2dda9f",
+      "path": "images/dislike/b1aadf41-4fbb-40b9-900e-546b2a2dda9f.png",
+      "sha256": "a2339abb46975689c7adbb40a874703d603673e4c95f2cae947e90772c27a1ba",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.45546147,
+          0.48915332,
+          0.11563249,
+          0.14180078
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "9b9634414e5d003cb81ebe658ccee1d640253277756fbfb8199aab885232880e",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/b1aadf41-4fbb-40b9-900e-546b2a2dda9f.jpg",
+      "source_sha256": "1ac7a7ff788c07f7e217ec5e2a2a8e370880367071b68eba946d3936617764e4"
+    },
+    {
+      "id": "a328b2af-8b80-4fc1-8008-bf24d46cbe28",
+      "path": "images/dislike/a328b2af-8b80-4fc1-8008-bf24d46cbe28.png",
+      "sha256": "1d012fb91cae1df27098b6d34ad87d097d0f86cb67de350b74c3e433fe10db8a",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.36475004,
+          0.43928832,
+          0.09275409,
+          0.19282912
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "097108dc3a8a5214d510573f931623d0de7f4895e5682a9a0e0334b3c61ae414",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/a328b2af-8b80-4fc1-8008-bf24d46cbe28.jpg",
+      "source_sha256": "a5d8c12d7699550a92df82278ee3e51adac19cc364fbf3c303cce35a6d84df6d"
+    },
+    {
+      "id": "d20b820b-3349-4e57-b625-9338353275b2",
+      "path": "images/dislike/d20b820b-3349-4e57-b625-9338353275b2.png",
+      "sha256": "93138451522510ef59e830a2b27f2edbb0d916d7544d351aa98e955d40126908",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.49048491,
+          0.60493727,
+          0.10877658,
+          0.10212859
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "855a3844104d8d3461dc0e5867516d9beb999d950726466ccb34108ecbfe1725",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/d20b820b-3349-4e57-b625-9338353275b2.jpg",
+      "source_sha256": "abaec7deab01c1dc84652fe186ff47592f2d0258780b47a85fd8d02ddce61127"
+    },
+    {
+      "id": "db98f534-4fe4-4574-9d13-5f4a2bb971bf",
+      "path": "images/dislike/db98f534-4fe4-4574-9d13-5f4a2bb971bf.png",
+      "sha256": "832e8caf32a558787aad99288c40ced2ed28851079d37db6d86f94191c992b85",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.4624062,
+          0.20725982,
+          0.12027977,
+          0.1359168
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "3c584004c3669a2aaf743bac8db959580d717bd89da943ff9edda6281e3b338f",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/db98f534-4fe4-4574-9d13-5f4a2bb971bf.jpg",
+      "source_sha256": "52d85fff350fc37f54093e2404da9cec39a8db14cbf3306b7c9b017f57e6fe55"
+    },
+    {
+      "id": "31c9ceac-105f-40f6-b8f1-615ce3b2fe55",
+      "path": "images/dislike/31c9ceac-105f-40f6-b8f1-615ce3b2fe55.png",
+      "sha256": "ae90eccd5a6c7195c986b125f6b915732993f08dd349c2788c4a0cb40b13de42",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.28924252,
+          0.33332923,
+          0.07981257,
+          0.07685213
+        ],
+        [
+          0.57645892,
+          0.65884538,
+          0.05722514,
+          0.06912529
+        ]
+      ],
+      "labels": [
+        "dislike",
+        "no_gesture"
+      ],
+      "subject_hash": "2c6c66549706de077eec280a5efe85b2f9e2d9bade237117431d312d20299344",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/31c9ceac-105f-40f6-b8f1-615ce3b2fe55.jpg",
+      "source_sha256": "e60b9f8c22e597f77dac40dd1290fd821da9574eb657249c6e94fe58b94bc584"
+    },
+    {
+      "id": "5e0d1243-9bf0-46b2-a34d-b7ba32e6add4",
+      "path": "images/dislike/5e0d1243-9bf0-46b2-a34d-b7ba32e6add4.png",
+      "sha256": "07d12f7c6f8c7bd8cc98b6467f4cad12e2d07d4f76bd730b1f21f5d608eed681",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.40333752,
+          0.72829492,
+          0.13369238,
+          0.15890834
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "3fc287c24301f495a09775f8d0800dba4c71d81aa64158fd08703e52df70ad84",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/5e0d1243-9bf0-46b2-a34d-b7ba32e6add4.jpg",
+      "source_sha256": "296ffd2ec4f681039f63cfecc15f60844abbdbc1f3e34530497eb2ee0b21ded8"
+    },
+    {
+      "id": "c0160ec9-33d3-4dc3-9339-b2549cacac56",
+      "path": "images/dislike/c0160ec9-33d3-4dc3-9339-b2549cacac56.png",
+      "sha256": "5e8c6c8bca2e87d7d3657d9ed74b98b535765f571950934c02b73e6e1a09d9a2",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.22911678,
+          0.56584643,
+          0.28952972,
+          0.26148288
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "ca3f7bd0c540437a9c1c48dfc66aef42f468661100a6dc087cfe77bc014c1063",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/c0160ec9-33d3-4dc3-9339-b2549cacac56.jpg",
+      "source_sha256": "f6e7bda5a20fe2b5a0adcd86d68f2484b2c4e5386c45a98e306e539291b912df"
+    },
+    {
+      "id": "4c199eb3-d48b-442d-9882-f18b58f298bc",
+      "path": "images/dislike/4c199eb3-d48b-442d-9882-f18b58f298bc.png",
+      "sha256": "1ce1bf92a29656fa41f2a4b88ef4ec5dc594e76c0df4fe62c857c67c862621a1",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.20599719,
+          0.16817533,
+          0.17299754,
+          0.17982905
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "4efafefe7e1eea981db11b7f4fb50c4c833068761d95bf1b20b95fad84ceb817",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/4c199eb3-d48b-442d-9882-f18b58f298bc.jpg",
+      "source_sha256": "93dda65d0b93587f6c7e951c113fa70aaf9301ed16a1649d3866265c024eccd5"
+    },
+    {
+      "id": "588b3442-5858-4126-817c-5de80ed1dd6b",
+      "path": "images/dislike/588b3442-5858-4126-817c-5de80ed1dd6b.png",
+      "sha256": "2fc9a75318fb2ec6f3ed1b0d70a00ea922779ba9678888e40654753a2f020ea8",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.37224003,
+          0.39312721,
+          0.20661393,
+          0.21584575
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "0ea41f40218a6f32e198f131cf2da91d9486fa7925a50db650ba5d1fdfcb7dba",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/588b3442-5858-4126-817c-5de80ed1dd6b.jpg",
+      "source_sha256": "c1a59828e1ef803a85dca27f753311cc6787d8c8b3284873d46c868cc0ce9e8f"
+    },
+    {
+      "id": "4950870d-15c5-4dd1-962b-c0e199692613",
+      "path": "images/dislike/4950870d-15c5-4dd1-962b-c0e199692613.png",
+      "sha256": "6fd10eb2f33805c02f906d055d2d502e50094bb57160ca7c07f2ac79ab8a6cfc",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.44480525,
+          0.58968644,
+          0.1631108,
+          0.26870049
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "88fc12d83ed8ea712cd5461f268a4425def64e93ade26db353ab68e910ec58b0",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/4950870d-15c5-4dd1-962b-c0e199692613.jpg",
+      "source_sha256": "12c2da3d1cab706d14e9905d54f4bb9f619511ad34a4979a089c1ebb90e735e1"
+    },
+    {
+      "id": "5e561dd4-c798-4af4-b41b-7624ad44d444",
+      "path": "images/dislike/5e561dd4-c798-4af4-b41b-7624ad44d444.png",
+      "sha256": "5d31403ae916fd1c04d7644936fa7e4e4f5c89082a2cc883377eaee19a09a4b7",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.51056531,
+          0.48072423,
+          0.08738445,
+          0.17042142
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "3782eebdfa51d6f4b1aae25e0283bd05f9bce6683478fcd9cb5a8b258fa0f3e2",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/5e561dd4-c798-4af4-b41b-7624ad44d444.jpg",
+      "source_sha256": "18c3d5ad352180354290925010b9da9a252bb2b51dba7b0f32c3904d27554ad2"
+    },
+    {
+      "id": "b9b2a19c-32b6-4639-b894-c4cfa678b413",
+      "path": "images/dislike/b9b2a19c-32b6-4639-b894-c4cfa678b413.png",
+      "sha256": "df5a53a9877869720f67af7ac2b834febef56cd0620ae7356975911311af534b",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.56827181,
+          0.63279242,
+          0.1185899,
+          0.12874389
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "3b0e180496b6170c39734657b9440b903f160738a377539d46fb329cf48442fb",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/b9b2a19c-32b6-4639-b894-c4cfa678b413.jpg",
+      "source_sha256": "eddffffde44e0385999dff789e1cf61e6a1a4ab160019945cccf2afe1bbefb45"
+    },
+    {
+      "id": "8da0e4c2-6f68-4fdd-ad60-173352a384ca",
+      "path": "images/dislike/8da0e4c2-6f68-4fdd-ad60-173352a384ca.png",
+      "sha256": "7a32626040f367bf312db4f1a44cdd56a8d6499edffb265caec6c2af5689815d",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.37023974,
+          0.2991006,
+          0.08555363,
+          0.09739917
+        ],
+        [
+          0.61503721,
+          0.6797874,
+          0.07888032,
+          0.07651639
+        ]
+      ],
+      "labels": [
+        "dislike",
+        "no_gesture"
+      ],
+      "subject_hash": "ae729b18eb8162f48cacb62b328da786b5b45f2c40a085cd958dc253126de198",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/8da0e4c2-6f68-4fdd-ad60-173352a384ca.jpg",
+      "source_sha256": "14cf678e004afc63604fde02d4ab8c3180c0ddd7367e5edf3154f8770a1f1c83"
+    },
+    {
+      "id": "9735e10f-a025-4dd5-b750-f553beda4863",
+      "path": "images/dislike/9735e10f-a025-4dd5-b750-f553beda4863.png",
+      "sha256": "6d9a0988ff42fbc9a0545c6c7eeab0f9a8f8f503dd4d21e13d072f368e643e3f",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.47208088,
+          0.18603549,
+          0.15886613,
+          0.20094221
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "ff9f4b688d9c81f2e817a37baddf2bda98074246500f70986eff9f93f6497306",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/9735e10f-a025-4dd5-b750-f553beda4863.jpg",
+      "source_sha256": "ac042d03a327581a8debf1463b46454bcafee45808cb2c036bea5f80f35b4947"
+    },
+    {
+      "id": "402fb05b-32f8-4ade-b493-29f07fe94562",
+      "path": "images/dislike/402fb05b-32f8-4ade-b493-29f07fe94562.png",
+      "sha256": "d12478122c2949824ed2d902fe1be0a5275c3a45a5179b4462458368b1c83298",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.39879993,
+          0.43886956,
+          0.1483015,
+          0.13364264
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "8e1d0295f67dacf412ddf93ed3286aef9c42e93b52d3afdc9f9a2f0fe4e19c9a",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/402fb05b-32f8-4ade-b493-29f07fe94562.jpg",
+      "source_sha256": "c61cffa1eb43242ae93ba91b55d92c8c2ea0a6fdb2d81a21fa5798c8e670804d"
+    },
+    {
+      "id": "1c7ae11c-76ee-4c4a-adda-c92d7e814a0a",
+      "path": "images/dislike/1c7ae11c-76ee-4c4a-adda-c92d7e814a0a.png",
+      "sha256": "1f6af67cdc80d391b270cf74853f3faecac92e438eee6bfb8df44d201f6ccfee",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.62757383,
+          0.21501456,
+          0.10387724,
+          0.12064391
+        ],
+        [
+          0.85406131,
+          0.6015331,
+          0.10255436,
+          0.10519782
+        ]
+      ],
+      "labels": [
+        "dislike",
+        "no_gesture"
+      ],
+      "subject_hash": "68c673a3799f7aa02f2714c908bdf1482d6e2d0acf5796b2e98218ca697ce679",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/1c7ae11c-76ee-4c4a-adda-c92d7e814a0a.jpg",
+      "source_sha256": "e4df8f434552c899001b1ca6e37f0dcd79a31d9a958df38681eb252df1192b80"
+    },
+    {
+      "id": "08af5b62-c667-475e-813a-0c3dfbe305c1",
+      "path": "images/dislike/08af5b62-c667-475e-813a-0c3dfbe305c1.png",
+      "sha256": "92cce681b2037aaa9945421116fb23803b227358be7aed2af42ff1c01b59507b",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.22474408,
+          0.77598701,
+          0.09078901,
+          0.11731747
+        ],
+        [
+          0.53184548,
+          0.36306054,
+          0.08835748,
+          0.09552351
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "dislike"
+      ],
+      "subject_hash": "a9757166cfdd29572b163c5ece15e535d7e2da08122524f407f8b381e84641db",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/08af5b62-c667-475e-813a-0c3dfbe305c1.jpg",
+      "source_sha256": "e4919691acfa0a91b0d587a5f8b0923df551912cff04b72ca4cc99a249d6126b"
+    },
+    {
+      "id": "56c62b52-5ab9-4210-b5a1-4e55bc67be72",
+      "path": "images/dislike/56c62b52-5ab9-4210-b5a1-4e55bc67be72.png",
+      "sha256": "50894e757c0df23b9910e03cd4977ad0f281df5837edccbfe7eb06e55be0f5cc",
+      "category": "dislike",
+      "boxes": [
+        [
+          0.45332582,
+          0.46248517,
+          0.07430639,
+          0.13738309
+        ]
+      ],
+      "labels": [
+        "dislike"
+      ],
+      "subject_hash": "ddd19f40a0efd9a29a58fa8f3cc33c153d5dd595c2a0f3b60d6e480d3be73d89",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/dislike.zip",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93",
+      "source_path": "images/dislike/56c62b52-5ab9-4210-b5a1-4e55bc67be72.jpg",
+      "source_sha256": "7e2e60db9964f379df35b695627ac7b42082ca580b1af6cac27b707086d441f4"
+    },
+    {
+      "id": "a7474292-f4b5-4af4-82e5-a7569e4b3f3b",
+      "path": "images/one/a7474292-f4b5-4af4-82e5-a7569e4b3f3b.png",
+      "sha256": "4d60fc35054c03dbe011e63687c5d3462fb2138d0b32c9aa26d84c9c0c464c69",
+      "category": "one",
+      "boxes": [
+        [
+          0.23624158,
+          0.70135186,
+          0.07107255,
+          0.1139552
+        ],
+        [
+          0.6246629,
+          0.24565346,
+          0.0914196,
+          0.1462816
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "one"
+      ],
+      "subject_hash": "5fbad916343509a51598a405385c696403e045c83935d8ec5abda4d185a39743",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/a7474292-f4b5-4af4-82e5-a7569e4b3f3b.jpg",
+      "source_sha256": "5fbd6f902dee9b7d1f496cece62aedd24b62bff3845441d11e97eeecf478e421"
+    },
+    {
+      "id": "cbee6a5e-2987-4df0-9630-9db91b07122e",
+      "path": "images/one/cbee6a5e-2987-4df0-9630-9db91b07122e.png",
+      "sha256": "ad99f410f3fcbf581db7fe560881d60d711a546efc57022cf539c0671ea0fe8e",
+      "category": "one",
+      "boxes": [
+        [
+          0.29289182,
+          0.47341839,
+          0.10371455,
+          0.15308365
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "1297a0c38fbb29ad831babf354118258bc2976c5f6360655f1002a7d39392c69",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/cbee6a5e-2987-4df0-9630-9db91b07122e.jpg",
+      "source_sha256": "1e47336d24893d5a356443daebb7e904b1269cdb15de75e10276500508b84ef4"
+    },
+    {
+      "id": "b7d4dfac-724c-4332-a5a5-232dbba9e6ec",
+      "path": "images/one/b7d4dfac-724c-4332-a5a5-232dbba9e6ec.png",
+      "sha256": "7859a14851a06894369c784f6c7ac570c1d58c050f54c6a7bb13e1c95dd0a7b7",
+      "category": "one",
+      "boxes": [
+        [
+          0.48258767,
+          0.7383278,
+          0.08688893,
+          0.10781544
+        ],
+        [
+          0.70219728,
+          0.19911275,
+          0.05930945,
+          0.20677003
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "one"
+      ],
+      "subject_hash": "6134e897473123b8b9b264bd0fff72b18f09db7046fc694be8a37d7e51cf07fd",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/b7d4dfac-724c-4332-a5a5-232dbba9e6ec.jpg",
+      "source_sha256": "3c14851660489e134b07d95972d6a63c189e3cb1b52a90bbae1f688eb2cc94ea"
+    },
+    {
+      "id": "8cefb859-649a-4bb9-b207-8f232aa13da7",
+      "path": "images/one/8cefb859-649a-4bb9-b207-8f232aa13da7.png",
+      "sha256": "29260501d93375a91229e9b9f64b32998cb227eb6858e920784d28c816ce6833",
+      "category": "one",
+      "boxes": [
+        [
+          0.43288441,
+          0.29729031,
+          0.0573398,
+          0.09179797
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "7761db2fec33e47e94f9ecb481012d9b1583b0168754b567ae6caed89898cdf3",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/8cefb859-649a-4bb9-b207-8f232aa13da7.jpg",
+      "source_sha256": "ed4786da1c880acb5ce8213e04da578fca72bd3910cdfb97c543683fa251e206"
+    },
+    {
+      "id": "05e8981f-2026-4a72-b723-48546d08a10a",
+      "path": "images/one/05e8981f-2026-4a72-b723-48546d08a10a.png",
+      "sha256": "0e7f21affbf928291a1254069d9b36f579c6e3588c80a86baf4e36755c238fa8",
+      "category": "one",
+      "boxes": [
+        [
+          0.5680368,
+          0.43300754,
+          0.11643262,
+          0.17798608
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "8557dfb95eba29bc2ff1271765e26d145974c4caf5335b44a744fa6cc18cd62f",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/05e8981f-2026-4a72-b723-48546d08a10a.jpg",
+      "source_sha256": "416f07975a9bd4aa55e30b3b7d9521e3050f9f2854d8d35461feea022383c7e7"
+    },
+    {
+      "id": "7572bd4e-5ed9-4afa-8115-c3faed3a5d4a",
+      "path": "images/one/7572bd4e-5ed9-4afa-8115-c3faed3a5d4a.png",
+      "sha256": "2448ca68a4fd36077111165c8a446b19ca02e150ff59e8158fc3633251dfd54d",
+      "category": "one",
+      "boxes": [
+        [
+          0.40433382,
+          0.50723926,
+          0.08137217,
+          0.11077023
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "f6bc7e10af1b42210fa54fb6f89a4e2a3468c29374fd3370b8cb56cc1ac54e85",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/7572bd4e-5ed9-4afa-8115-c3faed3a5d4a.jpg",
+      "source_sha256": "a36fbb7177b2c8ddc1e23dbe6b39c0aad20fa475199d004836067533a4c4c80b"
+    },
+    {
+      "id": "452dd045-d290-49c6-9980-0b500f6deef4",
+      "path": "images/one/452dd045-d290-49c6-9980-0b500f6deef4.png",
+      "sha256": "188ee79f93ee9443dda96d1a1100a3f2eb8c9c542c4ac88356da8e1bd15d08be",
+      "category": "one",
+      "boxes": [
+        [
+          0.38648314,
+          0.3055125,
+          0.08177677,
+          0.11103958
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "2d8bb28050c7e0b7ecd13479ce3307a2f681bffd8f6817de9cfa54fd6a1b31cd",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/452dd045-d290-49c6-9980-0b500f6deef4.jpg",
+      "source_sha256": "ba5f3b8b12dda14d5757b4bf60c959415028f8a558f0d27191e16e78eb1c0a3d"
+    },
+    {
+      "id": "9bdce673-bd4b-4a16-b2d4-3a444e9c6116",
+      "path": "images/one/9bdce673-bd4b-4a16-b2d4-3a444e9c6116.png",
+      "sha256": "027cf35d630b5597c3df81829a207bb0ba1a7094eac2bf836a234a30cf23aaa1",
+      "category": "one",
+      "boxes": [
+        [
+          0.6873806,
+          0.35506837,
+          0.16194825,
+          0.22647708
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "c60519563e752c7fb82d8b61b572f96a2f675d15d22528297cea9337051eddc2",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/9bdce673-bd4b-4a16-b2d4-3a444e9c6116.jpg",
+      "source_sha256": "aa1efd1f0ce513cb761f2c44159a47b9cd0a465393e4cdb09c690b5fb9cf5cf2"
+    },
+    {
+      "id": "fd9cb8b4-e28a-420c-9553-63ee8375fda8",
+      "path": "images/one/fd9cb8b4-e28a-420c-9553-63ee8375fda8.png",
+      "sha256": "351b8f3ac6b47b89598284aaa52afcede481b067984b7b63f973d379f85ca4e4",
+      "category": "one",
+      "boxes": [
+        [
+          0.40958659,
+          0.33451338,
+          0.05133767,
+          0.12317895
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "3782eebdfa51d6f4b1aae25e0283bd05f9bce6683478fcd9cb5a8b258fa0f3e2",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/fd9cb8b4-e28a-420c-9553-63ee8375fda8.jpg",
+      "source_sha256": "ed3424e7174138652f266015c7c1d0ebcdf8b22c23af235066ab79e5f28285de"
+    },
+    {
+      "id": "379a4b70-de09-4fcc-842d-25944fe22b94",
+      "path": "images/one/379a4b70-de09-4fcc-842d-25944fe22b94.png",
+      "sha256": "e7869c3e8ac885d540c9d13c1dd64c8b57c41d98166ce6b521c04b9788fc30f6",
+      "category": "one",
+      "boxes": [
+        [
+          0.13627905,
+          0.22403189,
+          0.18491698,
+          0.16350897
+        ],
+        [
+          0.89494643,
+          0.78190936,
+          0.10419215,
+          0.16940906
+        ]
+      ],
+      "labels": [
+        "one",
+        "no_gesture"
+      ],
+      "subject_hash": "b1193cf6627ffe9bc9703d6da1c4ff75036c47392a4061120f7bb3fbfdd943b8",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/379a4b70-de09-4fcc-842d-25944fe22b94.jpg",
+      "source_sha256": "0cec2368057913f797a2e5adedd1f1e0d2c9afeb878af6fa8453aabc2375fd91"
+    },
+    {
+      "id": "e6e4d4e4-52a7-45ce-be59-d4e6dc7a2339",
+      "path": "images/one/e6e4d4e4-52a7-45ce-be59-d4e6dc7a2339.png",
+      "sha256": "7b72138416e69e71df68e4dbc5a86a00c8bb5ad7bc21dcd05e3b607bff46c7fb",
+      "category": "one",
+      "boxes": [
+        [
+          0.33836355,
+          0.27626338,
+          0.05632506,
+          0.15578896
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "8ec30d992c1b08ea92cd4bae9ca9f743de8c4e241bef0ccbaec048fcd5af4040",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/e6e4d4e4-52a7-45ce-be59-d4e6dc7a2339.jpg",
+      "source_sha256": "ef48bdb8ce95fa7c98ee2cc5331414d0ca25a73015ebb66d400aafc8c9c1f888"
+    },
+    {
+      "id": "84755d30-d7cd-463c-9136-ccb062fd397b",
+      "path": "images/one/84755d30-d7cd-463c-9136-ccb062fd397b.png",
+      "sha256": "de5c8003fe1df3d46954b9085f17defcff07f18ace25cd4483e8d5749c4e737b",
+      "category": "one",
+      "boxes": [
+        [
+          0.59942945,
+          0.4812222,
+          0.06290958,
+          0.08375006
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "2aa12b3fd9fab388ffdb6d93e6e91140a4002b222e941588e54b585f45c9cb75",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/84755d30-d7cd-463c-9136-ccb062fd397b.jpg",
+      "source_sha256": "d3a31544faa6888c6960f9b7fad401c0b63607f9cc1c40f3e71dbd348ff1dfd6"
+    },
+    {
+      "id": "8e061dd5-4a35-4cdc-98db-6c1d046dac92",
+      "path": "images/one/8e061dd5-4a35-4cdc-98db-6c1d046dac92.png",
+      "sha256": "108a4982808014ea94052a3770a1e76960b3d8c6af6e9a18e012cf2dab25e876",
+      "category": "one",
+      "boxes": [
+        [
+          0.30025144,
+          0.31547872,
+          0.07247801,
+          0.10525789
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "b61fc80d56d0a10b3fb186e13ea5a8a4d6e55225fa8be81a4982b8f1aa93b36f",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/8e061dd5-4a35-4cdc-98db-6c1d046dac92.jpg",
+      "source_sha256": "1adde8dbdc5ea5e343160aba5f1ac774b6499aa3e3f9075ff41d57002cc80438"
+    },
+    {
+      "id": "1c8fa93b-f395-44c6-a912-9adf52aee6d0",
+      "path": "images/one/1c8fa93b-f395-44c6-a912-9adf52aee6d0.png",
+      "sha256": "6574fa40ea02dccb8e9927908c4533b9281ea3a636a3b1f5aca4871316a1e356",
+      "category": "one",
+      "boxes": [
+        [
+          0.22631381,
+          0.19690429,
+          0.14014429,
+          0.18706429
+        ],
+        [
+          0.71792087,
+          0.90672118,
+          0.1090311,
+          0.09232739
+        ]
+      ],
+      "labels": [
+        "one",
+        "no_gesture"
+      ],
+      "subject_hash": "f7e08e48f0af1d3fe0d342a5f994d2701f2c4d713f15d85e557a8fb453e102d8",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/1c8fa93b-f395-44c6-a912-9adf52aee6d0.jpg",
+      "source_sha256": "706659edc3e605de09a10d133ab17debe6f1233f51a56a4ce7b0949064270549"
+    },
+    {
+      "id": "f3886515-621c-4e08-a403-c6f35caf9e75",
+      "path": "images/one/f3886515-621c-4e08-a403-c6f35caf9e75.png",
+      "sha256": "02f28edf6f5eb8cf6d0c858e15f345266b2ad5b92f4113cb64b6a980fdc48818",
+      "category": "one",
+      "boxes": [
+        [
+          0.63541567,
+          0.34720842,
+          0.11729776,
+          0.16224253
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "0aeeaf61c1beb09c986ad99b2cd645d49f7df05be37a621c838995fd93f192c6",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/f3886515-621c-4e08-a403-c6f35caf9e75.jpg",
+      "source_sha256": "1f7e4b3e8bf25ebf5df657a18aaf573dc30cb85328fb734430dfbee3c954c285"
+    },
+    {
+      "id": "2cc04a53-7ddc-4005-a29e-6ecae75e11c0",
+      "path": "images/one/2cc04a53-7ddc-4005-a29e-6ecae75e11c0.png",
+      "sha256": "4d1d82a9507be2f4f90a449b2809bbc9a0100a797ab223520f926e63455e5a9d",
+      "category": "one",
+      "boxes": [
+        [
+          0.33154335,
+          0.3437265,
+          0.09131718,
+          0.13601719
+        ],
+        [
+          0.77846548,
+          0.87412279,
+          0.10329141,
+          0.12548971
+        ]
+      ],
+      "labels": [
+        "one",
+        "no_gesture"
+      ],
+      "subject_hash": "7a461c39704aeb495640d398b43613899e577943bd127ef23ae1cceeb8d2d2aa",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/2cc04a53-7ddc-4005-a29e-6ecae75e11c0.jpg",
+      "source_sha256": "78cd8a0c8cdce845a4ecd51755309270e9247e2cfb57ea652d6715f48c61f33d"
+    },
+    {
+      "id": "68ba7fef-7b8f-4017-8675-2da33ad71096",
+      "path": "images/one/68ba7fef-7b8f-4017-8675-2da33ad71096.png",
+      "sha256": "f4921556c71b9cd304e164fe8afa536c766e59d1ef1da8c75046c9deaf1ce145",
+      "category": "one",
+      "boxes": [
+        [
+          0.2796107,
+          0.33737571,
+          0.10075515,
+          0.20292782
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "df6f69b589ba70ec3b986131c87b0061e977cc747cfe30d99b64504015beee7f",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/68ba7fef-7b8f-4017-8675-2da33ad71096.jpg",
+      "source_sha256": "48e9799723b3cb1d57ed0f6872df4f06fc0c59ef7441aeb74800ddc19654d9ba"
+    },
+    {
+      "id": "7f34e85d-a348-46b4-acdd-7dba3c23c5f6",
+      "path": "images/one/7f34e85d-a348-46b4-acdd-7dba3c23c5f6.png",
+      "sha256": "059bc242e8815c6d2fa60b818a425ce1c7e10ad10a4e17fbec13acc0a3685d6e",
+      "category": "one",
+      "boxes": [
+        [
+          0.18785375,
+          0.11051011,
+          0.06533774,
+          0.18245665
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "36527a3d70e2ea1050c3041ef03c18fec3b4d737b4761b1722d3c8d24fb95332",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/7f34e85d-a348-46b4-acdd-7dba3c23c5f6.jpg",
+      "source_sha256": "aba5a581dda3cf3618faab3a6378879cc25c49e88fac08ceba49ecb4bbad63ac"
+    },
+    {
+      "id": "41aed920-d1b3-4334-b8dc-51f0be56244e",
+      "path": "images/one/41aed920-d1b3-4334-b8dc-51f0be56244e.png",
+      "sha256": "3f46c8d941865753c3aa281df4563331cef4e9197146ac580fa8b5ee10b524da",
+      "category": "one",
+      "boxes": [
+        [
+          0.67237905,
+          0.42714194,
+          0.1367683,
+          0.11975489
+        ]
+      ],
+      "labels": [
+        "one"
+      ],
+      "subject_hash": "0f5e7cf75d42d289306946ce88626312e9e3237612aef0bbe1a4eaa1d4822920",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/41aed920-d1b3-4334-b8dc-51f0be56244e.jpg",
+      "source_sha256": "9321d4a659ed32653ba5c21a866c20213f8f076aaa9be4f5333eb0160ab74b7f"
+    },
+    {
+      "id": "12d5ed33-8c98-42ad-964d-aff4788872b2",
+      "path": "images/one/12d5ed33-8c98-42ad-964d-aff4788872b2.png",
+      "sha256": "13889902684610ca4699574de38ca2dba659521c92a6007323131ee373857284",
+      "category": "one",
+      "boxes": [
+        [
+          0.30094561,
+          0.2646742,
+          0.0464207,
+          0.09380104
+        ],
+        [
+          0.48334012,
+          0.67382997,
+          0.03714182,
+          0.08757166
+        ]
+      ],
+      "labels": [
+        "one",
+        "no_gesture"
+      ],
+      "subject_hash": "4150d2dd4e6ca5f202f21941e6f7e4aa2ab82967df0e4419ba32e4efe6709cd5",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/one.zip",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99",
+      "source_path": "images/one/12d5ed33-8c98-42ad-964d-aff4788872b2.jpg",
+      "source_sha256": "253b3443cf3b8644c1bf01f4d41723090eced81443b9f11664d00421b0cc0ddf"
+    },
+    {
+      "id": "b56df5ff-68de-4ee6-805a-b11850562b3b",
+      "path": "images/point/b56df5ff-68de-4ee6-805a-b11850562b3b.png",
+      "sha256": "d70ebaee9b3f8559e5e273064f56e295d01f8f956af7f977da8a27c492e88cbc",
+      "category": "point",
+      "boxes": [
+        [
+          0.35692288,
+          0.5214394,
+          0.10631234,
+          0.22665968
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "9fbbcde2e27928df3bc20b941b5cf9bd7244fbe513abce7bd160e53389ab7381",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/b56df5ff-68de-4ee6-805a-b11850562b3b.jpg",
+      "source_sha256": "7e593966a58be1d2176303b3d70f89b68b088f14571c295021939785a08e3749"
+    },
+    {
+      "id": "ab897497-9258-48e0-84aa-94877cf1a78b",
+      "path": "images/point/ab897497-9258-48e0-84aa-94877cf1a78b.png",
+      "sha256": "5bf7fc4c92da79061ceda58aefe7cfc3eb5a134e44a00de2fa792e12b46dc8b1",
+      "category": "point",
+      "boxes": [
+        [
+          0.26748597,
+          0.6925596,
+          0.11137803,
+          0.09440969
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "6e6281c3349e3cb6725f1bc366f087a297ee6e3d93af45e04834bd868ff61773",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/ab897497-9258-48e0-84aa-94877cf1a78b.jpg",
+      "source_sha256": "9b316128e6412ebad7ba4a29691739081ddd484b33f12727a5ad7f552e3a04f3"
+    },
+    {
+      "id": "976a1f2b-bc10-4f35-911c-13403cd61007",
+      "path": "images/point/976a1f2b-bc10-4f35-911c-13403cd61007.png",
+      "sha256": "2ce818988e3a74051408f779316bb0db02234dd2d7ade5886778cadddc085974",
+      "category": "point",
+      "boxes": [
+        [
+          0.17289915,
+          0.53447567,
+          0.22485568,
+          0.17213522
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "e8d860d3456b89d557158cf91026c427b5f7fb4de4f26fc7f372e131f817b0bf",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/976a1f2b-bc10-4f35-911c-13403cd61007.jpg",
+      "source_sha256": "69cd332d7aa40e343196f10aa736e190e630124d6c048a031471b2563cea4db1"
+    },
+    {
+      "id": "a8c5ca60-bc31-4451-b251-6603527ac058",
+      "path": "images/point/a8c5ca60-bc31-4451-b251-6603527ac058.png",
+      "sha256": "fb93c54e41cfc9b0969e94c94bf39296d0a7a360336482845321147b73d4604a",
+      "category": "point",
+      "boxes": [
+        [
+          0.53048462,
+          0.60997979,
+          0.08658612,
+          0.11238604
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "0fdf059255409dcf965e4dedbd46d02135bb0a798e33605c16aaafe6b03aa43e",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/a8c5ca60-bc31-4451-b251-6603527ac058.jpg",
+      "source_sha256": "d0754371ae3476baaaa451a8179bf60a73a0e7d9b1d093576f3b403bc85b4939"
+    },
+    {
+      "id": "7b637e19-ef5e-410f-a4a0-46bf04dea348",
+      "path": "images/point/7b637e19-ef5e-410f-a4a0-46bf04dea348.png",
+      "sha256": "983347f5b9b86a273f9b439f879b92a735c3029bae03c301782d33654c3e65d5",
+      "category": "point",
+      "boxes": [
+        [
+          0.29678496,
+          0.65161203,
+          0.1621439,
+          0.1066342
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "ee212c72f5997dea353f5ba360c62d70e8cd5f958b7e5521e17b71609e998ac1",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/7b637e19-ef5e-410f-a4a0-46bf04dea348.jpg",
+      "source_sha256": "ecf8f2def60238fec69a289835f6fe188a93189e527d271df012d0cbe72f44cc"
+    },
+    {
+      "id": "c760e854-e479-4a7c-ae5b-e6cf4b7c44f9",
+      "path": "images/point/c760e854-e479-4a7c-ae5b-e6cf4b7c44f9.png",
+      "sha256": "2510c5b92fa8ae2dc2555190cd0659659f89c1e6b7bde6e5be3f784d41e85dbd",
+      "category": "point",
+      "boxes": [
+        [
+          0.59670955,
+          0.5970595,
+          0.15577478,
+          0.11829161
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "c02430b9dffcb66bfd51bc49ecbd7a2506143506db0f6d27da44351797a2ceed",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/c760e854-e479-4a7c-ae5b-e6cf4b7c44f9.jpg",
+      "source_sha256": "66b5284bb79fc04fde2b45b57660b294f457a6597e3256a3bbac04500223860c"
+    },
+    {
+      "id": "786acdf4-00af-43dd-9e9e-df8476d1d85e",
+      "path": "images/point/786acdf4-00af-43dd-9e9e-df8476d1d85e.png",
+      "sha256": "e3bb7bd5edeb17311907cff2a258dfcdccac61779e1ee7b3665e9b2615a33f65",
+      "category": "point",
+      "boxes": [
+        [
+          0.33144727,
+          0.51068308,
+          0.16416478,
+          0.14020155
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "2b507eb94bb59a2d436626f5e3f7660dacd43a6afca57910a8ade7340a3d8cca",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/786acdf4-00af-43dd-9e9e-df8476d1d85e.jpg",
+      "source_sha256": "132da20d96b7d9f7b6b8cf7e4220f9ef2a55952f272941215712dea8678e95e8"
+    },
+    {
+      "id": "596a822b-b3d4-475f-ba2a-f7916aac1b2d",
+      "path": "images/point/596a822b-b3d4-475f-ba2a-f7916aac1b2d.png",
+      "sha256": "4c69e4d1f742e58c0e3e18a7c71d14e53729435459be36f754c3137d8834589f",
+      "category": "point",
+      "boxes": [
+        [
+          0.5009923,
+          0.55989563,
+          0.24844192,
+          0.36909491
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "11bc617175f74bb6a2ba5925263cd5fe67135f03f399934011254d00fbb06c77",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/596a822b-b3d4-475f-ba2a-f7916aac1b2d.jpg",
+      "source_sha256": "3d31c51879085bc036c378dbb2e37f9ba5c0e8012f23f087fe86058ed6032436"
+    },
+    {
+      "id": "46bd54aa-e15f-4c06-8729-5a59e31e782f",
+      "path": "images/point/46bd54aa-e15f-4c06-8729-5a59e31e782f.png",
+      "sha256": "0ebe6e36cad992eba1bd2568e36cff83af22f29802c9252c4260b1ce58a94ba8",
+      "category": "point",
+      "boxes": [
+        [
+          0.3203169,
+          0.65217428,
+          0.13952517,
+          0.09168971
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "1ca48cbcf92528fad9e0803168ce6e842d648141d8d327493acfed75281a931d",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/46bd54aa-e15f-4c06-8729-5a59e31e782f.jpg",
+      "source_sha256": "17e9361c15a52d116d2abb0a84f323a1a7637505402ec8f10cfdcfed4cb908e2"
+    },
+    {
+      "id": "ddbdeb77-725d-47e7-9e7f-3efed4c8aa67",
+      "path": "images/point/ddbdeb77-725d-47e7-9e7f-3efed4c8aa67.png",
+      "sha256": "23b3fe82032368bdc56cfffbe5c01fef762b06a161870e7fc7dae71ee37db073",
+      "category": "point",
+      "boxes": [
+        [
+          0.2090277778,
+          0.4557291667,
+          0.2472222222,
+          0.2484375
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "0f93a3cb272e9c92708cc261de925f5515397f52b0a19e60be8a3b79f01f492b",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/ddbdeb77-725d-47e7-9e7f-3efed4c8aa67.jpg",
+      "source_sha256": "57f5163e1f66caf455862b0e3e7c0924cb8e6e88432347c79a5f0234732d01c6"
+    },
+    {
+      "id": "8a67f0bb-42cb-43af-8881-d9b07d521cd6",
+      "path": "images/point/8a67f0bb-42cb-43af-8881-d9b07d521cd6.png",
+      "sha256": "4b33c4629128ca90e2f17c8875f880989ecb1913c385f178747f3e7180f78534",
+      "category": "point",
+      "boxes": [
+        [
+          0.20863824,
+          0.46080536,
+          0.24067658,
+          0.1914012
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "837b5ceaf22beaec49dbbdae1771584872077342646e807d39d9b6209358b092",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/8a67f0bb-42cb-43af-8881-d9b07d521cd6.jpg",
+      "source_sha256": "2c3d38fab58ba0a35281d96d4a451c4031caa9a291ec7d3bea86fdedd846d131"
+    },
+    {
+      "id": "6a783828-2977-49f3-8800-13f7b02ce6cd",
+      "path": "images/point/6a783828-2977-49f3-8800-13f7b02ce6cd.png",
+      "sha256": "aa97dfab56b9e24f90b14a1079301647771a98588883cf28604bc0106fca7734",
+      "category": "point",
+      "boxes": [
+        [
+          0.58297901,
+          0.4151081,
+          0.1746887,
+          0.14710677
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "6bbdc86b5d536bc7868d29b01f1fa0d50d85529486eaa503bd5a62ee2138a568",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/6a783828-2977-49f3-8800-13f7b02ce6cd.jpg",
+      "source_sha256": "d08807730867134c2fc154c6ba609baa0d195c85ef014832a8d4480dbc98d114"
+    },
+    {
+      "id": "6b8034cb-7657-4e41-a3db-8e0bf86b1dd8",
+      "path": "images/point/6b8034cb-7657-4e41-a3db-8e0bf86b1dd8.png",
+      "sha256": "f46d62d5845a0bb257803e1ce79ae424eb9c9fcd5d59ccc461743a26b44ed2a1",
+      "category": "point",
+      "boxes": [
+        [
+          0.3640412,
+          0.67639158,
+          0.05457482,
+          0.12332887
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "78b6e2595d72e935f4b8cc7eb057d7af46f8f3e49954580a12ad2c03cd2fefec",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/6b8034cb-7657-4e41-a3db-8e0bf86b1dd8.jpg",
+      "source_sha256": "e1cfcc06df5f85baf6e33bd29e517afeb8cdf62facf62c06a71810205efc90e9"
+    },
+    {
+      "id": "db3aca5f-a2b3-4aa3-b14e-62a5c6e47927",
+      "path": "images/point/db3aca5f-a2b3-4aa3-b14e-62a5c6e47927.png",
+      "sha256": "3461345444bd45d89b59b4620ba225df5eab6fb7277279efce383475aa1b8b40",
+      "category": "point",
+      "boxes": [
+        [
+          0.47012726,
+          0.68232347,
+          0.10442572,
+          0.10536092
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "b6a3cb38fbf34cea767320ccb6aa03999ef1878978f2843b78ccc2727fdc41b9",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/db3aca5f-a2b3-4aa3-b14e-62a5c6e47927.jpg",
+      "source_sha256": "09c5666bfb71fbc0b8dd9c9202da4d39e079a9d4eddc3cbb8be33cd7794eebfe"
+    },
+    {
+      "id": "87d6de4f-773f-4fa5-83a2-be612e5f0076",
+      "path": "images/point/87d6de4f-773f-4fa5-83a2-be612e5f0076.png",
+      "sha256": "e3ada67b8a0ff50b50310ad53ebe074c84ff651fd632b02a1706a9084dd88a5a",
+      "category": "point",
+      "boxes": [
+        [
+          0.42227441,
+          0.58523444,
+          0.05894415,
+          0.10509028
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "cf07baf8dc700afb7eda3e7006cf2c30187cd98eafd4e25deeac8797d709f956",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/87d6de4f-773f-4fa5-83a2-be612e5f0076.jpg",
+      "source_sha256": "c44a7529698af2ba726f5fdeac157ba2a9759148dc106a00ffcdc37f88981727"
+    },
+    {
+      "id": "fe67cbac-3919-4b13-b2da-dea8759eff36",
+      "path": "images/point/fe67cbac-3919-4b13-b2da-dea8759eff36.png",
+      "sha256": "e0030fd612146c4bf8c8780609a0a1041defe83c66a2a66cbe0d4a6189dad68e",
+      "category": "point",
+      "boxes": [
+        [
+          0.52092782,
+          0.67989493,
+          0.11633673,
+          0.08379964
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "026bcf8972951540cc23433be042c689b10909c15360dbbbf4422013a36e03f0",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/fe67cbac-3919-4b13-b2da-dea8759eff36.jpg",
+      "source_sha256": "80032bb873837c85703433d2c41846f0127534dfcbbc291c2e9c2e1ac1f74226"
+    },
+    {
+      "id": "8753be39-fa89-4876-9bf0-d5dae8fe1ab6",
+      "path": "images/point/8753be39-fa89-4876-9bf0-d5dae8fe1ab6.png",
+      "sha256": "88ddecfd97dd1e8e9d7e48e2efab6266eb718cae6c0c759fcb609c90929b55e4",
+      "category": "point",
+      "boxes": [
+        [
+          0.33900884,
+          0.52378287,
+          0.26525815,
+          0.20512257
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "c5fd74a87f2971acedff53ba7bbf69b91fa9bdf6bea09ce04198bf36e3296439",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/8753be39-fa89-4876-9bf0-d5dae8fe1ab6.jpg",
+      "source_sha256": "0bd30337d845e494e975fa7a16d0ab51a3a71540b9f31cff872520a1d78ecd7e"
+    },
+    {
+      "id": "51034c5a-dac0-47d6-8b52-a85fb47c217d",
+      "path": "images/point/51034c5a-dac0-47d6-8b52-a85fb47c217d.png",
+      "sha256": "b8018c212b127178a871ac98b33ee19d17f1c7903f91696fc70748cb3aa3eaa9",
+      "category": "point",
+      "boxes": [
+        [
+          0.63661163,
+          0.47426747,
+          0.10971541,
+          0.21460089
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "ffe0bee75fdf20a7ce4981ede33bd73b612d971110b75134185f8ff3aa2ec682",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/51034c5a-dac0-47d6-8b52-a85fb47c217d.jpg",
+      "source_sha256": "b26971bb3877706baa5cdd25dde2c9aa1e0083327eaa0628de6f849502a26618"
+    },
+    {
+      "id": "b8fc458a-e30b-4913-9bd0-bda6759ac167",
+      "path": "images/point/b8fc458a-e30b-4913-9bd0-bda6759ac167.png",
+      "sha256": "0d5c335c08bb5cb255020fb19b2c32993116f8b2e8487bf0e732298948deacbd",
+      "category": "point",
+      "boxes": [
+        [
+          0.29506527,
+          0.65758363,
+          0.09010077,
+          0.06500071
+        ],
+        [
+          0.4572604,
+          0.53924813,
+          0.13333972,
+          0.12563334
+        ]
+      ],
+      "labels": [
+        "point",
+        "no_gesture"
+      ],
+      "subject_hash": "fe35e6456d28eae8ae3d15d66b1a7bf38bc4c0e79ff00bb5c9d0617f9a6703f4",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/b8fc458a-e30b-4913-9bd0-bda6759ac167.jpg",
+      "source_sha256": "c4db2b60cf4fd259a990c349825bc1823e9f0b98938858b7109d99eb626befb3"
+    },
+    {
+      "id": "43aed6a9-0065-4b17-8c1f-e0606190d053",
+      "path": "images/point/43aed6a9-0065-4b17-8c1f-e0606190d053.png",
+      "sha256": "bb4a77f7f01e3e66596de336cf0d857130e63244ab8a325a82e7fc2968493ae3",
+      "category": "point",
+      "boxes": [
+        [
+          0.2213202,
+          0.67925759,
+          0.16080552,
+          0.14771856
+        ]
+      ],
+      "labels": [
+        "point"
+      ],
+      "subject_hash": "527ff06bfa3c3a019334a147e8541cd3d77a7aa4e8002c841118ba813da0d609",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/point.zip",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3",
+      "source_path": "images/point/43aed6a9-0065-4b17-8c1f-e0606190d053.jpg",
+      "source_sha256": "4eff7ef260519809ed1bc2642d76f7f57ac7c79a48193655d88ee96ff617fcfb"
+    },
+    {
+      "id": "a649fe61-6d3e-4121-919c-fe1f44b31080",
+      "path": "images/fist/a649fe61-6d3e-4121-919c-fe1f44b31080.png",
+      "sha256": "1f9da203552f1211998145d2b33d6d47ebbb2435ee3072517f223471b94a34a6",
+      "category": "fist",
+      "boxes": [
+        [
+          0.64643158,
+          0.39474736,
+          0.15286624,
+          0.1071424
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "d6f5493d2bc3819fcadf0408cf5bbdecbf9c9acc148d08ed22ea85503ae12596",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/a649fe61-6d3e-4121-919c-fe1f44b31080.jpg",
+      "source_sha256": "48b2db5a30f9b4c73d34f7e4b2a3cc3971f8cfe5d4e4d52cb325318d3572362f"
+    },
+    {
+      "id": "e0d37f08-048a-4434-943c-45ee0ef6d30b",
+      "path": "images/fist/e0d37f08-048a-4434-943c-45ee0ef6d30b.png",
+      "sha256": "08482e4c1b18f261a021554537de801dd5118bb7e76c46e327fd73210cafc542",
+      "category": "fist",
+      "boxes": [
+        [
+          0.69334931,
+          0.24477792,
+          0.09398646,
+          0.12682863
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "e8419ba187f539102724df7df355e4993795b65ac5d0626e9af6b44abf670876",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/e0d37f08-048a-4434-943c-45ee0ef6d30b.jpg",
+      "source_sha256": "767cb95672fc4ae0b6f86a29279ff606ebc196432812788aada7937c3edb7a14"
+    },
+    {
+      "id": "c13c1f1b-1fc0-4435-b702-6c2c5e2f2b07",
+      "path": "images/fist/c13c1f1b-1fc0-4435-b702-6c2c5e2f2b07.png",
+      "sha256": "c8de9d2ab322ab44135c038d8510d66f2d26fb8ec4e4339c0851edfbe4f2bc8e",
+      "category": "fist",
+      "boxes": [
+        [
+          0.17739125,
+          0.43109875,
+          0.20871875,
+          0.1929325
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "1297a0c38fbb29ad831babf354118258bc2976c5f6360655f1002a7d39392c69",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/c13c1f1b-1fc0-4435-b702-6c2c5e2f2b07.jpg",
+      "source_sha256": "d91f349bc510100d0287ff675ea7cb1105b2316c302792af45a13cffe3446174"
+    },
+    {
+      "id": "34ce8a53-d5d7-4485-93df-56412ce2bd7b",
+      "path": "images/fist/34ce8a53-d5d7-4485-93df-56412ce2bd7b.png",
+      "sha256": "1d807b4278da17c0108ed22764dc87aae207bc8777b14e5da15296610ccc7d05",
+      "category": "fist",
+      "boxes": [
+        [
+          0.08673019,
+          0.4018193,
+          0.16417624,
+          0.10116635
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "3b944b1e4c0c32b0785a13fca0aa8208b0dcddf23511ee4ff518fa3ca3c9590a",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/34ce8a53-d5d7-4485-93df-56412ce2bd7b.jpg",
+      "source_sha256": "1825655ffd56c8c1c6e50e8622146e6dd1bf56135771f3bf7002276ea38369d5"
+    },
+    {
+      "id": "120b304d-1127-4524-866f-9a185233f76d",
+      "path": "images/fist/120b304d-1127-4524-866f-9a185233f76d.png",
+      "sha256": "16fde23ebbe64250bad40e6bcd4ceb941424304162e9865de879d9ec1ab97645",
+      "category": "fist",
+      "boxes": [
+        [
+          0.29243963,
+          0.33184981,
+          0.17745207,
+          0.13144677
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "a97d467195de9cf388702cf6f7fe5e3a7792cced59e91f13dff1797c4a3549bd",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/120b304d-1127-4524-866f-9a185233f76d.jpg",
+      "source_sha256": "a90e63c7217cff7fa513bf6e6ba4d6314ce247c6432c94737cb49083c4c6c15e"
+    },
+    {
+      "id": "7448d07f-eb57-4cdf-8f10-7a4bdcbcb2ef",
+      "path": "images/fist/7448d07f-eb57-4cdf-8f10-7a4bdcbcb2ef.png",
+      "sha256": "02f8b9e55e969b7cbd512b2e0af0d7a0291e93d4a5cf14a0d511bc83a1f2e9ae",
+      "category": "fist",
+      "boxes": [
+        [
+          0.15989022,
+          0.39114088,
+          0.12113351,
+          0.09189707
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "49e42ac43c1c7bd372bedcafba76573897957187c259db33e22071079087e324",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/7448d07f-eb57-4cdf-8f10-7a4bdcbcb2ef.jpg",
+      "source_sha256": "e5f0d3ac0f7e941f5751182ac73d46925bcec0ae2105b89aa8b1cdc91d2d69ea"
+    },
+    {
+      "id": "a8a73e87-b4cf-42d0-baae-79a0609ed0ba",
+      "path": "images/fist/a8a73e87-b4cf-42d0-baae-79a0609ed0ba.png",
+      "sha256": "fafb12bdd668a81cb1200f1ab213a140f2298f97d1dc1b244a81f8e50b18900e",
+      "category": "fist",
+      "boxes": [
+        [
+          0.57715285,
+          0.29354944,
+          0.11107878,
+          0.07610816
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "0ea41f40218a6f32e198f131cf2da91d9486fa7925a50db650ba5d1fdfcb7dba",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/a8a73e87-b4cf-42d0-baae-79a0609ed0ba.jpg",
+      "source_sha256": "81a26c6f71c550ccb87e319ab9b9c492f2b3be0dfeeed86c071774f1ebb25748"
+    },
+    {
+      "id": "e946bcb3-d735-4f71-8c42-2042fb484207",
+      "path": "images/fist/e946bcb3-d735-4f71-8c42-2042fb484207.png",
+      "sha256": "e3ae996b660cccf555e463ae660514724c10240dba2dc7d33d9a8406ff6d81b2",
+      "category": "fist",
+      "boxes": [
+        [
+          0.1864794,
+          0.40251471,
+          0.08929939,
+          0.06318093
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "723e05ed7afc217e6d1dd936dca42d9ee557aad19e539bd2fb8b4ed71fef77a3",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/e946bcb3-d735-4f71-8c42-2042fb484207.jpg",
+      "source_sha256": "8f736f0c61e4ed60eb025286a68950df84c7daba6b9161d142bc049e5d03ca91"
+    },
+    {
+      "id": "60fd02c4-2690-4b3c-9b88-d398c19b3515",
+      "path": "images/fist/60fd02c4-2690-4b3c-9b88-d398c19b3515.png",
+      "sha256": "5a8e80c983aa594ce09332aeb5334ed4ec4ea2aedd4abf2040bc5954a314391f",
+      "category": "fist",
+      "boxes": [
+        [
+          0.20104111,
+          0.17197667,
+          0.15040111,
+          0.28164667
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "5cd2c7619984a33bca6e9ba3d86bc2e4a9b024f88bb46b9b6bd9fe79dc63adeb",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/60fd02c4-2690-4b3c-9b88-d398c19b3515.jpg",
+      "source_sha256": "f95c37820af8450302079c603d79d8d20dcbd03bbd336e7bad27d39e7dbea67e"
+    },
+    {
+      "id": "3722f033-2ed1-497d-97ad-32f36084a8b8",
+      "path": "images/fist/3722f033-2ed1-497d-97ad-32f36084a8b8.png",
+      "sha256": "46ba8ad3c8f704c1e6ab18fc0411614df46136dde178931eab448f511b64fce2",
+      "category": "fist",
+      "boxes": [
+        [
+          0.21487587,
+          0.38854704,
+          0.12963961,
+          0.08615313
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "63d1311035ecced05e30970d73d25d6d6bce1fbab70cd35843ac8dba38bf0bc4",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/3722f033-2ed1-497d-97ad-32f36084a8b8.jpg",
+      "source_sha256": "4786df68a912f52eaeb1f9a7855494864dfb132881202a32ba47dc70e62e35a5"
+    },
+    {
+      "id": "95a42c84-0a11-4f42-b026-fb3346092f78",
+      "path": "images/fist/95a42c84-0a11-4f42-b026-fb3346092f78.png",
+      "sha256": "2ea4dd3d64c179ae8dcd54118a3638ee212ef3456dcb8e8c8c74e38a5675fa1e",
+      "category": "fist",
+      "boxes": [
+        [
+          0.37449664,
+          0.43594293,
+          0.06219359,
+          0.03973974
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "7761db2fec33e47e94f9ecb481012d9b1583b0168754b567ae6caed89898cdf3",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/95a42c84-0a11-4f42-b026-fb3346092f78.jpg",
+      "source_sha256": "5de7a33aaeed0f56bf704280eea20c961e483e23671ea185b62ff92ad39563c9"
+    },
+    {
+      "id": "a8d4bf23-bf5b-4e96-8234-6c931897c952",
+      "path": "images/fist/a8d4bf23-bf5b-4e96-8234-6c931897c952.png",
+      "sha256": "f10005396c5bce4e2bae77961edf5aff40afa2d30d935800a4b8ea3bc99bda20",
+      "category": "fist",
+      "boxes": [
+        [
+          0.57131428,
+          0.49595956,
+          0.1413175,
+          0.098615
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "556b009df142baf29fb22e1346dfcf3895308a513e3473bf4f93a9bf0d3ae337",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/a8d4bf23-bf5b-4e96-8234-6c931897c952.jpg",
+      "source_sha256": "1674b719197ecc72f030d39abe044ecf886fdac9686531d77c7bd7e9df96781e"
+    },
+    {
+      "id": "63b6188c-d264-4ede-9c2b-a936a771023d",
+      "path": "images/fist/63b6188c-d264-4ede-9c2b-a936a771023d.png",
+      "sha256": "67e5bffc9fc4229f6435cca7e6cc475744a313352fa70fad058903bc783b396a",
+      "category": "fist",
+      "boxes": [
+        [
+          0.28456783,
+          0.23166573,
+          0.0840279,
+          0.1106128
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "8ec30d992c1b08ea92cd4bae9ca9f743de8c4e241bef0ccbaec048fcd5af4040",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/63b6188c-d264-4ede-9c2b-a936a771023d.jpg",
+      "source_sha256": "fb37657effc247304070dc7e9df7b4a63c4551012d40e45bcf6a81e984f2706e"
+    },
+    {
+      "id": "e9927ebd-8ab7-4ea1-addb-052ad3929e55",
+      "path": "images/fist/e9927ebd-8ab7-4ea1-addb-052ad3929e55.png",
+      "sha256": "714ea90f0c7d445c2c6c6aaca607cb85edb321ee282b8352da9fda868d0311e6",
+      "category": "fist",
+      "boxes": [
+        [
+          0.17820182,
+          0.69419979,
+          0.08198368,
+          0.08620688
+        ],
+        [
+          0.53320226,
+          0.39972108,
+          0.07947962,
+          0.05194215
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "fist"
+      ],
+      "subject_hash": "cdbccf6ba20fb175e4cd6647dc703e388749d6a597f672c3bcd63a1c376348dc",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/e9927ebd-8ab7-4ea1-addb-052ad3929e55.jpg",
+      "source_sha256": "e262b8937ef5d8ca293b53f49b740ee03f2165f694f428ce53f952e86b93262f"
+    },
+    {
+      "id": "0fee178c-af85-4d9d-a7bb-e0a49de99887",
+      "path": "images/fist/0fee178c-af85-4d9d-a7bb-e0a49de99887.png",
+      "sha256": "436a098bcb7b0e97adcddfc7dfed9d17164f1d701eca77292daaf27ca4ea8be6",
+      "category": "fist",
+      "boxes": [
+        [
+          0.35874957,
+          0.85778264,
+          0.07572445,
+          0.10392787
+        ],
+        [
+          0.74931046,
+          0.47151962,
+          0.06377587,
+          0.10374448
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "fist"
+      ],
+      "subject_hash": "d6115fe7b8dd50a8c9f9eff4ae11a03314440e4e5929292844d989f298a3cb7f",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/0fee178c-af85-4d9d-a7bb-e0a49de99887.jpg",
+      "source_sha256": "b7aadb3135209bb17eb315ce261cbae116548078d13986adf695567de9be9b13"
+    },
+    {
+      "id": "50a091fc-92d2-41de-8fb8-54f3e946f65b",
+      "path": "images/fist/50a091fc-92d2-41de-8fb8-54f3e946f65b.png",
+      "sha256": "f04a456b6b2be71fd7f6f5d03cacf000ca79c26fb93510f0f5712fde73ed9415",
+      "category": "fist",
+      "boxes": [
+        [
+          0.66016749,
+          0.44707175,
+          0.15681556,
+          0.12452578
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "7d20ffa057c295d5a5995c7187d2ba34719ddfb5aa32bf9f7f35e62a163267d8",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/50a091fc-92d2-41de-8fb8-54f3e946f65b.jpg",
+      "source_sha256": "b386be1a4325348ce6f0ee4b0b1a6b389c14c0ae704463583bb41db7849ca4ff"
+    },
+    {
+      "id": "5b3ed30b-3f7b-4a35-914a-8749b5f8f8a3",
+      "path": "images/fist/5b3ed30b-3f7b-4a35-914a-8749b5f8f8a3.png",
+      "sha256": "7c3090b6fdd57f1a3f4780b48182cac5c05c87389d40bdeff552c6649d98dc81",
+      "category": "fist",
+      "boxes": [
+        [
+          0.22040196,
+          0.24594311,
+          0.21330524,
+          0.1689499
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "5d51ed1f1058cb47ea2a941b73810ecf582b73de92d7d08382e6a4e6692cb42c",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/5b3ed30b-3f7b-4a35-914a-8749b5f8f8a3.jpg",
+      "source_sha256": "1a26dbd4368cabf457e2c9cf4bf2e86b96cf62871e72072e9f519426c2f4b0e7"
+    },
+    {
+      "id": "92e445a9-8381-459e-8b16-75c37ca02004",
+      "path": "images/fist/92e445a9-8381-459e-8b16-75c37ca02004.png",
+      "sha256": "088c06304268edbb7d16b47bdded18ec119c5dc5d4e17db0b3d12faa9e4f9a09",
+      "category": "fist",
+      "boxes": [
+        [
+          0.2231473,
+          0.53936102,
+          0.09018188,
+          0.06405547
+        ],
+        [
+          0.3840276,
+          0.86612016,
+          0.14708906,
+          0.08705314
+        ]
+      ],
+      "labels": [
+        "fist",
+        "no_gesture"
+      ],
+      "subject_hash": "f6bc7e10af1b42210fa54fb6f89a4e2a3468c29374fd3370b8cb56cc1ac54e85",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/92e445a9-8381-459e-8b16-75c37ca02004.jpg",
+      "source_sha256": "81898fd81002be52d79f023a6608974cefe1c830e88c43c68c78e1cd36c60cb2"
+    },
+    {
+      "id": "0c7dd66e-1f44-4e21-90a8-d457fdd3e671",
+      "path": "images/fist/0c7dd66e-1f44-4e21-90a8-d457fdd3e671.png",
+      "sha256": "a1857a3a633fa38881ab892c610ad314ee2fe87017b9f9641a3fda0942e8a049",
+      "category": "fist",
+      "boxes": [
+        [
+          0.17542728,
+          0.41095639,
+          0.12935431,
+          0.08243555
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "bb7db1d3d58ce4273733b5e3b3301479b0b866c89ac539474ad51833f0ea0c24",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/0c7dd66e-1f44-4e21-90a8-d457fdd3e671.jpg",
+      "source_sha256": "cd8bf9ef407a37a5551e59bc27799d0a9ce2687b2962382426a4191d0935d6ea"
+    },
+    {
+      "id": "a983b240-890f-4469-9edd-7be3c9cb5671",
+      "path": "images/fist/a983b240-890f-4469-9edd-7be3c9cb5671.png",
+      "sha256": "0f24381d92ad807c2a02a55d88cc00ac1e1c4e771c003d8db89dc7684a8ff2cb",
+      "category": "fist",
+      "boxes": [
+        [
+          0.31865416,
+          0.24874747,
+          0.09402792,
+          0.08088285
+        ]
+      ],
+      "labels": [
+        "fist"
+      ],
+      "subject_hash": "9aa6545e9b5b33313f3bfacbed25ae43262075b1d5a2fef3d9e8e6e9e38825e2",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid/hagrid_dataset_new_554800/hagrid_dataset/fist.zip",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c",
+      "source_path": "images/fist/a983b240-890f-4469-9edd-7be3c9cb5671.jpg",
+      "source_sha256": "a71e6a9c6103c162f19820145890f82ee6f73caf8066b1fd5ca123e6d50a61ad"
+    },
+    {
+      "id": "e3df8b36-5a8b-4dd7-9fab-05939e375e75",
+      "path": "images/no_gesture/e3df8b36-5a8b-4dd7-9fab-05939e375e75.png",
+      "sha256": "283b00a90c0bd45304f1edfa7ec487575fb3b181ef1edc82514112ffa0273bcb",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.1925925926,
+          0.4458333333,
+          0.1981481481,
+          0.1833333333
+        ],
+        [
+          0.3222222222,
+          0.6555555556,
+          0.3425925926,
+          0.0902777778
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "no_gesture"
+      ],
+      "subject_hash": "f49da49400428b6a5d25857ad5acf96e49ca2dac7d5d2ed42444407497aaba01",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/e3df8b36-5a8b-4dd7-9fab-05939e375e75.jpg",
+      "source_sha256": "e293551c4c059a76331ff0f5a5605d59b6fd2c02af28fada7339d9d912edbbdc"
+    },
+    {
+      "id": "bae28e3f-a030-4e5a-85bd-09fd979848cf",
+      "path": "images/no_gesture/bae28e3f-a030-4e5a-85bd-09fd979848cf.png",
+      "sha256": "8d7ee3600fe97317ad6b5d11e9ebf5bb8910528e1500d9e4f210c720cc722f85",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.5796296296,
+          0.6611111111,
+          0.2574074074,
+          0.2111111111
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "85ea4f425074d65bbd59b7ac3fc161a84dd68e678ba8da9c614cc3e48a5af667",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/bae28e3f-a030-4e5a-85bd-09fd979848cf.jpg",
+      "source_sha256": "2dcb32d21b681ef595d283bd4fe025306ce167e59a24b6b271f6199ba723d094"
+    },
+    {
+      "id": "c545fd27-7f95-46b5-9e5d-5d2d9b4cc017",
+      "path": "images/no_gesture/c545fd27-7f95-46b5-9e5d-5d2d9b4cc017.png",
+      "sha256": "51cb124e61bacfc736ab3db1b5c1c2a16b2a5ef93583848b95c1d758049b77fc",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.0037037037,
+          0.4722222222,
+          0.1925925926,
+          0.3208333333
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "4ee3d00ba8d79546c8c5f7064e19b7463ab5c5ce9b4423fa18c3ecb4a1718b25",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/c545fd27-7f95-46b5-9e5d-5d2d9b4cc017.jpg",
+      "source_sha256": "d14ffa1fa0d6dd19b5843ac0233d7ac0fc4c74262a8a64246e74978b79b24a73"
+    },
+    {
+      "id": "8314a746-ce3f-4dd7-8280-4a008636ba16",
+      "path": "images/no_gesture/8314a746-ce3f-4dd7-8280-4a008636ba16.png",
+      "sha256": "196ccbe5b1102462bf9dd34c7dc579e28b738e6a25feb0883f077f756f56382f",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.3125,
+          0.5185185185,
+          0.1847222222,
+          0.2166666667
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "c5ba6e3ce75a8038f193c42a678ca3d1627d8059defc583b02582612abff6b7a",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/8314a746-ce3f-4dd7-8280-4a008636ba16.jpg",
+      "source_sha256": "95a99310c66882fc5be2b87370a9b4fbffac5af39b7bd4222000787c73b84503"
+    },
+    {
+      "id": "59f58a91-3997-4e43-b2b5-ff0adf1034cf",
+      "path": "images/no_gesture/59f58a91-3997-4e43-b2b5-ff0adf1034cf.png",
+      "sha256": "c8489dbf8bf99b666ea7e0ef8e26c52bd1512121dc7ba6bdc2fa6060147ca700",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.2777777778,
+          0.4097222222,
+          0.3185185185,
+          0.3055555556
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "cfc9e79da9bc3e9ffc41f45c7bc35c26698fa95e85ffb28de9209fc725c29af2",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/59f58a91-3997-4e43-b2b5-ff0adf1034cf.jpg",
+      "source_sha256": "97ec06d09302860bb923d7aa7856c8d425cb70996dce0cb3d232369b6c2ea599"
+    },
+    {
+      "id": "e3587b38-8061-4c8a-95c9-20e2abd07db3",
+      "path": "images/no_gesture/e3587b38-8061-4c8a-95c9-20e2abd07db3.png",
+      "sha256": "9236f89baffbf8b5fecbea8a23f592964ddd8cb3a4a2c7912d0eb09c6150b6c5",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.2666666667,
+          0.6208333333,
+          0.1351851852,
+          0.1277777778
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "bcd4f7f279d3d1c5b25bb8c876f7d40da69bf9606e09c2f1a5edac6ce9861f27",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/e3587b38-8061-4c8a-95c9-20e2abd07db3.jpg",
+      "source_sha256": "4fe3174a37b8eda93a3c9932e90fddab92729fa5ef74745eec87fd89bafd3ba4"
+    },
+    {
+      "id": "f171706b-e440-4b91-a320-07bd681a40ad",
+      "path": "images/no_gesture/f171706b-e440-4b91-a320-07bd681a40ad.png",
+      "sha256": "5a2ab594a31493c09e89ece5455f6476ae53c7e16e2510c544f2ba75179aa9ad",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.4237918216,
+          0.3652777778,
+          0.1301115242,
+          0.1430555556
+        ],
+        [
+          0.4962825279,
+          0.6972222222,
+          0.1152416357,
+          0.0541666667
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "no_gesture"
+      ],
+      "subject_hash": "57d360799f2302ab52f2c21eee47c83a1455e12fcd941988d430df75f36ec00e",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/f171706b-e440-4b91-a320-07bd681a40ad.jpg",
+      "source_sha256": "9c4eada98b6aefc9fd1ef68e9acd66d38619f1ac783bfbe809beed0ac926b432"
+    },
+    {
+      "id": "85ac6b16-b2f9-4617-a31f-1316c4da1187",
+      "path": "images/no_gesture/85ac6b16-b2f9-4617-a31f-1316c4da1187.png",
+      "sha256": "719210161c4479aba012183e4138681083aecedd51fe985a47034a7bb31480e4",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.346875,
+          0.3666666667,
+          0.1046875,
+          0.2694444444
+        ],
+        [
+          0.38125,
+          0.7861111111,
+          0.075,
+          0.1888888889
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "no_gesture"
+      ],
+      "subject_hash": "8dfe6d766b24d7a0c9375dffb1ffca8d3011701c74b49986e994b4541ed53d21",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/85ac6b16-b2f9-4617-a31f-1316c4da1187.jpg",
+      "source_sha256": "ea80ad7c9002e8fe74f731d37ca1823c5b2ad83c9c0156e28c6126c155915862"
+    },
+    {
+      "id": "bf6a72f9-b83c-404d-b2c7-c5bbe1b9c769",
+      "path": "images/no_gesture/bf6a72f9-b83c-404d-b2c7-c5bbe1b9c769.png",
+      "sha256": "bcb5bed9e8d197be5f771024eed760f23699868124cfc96b62f6823dcb3c733b",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.5819444444,
+          0.387654321,
+          0.1069444444,
+          0.2567901235
+        ],
+        [
+          0.3819444444,
+          0.7580246914,
+          0.2097222222,
+          0.2419753086
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "no_gesture"
+      ],
+      "subject_hash": "4af6048276eeac94ae0cf0102185e0cf66eda40ca8ec23e7b88b65695b404f94",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/bf6a72f9-b83c-404d-b2c7-c5bbe1b9c769.jpg",
+      "source_sha256": "35fb23d5c5f143b0781162bc4316ec1d3b0637848384e0e19464dd11124f0409"
+    },
+    {
+      "id": "0e845d2e-a350-4d30-b77c-05f821a5bddf",
+      "path": "images/no_gesture/0e845d2e-a350-4d30-b77c-05f821a5bddf.png",
+      "sha256": "7e55df0cb19f155c10e696f96a4a22b035c88a7f5554e55cf526a56e69661f61",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.2574074074,
+          0.1833333333,
+          0.3111111111,
+          0.2791666667
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "47e7e983f6258f582cb8c5df8113d3b4b7732137e2e8a93741bc395c1eff78ce",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/0e845d2e-a350-4d30-b77c-05f821a5bddf.jpg",
+      "source_sha256": "5f7e4703eeea8bd3c705683ceda80006c3df972b795b0fd430327f6154e64dc1"
+    },
+    {
+      "id": "53912437-2981-45c1-ac8c-7b8c24b49b94",
+      "path": "images/no_gesture/53912437-2981-45c1-ac8c-7b8c24b49b94.png",
+      "sha256": "49b572f3da216c1e0763cbc92d7b90c11d804421dd1fa9886bda292bbf4b893e",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.0018518519,
+          0.4222222222,
+          0.2518518519,
+          0.2555555556
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "c6f255afb4e557e49b8c986567c9109a47cfd88de35cdbc2e4c0cc30737589b1",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/53912437-2981-45c1-ac8c-7b8c24b49b94.jpg",
+      "source_sha256": "8ec454e10fb7938624b197d95a9edf9bbf7021e4d7dc6aa7f1fc18bf8ffc7dfa"
+    },
+    {
+      "id": "49836118-ea13-4d69-86ca-67e2467f0646",
+      "path": "images/no_gesture/49836118-ea13-4d69-86ca-67e2467f0646.png",
+      "sha256": "b2f3910c44b9bfa64f8bd90593fa726296c248ad417587bde85759196fcd09b3",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0,
+          0.4402777778,
+          0.3296296296,
+          0.2805555556
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "9c07422b5ad57b32b868bd832c30cf6b303d710ba11156014bda64b866703e3c",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/49836118-ea13-4d69-86ca-67e2467f0646.jpg",
+      "source_sha256": "37ead9d87e39e5bec8ca0670ffeeff1afe501e5b92bae04e426cb3aaf7dc740b"
+    },
+    {
+      "id": "d94209a5-66b4-46b8-8174-5a63e4cde387",
+      "path": "images/no_gesture/d94209a5-66b4-46b8-8174-5a63e4cde387.png",
+      "sha256": "df642925a801d69b950e0006860e4d6797821d4edeedd5bb817000ca62a78d33",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.4347222222,
+          0.3777777778,
+          0.15,
+          0.162962963
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "189b1d72d7246537606dbafbdbd4771a7a11b2c60fcd8fb7c937eb120b9dc02a",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/d94209a5-66b4-46b8-8174-5a63e4cde387.jpg",
+      "source_sha256": "70319b6e4de69647fd427d48f7da243a2e25bff7031d31a57fd9a7e3e54ff73d"
+    },
+    {
+      "id": "21c1ff0c-bf03-40d1-8483-4a4ea692ba11",
+      "path": "images/no_gesture/21c1ff0c-bf03-40d1-8483-4a4ea692ba11.png",
+      "sha256": "6fbdfd64306a8b489d65bd8595e5ac86f932620a555b992d9f7a38da4caca68a",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.7111111111,
+          0.3263888889,
+          0.287037037,
+          0.3333333333
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "ad2f71ab46b5bc98ad1aac2d002c774f6a46952cc1a8f15e2625ed3803a82d71",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/21c1ff0c-bf03-40d1-8483-4a4ea692ba11.jpg",
+      "source_sha256": "c4a0f02ba6e6814b34e44f3f1849a6dacd68b4dac929e66ff1fda70f752b57cd"
+    },
+    {
+      "id": "b05f61af-8d79-4b82-85ba-55434cfda294",
+      "path": "images/no_gesture/b05f61af-8d79-4b82-85ba-55434cfda294.png",
+      "sha256": "c5570bf7044d7db147732c7164fe56e81e0d6b470b152a5ae2396136e8a7ab96",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.471349353,
+          0.4138888889,
+          0.1829944547,
+          0.2263888889
+        ],
+        [
+          0.5767097967,
+          0.8291666667,
+          0.280961183,
+          0.1708333333
+        ]
+      ],
+      "labels": [
+        "no_gesture",
+        "no_gesture"
+      ],
+      "subject_hash": "d8084683fa559a3d083fb4bb1e2596d6a962b9ae042864519671e552549c0f9d",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/b05f61af-8d79-4b82-85ba-55434cfda294.jpg",
+      "source_sha256": "18518c1ed9fa3509194b3d2c036fff3a05f47938ca5aecfe2fe32aa78e4619ac"
+    },
+    {
+      "id": "613b46fb-3752-4dd2-a7b6-eef413edec09",
+      "path": "images/no_gesture/613b46fb-3752-4dd2-a7b6-eef413edec09.png",
+      "sha256": "9a0a0b462d224f01e03716bea00da7bbabca5316064d47d842e5b7fae24eca11",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.2222222222,
+          0.6444444444,
+          0.2055555556,
+          0.1972222222
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "d5e6d8de5fcb0977ef38ff8d7ded8ecd8728e009f7a04ad5506bdc222ffae5e3",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/613b46fb-3752-4dd2-a7b6-eef413edec09.jpg",
+      "source_sha256": "28f69749465de8ee9b99aed1ba2a53cdc5427eadc755ef47fd4481ff31374808"
+    },
+    {
+      "id": "839f162a-d145-41b3-8f1d-85e83b5e10af",
+      "path": "images/no_gesture/839f162a-d145-41b3-8f1d-85e83b5e10af.png",
+      "sha256": "8cdf386cca5285ce89c6596d7f661be090aaab3400301b169f705fe7c7904a51",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.3481481481,
+          0.4152777778,
+          0.3111111111,
+          0.2069444444
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "8d4b584e535303e119712de5400eac6964b28133c8ee7c974df9f25b4384ea28",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/839f162a-d145-41b3-8f1d-85e83b5e10af.jpg",
+      "source_sha256": "f7840edf5ba775ad708e1f37801e99e7e2ff4af9b141ab8255e11ebc44901cca"
+    },
+    {
+      "id": "2a13be16-8a09-438c-9896-848c1011cdeb",
+      "path": "images/no_gesture/2a13be16-8a09-438c-9896-848c1011cdeb.png",
+      "sha256": "8c687c49e605795f5ade157a8b223c801a99c4d67dd6ce1d8e65f47f21fcdd01",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.687037037,
+          0.675,
+          0.1925925926,
+          0.1916666667
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "5b87cdb4f32605d5c9825c8cfaa2704e52cfc8fc9479c431a33a878a89956bbc",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/2a13be16-8a09-438c-9896-848c1011cdeb.jpg",
+      "source_sha256": "1e7337816f5ee3ce779d6704a77b449373fd84d09f21b39b4f540d95c3afa1c2"
+    },
+    {
+      "id": "147a18d0-54db-4d8f-9057-283ec0f768ea",
+      "path": "images/no_gesture/147a18d0-54db-4d8f-9057-283ec0f768ea.png",
+      "sha256": "be60523d63f97e8e1c0743e30c84371fd7721f8a9454abc13b574d2a375605ab",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.5148698885,
+          0.3958333333,
+          0.2750929368,
+          0.2166666667
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "90d4d09d03e8166bff7c3ae316f39e91762be06cfd64772cce166f2f1d2fa691",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/147a18d0-54db-4d8f-9057-283ec0f768ea.jpg",
+      "source_sha256": "ea7b973e5787d11f2b4606b774796d8874819a373be6d718f38b064996a28029"
+    },
+    {
+      "id": "941b2f6e-49b6-46d3-94a0-a0569c7611b3",
+      "path": "images/no_gesture/941b2f6e-49b6-46d3-94a0-a0569c7611b3.png",
+      "sha256": "42d00ef69735fab15904158bc1c1dcfda8d14e97fdde8d24a5354b2a32f5a1f4",
+      "category": "no_gesture",
+      "boxes": [
+        [
+          0.537037037,
+          0.5138888889,
+          0.1944444444,
+          0.1736111111
+        ]
+      ],
+      "labels": [
+        "no_gesture"
+      ],
+      "subject_hash": "bfab4a285e8530faf7fdd00e829203fa3c560dd124398238af8c7e5f48ae0b4b",
+      "archive": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/hagrid_v2_zip/no_gesture.zip",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd",
+      "source_path": "images/no_gesture/941b2f6e-49b6-46d3-94a0-a0569c7611b3.jpg",
+      "source_sha256": "ddc871ac6dac3e1bd0898e56314728d4295b8058e270a68435f1eabc369ecfc4"
+    }
+  ],
+  "source_manifest_sha256": "85b3fb5addf5c9d5b13dc58ad277928193ebe81095d2538932c84bfee0b7b9e3",
+  "frame_preparation": "cv2 INTER_LINEAR fit 640x480; lossless PNG; no crop",
+  "preparation_opencv": "4.13.0"
+}

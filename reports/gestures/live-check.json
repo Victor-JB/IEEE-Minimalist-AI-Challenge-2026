@@ -1,0 +1,263 @@
+[
+  {
+    "fresh": true,
+    "age_s": 0.47450445899448823,
+    "error": null,
+    "hands_available": true,
+    "pipeline": {
+      "face_calls": 908,
+      "hand_calls": 108,
+      "palm_calls": 108,
+      "gated_frames": 800,
+      "face_ms": 83.94,
+      "parallel": false,
+      "threads_per_model": 4,
+      "gesture_classifier": "landmark-mlp-v1",
+      "mode": "face guard \u00b7 hands sleeping",
+      "model_ms": 84.1,
+      "uptime_s": 237.0
+    },
+    "telemetry_error": null,
+    "outputs": {
+      "enabled": true,
+      "connected": true,
+      "steppers": "disabled \u00b7 no motion commands",
+      "reason": "Subject lost \u00b7 holding swivel \u00b7 Tilt the whole beam farther downward \u00b7 real lamp off"
+    }
+  },
+  {
+    "fresh": true,
+    "age_s": 0.3061782910081092,
+    "error": null,
+    "hands_available": true,
+    "pipeline": {
+      "face_calls": 911,
+      "hand_calls": 108,
+      "palm_calls": 108,
+      "gated_frames": 803,
+      "face_ms": 88.96,
+      "parallel": false,
+      "threads_per_model": 4,
+      "gesture_classifier": "landmark-mlp-v1",
+      "mode": "face guard \u00b7 hands sleeping",
+      "model_ms": 89.2,
+      "uptime_s": 237.7
+    },
+    "telemetry_error": null,
+    "outputs": {
+      "enabled": true,
+      "connected": true,
+      "steppers": "disabled \u00b7 no motion commands",
+      "reason": "Subject lost \u00b7 holding swivel \u00b7 Tilt the whole beam farther downward \u00b7 real lamp off"
+    }
+  },
+  {
+    "fresh": true,
+    "age_s": 0.37945495900930837,
+    "error": null,
+    "hands_available": true,
+    "pipeline": {
+      "face_calls": 913,
+      "hand_calls": 108,
+      "palm_calls": 108,
+      "gated_frames": 805,
+      "face_ms": 94.64,
+      "parallel": false,
+      "threads_per_model": 4,
+      "gesture_classifier": "landmark-mlp-v1",
+      "mode": "face guard \u00b7 hands sleeping",
+      "model_ms": 94.8,
+      "uptime_s": 238.2
+    },
+    "telemetry_error": null,
+    "outputs": {
+      "enabled": true,
+      "connected": true,
+      "steppers": "disabled \u00b7 no motion commands",
+      "reason": "Subject lost \u00b7 holding swivel \u00b7 Tilt the whole beam farther downward \u00b7 real lamp off"
+    }
+  },
+  {
+    "fresh": true,
+    "age_s": 0.395805250009289,
+    "error": null,
+    "hands_available": true,
+    "pipeline": {
+      "face_calls": 915,
+      "hand_calls": 108,
+      "palm_calls": 108,
+      "gated_frames": 807,
+      "face_ms": 92.0,
+      "parallel": false,
+      "threads_per_model": 4,
+      "gesture_classifier": "landmark-mlp-v1",
+      "mode": "face guard \u00b7 hands sleeping",
+      "model_ms": 92.2,
+      "uptime_s": 238.7
+    },
+    "telemetry_error": null,
+    "outputs": {
+      "enabled": true,
+      "connected": true,
+      "steppers": "disabled \u00b7 no motion commands",
+      "reason": "Subject lost \u00b7 holding swivel \u00b7 Tilt the whole beam farther downward \u00b7 real lamp off"
+    }
+  },
+  {
+    "fresh": true,
+    "age_s": 0.4752210420119809,
+    "error": null,
+    "hands_available": true,
+    "pipeline": {
+      "face_calls": 917,
+      "hand_calls": 108,
+      "palm_calls": 108,
+      "gated_frames": 809,
+      "face_ms": 92.15,
+      "parallel": false,
+      "threads_per_model": 4,
+      "gesture_classifier": "landmark-mlp-v1",
+      "mode": "face guard \u00b7 hands sleeping",
+      "model_ms": 92.3,
+      "uptime_s": 239.2
+    },
+    "telemetry_error": null,
+    "outputs": {
+      "enabled": true,
+      "connected": true,
+      "steppers": "disabled \u00b7 no motion commands",
+      "reason": "Subject lost \u00b7 holding swivel \u00b7 Tilt the whole beam farther downward \u00b7 real lamp off"
+    }
+  },
+  {
+    "fresh": true,
+    "age_s": 0.5228024579992052,
+    "error": null,
+    "hands_available": true,
+    "pipeline": {
+      "face_calls": 919,
+      "hand_calls": 109,
+      "palm_calls": 109,
+      "gated_frames": 810,
+      "face_ms": 96.08,
+      "hands_ms": 151.75,
+      "parallel": false,
+      "threads_per_model": 4,
+      "gesture_classifier": "landmark-mlp-v1",
+      "mode": "face + palm detection",
+      "model_ms": 248.1,
+      "uptime_s": 239.7
+    },
+    "telemetry_error": null,
+    "outputs": {
+      "enabled": true,
+      "connected": true,
+      "steppers": "disabled \u00b7 no motion commands",
+      "reason": "Subject lost \u00b7 holding swivel \u00b7 Tilt the whole beam farther downward \u00b7 real lamp off"
+    }
+  },
+  {
+    "fresh": true,
+    "age_s": 0.4525540830072714,
+    "error": null,
+    "hands_available": true,
+    "pipeline": {
+      "face_calls": 921,
+      "hand_calls": 109,
+      "palm_calls": 109,
+      "gated_frames": 812,
+      "face_ms": 85.36,
+      "parallel": false,
+      "threads_per_model": 4,
+      "gesture_classifier": "landmark-mlp-v1",
+      "mode": "face guard \u00b7 hands sleeping",
+      "model_ms": 85.6,
+      "uptime_s": 240.3
+    },
+    "telemetry_error": null,
+    "outputs": {
+      "enabled": true,
+      "connected": true,
+      "steppers": "disabled \u00b7 no motion commands",
+      "reason": "Subject lost \u00b7 holding swivel \u00b7 Tilt the whole beam farther downward \u00b7 real lamp off"
+    }
+  },
+  {
+    "fresh": true,
+    "age_s": 0.35933083400595933,
+    "error": null,
+    "hands_available": true,
+    "pipeline": {
+      "face_calls": 924,
+      "hand_calls": 109,
+      "palm_calls": 109,
+      "gated_frames": 815,
+      "face_ms": 83.3,
+      "parallel": false,
+      "threads_per_model": 4,
+      "gesture_classifier": "landmark-mlp-v1",
+      "mode": "face guard \u00b7 hands sleeping",
+      "model_ms": 83.5,
+      "uptime_s": 241.1
+    },
+    "telemetry_error": null,
+    "outputs": {
+      "enabled": true,
+      "connected": true,
+      "steppers": "disabled \u00b7 no motion commands",
+      "reason": "Subject lost \u00b7 holding swivel \u00b7 Tilt the whole beam farther downward \u00b7 real lamp off"
+    }
+  },
+  {
+    "fresh": true,
+    "age_s": 0.4559467079961905,
+    "error": null,
+    "hands_available": true,
+    "pipeline": {
+      "face_calls": 926,
+      "hand_calls": 109,
+      "palm_calls": 109,
+      "gated_frames": 817,
+      "face_ms": 95.95,
+      "parallel": false,
+      "threads_per_model": 4,
+      "gesture_classifier": "landmark-mlp-v1",
+      "mode": "face guard \u00b7 hands sleeping",
+      "model_ms": 96.2,
+      "uptime_s": 241.6
+    },
+    "telemetry_error": null,
+    "outputs": {
+      "enabled": true,
+      "connected": true,
+      "steppers": "disabled \u00b7 no motion commands",
+      "reason": "Subject lost \u00b7 holding swivel \u00b7 Tilt the whole beam farther downward \u00b7 real lamp off"
+    }
+  },
+  {
+    "fresh": true,
+    "age_s": 0.5209042910137214,
+    "error": null,
+    "hands_available": true,
+    "pipeline": {
+      "face_calls": 928,
+      "hand_calls": 109,
+      "palm_calls": 109,
+      "gated_frames": 819,
+      "face_ms": 92.97,
+      "parallel": false,
+      "threads_per_model": 4,
+      "gesture_classifier": "landmark-mlp-v1",
+      "mode": "face guard \u00b7 hands sleeping",
+      "model_ms": 93.2,
+      "uptime_s": 242.1
+    },
+    "telemetry_error": null,
+    "outputs": {
+      "enabled": true,
+      "connected": true,
+      "steppers": "disabled \u00b7 no motion commands",
+      "reason": "Subject lost \u00b7 holding swivel \u00b7 Tilt the whole beam farther downward \u00b7 real lamp off"
+    }
+  }
+]

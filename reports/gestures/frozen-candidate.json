@@ -1,0 +1,15 @@
+{
+  "selection": "Frozen after official validation; before fresh test inference",
+  "landmark_threshold": 0.65,
+  "command_threshold": 0.5,
+  "palm_threshold": 0.5,
+  "palm_scale": 2.6,
+  "threads_per_model": 4,
+  "preprocessing": "unchanged",
+  "files": {
+    "apps/luxoiii/luxoiii/perception/gestures.py": "13b40bff47c1b060c9cba0b634be901c436f8b2910d0f8649514866ee11fbb88",
+    "apps/luxoiii/luxoiii/perception/gesture_features.py": "288dcccb3515476fb21bccbcc41d5d8b69580b0d5cb0abf5ea122a23d004a20a",
+    "apps/luxoiii/models/gesture_landmarks_v1.npz": "e15bfec6814e1127431304881eed29c7ffa1160232339eedbdd295876d8d787f"
+  },
+  "test_manifest_sha256": "54d2d629ddc248ee2453864ee07633057d8bc7fbd9c8b4994962672040d3be84"
+}

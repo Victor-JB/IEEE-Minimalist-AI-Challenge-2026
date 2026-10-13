@@ -1,0 +1,1333 @@
+{
+  "platform": "Linux-6.16.7-g0dd6551ae96b-aarch64-with-glibc2.41",
+  "threads_per_model": 4,
+  "parallel": false,
+  "opencv_threads": 1,
+  "model_resolution": "unchanged",
+  "selection": "first five images per category in frozen manifest; ABBA order",
+  "manifest_sha256": "54d2d629ddc248ee2453864ee07633057d8bc7fbd9c8b4994962672040d3be84",
+  "classifier": {
+    "original": {
+      "calls": 765,
+      "mean_ms": 0.023068508495253257,
+      "p50_ms": 0.02250099998946098,
+      "p95_ms": 0.026636000029611744
+    },
+    "new": {
+      "calls": 765,
+      "mean_ms": 1.2424011385621947,
+      "p50_ms": 1.2022789999264205,
+      "p95_ms": 1.3871178000727014
+    }
+  },
+  "workload": {
+    "original": {
+      "mean_ms": 183.5345449999912,
+      "p50_ms": 187.54347499998403,
+      "p95_ms": 195.0040416999684
+    },
+    "new": {
+      "mean_ms": 183.1787145857123,
+      "p50_ms": 187.4611289999848,
+      "p95_ms": 194.88781175005556
+    }
+  },
+  "rows": [
+    {
+      "id": "847007df-1f0c-48f9-a020-5a27b6ad3abc",
+      "variant": "original",
+      "ms": 194.99484899995423,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "847007df-1f0c-48f9-a020-5a27b6ad3abc",
+      "variant": "new",
+      "ms": 190.34193000004507,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "847007df-1f0c-48f9-a020-5a27b6ad3abc",
+      "variant": "new",
+      "ms": 193.91777399994226,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "847007df-1f0c-48f9-a020-5a27b6ad3abc",
+      "variant": "original",
+      "ms": 189.34632499997406,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "8a74678b-6555-488b-8b28-66a020a35962",
+      "variant": "original",
+      "ms": 190.68590000006225,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "8a74678b-6555-488b-8b28-66a020a35962",
+      "variant": "new",
+      "ms": 185.1048080000055,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "8a74678b-6555-488b-8b28-66a020a35962",
+      "variant": "new",
+      "ms": 187.82138899996426,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "8a74678b-6555-488b-8b28-66a020a35962",
+      "variant": "original",
+      "ms": 183.07441499996457,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "4c9c317e-8de7-4cb2-9110-24db720454c4",
+      "variant": "original",
+      "ms": 190.85252699994726,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "4c9c317e-8de7-4cb2-9110-24db720454c4",
+      "variant": "new",
+      "ms": 187.2120470000027,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "4c9c317e-8de7-4cb2-9110-24db720454c4",
+      "variant": "new",
+      "ms": 188.14909000002444,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "4c9c317e-8de7-4cb2-9110-24db720454c4",
+      "variant": "original",
+      "ms": 186.02852799995162,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "2090fda0-5ecb-4ced-8a47-3124e6442d65",
+      "variant": "original",
+      "ms": 187.68790399997215,
+      "hands": 2,
+      "gestures": [
+        "thumbs_down",
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "2090fda0-5ecb-4ced-8a47-3124e6442d65",
+      "variant": "new",
+      "ms": 192.3839380000345,
+      "hands": 2,
+      "gestures": [
+        "thumbs_down",
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "2090fda0-5ecb-4ced-8a47-3124e6442d65",
+      "variant": "new",
+      "ms": 188.81179400000292,
+      "hands": 2,
+      "gestures": [
+        "thumbs_down",
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "2090fda0-5ecb-4ced-8a47-3124e6442d65",
+      "variant": "original",
+      "ms": 189.29148899997017,
+      "hands": 2,
+      "gestures": [
+        "thumbs_down",
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "b884bc8e-7695-4ce8-a299-2e349ce3fb3c",
+      "variant": "original",
+      "ms": 191.6212659999701,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "b884bc8e-7695-4ce8-a299-2e349ce3fb3c",
+      "variant": "new",
+      "ms": 184.37504899998203,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "b884bc8e-7695-4ce8-a299-2e349ce3fb3c",
+      "variant": "new",
+      "ms": 183.51153300000078,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "b884bc8e-7695-4ce8-a299-2e349ce3fb3c",
+      "variant": "original",
+      "ms": 184.37057000005552,
+      "hands": 1,
+      "gestures": [
+        "thumbs_down"
+      ]
+    },
+    {
+      "id": "a9d25903-cc2e-484a-9e52-19fe7eeb6262",
+      "variant": "original",
+      "ms": 192.950838999991,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        null
+      ]
+    },
+    {
+      "id": "a9d25903-cc2e-484a-9e52-19fe7eeb6262",
+      "variant": "new",
+      "ms": 187.12301300001855,
+      "hands": 2,
+      "gestures": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": "a9d25903-cc2e-484a-9e52-19fe7eeb6262",
+      "variant": "new",
+      "ms": 192.37963199998376,
+      "hands": 2,
+      "gestures": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": "a9d25903-cc2e-484a-9e52-19fe7eeb6262",
+      "variant": "original",
+      "ms": 186.19376200001625,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        null
+      ]
+    },
+    {
+      "id": "0a893e27-340a-438d-9a79-677f6fbadba9",
+      "variant": "original",
+      "ms": 194.22729299992625,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "0a893e27-340a-438d-9a79-677f6fbadba9",
+      "variant": "new",
+      "ms": 194.97997400003442,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "0a893e27-340a-438d-9a79-677f6fbadba9",
+      "variant": "new",
+      "ms": 189.65039900001557,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "0a893e27-340a-438d-9a79-677f6fbadba9",
+      "variant": "original",
+      "ms": 186.68128900003467,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "2482a2f6-132b-4357-bc92-d21afa784bcd",
+      "variant": "original",
+      "ms": 168.5265610000215,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "2482a2f6-132b-4357-bc92-d21afa784bcd",
+      "variant": "new",
+      "ms": 161.7196839999906,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "2482a2f6-132b-4357-bc92-d21afa784bcd",
+      "variant": "new",
+      "ms": 163.90709600000264,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "2482a2f6-132b-4357-bc92-d21afa784bcd",
+      "variant": "original",
+      "ms": 160.9723159999703,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "e4dc8815-cd22-4571-aea7-1d552c3693e7",
+      "variant": "original",
+      "ms": 188.23296299990488,
+      "hands": 2,
+      "gestures": [
+        null,
+        "open_palm"
+      ]
+    },
+    {
+      "id": "e4dc8815-cd22-4571-aea7-1d552c3693e7",
+      "variant": "new",
+      "ms": 189.27835900001355,
+      "hands": 2,
+      "gestures": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": "e4dc8815-cd22-4571-aea7-1d552c3693e7",
+      "variant": "new",
+      "ms": 189.23403500002678,
+      "hands": 2,
+      "gestures": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": "e4dc8815-cd22-4571-aea7-1d552c3693e7",
+      "variant": "original",
+      "ms": 193.5274479999407,
+      "hands": 2,
+      "gestures": [
+        null,
+        "open_palm"
+      ]
+    },
+    {
+      "id": "35e8de12-91ca-4dda-b4f8-e89f8bf541d6",
+      "variant": "original",
+      "ms": 189.51013699995656,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "35e8de12-91ca-4dda-b4f8-e89f8bf541d6",
+      "variant": "new",
+      "ms": 188.2965229999627,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "35e8de12-91ca-4dda-b4f8-e89f8bf541d6",
+      "variant": "new",
+      "ms": 189.10242800006927,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "35e8de12-91ca-4dda-b4f8-e89f8bf541d6",
+      "variant": "original",
+      "ms": 190.55320200004644,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "50616890-e3ac-499e-8710-0c5806449bb4",
+      "variant": "original",
+      "ms": 164.7087679999686,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "50616890-e3ac-499e-8710-0c5806449bb4",
+      "variant": "new",
+      "ms": 161.5031490000547,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "50616890-e3ac-499e-8710-0c5806449bb4",
+      "variant": "new",
+      "ms": 161.35245899999973,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "50616890-e3ac-499e-8710-0c5806449bb4",
+      "variant": "original",
+      "ms": 164.83738299996276,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "10678b74-62f2-4a21-9d43-d218f063c5ff",
+      "variant": "original",
+      "ms": 191.9212239999979,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "10678b74-62f2-4a21-9d43-d218f063c5ff",
+      "variant": "new",
+      "ms": 187.71021099996688,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "10678b74-62f2-4a21-9d43-d218f063c5ff",
+      "variant": "new",
+      "ms": 190.12913799997477,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "10678b74-62f2-4a21-9d43-d218f063c5ff",
+      "variant": "original",
+      "ms": 196.572614000047,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "542caaf9-d694-4283-9810-f0a21e1f1330",
+      "variant": "original",
+      "ms": 191.60664300000008,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "542caaf9-d694-4283-9810-f0a21e1f1330",
+      "variant": "new",
+      "ms": 187.13692599999376,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "542caaf9-d694-4283-9810-f0a21e1f1330",
+      "variant": "new",
+      "ms": 188.88755099999344,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "542caaf9-d694-4283-9810-f0a21e1f1330",
+      "variant": "original",
+      "ms": 188.71749400000226,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "db15c600-a2d2-4020-a8c0-77da7c3c0d45",
+      "variant": "original",
+      "ms": 192.40296999998918,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "db15c600-a2d2-4020-a8c0-77da7c3c0d45",
+      "variant": "new",
+      "ms": 184.73755299999084,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "db15c600-a2d2-4020-a8c0-77da7c3c0d45",
+      "variant": "new",
+      "ms": 192.2332890000007,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "db15c600-a2d2-4020-a8c0-77da7c3c0d45",
+      "variant": "original",
+      "ms": 188.92839900001945,
+      "hands": 1,
+      "gestures": [
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "2a3668f0-aeb1-4900-94d2-bb5863d8c913",
+      "variant": "original",
+      "ms": 187.09579199992277,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "2a3668f0-aeb1-4900-94d2-bb5863d8c913",
+      "variant": "new",
+      "ms": 188.21895100006714,
+      "hands": 2,
+      "gestures": [
+        null,
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "2a3668f0-aeb1-4900-94d2-bb5863d8c913",
+      "variant": "new",
+      "ms": 189.12604100000863,
+      "hands": 2,
+      "gestures": [
+        null,
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "2a3668f0-aeb1-4900-94d2-bb5863d8c913",
+      "variant": "original",
+      "ms": 186.40146400002777,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        "thumbs_up"
+      ]
+    },
+    {
+      "id": "4006bc41-e8f2-45e9-a021-5e8fc83fc0a6",
+      "variant": "original",
+      "ms": 170.1529089999667,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "4006bc41-e8f2-45e9-a021-5e8fc83fc0a6",
+      "variant": "new",
+      "ms": 164.74920799998927,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "4006bc41-e8f2-45e9-a021-5e8fc83fc0a6",
+      "variant": "new",
+      "ms": 161.62557300003755,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "4006bc41-e8f2-45e9-a021-5e8fc83fc0a6",
+      "variant": "original",
+      "ms": 160.389233999922,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "e7fa8722-9a88-4526-9405-fa6d41fdf2ab",
+      "variant": "original",
+      "ms": 188.68124000005082,
+      "hands": 2,
+      "gestures": [
+        null,
+        "open_palm"
+      ]
+    },
+    {
+      "id": "e7fa8722-9a88-4526-9405-fa6d41fdf2ab",
+      "variant": "new",
+      "ms": 186.84440799995627,
+      "hands": 2,
+      "gestures": [
+        null,
+        "point"
+      ]
+    },
+    {
+      "id": "e7fa8722-9a88-4526-9405-fa6d41fdf2ab",
+      "variant": "new",
+      "ms": 192.6952580000716,
+      "hands": 2,
+      "gestures": [
+        null,
+        "point"
+      ]
+    },
+    {
+      "id": "e7fa8722-9a88-4526-9405-fa6d41fdf2ab",
+      "variant": "original",
+      "ms": 186.199649999935,
+      "hands": 2,
+      "gestures": [
+        null,
+        "open_palm"
+      ]
+    },
+    {
+      "id": "5676d705-66a5-4237-80d0-2c58b4b2bc25",
+      "variant": "original",
+      "ms": 165.07444500007296,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "5676d705-66a5-4237-80d0-2c58b4b2bc25",
+      "variant": "new",
+      "ms": 170.43062999994163,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "5676d705-66a5-4237-80d0-2c58b4b2bc25",
+      "variant": "new",
+      "ms": 166.7289399999845,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "5676d705-66a5-4237-80d0-2c58b4b2bc25",
+      "variant": "original",
+      "ms": 165.44270500003222,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "80f53c76-e66d-449a-82d3-a4845ca982e8",
+      "variant": "original",
+      "ms": 187.89471499997035,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "80f53c76-e66d-449a-82d3-a4845ca982e8",
+      "variant": "new",
+      "ms": 189.93217100000948,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "80f53c76-e66d-449a-82d3-a4845ca982e8",
+      "variant": "new",
+      "ms": 190.11467600000742,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "80f53c76-e66d-449a-82d3-a4845ca982e8",
+      "variant": "original",
+      "ms": 194.7914459999538,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "2bbc144b-0d9d-4280-abc4-9400ee0cd030",
+      "variant": "original",
+      "ms": 186.41458499996588,
+      "hands": 0,
+      "gestures": []
+    },
+    {
+      "id": "2bbc144b-0d9d-4280-abc4-9400ee0cd030",
+      "variant": "new",
+      "ms": 181.88825499998984,
+      "hands": 0,
+      "gestures": []
+    },
+    {
+      "id": "2bbc144b-0d9d-4280-abc4-9400ee0cd030",
+      "variant": "new",
+      "ms": 180.40362900001128,
+      "hands": 0,
+      "gestures": []
+    },
+    {
+      "id": "2bbc144b-0d9d-4280-abc4-9400ee0cd030",
+      "variant": "original",
+      "ms": 180.73218000006364,
+      "hands": 0,
+      "gestures": []
+    },
+    {
+      "id": "f45ebdd3-0bb0-4c51-9ea6-d6155136702e",
+      "variant": "original",
+      "ms": 161.297224000009,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "f45ebdd3-0bb0-4c51-9ea6-d6155136702e",
+      "variant": "new",
+      "ms": 162.16358899998795,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "f45ebdd3-0bb0-4c51-9ea6-d6155136702e",
+      "variant": "new",
+      "ms": 163.12564800000473,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "f45ebdd3-0bb0-4c51-9ea6-d6155136702e",
+      "variant": "original",
+      "ms": 158.7955760001023,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "27586eb2-c16a-4ce6-9921-53323815c86d",
+      "variant": "original",
+      "ms": 184.34193800010235,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "27586eb2-c16a-4ce6-9921-53323815c86d",
+      "variant": "new",
+      "ms": 183.33873099993525,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "27586eb2-c16a-4ce6-9921-53323815c86d",
+      "variant": "new",
+      "ms": 184.6485879999591,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "27586eb2-c16a-4ce6-9921-53323815c86d",
+      "variant": "original",
+      "ms": 185.67949399994177,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "4f6e53f4-25c4-4ab9-8310-1058315dee30",
+      "variant": "original",
+      "ms": 185.48245800002405,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "4f6e53f4-25c4-4ab9-8310-1058315dee30",
+      "variant": "new",
+      "ms": 186.0130449999815,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "4f6e53f4-25c4-4ab9-8310-1058315dee30",
+      "variant": "new",
+      "ms": 185.4382369999712,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "4f6e53f4-25c4-4ab9-8310-1058315dee30",
+      "variant": "original",
+      "ms": 185.77479600003244,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "ac19b3ca-1b77-4685-b668-fd5c377a367d",
+      "variant": "original",
+      "ms": 190.05349200006094,
+      "hands": 2,
+      "gestures": [
+        "point",
+        "point"
+      ]
+    },
+    {
+      "id": "ac19b3ca-1b77-4685-b668-fd5c377a367d",
+      "variant": "new",
+      "ms": 191.96958699990319,
+      "hands": 2,
+      "gestures": [
+        "point",
+        null
+      ]
+    },
+    {
+      "id": "ac19b3ca-1b77-4685-b668-fd5c377a367d",
+      "variant": "new",
+      "ms": 194.65153900000587,
+      "hands": 2,
+      "gestures": [
+        "point",
+        null
+      ]
+    },
+    {
+      "id": "ac19b3ca-1b77-4685-b668-fd5c377a367d",
+      "variant": "original",
+      "ms": 186.4008869999907,
+      "hands": 2,
+      "gestures": [
+        "point",
+        "point"
+      ]
+    },
+    {
+      "id": "6e58e588-70cd-4415-8026-b75dacc48d88",
+      "variant": "original",
+      "ms": 168.2186969999293,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "6e58e588-70cd-4415-8026-b75dacc48d88",
+      "variant": "new",
+      "ms": 162.25449299997763,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "6e58e588-70cd-4415-8026-b75dacc48d88",
+      "variant": "new",
+      "ms": 162.17792799989184,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "6e58e588-70cd-4415-8026-b75dacc48d88",
+      "variant": "original",
+      "ms": 162.2142310000072,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "1ae13236-b833-4a21-a644-e77a8c07d21f",
+      "variant": "original",
+      "ms": 164.73576099997445,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "1ae13236-b833-4a21-a644-e77a8c07d21f",
+      "variant": "new",
+      "ms": 160.87164099997153,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "1ae13236-b833-4a21-a644-e77a8c07d21f",
+      "variant": "new",
+      "ms": 162.89450900001157,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "1ae13236-b833-4a21-a644-e77a8c07d21f",
+      "variant": "original",
+      "ms": 161.31376099997397,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "d613d4a4-108e-4a0f-8b7a-dd388a202e01",
+      "variant": "original",
+      "ms": 198.1206299999485,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        null
+      ]
+    },
+    {
+      "id": "d613d4a4-108e-4a0f-8b7a-dd388a202e01",
+      "variant": "new",
+      "ms": 192.9126699999415,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        null
+      ]
+    },
+    {
+      "id": "d613d4a4-108e-4a0f-8b7a-dd388a202e01",
+      "variant": "new",
+      "ms": 198.27089499995054,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        null
+      ]
+    },
+    {
+      "id": "d613d4a4-108e-4a0f-8b7a-dd388a202e01",
+      "variant": "original",
+      "ms": 193.23637699994833,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        null
+      ]
+    },
+    {
+      "id": "6e9198ca-76be-4266-9441-f2062bd42168",
+      "variant": "original",
+      "ms": 187.32170299995232,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "6e9198ca-76be-4266-9441-f2062bd42168",
+      "variant": "new",
+      "ms": 184.14254799995433,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "6e9198ca-76be-4266-9441-f2062bd42168",
+      "variant": "new",
+      "ms": 184.64297799994256,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "6e9198ca-76be-4266-9441-f2062bd42168",
+      "variant": "original",
+      "ms": 193.43728799992732,
+      "hands": 1,
+      "gestures": [
+        "open_palm"
+      ]
+    },
+    {
+      "id": "9a1fbf8d-da47-4cd0-a2ac-89739d6e0331",
+      "variant": "original",
+      "ms": 187.3990459999959,
+      "hands": 2,
+      "gestures": [
+        null,
+        "open_palm"
+      ]
+    },
+    {
+      "id": "9a1fbf8d-da47-4cd0-a2ac-89739d6e0331",
+      "variant": "new",
+      "ms": 194.7751690000814,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        null
+      ]
+    },
+    {
+      "id": "9a1fbf8d-da47-4cd0-a2ac-89739d6e0331",
+      "variant": "new",
+      "ms": 189.34307799997896,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        null
+      ]
+    },
+    {
+      "id": "9a1fbf8d-da47-4cd0-a2ac-89739d6e0331",
+      "variant": "original",
+      "ms": 188.5771190000014,
+      "hands": 2,
+      "gestures": [
+        null,
+        "open_palm"
+      ]
+    },
+    {
+      "id": "ea5a9e46-ef6a-4c50-97f8-88474ea52b67",
+      "variant": "original",
+      "ms": 192.30149299994537,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        "open_palm"
+      ]
+    },
+    {
+      "id": "ea5a9e46-ef6a-4c50-97f8-88474ea52b67",
+      "variant": "new",
+      "ms": 192.91322900005525,
+      "hands": 2,
+      "gestures": [
+        null,
+        "open_palm"
+      ]
+    },
+    {
+      "id": "ea5a9e46-ef6a-4c50-97f8-88474ea52b67",
+      "variant": "new",
+      "ms": 194.7711820000677,
+      "hands": 2,
+      "gestures": [
+        null,
+        "open_palm"
+      ]
+    },
+    {
+      "id": "ea5a9e46-ef6a-4c50-97f8-88474ea52b67",
+      "variant": "original",
+      "ms": 190.67610399997648,
+      "hands": 2,
+      "gestures": [
+        "open_palm",
+        "open_palm"
+      ]
+    },
+    {
+      "id": "c14ab84c-21b3-49f9-8a04-a1858a53c4a2",
+      "variant": "original",
+      "ms": 163.3047739999256,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "c14ab84c-21b3-49f9-8a04-a1858a53c4a2",
+      "variant": "new",
+      "ms": 161.19346599998607,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "c14ab84c-21b3-49f9-8a04-a1858a53c4a2",
+      "variant": "new",
+      "ms": 162.67777699999897,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "c14ab84c-21b3-49f9-8a04-a1858a53c4a2",
+      "variant": "original",
+      "ms": 159.9340039999788,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "218f1668-93bb-4327-982e-7e931457795a",
+      "variant": "original",
+      "ms": 195.01156299998001,
+      "hands": 2,
+      "gestures": [
+        "thumbs_up",
+        "open_palm"
+      ]
+    },
+    {
+      "id": "218f1668-93bb-4327-982e-7e931457795a",
+      "variant": "new",
+      "ms": 187.17946599997504,
+      "hands": 2,
+      "gestures": [
+        "point",
+        null
+      ]
+    },
+    {
+      "id": "218f1668-93bb-4327-982e-7e931457795a",
+      "variant": "new",
+      "ms": 190.6196639999962,
+      "hands": 2,
+      "gestures": [
+        "point",
+        null
+      ]
+    },
+    {
+      "id": "218f1668-93bb-4327-982e-7e931457795a",
+      "variant": "original",
+      "ms": 188.54668999995283,
+      "hands": 2,
+      "gestures": [
+        "thumbs_up",
+        "open_palm"
+      ]
+    },
+    {
+      "id": "a1ec0ebd-71e9-46b4-81d1-f681716849e0",
+      "variant": "original",
+      "ms": 195.22942600008264,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "a1ec0ebd-71e9-46b4-81d1-f681716849e0",
+      "variant": "new",
+      "ms": 196.58303699998214,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "a1ec0ebd-71e9-46b4-81d1-f681716849e0",
+      "variant": "new",
+      "ms": 186.08294700004535,
+      "hands": 1,
+      "gestures": [
+        "point"
+      ]
+    },
+    {
+      "id": "a1ec0ebd-71e9-46b4-81d1-f681716849e0",
+      "variant": "original",
+      "ms": 189.43033000005016,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "aca7d359-e669-441c-a6ca-d5a56f801d7f",
+      "variant": "original",
+      "ms": 189.72492099999272,
+      "hands": 2,
+      "gestures": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": "aca7d359-e669-441c-a6ca-d5a56f801d7f",
+      "variant": "new",
+      "ms": 190.2604040000142,
+      "hands": 2,
+      "gestures": [
+        "point",
+        null
+      ]
+    },
+    {
+      "id": "aca7d359-e669-441c-a6ca-d5a56f801d7f",
+      "variant": "new",
+      "ms": 195.08067700007814,
+      "hands": 2,
+      "gestures": [
+        "point",
+        null
+      ]
+    },
+    {
+      "id": "aca7d359-e669-441c-a6ca-d5a56f801d7f",
+      "variant": "original",
+      "ms": 191.68890200000988,
+      "hands": 2,
+      "gestures": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": "784e6583-9bff-4f03-85c0-d6e10f3e6230",
+      "variant": "original",
+      "ms": 185.57545600003778,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "784e6583-9bff-4f03-85c0-d6e10f3e6230",
+      "variant": "new",
+      "ms": 186.5125120000357,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "784e6583-9bff-4f03-85c0-d6e10f3e6230",
+      "variant": "new",
+      "ms": 191.25227600000017,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    },
+    {
+      "id": "784e6583-9bff-4f03-85c0-d6e10f3e6230",
+      "variant": "original",
+      "ms": 185.2985660000286,
+      "hands": 1,
+      "gestures": [
+        null
+      ]
+    }
+  ]
+}

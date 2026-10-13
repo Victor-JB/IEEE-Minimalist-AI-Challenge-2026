@@ -67,6 +67,7 @@ def main():
     cv2.setNumThreads(1)
     detector=FaceDetector(num_threads=args.inference_threads)
     hands=hands_module.HandLandmarker(num_threads=args.inference_threads,max_hands=2,landmark_threshold=.65)
+    gesture_model='landmark-mlp-v1' if getattr(gestures,'_classifier',lambda:None)() is not None else 'legacy-rules'
     inference=Inference(detector,hands,parallel=args.parallel_inference)
     tracker=SubjectTracker();demo=Demo(simulated_aim);gate=MotionGate(4.0)
     output=Outputs(Bridge(),read_pose=physical_pose) if args.hybrid else None
@@ -158,7 +159,7 @@ def main():
                     frame_jpeg=base64.b64encode(jpeg).decode(),joints=joints,pivot=pivot,
                     hands=hand_data,hands_available=hands.available,max_hands=2,demo=demo_state,
                     tracking=tracker.update(time.monotonic(),faces,hand_data,control_pivot,frame.shape[1],observed_pivot=pivot),
-                    pipeline=dict(**metrics,**inference.timings,parallel=args.parallel_inference,threads_per_model=args.inference_threads,mode='hand ROI tracking' if hand_data and hand_data[0]['tracked'] else 'face + palm detection' if run_models else 'face guard · hands sleeping' if run_faces else 'motion gate · models sleeping',model_ms=model_ms,uptime_s=round(started-started_at,1)),
+                    pipeline=dict(**metrics,**inference.timings,parallel=args.parallel_inference,threads_per_model=args.inference_threads,gesture_classifier=gesture_model,mode='hand ROI tracking' if hand_data and hand_data[0]['tracked'] else 'face + palm detection' if run_models else 'face guard · hands sleeping' if run_faces else 'motion gate · models sleeping',model_ms=model_ms,uptime_s=round(started-started_at,1)),
                     inference_ms=round((time.monotonic()-started)*1000,1),
                     telemetry_error=telemetry_error,source='UNO Q · face + hand w8a8',error=None)
                 with lock: current.update(data=data,time=stamp)

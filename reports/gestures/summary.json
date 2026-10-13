@@ -1,0 +1,278 @@
+{
+  "regression": {
+    "original": {
+      "images": 210,
+      "gt_hands": 258,
+      "matched_hands": 175,
+      "correct": 125,
+      "end_to_end_recall": 0.4844961240310077,
+      "matched_accuracy": 0.7142857142857143,
+      "categories": {
+        "palm": {
+          "total": 30,
+          "matched": 28,
+          "correct": 25
+        },
+        "no_gesture": {
+          "total": 78,
+          "matched": 53,
+          "correct": 21
+        },
+        "like": {
+          "total": 30,
+          "matched": 21,
+          "correct": 20
+        },
+        "dislike": {
+          "total": 30,
+          "matched": 22,
+          "correct": 22
+        },
+        "one": {
+          "total": 30,
+          "matched": 16,
+          "correct": 16
+        },
+        "point": {
+          "total": 30,
+          "matched": 19,
+          "correct": 5
+        },
+        "fist": {
+          "total": 30,
+          "matched": 16,
+          "correct": 16
+        }
+      }
+    },
+    "new": {
+      "images": 210,
+      "gt_hands": 258,
+      "matched_hands": 175,
+      "correct": 174,
+      "end_to_end_recall": 0.6744186046511628,
+      "matched_accuracy": 0.9942857142857143,
+      "categories": {
+        "palm": {
+          "total": 30,
+          "matched": 28,
+          "correct": 28
+        },
+        "no_gesture": {
+          "total": 78,
+          "matched": 53,
+          "correct": 52
+        },
+        "like": {
+          "total": 30,
+          "matched": 21,
+          "correct": 21
+        },
+        "dislike": {
+          "total": 30,
+          "matched": 22,
+          "correct": 22
+        },
+        "one": {
+          "total": 30,
+          "matched": 16,
+          "correct": 16
+        },
+        "point": {
+          "total": 30,
+          "matched": 19,
+          "correct": 19
+        },
+        "fist": {
+          "total": 30,
+          "matched": 16,
+          "correct": 16
+        }
+      }
+    }
+  },
+  "val": {
+    "original": {
+      "images": 140,
+      "gt_hands": 168,
+      "matched_hands": 115,
+      "correct": 80,
+      "end_to_end_recall": 0.47619047619047616,
+      "matched_accuracy": 0.6956521739130435,
+      "categories": {
+        "palm": {
+          "total": 20,
+          "matched": 20,
+          "correct": 14
+        },
+        "no_gesture": {
+          "total": 48,
+          "matched": 26,
+          "correct": 9
+        },
+        "like": {
+          "total": 20,
+          "matched": 19,
+          "correct": 19
+        },
+        "dislike": {
+          "total": 20,
+          "matched": 11,
+          "correct": 10
+        },
+        "one": {
+          "total": 20,
+          "matched": 14,
+          "correct": 14
+        },
+        "point": {
+          "total": 20,
+          "matched": 11,
+          "correct": 0
+        },
+        "fist": {
+          "total": 20,
+          "matched": 14,
+          "correct": 14
+        }
+      }
+    },
+    "new": {
+      "images": 140,
+      "gt_hands": 168,
+      "matched_hands": 115,
+      "correct": 114,
+      "end_to_end_recall": 0.6785714285714286,
+      "matched_accuracy": 0.991304347826087,
+      "categories": {
+        "palm": {
+          "total": 20,
+          "matched": 20,
+          "correct": 20
+        },
+        "no_gesture": {
+          "total": 48,
+          "matched": 26,
+          "correct": 25
+        },
+        "like": {
+          "total": 20,
+          "matched": 19,
+          "correct": 19
+        },
+        "dislike": {
+          "total": 20,
+          "matched": 11,
+          "correct": 11
+        },
+        "one": {
+          "total": 20,
+          "matched": 14,
+          "correct": 14
+        },
+        "point": {
+          "total": 20,
+          "matched": 11,
+          "correct": 11
+        },
+        "fist": {
+          "total": 20,
+          "matched": 14,
+          "correct": 14
+        }
+      }
+    }
+  },
+  "test": {
+    "original": {
+      "images": 210,
+      "gt_hands": 259,
+      "matched_hands": 177,
+      "correct": 119,
+      "end_to_end_recall": 0.4594594594594595,
+      "matched_accuracy": 0.672316384180791,
+      "categories": {
+        "palm": {
+          "total": 30,
+          "matched": 29,
+          "correct": 24
+        },
+        "no_gesture": {
+          "total": 79,
+          "matched": 54,
+          "correct": 19
+        },
+        "like": {
+          "total": 30,
+          "matched": 25,
+          "correct": 24
+        },
+        "dislike": {
+          "total": 30,
+          "matched": 21,
+          "correct": 16
+        },
+        "one": {
+          "total": 30,
+          "matched": 14,
+          "correct": 14
+        },
+        "point": {
+          "total": 30,
+          "matched": 16,
+          "correct": 4
+        },
+        "fist": {
+          "total": 30,
+          "matched": 18,
+          "correct": 18
+        }
+      }
+    },
+    "new": {
+      "images": 210,
+      "gt_hands": 259,
+      "matched_hands": 177,
+      "correct": 174,
+      "end_to_end_recall": 0.6718146718146718,
+      "matched_accuracy": 0.9830508474576272,
+      "categories": {
+        "palm": {
+          "total": 30,
+          "matched": 29,
+          "correct": 29
+        },
+        "no_gesture": {
+          "total": 79,
+          "matched": 54,
+          "correct": 52
+        },
+        "like": {
+          "total": 30,
+          "matched": 25,
+          "correct": 24
+        },
+        "dislike": {
+          "total": 30,
+          "matched": 21,
+          "correct": 21
+        },
+        "one": {
+          "total": 30,
+          "matched": 14,
+          "correct": 14
+        },
+        "point": {
+          "total": 30,
+          "matched": 16,
+          "correct": 16
+        },
+        "fist": {
+          "total": 30,
+          "matched": 18,
+          "correct": 18
+        }
+      }
+    }
+  }
+}

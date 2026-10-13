@@ -6,7 +6,7 @@ on the UNO Q using the existing quantized face model. The default observer is re
 head pivot for subject tracking and D7 under a face/downward-beam gate. Failed stepper joints are animated in the browser. The observer starts with outputs disabled; the preview enables tracking and automatic lighting once camera and encoders are fresh.
 
 The observer shares the standalone desk's MJPEG feed at port 8081 (does not open the USB camera
-again). It holds one frame in memory and runs face detection with two threads at a bounded active loop. In hybrid mode, every processed frame runs face detection, including quiet scenes: an unchecked frame never counts as face-free. A motion gate can still skip the hand model, with a three-second
+again). It holds one frame in memory and runs face detection with four threads at a bounded active loop. In hybrid mode, every processed frame runs face detection, including quiet scenes: an unchecked frame never counts as face-free. A motion gate can still skip the hand model, with a three-second
 probe to recover stationary arrivals. Active hand tracking reuses landmark crops; UI counters expose
 actual model calls, gated frames and measured timing.
 Up to two hands are detected. Pointing and command gestures have independent hold timers:
@@ -23,7 +23,7 @@ apps/luxoiii/.venv/bin/python tools/spatial/observe.py --repo "$PWD" --hybrid
 ```
 
 For the existing, unmigrated board deployment, use `--package lumen` and its existing
-`apps/lumen/.venv/bin/python`. Copy all five Python files from this folder together if running from `/tmp`; it imports the
+`apps/lumen/.venv/bin/python`. Copy all Python files from this folder together if running from `/tmp`; it imports the
 installed detector without replacing the running application.
 
 On the Mac, in one terminal:
@@ -212,3 +212,12 @@ the live default because its temporal accuracy audit lost several matches.
 [Evaluation tools and dataset methodology](../efficiency/README.md) and
 [measured scorecard](../../reports/efficiency/README.md) document the before/after
 results, identical still-image predictions, and remaining accuracy limitations.
+
+Gesture recognition now uses a 21 KB trained landmark classifier after the same
+hand model. It recognizes foreshortened pointing and rejects non-command hand
+poses without another image-model pass. The pipeline reports `landmark-mlp-v1`;
+if the artifact cannot load, it warns and reports `legacy-rules`. Deploy
+`gestures.py`, `gesture_features.py`, and `models/gesture_landmarks_v1.npz`
+together. Landmark presence stays at 0.65 and command confidence is 0.5.
+See the [gesture evaluation](../../reports/gestures/README.md) for public-photo
+accuracy, missed detections, and measured board latency.

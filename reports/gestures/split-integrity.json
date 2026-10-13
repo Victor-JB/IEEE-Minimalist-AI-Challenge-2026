@@ -1,0 +1,21 @@
+{
+  "subjects": {
+    "landmarks_train": 13428,
+    "landmarks_val": 1551,
+    "images_val": 121,
+    "images_test": 189,
+    "old_test": 193
+  },
+  "images": {
+    "val": 140,
+    "test": 210
+  },
+  "overlaps": {
+    "landmarks_train__landmarks_val": 0,
+    "landmarks_train__images_test": 0,
+    "landmarks_val__images_test": 0,
+    "images_val__images_test": 0,
+    "old_test__images_test": 0
+  },
+  "all_image_hashes_verified": true
+}

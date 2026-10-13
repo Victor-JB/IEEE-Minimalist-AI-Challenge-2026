@@ -1,0 +1,208 @@
+{
+  "dataset": "HaGRIDv2",
+  "annotation_url": "https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/annotations_with_landmarks/annotations.zip",
+  "selection": "luxoiii-gesture-v2:",
+  "source": "https://github.com/hukenovs/hagrid",
+  "license": "CC BY-SA 4.0",
+  "landmark_note": "Auto-annotated MediaPipe 21x2 normalized image coordinates; image aspect ratio unavailable in annotations. Human gesture labels are supervision.",
+  "rows": [
+    {
+      "split": "train",
+      "category": "point",
+      "hands": 3325,
+      "images": 2774,
+      "subjects": 2774,
+      "skipped_malformed": 393,
+      "path": "landmarks/train-point.npz",
+      "sha256": "a8fd5fe16dcdf728396bd13986cddbe90ae77d297b78e128c1962b2b664f1453",
+      "annotation_sha256": "70756e1b79b1b68264980ce6fd6cc95324277b1433b967c89b564e9696637b30"
+    },
+    {
+      "split": "val",
+      "category": "point",
+      "hands": 552,
+      "images": 441,
+      "subjects": 441,
+      "skipped_malformed": 83,
+      "path": "landmarks/val-point.npz",
+      "sha256": "b332807f66288daf968afbec0754e8ffaf2c5241b0ac4d224dde3458ebcf9537",
+      "annotation_sha256": "b2d41ec878956f29a040df5bce056d102987832e808c8c1aaed6634a877864b3"
+    },
+    {
+      "split": "train",
+      "category": "one",
+      "hands": 3564,
+      "images": 2972,
+      "subjects": 2972,
+      "skipped_malformed": 123,
+      "path": "landmarks/train-one.npz",
+      "sha256": "b8c056737db3efe5a8c3d27523eb3e025f163ef900a1e2c0f9e06867d4553b64",
+      "annotation_sha256": "6877daca658fc6f64aca03749e61da3f4d03136958da0be1aabf8cb5bffa2c6d"
+    },
+    {
+      "split": "val",
+      "category": "one",
+      "hands": 560,
+      "images": 482,
+      "subjects": 482,
+      "skipped_malformed": 29,
+      "path": "landmarks/val-one.npz",
+      "sha256": "5374a7b6f8c11c28fae77abd4b2445c75889d838fc4cbdfe6a0a8c492e4f8141",
+      "annotation_sha256": "31ef90d069abac7203aaf3e7f36db72dbede2a2cf0cbc85b6b40ea7c88e77d99"
+    },
+    {
+      "split": "train",
+      "category": "palm",
+      "hands": 3481,
+      "images": 2992,
+      "subjects": 2992,
+      "skipped_malformed": 60,
+      "path": "landmarks/train-palm.npz",
+      "sha256": "31fb071126104133ae7211742b22771ba7236fa5a333c58d67d9db140f0aa293",
+      "annotation_sha256": "08c26f6437d7587796d1d2f34909cb3d310f1bbccb94bb8e1e9f1334143509b7"
+    },
+    {
+      "split": "val",
+      "category": "palm",
+      "hands": 533,
+      "images": 480,
+      "subjects": 480,
+      "skipped_malformed": 13,
+      "path": "landmarks/val-palm.npz",
+      "sha256": "d21d161ff63a6d243cba49335018080fdf15c194e4cc2b9bf30393a60197865a",
+      "annotation_sha256": "834722d2974e00da1beabf89e1dc0998d3f8f441c5d56522fd83b52635cf2a48"
+    },
+    {
+      "split": "train",
+      "category": "like",
+      "hands": 3554,
+      "images": 2955,
+      "subjects": 2955,
+      "skipped_malformed": 129,
+      "path": "landmarks/train-like.npz",
+      "sha256": "efae92d57a1281320ff148e7d5401b6d93937f98701303d39e15cfb531ad6226",
+      "annotation_sha256": "fad1dcb597262ffc1432ccbbe663c120be0a59a6cd9a70317c57de4da2407867"
+    },
+    {
+      "split": "val",
+      "category": "like",
+      "hands": 510,
+      "images": 447,
+      "subjects": 447,
+      "skipped_malformed": 33,
+      "path": "landmarks/val-like.npz",
+      "sha256": "5b78bb2aa7722ea75ac8d3e255b0e7ef202c61849fcdf8b1355c72f0b6ab04dd",
+      "annotation_sha256": "3f5e8e0d1758621d9f0b6292835412a76a638a0160da9bde1446e1d77b3355fe"
+    },
+    {
+      "split": "train",
+      "category": "dislike",
+      "hands": 3505,
+      "images": 2965,
+      "subjects": 2965,
+      "skipped_malformed": 118,
+      "path": "landmarks/train-dislike.npz",
+      "sha256": "228b448a8e5e915d2820c86920e787b82cdb6ec58d7c86d90017d2e48919a135",
+      "annotation_sha256": "35b113b1af5b09ee81f155a7bf9cc4a1ad6a2c75a753b8bf60cb434813f491e4"
+    },
+    {
+      "split": "val",
+      "category": "dislike",
+      "hands": 533,
+      "images": 463,
+      "subjects": 463,
+      "skipped_malformed": 26,
+      "path": "landmarks/val-dislike.npz",
+      "sha256": "a50b85a7948e573663aa989254775a4110d0505102db6b5ea65f67a59f1e0df8",
+      "annotation_sha256": "6c9d0187bb1d9461b1b5a079a8a3b69f30a75c60fdc7e1ee137730774888ba93"
+    },
+    {
+      "split": "train",
+      "category": "fist",
+      "hands": 3340,
+      "images": 2934,
+      "subjects": 2934,
+      "skipped_malformed": 146,
+      "path": "landmarks/train-fist.npz",
+      "sha256": "d00684d3b2d5042625dce2f3cb791c086802807d6ea3bbdf953e44bdce978b9e",
+      "annotation_sha256": "2cc617cc3825b8c74dfa85b2b6d8b552d0be5b6948bd7adf91a34a5e6a147a00"
+    },
+    {
+      "split": "val",
+      "category": "fist",
+      "hands": 518,
+      "images": 463,
+      "subjects": 463,
+      "skipped_malformed": 32,
+      "path": "landmarks/val-fist.npz",
+      "sha256": "0b6645a5c4cd312878f577af55953e9bcaa6e22908214a86fd6f3a5ee5a9e4e1",
+      "annotation_sha256": "e336ed0731d87f76a4641a67511ef280f8b15619a8931c3f0ff4f7e2cea8184c"
+    },
+    {
+      "split": "train",
+      "category": "no_gesture",
+      "hands": 1073,
+      "images": 827,
+      "subjects": 827,
+      "skipped_malformed": 41,
+      "path": "landmarks/train-no_gesture.npz",
+      "sha256": "ef11ef8665d707ac44869e172149e76ae1efc94a59be7d16410d3d7f17fe6229",
+      "annotation_sha256": "b4a5f5bced1fed65c98069da225b20f762db602ef3674d05bb2fd3aac4a0ff23"
+    },
+    {
+      "split": "val",
+      "category": "no_gesture",
+      "hands": 164,
+      "images": 140,
+      "subjects": 140,
+      "skipped_malformed": 11,
+      "path": "landmarks/val-no_gesture.npz",
+      "sha256": "544dcc96e84daef33c6450353c6ae6af42cc5c0f03ab40c221b9b463124c7a60",
+      "annotation_sha256": "03cbbd25ab482591758769d2b3573ac5c36117edbfd7aa4c385a6651953263cd"
+    },
+    {
+      "split": "train",
+      "category": "peace",
+      "hands": 3452,
+      "images": 2968,
+      "subjects": 2968,
+      "skipped_malformed": 119,
+      "path": "landmarks/train-peace.npz",
+      "sha256": "85818f7bae735f310df4b920351d75fbc27bf63673204a1c53f6c5d6f744f5d9",
+      "annotation_sha256": "18a6224d02750e6b392347195f501cbff94cb6b6e7fed8f060605d797e56d117"
+    },
+    {
+      "split": "val",
+      "category": "peace",
+      "hands": 531,
+      "images": 468,
+      "subjects": 468,
+      "skipped_malformed": 23,
+      "path": "landmarks/val-peace.npz",
+      "sha256": "83a2aee73c48230487a0c801abe896b7cd558735ad687d360cc4cd74875b3d36",
+      "annotation_sha256": "b2a3ae7d48edc315fbe356ae7bccbc4ecea96405bb040557b611251ca4034055"
+    },
+    {
+      "split": "train",
+      "category": "ok",
+      "hands": 3525,
+      "images": 2993,
+      "subjects": 2993,
+      "skipped_malformed": 86,
+      "path": "landmarks/train-ok.npz",
+      "sha256": "9b94d58474f4ed6cb74a24451d7b839974db49ee1156bc067ec3cba3fda1fdcb",
+      "annotation_sha256": "ba178f23fe5c6437133c681e3050a007abe66064af1bae1a754a47d86bfc3d8e"
+    },
+    {
+      "split": "val",
+      "category": "ok",
+      "hands": 546,
+      "images": 479,
+      "subjects": 479,
+      "skipped_malformed": 7,
+      "path": "landmarks/val-ok.npz",
+      "sha256": "0a10f90cebeaf4ca9b5dd48c8f9667f6c44af6847013d2c8d2a7279eff0c860a",
+      "annotation_sha256": "d5610aa5da429506ed6fb90b320a63cd3fefd2735888ca57ffea76bd398cb4f7"
+    }
+  ]
+}
