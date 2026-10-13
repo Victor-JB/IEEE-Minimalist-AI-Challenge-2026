@@ -60,6 +60,9 @@ ROLL_DEADBAND = 0.3                       # deg: smaller roll changes aren't sen
 SWEEP_MIN_MOVE_S = 1.0                    # sweep moves take at least this long (longer if the caps need it)
 
 
+DOING = {"relax": "relaxed (drivers asleep)", "goto": "move", "path": "move (adjust)",
+         "seq": "plan", "sweep": "sweep"}         # HUD text per command; "play" shows the clip
+
 class Stalled(Exception):
     """Every retry of a stalled setpoint failed; the arm holds where it stopped."""
 
@@ -108,6 +111,7 @@ class MotionWorker(threading.Thread):
         self.current = list(C.HOME)
         self.roll = None                    # last head-tilt angle sent (None: send the next one)
         self.relaxed = False
+        self.doing = "hold"                 # what the arm is doing, for the HUD
         self.arm = None
         self.give_ups = []                  # times commands were abandoned after failed retries
         self.light_cmd = None               # lamp per mille wanted (main thread writes, we read)
@@ -257,6 +261,7 @@ class MotionWorker(threading.Thread):
             kind = cmd[0]
             if kind == "connect":
                 continue                              # already connected
+            self.doing = DOING.get(kind, kind) if kind != "play" else f"clip {cmd[1]}"
             if kind == "relax":
                 if self.arm:
                     self.arm.relax()
@@ -287,6 +292,8 @@ class MotionWorker(threading.Thread):
                 _, poses, dwell, token = cmd
                 if self._guard(self._sweep, poses, dwell, token) is None:
                     self.events.put((E.SWEEP_DONE, token, None))
+            if kind != "relax":
+                self.doing = "hold"
 
     def _watch(self):
         """Between commands. Relaxed, nothing streams: a STATUS every KEEPALIVE_S keeps ownership
@@ -363,6 +370,7 @@ class MotionWorker(threading.Thread):
                 if not self._wait(step[1]):
                     return False
             elif kind == "play":
+                self.doing = f"clip {step[1]}"
                 if not self._play(*step[1:4]):
                     return False
             elif kind == "mark":

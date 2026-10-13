@@ -87,7 +87,8 @@ def run(args):
 
             if streamer:
                 hud.draw(frame, machine, perception, light, expressive.energy, fps.fps,
-                         fault=director.fault_reason if machine.state == "FAULT" else None)
+                         fault=director.fault_reason if machine.state == "FAULT" else None,
+                         now=now, doing=worker.doing)
                 streamer.update(frame)
             if args.headless and now - last_print > 5:
                 last_print = now

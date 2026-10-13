@@ -51,6 +51,9 @@ def _face_or_idle(m):
     return "STANDBY" if m.ctx.get("face_visible") else "IDLE"
 
 
+_face_or_idle.label = "STANDBY/IDLE"     # for the HUD's "next" line
+
+
 # (state, event) -> target state, or a function of the machine returning one.
 # Lookup order: the state itself, then its parent, then "*" (any state).
 TRANSITIONS = {
