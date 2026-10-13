@@ -32,6 +32,8 @@ PATH["CHECKIN"] = PATH["HOLD"] + [E.CHECKIN_DUE]
 PATH["REACQUIRE"] = PATH["HOLD"] + [E.BOOK_LOST]
 PATH["GOODBYE"] = PATH["HOLD"] + [E.PALM]
 PATH["FAULT"] = [E.FAULT]
+# RESET -> BOOT landed on state-machine-fixes (e989877); expected failure on older bases.
+_xfail_without_reset = (lambda f: f) if hasattr(E, "RESET") else unittest.expectedFailure
 LEAF_STATES = [s for s in STATES if s not in INITIAL_CHILD]
 
 
@@ -215,11 +217,10 @@ class Faults(unittest.TestCase):
         for event in (E.READY, E.FACE_SEEN, E.MOTION, E.PALM, E.CLIP_DONE, E.TIMEOUT):
             self.assertIsNone(r.ev(event), event)
 
-    @unittest.expectedFailure
+    @_xfail_without_reset
     def test_reset_clears_a_latched_fault(self):
-        """Spec: 'second fault, stays latched until reset'. There is no RESET event in events.py and
-        no (FAULT, RESET) transition; the only way out of a latched FAULT is restarting Lumen
-        (app.py prints 'restart Lumen to clear')."""
+        """Spec: 'second fault, stays latched until reset'. Before e989877 (state-machine-fixes)
+        there was no RESET event and no (FAULT, RESET) transition: expected failure there."""
         reset = getattr(E, "RESET", "RESET")
         r = Rig().goto("FAULT")
         r.ev(E.FAULT)                                  # latched

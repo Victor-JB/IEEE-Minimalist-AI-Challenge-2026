@@ -15,6 +15,7 @@ exercise the scorecard's power path. Never put those numbers in RESULTS.md.
 """
 import argparse
 import csv
+import inspect
 import random
 import sys
 import time
@@ -62,7 +63,8 @@ SCENARIO = [
     (432.0, "gone", dict(motion=False)),
     (450.0, "arm stall (worker reports FAULT)", "fault"),
     (480.0, "arm stall again within 2 min (latched)", "fault"),
-    (500.0, "operator reset", "reset"),
+    (500.0, "operator reset: open palm held 3 s", dict(gesture=G.OPEN_PALM)),
+    (504.0, "hand down (restart Lumen if the palm did not clear the latch)", "restart_if_latched"),
     (520.0, "end", {}),
 ]
 
@@ -237,13 +239,17 @@ def simulate(scenario=SCENARIO, csv_path=None, power_csv=None, seed=0, fps=FPS, 
         power = csv.writer(pf)
         power.writerow(["timestamp", "watts"])
     transitions, steps = [], []
+    _takes_ctx = bool(inspect.signature(perception.on_state_change).parameters)
 
     def boot():
         director = Director(worker, light, expressive, rng=random.Random(rng.random()))
 
         def entered(state, m):
             director.on_enter(state, m)
-            perception.on_state_change()
+            if _takes_ctx:
+                perception.on_state_change(m.ctx)
+            else:
+                perception.on_state_change()
         machine = Machine(on_enter=entered, on_exit=director.on_exit, now=clock.t,
                           rng=random.Random(rng.random()))
         return director, machine
@@ -271,12 +277,9 @@ def simulate(scenario=SCENARIO, csv_path=None, power_csv=None, seed=0, fps=FPS, 
             out(f"{t_s:8.2f}  # {label}")
             if change == "fault":
                 worker.fault("simulated STALL")
-            elif change == "reset":
-                reset = getattr(E, "RESET", None)
-                tr = machine.handle(reset, now) if reset else None
-                if tr:
-                    record(tr, machine, director)
-                else:   # no RESET event in the machine: what the operator does is restart Lumen
+            elif change == "restart_if_latched":
+                world.gesture = None
+                if machine.state == "FAULT":   # no RESET palm in this version: the operator restarts Lumen
                     old = machine.state
                     director, machine = boot()
                     tr = type("Tr", (), dict(t=now, src=old, dst=machine.state, event="RESTART"))()

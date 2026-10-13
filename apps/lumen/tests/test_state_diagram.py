@@ -25,6 +25,7 @@ COMPOSITE = re.compile(r"^\s*state\s+(\w+)\s*\{\s*$")
 LABEL_RULES = [
     (r"stall|sensor_stale|overtemp|link_lost|second fault", {E.FAULT}),
     (r"cooled|retry", {E.RECOVERED}),
+    (r"^reset", {getattr(E, "RESET", "RESET")}),
     (r"homed|sensors ok", {E.READY}),
     (r"no motion", {E.NO_MOTION}),
     (r"^motion$", {E.MOTION}),
