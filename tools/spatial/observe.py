@@ -143,8 +143,10 @@ def main():
     def control():
         while True:
             with lock:data,stamp=current['data'],current['time']
+            now=time.monotonic()
+            with demo_lock:data={**data,'demo':demo.snapshot(now)}
             with output_lock:
-                if output:output.step(data,stamp,time.monotonic())
+                if output:output.step(data,stamp,now)
             time.sleep(.1)
     class Handler(BaseHTTPRequestHandler):
         def do_POST(self):
@@ -179,6 +181,7 @@ def main():
             if self.path!='/spatial': return self.send_error(404)
             with lock:
                 data=dict(current['data'],age_s=round(time.monotonic()-current['time'],3))
+            with demo_lock:data['demo']=demo.snapshot(time.monotonic())
             with output_lock:data['outputs']=output.snapshot() if output else dict(enabled=False,connected=False,reason='Hybrid outputs not configured')
             body=json.dumps(data,allow_nan=False).encode()
             self.send_response(200)

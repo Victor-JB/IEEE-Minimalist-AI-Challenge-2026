@@ -3,7 +3,7 @@
 The Mac web view at port 8082 combines the full CAD assembly with read-only encoder readings,
 head-pivot command telemetry, a camera frustum and approximate face positions. Detection runs
 on the UNO Q using the existing quantized face model. The default observer is read-only. With `--hybrid`, the UI can explicitly activate only the physical
-head pivot for subject tracking; the D7 lamp stays off. Failed stepper joints are animated in the browser. All outputs start disabled.
+head pivot for subject tracking; the D7 lamp stays off. Failed stepper joints are animated in the browser. The observer starts with outputs disabled; the preview enables subject tracking automatically once camera and encoders are fresh.
 
 The observer shares the standalone desk's MJPEG feed at port 8081 (does not open the USB camera
 again). It holds one frame in memory and runs face detection with two threads at a bounded active loop. A motion gate skips neural models when nobody is present, with a three-second
@@ -61,11 +61,11 @@ Stopping the observer, SSH tunnel, or preview does not stop or alter the existin
 
 ## Social behavior, gestures and subject tracking
 
-The real swivel is exclusively an image-based subject tracker. **Enable subject tracking** grants
-it a quiet-arm session. Faces take priority over hands; among multiple faces it follows the nearest
+The real swivel is exclusively an image-based subject tracker. The preview grants
+it a quiet-arm session by default once observations are fresh. Faces take priority over hands; among multiple faces it follows the nearest
 previous image-space subject. After a one-second face-loss grace period, a visible palm can become
 the target. It corrects horizontal camera error using current servo command telemetry and a 100°
-HFOV assumption. A 3.5% image-width deadband and 12°/s rate limit reduce jitter. Travel is ±45°;
+HFOV assumption. The middle 20% of the image is a hold zone. Tracking resumes outside the middle 28%, so small boundary movements do not cause chatter. Corrections and firmware slews are capped at 60°/s. Travel is ±45°;
 vertical centering is unavailable with the broken pitch joints. Losing a subject holds the last
 angle; the tracker does not scan or play emotional motions. This is not identity recognition.
 
@@ -116,3 +116,10 @@ is omitted. **People + robot** fits the wider scene; **3D** returns to a closer 
 Camera capture now retries after USB disconnection while a viewer remains connected. A capture
 error clears its cached image and FPS; a timeout never retransmits the previous JPEG. The observer
 also refuses to timestamp repeated identical JPEGs as fresh, covering older desk deployments.
+
+
+Automatic defaults: the preview opens in AI animation mode and enables subject tracking after
+fresh camera and encoder data arrive. A manual tracking-off selection is saved in this browser.
+Reloading never clears a latched Stop; **Resume gestures** resumes the social loops and restores
+tracking when the saved preference is on. Stale data or heartbeat expiry still disables hardware;
+a failed activation is not retried repeatedly. The camera image shows the center hold zone.

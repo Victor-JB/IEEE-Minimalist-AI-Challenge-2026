@@ -32,8 +32,8 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
 <p class="small">After 10 seconds alone: idle loops. On arrival: a greeting or curious look. After 8 seconds without a gesture: playful invitations. Gestures take priority.</p>
 <progress id="gestureProgress" max="1" value="0" aria-label="Gesture hold progress"></progress>
 <div class="toolbar"><button id="aiMode" aria-pressed="true">AI-driven simulated arm</button><button id="hardware" aria-pressed="false">Enable subject tracking</button><button id="stopDemo" style="border-color:#ed8585">Stop & lamp off</button><button id="resumeDemo">Resume gestures</button></div>
-<p class="small" id="outputStatus">Subject tracking disabled. Digital animation runs independently.</p>
-<p class="small">The real swivel tracks within ±45° using an assumed 100° horizontal field of view: face first, hand as fallback. It holds position when the subject disappears. The real lamp stays off. Greetings, waves, nods and desk gestures animate the digital arm only.</p>
+<p class="small" id="outputStatus">Automatic tracking starts with fresh camera data. Digital animation runs independently.</p>
+<p class="small">Tracking and social animations start automatically. The real swivel moves up to 60°/s within ±45°, with a center deadzone (middle 20% of the image): face first, hand as fallback. It holds when centered or when the subject disappears. Camera view assumes 100° horizontal FOV. The real lamp stays off. Greetings, waves, nods and desk gestures animate the digital arm only.</p>
 </section>
 <section class="sliders" aria-label="Live physical joint angles" style="border:1px solid #775f3c;margin-bottom:16px">
 <label>Real shoulder <output id="realShoulder">Waiting…</output></label>
@@ -52,7 +52,7 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
 <div id="cadmsg">Loading full assembly…</div>
 <p class="small">Arm model: <span class="state" id="state">Waiting for measured joints</span> · Drag to orbit, scroll to zoom. The amber camera follows physical readings; the full model can move independently.</p>
 <section class="live">
- <div><div class="videoFrame"><img id="video" alt="Latest image from the robot camera, used for face detection"><div id="faceBoxes"></div><svg id="handOverlay" viewBox="0 0 640 480" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></svg></div><div class="small" id="frameInfo">Waiting for camera…</div></div>
+ <div><div class="videoFrame"><img id="video" alt="Latest image from the robot camera, used for face detection"><div id="faceBoxes"></div><div id="trackingZone" aria-label="Tracking center deadzone" style="position:absolute;left:40%;width:20%;top:0;height:100%;box-sizing:border-box;border:1px dashed #75dfd0;background:#75dfd00b;pointer-events:none" hidden></div><svg id="handOverlay" viewBox="0 0 640 480" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></svg></div><div class="small" id="frameInfo">Waiting for camera…</div></div>
  <div><h2>Where the camera sees people</h2><p id="health" role="status">Connecting to the UNO Q…</p><p id="people">Waiting for detections…</p><p id="handsText" style="color:#c5a5ff">Waiting for hand detection…</p><p id="pipeline" class="small"></p><p class="small">Depth uses assumed face and palm width, so distance and finger direction are approximate. Symbols mark faces, not tracked body joints. Sideways and vertical positions are relative to the camera.</p></div>
 </section>
 <details><summary>Camera calibration & assumptions</summary>
@@ -86,6 +86,21 @@ const emotions=new LuxoiiiEmotions();
 fetch('/emotions.json').then(r=>{if(!r.ok)throw Error('Clips unavailable');return r.json();}).then(c=>emotions.clips=c).catch(()=>{document.getElementById('state').textContent='Motion library unavailable';});
 let playing=false, following=false, aiReact=true, elapsed=0, last=null, live=null, example=false, receivedAt=0;
 let displayPose=[...home], wantHardware=false, enabledAt=0;
+let preferTracking=true, defaultTrackingPending=true;
+try {preferTracking=localStorage.getItem('luxoiii.subjectTracking')!=='off';}catch(_){}
+function saveTrackingPreference(value) {
+ preferTracking=value;try {localStorage.setItem('luxoiii.subjectTracking',value?'on':'off');}catch(_){}
+}
+async function startDefaultTracking() {
+ if(!defaultTrackingPending || !live?.fresh || !live.demo || !live.outputs)return;
+ if(live.demo.state==='STOPPED' || !preferTracking){defaultTrackingPending=false;return;}
+ if(!live.camera || live.age_s>1.2)return;
+ defaultTrackingPending=false;
+ try {
+  if(!live.outputs.enabled)await control('enable');
+  wantHardware=true;enabledAt=performance.now();
+ } catch(e){wantHardware=false;document.getElementById('outputStatus').textContent=e.message;}
+}
 function show(v) {
  displayPose=[...v];
  keys.forEach((k,i)=>{ document.getElementById(k).value=v[i]; document.getElementById(k+'Value').textContent=v[i].toFixed(1)+'°'; });
@@ -117,11 +132,12 @@ async function control(action,extra={}) {
  const d=await r.json();if(!r.ok || !d.ok)throw new Error(d.error||'Control failed');return d;
 }
 document.getElementById('hardware').onclick=async()=>{
- try {const action=live?.outputs?.enabled?'disable':'enable';await control(action);wantHardware=action==='enable';enabledAt=performance.now();}
+ defaultTrackingPending=false;
+ try {const action=live?.outputs?.enabled?'disable':'enable';await control(action);wantHardware=action==='enable';saveTrackingPreference(wantHardware);enabledAt=performance.now();}
  catch(e){wantHardware=false;document.getElementById('outputStatus').textContent=e.message;}
 };
-document.getElementById('stopDemo').onclick=async()=>{wantHardware=false;aiReact=true;following=false;setPlaying(false);updateFollow();try{await control('stop');}catch(e){document.getElementById('outputStatus').textContent='Stop connection failed; output lease will expire.';}};
-document.getElementById('resumeDemo').onclick=async()=>{try{await control('resume');aiReact=true;following=false;setPlaying(false);updateFollow();}catch(e){document.getElementById('demoStatus').textContent=e.message;}};
+document.getElementById('stopDemo').onclick=async()=>{defaultTrackingPending=false;wantHardware=false;aiReact=true;following=false;setPlaying(false);updateFollow();try{await control('stop');}catch(e){document.getElementById('outputStatus').textContent='Stop connection failed; output lease will expire.';}};
+document.getElementById('resumeDemo').onclick=async()=>{try{await control('resume');aiReact=true;following=false;setPlaying(false);updateFollow();defaultTrackingPending=true;}catch(e){document.getElementById('demoStatus').textContent=e.message;}};
 setInterval(()=>{if(wantHardware)control('heartbeat').catch(()=>{wantHardware=false;});},700);
 document.getElementById('peopleView').onclick=()=>cad.fitPeople();
 function renderSpatial() {
@@ -153,6 +169,7 @@ async function poll() {
   const d=live.demo;
   document.getElementById('demoStatus').textContent=live.fresh && d ? `${d.state.toLowerCase()} · ${d.event} · simulated brightness ${Math.round(d.brightness*100)}%` : 'Waiting for fresh AI observations';
   document.getElementById('gestureProgress').value=live.fresh && d ? d.hold_progress : 0;
+  await startDefaultTracking();
   const o=live.outputs;
   if(o && !o.enabled && performance.now()-enabledAt>2000)wantHardware=false;
   const hb=document.getElementById('hardware');hb.setAttribute('aria-pressed',String(!!o?.enabled));hb.textContent=o?.enabled?'Disable subject tracking':'Enable subject tracking';
@@ -171,18 +188,19 @@ async function poll() {
   document.getElementById('people').textContent=live.fresh ? (live.people.length ? live.people.map((p,i)=>`Face ${i+1}: ~${p.range_m.toFixed(2)} m away · ${Math.abs(p.camera[0]).toFixed(2)} m ${p.camera[0]>=0?'right':'left'} · ${Math.abs(p.camera[1]).toFixed(2)} m ${p.camera[1]>=0?'above':'below'} camera`).join(' | ') : 'No complete faces detected in this frame.') : 'Waiting for fresh camera data. Old face markers are hidden.';
   const boxes=document.getElementById('faceBoxes');boxes.replaceChildren();
   if(live.fresh) live.people.forEach((p,i)=>{const b=document.createElement('div');b.className='faceBox';b.textContent='Face '+(i+1);const [x,y,w,h]=p.bbox;b.style.cssText=`left:${x/live.size[0]*100}%;top:${y/live.size[1]*100}%;width:${w/live.size[0]*100}%;height:${h/live.size[1]*100}%`;boxes.append(b);});
+  document.getElementById('trackingZone').hidden=!live.fresh;
   const img=document.getElementById('video');
   if(live.fresh && live.frame_jpeg) {img.src='data:image/jpeg;base64,'+live.frame_jpeg;img.style.opacity=1;} else {img.removeAttribute('src');}
   document.getElementById('frameInfo').textContent=live.fresh ? `${live.source} · ${Math.round(live.inference_ms)} ms read + inference · frame age ${live.age_s.toFixed(1)} s` : 'Camera unavailable';
  } catch(e) {
-  live=null;cad.spatial(null);applyLive();document.getElementById('health').textContent='Live connection unavailable';document.getElementById('people').textContent='Old face markers are hidden.';document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
+  live=null;document.getElementById('trackingZone').hidden=true;cad.spatial(null);applyLive();document.getElementById('health').textContent='Live connection unavailable';document.getElementById('people').textContent='Old face markers are hidden.';document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
  }
  setTimeout(poll,500);
 }
 // Expire markers even if a request stalls or the browser loses its connection.
 setInterval(()=>{
  if(live?.fresh && (performance.now()-receivedAt)/1000+live.age_s>=2) {
-  live={...live,fresh:false,people:[],camera:null};cad.spatial(null);applyLive();
+  document.getElementById('trackingZone').hidden=true;live={...live,fresh:false,people:[],camera:null};cad.spatial(null);applyLive();
   document.getElementById('health').textContent='Camera data is stale';
   document.getElementById('people').textContent='Waiting for fresh camera data. Old face markers are hidden.';
   document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();

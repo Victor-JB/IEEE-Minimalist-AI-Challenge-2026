@@ -60,7 +60,7 @@ class Outputs:
                     raise RuntimeError('Disconnect other arm controls and let the stepper drivers sleep first')
                 self.command(0);self.claimed=True
                 self.light(0)
-                self.command(17,1500,7407,-45000,45000,-1,12000)
+                self.command(17,1500,7407,-45000,45000,-1,round(SubjectTracker.SPEED*1000))
             status=self.command(4)
             if status[6] or status[7]:raise RuntimeError('Unexpected stepper activity · hybrid stopped')
             tracking=data.get('tracking') or {}
@@ -69,7 +69,7 @@ class Outputs:
                 raise ValueError('Subject tracking unavailable')
             target=max(-SubjectTracker.LIMIT,min(SubjectTracker.LIMIT,value))
             if self.last_target is None or abs(target-self.last_target)>.5:
-                self.command(16,round(target*1000),12000);self.last_target=target
+                self.command(16,round(target*1000),round(SubjectTracker.SPEED*1000));self.last_target=target
             # The camera points at the subject. Gesture lighting is digital only.
             self.light(0);self.level=0.
             self.reason=tracking.get('status','Tracking subject')+' · real lamp off'

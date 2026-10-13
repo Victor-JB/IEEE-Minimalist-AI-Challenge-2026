@@ -45,3 +45,23 @@ class TrackingTests(unittest.TestCase):
         t=SubjectTracker();t.update(0,[face(200)],[],pivot(0))
         t.update(.25,[face(205),face(500,200)],[],pivot(t.target))
         self.assertAlmostEqual(t.center,205/640)
+
+    def test_faster_slew_and_center_deadzone_hysteresis(self):
+        t=SubjectTracker()
+        far=t.update(0,[face(600)],[],pivot(0))
+        self.assertGreater(far['target'],3)  # previous 12 deg/s limit at 250 ms
+        self.assertLessEqual(far['target'],15)
+        self.assertEqual(far['speed_deg_s'],60)
+        # Entering the deadzone cancels the pending movement at current telemetry.
+        centered=t.update(.25,[face(380)],[],pivot(6))
+        self.assertEqual(centered['target'],6)
+        for i,x in enumerate((390,397,385,400)):
+            held=t.update(.5+i*.25,[face(x)],[],pivot(6))
+            self.assertEqual(held['target'],6)
+        departed=t.update(2,[face(425)],[],pivot(6))
+        self.assertGreater(departed['target'],6)
+        # Once moving, keep correcting until the inner boundary is reached.
+        returning=t.update(2.25,[face(397)],[],pivot(7))
+        self.assertGreater(returning['target'],7)
+        centered=t.update(2.5,[face(380)],[],pivot(8))
+        self.assertEqual(centered['target'],8)

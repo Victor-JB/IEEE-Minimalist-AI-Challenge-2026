@@ -99,7 +99,9 @@ class OutputTests(unittest.TestCase):
         ops=[a[0] for m,a in self.b.calls if m=='arm_command']
         self.assertEqual(ops,[0,17,4,16]);self.assertTrue(set(ops)<=Outputs.ALLOWED)
         config=next(a for m,a in self.b.calls if m=='arm_command' and a[0]==17)
-        self.assertEqual(config[4:6],[-45000,45000])
+        self.assertEqual(config[4:6],[-45000,45000]);self.assertEqual(config[-1],60000)
+        move=next(a for m,a in self.b.calls if m=='arm_command' and a[0]==16)
+        self.assertEqual(move[-1],60000)
         light=[a for m,a in self.b.calls if m=='arm_light']
         self.assertTrue(all(a[0]==0 for a in light));self.assertEqual(self.o.last_target,4)
         with self.assertRaises(ValueError):self.o.command(11,0)
