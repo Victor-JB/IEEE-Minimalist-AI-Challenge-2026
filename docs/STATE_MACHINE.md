@@ -2,7 +2,7 @@
 
 Owner: Victor (software). Status: v0 = the agreed happy path; v1 = the version to build for the demo.
 
-Implemented in [apps/lumen](../apps/lumen/README.md): the tables below live in `apps/lumen/lumen/state/machine.py` (states, transitions) and `apps/lumen/lumen/movement/pools.py` (animation pools). Every tunable number is in the `config.py` of its folder (`movement/`, `ai/` and each model, `state/`, `light/`, `io/`).
+Implemented in [apps/lumen](../apps/lumen/README.md): the tables below live in `apps/lumen/lumen/state/machine.py` (states, transitions) and `apps/lumen/lumen/movement/pools.py` (animation pools). Model choice and the compute budget: [MODEL_SELECTION.md](MODEL_SELECTION.md). Every tunable number is in the `config.py` of its folder (`movement/`, `ai/` and each model, `state/`, `light/`, `io/`).
 
 Every state answers three questions:
 
