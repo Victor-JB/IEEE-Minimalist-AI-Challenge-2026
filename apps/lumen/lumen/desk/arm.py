@@ -79,6 +79,7 @@ class DeskArm(threading.Thread):
         self.motion = None                        # dict(kind, label, points=[(pose, vel, roll)], i)
         self.setpoint = None                      # last streamed pose (joint order), None when idle
         self.roll_sent, self.roll_wide = None, False
+        self.light = False                        # lamp light as last set from the desk (D12)
         self.history = deque(maxlen=int(HISTORY_S * C.STREAM_HZ))
         self._next = dict(status=0.0, servo=0.0, roll=0.0)
         self._stop = threading.Event()
@@ -113,7 +114,7 @@ class DeskArm(threading.Thread):
                 joints=joints,
                 servo=None if not servo else {k: servo[k] for k in ("state", "reason", "stalls", "stalled_joint", "stall_angle")},
                 roll=roll, roll_range=A.ROLL_RANGE, roll_wide=self.roll_wide, roll_home=A.ROLL_HOME,
-                roll_supported=bool(self.arm and self.arm.roll_supported))
+                roll_supported=bool(self.arm and self.arm.roll_supported), light=self.light)
 
     def history_since(self, t):
         with self.lock:
@@ -167,6 +168,10 @@ class DeskArm(threading.Thread):
             self.jog = self.motion = self.setpoint = self.roll_sent = None
             self.notice = "Connected. Drivers asleep; they wake for each move."
         self._poll(force=True)
+        try:
+            arm.light(self.light)                     # the firmware keeps its own state; match the page
+        except Exception:
+            pass                                      # firmware without the light: the button says so
 
     def _cmd_disconnect(self):
         self._close()
@@ -242,6 +247,19 @@ class DeskArm(threading.Thread):
             self.roll_wide = bool(wide)
         lo, hi = ROLL_WIDE if wide else A.ROLL_RANGE
         self._roll(min(hi, max(lo, float(angle))), speed, force=True)
+
+    def _cmd_light(self, on):
+        if not self.arm:
+            self._say("Connect first to switch the light.")
+            return
+        try:
+            self.arm.light(on)
+        except Exception as e:
+            self._say(f"Light failed ({e}). Flash arm/sketch for the light on D12.")
+            return
+        with self.lock:
+            self.light = bool(on)
+        self._say(f"Light {'on' if on else 'off'}.")
 
     def _cmd_roll_off(self):
         if self.arm and self.arm.roll_supported:

@@ -41,6 +41,7 @@ class ArmMotion(ArmSession):
         self.roll_config = roll
         self.roll_supported = False
         self.roll_range = None
+        self.light_on = False             # as last commanded; the firmware boots with it off
         self.limits_speed = None
 
     def __enter__(self):
@@ -118,6 +119,14 @@ class ArmMotion(ArmSession):
         if s.get('supported'):
             s = dict(s, target=s['target']/1000, current=s['current']/1000)
         return s
+
+    # Lamp light (D12) ------------------------------------------------------------
+    def light(self, on):
+        """Switch the lamp light on or off (on/off only; see LIGHT_PIN in sketch.ino). It is
+        independent of motor power and stays as set after the session; the firmware boots dark."""
+        r = self._request(f'LIGHT {int(bool(on))}')
+        self.light_on = bool(on)
+        return r
 
     # Reads -----------------------------------------------------------------
     def servo_status(self):

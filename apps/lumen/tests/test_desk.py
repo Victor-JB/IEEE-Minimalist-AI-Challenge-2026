@@ -65,6 +65,9 @@ class FakeArm:
     def roll_off(self):
         self.calls.append("roll_off")
 
+    def light(self, on):
+        self.calls.append(("light", bool(on)))
+
     def roll_status(self):
         return dict(supported=True, enabled=1, target=0.0, current=0.0, pulse_us=1500, fault=0)
 
@@ -195,6 +198,18 @@ class DeskTests(unittest.TestCase):
         self.assertGreater(max(rolls), 15)
         self.assertEqual(rolls[-1], D.A.ROLL_HOME)
         self.assertIn("done", self.desk.snapshot()["notice"])
+
+    def test_light_switches_and_needs_a_connection(self):
+        self.assertIn(("light", False), self.fake.calls)              # connect matches the page (off)
+        self.desk.send("light", True); self.tick()
+        self.assertIn(("light", True), self.fake.calls)
+        self.assertTrue(self.desk.snapshot()["light"])
+        self.assertFalse(any(c == "power" or (isinstance(c, tuple) and c[0] == "power")
+                             for c in self.fake.calls))                # no driver wake for the light
+        self.desk.send("disconnect"); self.tick()
+        self.desk.send("light", False); self.tick()
+        self.assertTrue(self.desk.snapshot()["light"])                # unchanged: not connected
+        self.assertIn("Connect first", self.desk.snapshot()["notice"])
 
     def test_power_and_disconnect(self):
         self.desk.send("power", False); self.tick()

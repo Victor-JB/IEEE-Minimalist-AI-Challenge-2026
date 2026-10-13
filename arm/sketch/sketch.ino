@@ -37,6 +37,10 @@ static TIM_TypeDef *const timers[AXES] = {TIM3, TIM1, TIM4};
 constexpr uint8_t ROLL_PIN = 2;
 static const pwm_dt_spec rollOutput = PWM_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 0); // D2 TIM2 CH2
 static roll::Roll headRoll;
+// Lamp light (MOSFET gate on D12): on/off only. D12 is TIM1 CH2N, and TIM1 also drives the
+// shoulder STEP pin (D5), whose period changes with every step rate, so it can't be dimmed by PWM.
+constexpr uint8_t LIGHT_PIN = 12;
+static bool lightOn = false;
 static unsigned rollApplied = ~0u;
 static int rollFault = 0;
 static Motor motors[AXES];
@@ -278,6 +282,8 @@ static std::vector<int> command(std::vector<int> args) {
 void setup() {
     digitalWrite(SLEEP_PIN, LOW);
     pinMode(SLEEP_PIN, OUTPUT);
+    digitalWrite(LIGHT_PIN, LOW);
+    pinMode(LIGHT_PIN, OUTPUT);   // plain GPIO: never analogWrite this pin (TIM1, see above)
     k_mutex_init(&lock);
     for (unsigned a=0; a<AXES; ++a) {
         pinMode(DIR_PINS[a], OUTPUT); digitalWrite(DIR_PINS[a], LOW);

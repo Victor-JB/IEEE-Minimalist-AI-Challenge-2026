@@ -189,6 +189,15 @@ class ScriptGatewayTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             gateway.command('ROLL 12000')            # wrong argument count
 
+    def test_light_maps_to_op_19(self):
+        bridge = FakeBridge(); gateway = ArmGateway(bridge)
+        gateway.command('HELLO')
+        gateway.command('LIGHT 1'); gateway.command('LIGHT 0')
+        ops = [c[1][0] for c in bridge.calls if c[0] == 'arm_command'][1:]
+        self.assertEqual([(o[0], o[2]) for o in ops], [(19, 1), (19, 0)])
+        with self.assertRaises(ValueError):
+            gateway.command('LIGHT')                 # missing on/off
+
     def test_roll_status_decodes_or_reports_unsupported(self):
         bridge = FakeBridge(); gateway = ArmGateway(bridge)
         gateway.command('HELLO')
