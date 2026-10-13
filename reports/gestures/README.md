@@ -84,6 +84,13 @@ holdout. The dataset's supplied MediaPipe landmarks support training only;
 all reported photo results use landmarks actually produced by the deployed
 quantized models on the UNO Q, not the supplied annotation landmarks.
 
+The [validation learning curve](training-accuracy.svg) plots every recorded
+epoch in `training-report.json`: 82.75% after epoch 1 to 98.00% after epoch 100.
+It uses supplied landmarks, not live camera images. No training-set accuracy
+history was recorded. A [PNG copy](training-accuracy.png) is available for slides.
+Rebuild both figures and the embedded website chart with Matplotlib:
+`python3 tools/efficiency/plot_gesture_training.py --embed-preview`.
+
 Fresh photos were resized with OpenCV to fit 640×480, preserving aspect ratio,
 and saved losslessly as PNG before transfer. PNG roundtrips were checked for
 exact pixel equality. Both recognizers see the same decoded frames. Manifests
