@@ -38,7 +38,9 @@ recordings with replay. It's the Stepper Desk Mac app's job, on the closed-loop 
 
 HUD stream: `http://daboard:8080/` (state, active models, light, energy, detections).
 Transition log: `apps/lumen/logs/transitions-<date>.csv` on the board. Every state change with
-the models running and the cumulative inference counts, which is your scorecard data.
+the models running and the cumulative inference counts, which is your scorecard data. Transitions
+into FAULT also have a `reason` (`STALL`, `SENSOR_STALE`, `LINK_LOST`, `OVERTEMP`, `ARM`, `ERROR`,
+then the detail), which the HUD shows while in FAULT.
 
 ## Layout
 

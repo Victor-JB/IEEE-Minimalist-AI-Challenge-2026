@@ -239,6 +239,25 @@ class Overtemp(unittest.TestCase):
         self.fail("no FAULT")
 
 
+class ReasonSurfaced(unittest.TestCase):
+    def test_transitions_log_has_the_fault_reason(self):
+        import csv
+        from lumen.machine import Transition
+        from lumen.translog import TransitionLog
+        with tempfile.TemporaryDirectory() as d:
+            log = TransitionLog(Path(d))
+            log.write(Transition(1.0, "STANDBY", "FAULT", E.FAULT), {}, 0.3, {}, "LINK_LOST: no reply")
+            log.write(Transition(2.0, "FAULT", "BOOT", E.RESET), {}, 0.3, {})
+            log.f.close()
+            rows = list(csv.DictReader(log.path.open()))
+            self.assertEqual([r["reason"] for r in rows], ["LINK_LOST: no reply", ""])
+            # A file from before the reason column is not appended to with a different layout.
+            log.path.write_text("wall_time,t,from,to,event,models,energy,inferences_so_far\n")
+            again = TransitionLog(Path(d))
+            again.f.close()
+            self.assertNotEqual(again.path, log.path)
+
+
 class FakeLight:
     def set(self, level):
         pass
