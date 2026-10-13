@@ -43,6 +43,7 @@ class ArmMotion(ArmSession):
         self.roll_config = roll
         self.roll_supported = False
         self.roll_range = None
+        self.light_supported = None          # None: not asked yet (light() asks once)
         self.limits_speed = None
 
     def __enter__(self):
@@ -119,6 +120,32 @@ class ArmMotion(ArmSession):
         self._event('roll', sample=s)
         if s.get('supported'):
             s = dict(s, target=s['target']/1000, current=s['current']/1000)
+        return s
+
+    # Lamp LED ------------------------------------------------------------------
+    def light(self, level, fade_ms=0):
+        """Lamp LED duty, 0-1000 per mille (already gamma-corrected by the caller), reached by a
+        linear fade over fade_ms on the MCU. No-op (None) on firmware without the lamp. The level
+        stays after the session ends."""
+        if self.light_supported is None:
+            self.light_status()
+        if not self.light_supported:
+            return None
+        level = min(1000, max(0, round(finite(level, -1e9, 1e9, 'Light level'))))
+        fade = min(60000, max(0, round(finite(fade_ms, -1e9, 1e9, 'Light fade'))))
+        return self._light_request(f'LIGHT {level} {fade}')
+
+    def light_status(self):
+        """{'supported', 'enabled', 'target', 'current' (per mille), 'remaining' (ms), 'fault'}."""
+        s = self._light_request('LIGHTSTAT')
+        self.light_supported = bool(s.get('supported'))
+        return s
+
+    def _light_request(self, command):
+        # Not _request(): a light reply must not replace self.sample (the arm status).
+        self._event('command', text=command)
+        s = self.transport.request(command)
+        self._event('light', sample=s)
         return s
 
     # Reads -----------------------------------------------------------------

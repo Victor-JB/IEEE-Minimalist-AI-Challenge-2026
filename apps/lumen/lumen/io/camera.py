@@ -16,6 +16,8 @@ import time
 
 import cv2
 
+from .power import FrameThrottle
+
 if sys.platform == "win32":
     # DirectShow opens fast on Windows; the default (MSMF) can take seconds.
     BACKEND = cv2.CAP_DSHOW
@@ -77,6 +79,8 @@ class Camera:
         # Keep the driver buffer small so we always process the newest frame.
         self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
+        self.throttle = FrameThrottle()
+
         for _ in range(WARMUP_FRAMES):
             self.cap.read()
 
@@ -88,8 +92,14 @@ class Camera:
             f"{self.width}x{self.height} @ {self.cap.get(cv2.CAP_PROP_FPS):.0f} fps requested"
         )
 
+    def set_fps(self, fps):
+        """Pace read() to `fps` (None = full rate). A frame skip, not a driver change: V4L2 only
+        applies a new CAP_PROP_FPS by restarting the stream. See io/power.py."""
+        self.throttle.set_fps(fps)
+
     def read(self):
         """Return the next frame as an (H, W, 3) uint8 BGR array, or None on failure."""
+        self.throttle.wait()
         ok, frame = self.cap.read()
         return frame if ok else None
 

@@ -64,7 +64,7 @@ apps/lumen/
     ├── behavior/                   pools, expressive (noise + energy), director, look_at
     ├── motion/worker.py            thread streaming to the arm at 25 Hz (or fake), via arm/python
     ├── desk/                       Lumen Desk: browser control page (python -m lumen.desk, :8081)
-    └── io/                         camera, stream (MJPEG), light (TODO)
+    └── io/                         camera, stream (MJPEG), light (ramps + gamma; sim/firmware/linux-pwm/gpio)
 ```
 
 From `arm/` Lumen uses `arm_config` (home, caps, safe ranges), `arm_motion.ArmMotion`,
@@ -85,7 +85,9 @@ In order of what unblocks the demo:
 3. **`perception/book.py`.** Load the book detector; return boxes.
 4. **`behavior/director.py`:** `_sweep_poses()` and the AIM pose (book position → arm pose).
    Both are marked TODO. A real left-right sweep needs the 4th (yaw) joint.
-5. **`io/light.py`.** Drive the LED once it's wired.
+5. **Wire the LED** (arm/README.md "Lamp LED": MOSFET on D7, head DIR to D12, `LIGHT_ENABLED 1`),
+   then run with `LUMEN_LIGHT=firmware`. Default `LUMEN_LIGHT=sim` only logs; `linux-pwm` / `gpio`
+   drive a QRB2210 pin instead (see the docstring in `io/light.py`).
 6. Mirror mode in STANDBY (TODO in `director.tick`), then the optimization rungs.
 
 To change behavior, edit `machine.py`'s two tables and keep `docs/STATE_MACHINE.md` in sync.

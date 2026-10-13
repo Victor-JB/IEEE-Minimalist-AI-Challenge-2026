@@ -76,6 +76,21 @@ class HappyPath(unittest.TestCase):
         self.assertIsNone(self.ev(E.CLOSER))   # no closer/further outside ILLUMINATE
         self.assertEqual(self.m.state, "IDLE")
 
+    def test_previous_states_are_tracked_before_enter(self):
+        seen = []
+        m = Machine(on_enter=lambda s, m: seen.append((s, m.came_from(1), m.came_from(2))))
+        m.handle(E.READY, 1.0)
+        m.handle(E.NO_MOTION, 2.0)
+        m.handle(E.MOTION, 50.0)
+        m.handle(E.FACE_SEEN, 51.0)
+        state, last, before = seen[-1]
+        self.assertEqual(state, "NOTICE")
+        self.assertEqual(last, ("IDLE", 50.0, 51.0, E.FACE_SEEN))
+        self.assertEqual(before, ("SLEEP", 2.0, 50.0, E.MOTION))
+        for _ in range(10):
+            m.handle(E.FAULT, 60.0)
+        self.assertLessEqual(len(m.ctx["prev"]), 4)
+
     def test_table_is_consistent(self):
         for (src, _), dst in TRANSITIONS.items():
             self.assertTrue(src == "*" or src in STATES, src)

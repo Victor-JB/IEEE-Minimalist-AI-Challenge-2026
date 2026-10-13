@@ -9,7 +9,8 @@ import time
 from . import config as C
 from .behavior.director import Director
 from .behavior.expressive import Expressive
-from .io.light import Light
+from .io.light import Light, make_backend
+from .io.power import Power
 from .motion.worker import MotionWorker
 from .machine import Machine
 from .perception import Perception
@@ -26,8 +27,9 @@ def run(args):
 
     expressive = Expressive()
     worker = MotionWorker(expressive, fake=args.fake_arm)
-    light = Light()
-    director = Director(worker, light, expressive)
+    light = Light(make_backend(C.LIGHT_BACKEND, worker))   # env LUMEN_LIGHT; sim by default
+    power = Power()
+    director = Director(worker, light, expressive, power=power)
     face = None
     if not args.no_face:
         from .perception.face import FaceTracker
@@ -49,12 +51,13 @@ def run(args):
     print(f"Lumen running: state {machine.path}" + (" (fake arm)" if args.fake_arm else ""))
 
     with Camera(args.camera) as cam:
+        power.attach(cam)
         fps = FpsCounter()
         last_print = 0.0
         while True:
-            now = time.monotonic()
             with timed("camera.read"):
-                frame = cam.read()
+                frame = cam.read()                   # paced in SLEEP (io/power.py)
+            now = time.monotonic()                   # after the read: the frame's own time
             if frame is None:
                 print("Camera frame grab failed")
                 break
@@ -79,6 +82,7 @@ def run(args):
                         print(f"FAULT #{director.faults}: {why}{latched}")
 
             director.tick(now, machine, perception, frame.shape)
+            light.update(now)                                # advance the light's ramp, write the LED
             fps.tick()
 
             if streamer:

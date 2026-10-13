@@ -122,10 +122,10 @@ AI rates are starting points to tune against the power meter. Every rate cut is 
 | State | On enter | AI running | Animation pool | Leaves on |
 |---|---|---|---|---|
 | BOOT | home pose, check encoders + link | none | `home__gentle` | homed → IDLE · check fails → FAULT |
-| SLEEP | camera to low fps, CPU clock down, light off | motion gate at 2 fps, no NN | asleep: `go_to_sleep__drowsy` once, then a very slow breathe (`idle_breathe__calm`, amplitude 0.3, time_scale 2) | motion → IDLE |
+| SLEEP | camera paced to 2 fps (`SLEEP_CAMERA_FPS`; a frame skip in `Camera.read()`, since V4L2 can't change fps live), CPU governor to `SLEEP_CPU_GOVERNOR` if set and this user may write it (off by default, no sudo), light off; all restored on exit | motion gate at 2 fps, no NN | asleep: `go_to_sleep__drowsy` once (the lamp stays slumped: the worker rebases on its end pose), then a very slow breathe around it (`idle_breathe__calm`, amplitude 0.3, time_scale 2, `IdleBreathe`) | motion → IDLE |
 | IDLE | light off | gate at 10 fps; face at 1 Hz only when the gate fires | bored: `idle_breathe__calm`, `scan_room__calm`, `relaxed_sit_down__calm`, `stretch_reach_limit__short_try`, `tail_wag__small`, `sad_droop__slight` (a sigh), rare `dance_90__groove` | face 3/5 frames → NOTICE · no motion 5 min → SLEEP |
-| NOTICE | freeze the current clip and look toward the face | face at 10 Hz | notice: `double_take__subtle`, `perk_up__small`; from SLEEP use `wake_up__slow_groggy` | face confirmed → STANDBY · gone in 1.5 s → IDLE (sheepish `hesitate__subtle`) |
-| STANDBY | lock onto the target face | face at 5 Hz + hand at 10 Hz on a crop around the face, interleaved F H H F H H | attentive: procedural look-at on the face, `idle_breathe__alert`, `curious_head_tilt__single`/`__double`, `lean_in_interest__subtle`, `lamp_curious`. Mirror: head follows a waving hand; `tail_wag__small` | POINT held 0.4 s → ACK · no face 4 s → LOST |
+| NOTICE | freeze the current clip and look toward the face | face at 10 Hz | notice: `double_take__subtle`, `perk_up__small`; from SLEEP (SLEEP → IDLE → NOTICE with IDLE ≤ 5 s, from `ctx["prev"]`) use `wake_up__slow_groggy` (amplitude 0.7, ~18 s on the arm; STANDBY lets it finish before centering). Woken by motion with nobody there, IDLE stays slumped 5 s, then plays the same wake-up | face confirmed → STANDBY · gone in 1.5 s → IDLE (sheepish `hesitate__subtle`) |
+| STANDBY | lock onto the target face | face at 5 Hz + hand at 10 Hz on a crop around the face, interleaved F H H F H H | attentive: procedural look-at on the face, `idle_breathe__alert`, `curious_head_tilt__single`/`__double`, `lean_in_interest__subtle`, `lamp_curious`. Mirror: on a `WAVE`, one clip from the mirror pool (`tail_wag__small`, `excited_bounce__medium`), the head follows the hand (pitch; x waits for yaw) for 3 s instead of the face, energy bump | POINT held 0.4 s → ACK · no face 4 s → LOST |
 | LOST USER | — | face at 5 Hz | `scan_room__alert`, `look_at_user_return__*` | face back → STANDBY · 10 s → IDLE |
 | ACK | — | none (it's 0.5 s) | acknowledge: `nod_yes__small_calm`, `nod_yes__medium`, `lamp_yes`, `confident_snap__firm` | clip done → SEARCH |
 | SEARCH | plan a sweep of 3–5 pause poses over the desk | book at each pause (1–2 inferences per pose); hand at 2 Hz for STOP | searching: `scan_room__alert`, `point_with_head__left_small`/`__right_big`, `glance_then_reach__left`/`__right`, `approach_object__cautious`, `hesitate__subtle` between poses | book 2 consecutive frames → AIM · sweep done → NOT FOUND · STOP → STANDBY |
@@ -133,8 +133,8 @@ AI rates are starting points to tune against the power meter. Every rate cut is 
 | NOT FOUND | — | none | quizzical: `shake_no__medium`, `shrug_fail__small`/`__big`, `hesitate__unsure`, then `sad_droop__slight` | clip done → STANDBY |
 | ILLUMINATE · HOLD | light on | hand at 8 Hz on the desk crop; book at 0.5 Hz to confirm it's still there | holding: hold the aim pose with micro-noise; `idle_breathe__calm` at amplitude 0.3 | CLOSER/FURTHER → ADJUST · timer → CHECK-IN · book lost 2 s → REACQUIRE |
 | · ADJUST | — | hand at 8 Hz | closer: a step along the light axis with `approach_object__eager` flavor; further: `avoid_object__mild` flavor. Small anticipation, then the move. | move done → HOLD |
-| · CHECK-IN | dim the light slightly (`LightCoupling` rule) | face at 10 Hz for about 1.5 s | `look_at_user_return__slow_right`/`__quick_left` (`LookBackAtUser` rule) | glance done → HOLD |
-| · REACQUIRE | — | book at 3 Hz on a widening crop | `curious_head_tilt__single`, small local sweep | found → HOLD · 4 s → NOT FOUND |
+| · CHECK-IN | dim the light slightly (`LightCoupling` rule) | face at 10 Hz for about 1.5 s | procedural `LookBackAtUser`: from the aim pose, pitch the head 60–100 % of the way toward where the face was last seen (camera pitch remembered from STANDBY's look-at; 20° up if never seen), track the face with the look-at for 1.5 s, then glide back to the aim pose (offset cleared). `look_at_user_return__*` need yaw, so they wait for the 4th joint | glance done → HOLD |
+| · REACQUIRE | — | book at 3 Hz on a widening crop | peek: a small local sweep around the aim pose, widening (head −3°, +4°, −6°, small shoulder steps; the first one hesitant, `Hesitation`), inside the 4 s; back to the aim pose on exit | found → HOLD · 4 s → NOT FOUND |
 | GOODBYE | light ramps off | face at 5 Hz (decides STANDBY vs IDLE; the flag is cleared on enter so an old sighting doesn't count) | done: `nod_yes__small_calm`, `home__gentle` | face → STANDBY · none → IDLE |
 | FAULT | stop streaming, drivers asleep, light dims | hand at 2 Hz, only for RESET | `shrug_fail__small` once, only if motion is still allowed; otherwise stay still | cooled + 1 retry → BOOT · RESET → BOOT (clears the latch) |
 
@@ -152,6 +152,7 @@ The state machine never sees raw detections. A perception layer turns them into 
 | `POINT` | index finger extended, others curled, held 0.4 s | the "find book" command |
 | `CLOSER` / `FURTHER` | gesture held 0.4 s; repeats every 1 s while held | each repeat is one brightness step |
 | `STOP` / `EXIT` | open palm held 1 s | the same gesture means "stop" in SEARCH and "done" in ILLUMINATE |
+| `WAVE` | wrist x reverses direction ≥ 2 times within 1.2 s, each swing ≥ half a hand size | no transition: the director mirrors it in STANDBY |
 | `BOOK_FOUND` | book confidence ≥ 0.5 on 2 consecutive inferences | |
 | `BOOK_LOST` | 3 misses in a row and no book for 2 s | a miss raises the book rate to 3 Hz to confirm quickly; one missed 0.5 Hz check is not a loss |
 | `RESET` | open palm held 3 s | clears a latched FAULT |
@@ -168,7 +169,7 @@ Static hand poses are far more reliable to classify from the 21 hand landmarks t
 | 👍 Thumbs up | closer / brighter | ILLUMINATE | beckon (fingers curling) |
 | 👎 Thumbs down | further / dimmer | ILLUMINATE | push (open palm moving toward lamp) |
 | ✋ Open palm, 1 s | stop / exit | SEARCH, ILLUMINATE | wave goodbye |
-| 👋 Wave | nothing; it's mirrored for fun | STANDBY | — |
+| 👋 Wave | nothing; it's mirrored for fun (the one moving gesture: `WaveDetector` on the wrist landmark) | STANDBY | — |
 
 Camera placement matters. The camera rides in the lamp head, so in STANDBY it sees your face and chest: the POINT gesture must happen near your face. In ILLUMINATE it is looking at the book: gestures happen over the book, and your face is out of frame. That's why ILLUMINATE checks in by looking up, and why "no face" alone must never end ILLUMINATE: someone reading has their head down. Only no face, no hand and no motion for 3 minutes ends it.
 
@@ -191,7 +192,13 @@ When several faces are visible, pick the largest (closest) one. Switch targets o
 - High energy biases pools toward the bigger variants (`__big`, `excited_bounce`, `celebrate__big`) and slightly faster time scales. Low energy biases toward `__calm`, `__subtle` and slower ones.
 - This is one number, cheap to implement, and it makes the lamp feel like it remembers the last minute.
 
-**Reuse the existing modifier rules** in `tools/motion_lib/modifiers/rules.py` (port the ones you use into the app): `LookBackAtUser` (CHECK-IN), `LightCoupling` (dim while looking at the user), `IdleBreathe` (any hold ≥ 2 s), `GlanceBeforeMove` + `AnticipationWindup` (AIM, ADJUST), `Hesitation` (NOTICE false alarm, NOT FOUND).
+**Reuse the existing modifier rules** in `tools/motion_lib/modifiers/rules.py` (dev branch). Ported to the 3-joint arm as small plan-building functions in `apps/lumen/lumen/behavior/modifiers.py`; a plan is a list of worker steps (goto / wait / play / mark / rebase) played as one `MotionWorker.seq` command, and every plan goes through `respect_caps()` (min-jerk peaks inside `SPEED_CAPS`, the elbow-lift cap and `ACCEL_CAP`):
+- `GlanceBeforeMove` (for AIM): the head pitches toward the book first, holds 0.15–0.4 s, then the body follows. On this arm the glance is pitch, not yaw (no yaw joint yet).
+- `AnticipationWindup` (for AIM, ADJUST): a counter-motion of 10–20 % of the move first, at least 2.5° so it isn't swallowed by the gear backlash.
+- AIM / SEARCH / ADJUST motion is owned by `behavior/aim.py` (ADJUST already has its own counter-move along the light axis); `modifiers.expressive_move(..., "aim")` is ready for AIM to adopt, but is not wired in yet.
+- `IdleBreathe` (any hold ≥ 2 s): whole `idle_breathe__calm` breaths that fill the hold (used by SLEEP).
+- `Hesitation` (uncertain moves: the first REACQUIRE peek): pause, micro-retreat, pause, then commit slower. The NOTICE false alarm uses the `hesitate__subtle` clip instead.
+- `LookBackAtUser` is the CHECK-IN plan in the director (it needs the face); `LightCoupling` is the light's job.
 
 ---
 
