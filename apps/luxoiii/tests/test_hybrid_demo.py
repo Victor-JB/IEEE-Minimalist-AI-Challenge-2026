@@ -216,7 +216,92 @@ class OutputTests(unittest.TestCase):
         self.b=Bridge();self.o=Outputs(self.b);self.o.requested=True;self.o.heartbeat=100
         q=(-18,65,70)
         self.data=dict(joints=[dict(angle=v,healthy=True,age_ms=5) for v in q],detections=[],
-            pivot=dict(enabled=True,current=0,fault=0),tracking=dict(target=4,status='Tracking face'),demo=dict(state='ILLUMINATE',light_requested=True,brightness=.4,pivot_target=0,desk_target=beam_hit(q)))
+            pivot=dict(enabled=True,current=0,target=0,fault=0),tracking=dict(target=4,status='Tracking face'),demo=dict(state='ILLUMINATE',light_requested=True,brightness=.4,pivot_target=0,desk_target=beam_hit(q)))
+
+    def downward(self):
+        for j,v in zip(self.data['joints'],(0,90,90)):j['angle']=v
+        self.data['tracking']['target']=0
+        self.data['face_guard']=dict(checked=True,frame_at=100)
+
+    def frame(self,now):
+        self.data['face_guard']['frame_at']=now
+        self.o.heartbeat=now;self.o.step(self.data,now,now)
+
+    def illuminate(self):
+        self.downward()
+        for t in (100,100.4,100.8,101.2):self.frame(t)
+        self.assertEqual(self.o.level,.4)
+
+    def test_physical_light_needs_clear_frames_and_whole_downward_cone(self):
+        self.downward();self.data['demo'].update(state='IDLE',light_requested=False,brightness=.1)
+        for t in (100,100.4,100.8):
+            self.frame(t);self.assertEqual(self.o.level,0)
+        self.frame(101.2);self.assertEqual(self.o.level,.4)
+        on=[args for method,args in self.b.calls if method=='arm_light' and args[0]>0]
+        self.assertEqual(on,[[400,0,800]])
+        self.assertLess(self.o.snapshot()['lamp_gate']['beam_top_deg'],-5)
+        self.frame(101.4)
+        self.assertEqual([args for method,args in self.b.calls if method=='arm_light'][-1],[400,0,800])
+        # A face cuts the light before any tracking/motion RPC on that cycle.
+        self.b.calls.clear();self.data['detections']=[dict(score=.51)]
+        self.frame(101.5);self.assertEqual(self.o.level,0)
+        self.assertEqual(self.b.calls[0],('arm_light',[0,0]))
+        self.data['detections']=[]
+        for t in (101.6,102,102.4):self.frame(t);self.assertEqual(self.o.level,0)
+        self.frame(102.8);self.assertEqual(self.o.level,.4)
+
+    def test_automatic_light_turns_off_on_missing_inputs_or_horizon_crossing(self):
+        for failure in ('face','horizon','bad_encoder','swivel_fault','swivel_released','future_swivel','in_flight_swivel','skipped_face','stale_face','missing_detections','camera_error','stop'):
+            with self.subTest(failure=failure):
+                self.setUp();self.illuminate()
+                if failure=='face':self.data['detections']=[dict(score=.7)]
+                elif failure=='horizon':self.data['joints'][2]['angle']=5
+                elif failure=='bad_encoder':self.data['joints'][0]['healthy']=False
+                elif failure=='swivel_fault':self.data['pivot']['fault']=-1
+                elif failure=='swivel_released':self.data['pivot']['enabled']=False
+                elif failure=='future_swivel':self.data['tracking']['target']=45
+                elif failure=='in_flight_swivel':self.data['pivot']['target']=45
+                elif failure=='skipped_face':self.data['face_guard']['checked']=False
+                elif failure=='stale_face':self.data['face_guard']['frame_at']=99
+                elif failure=='missing_detections':self.data.pop('detections')
+                elif failure=='camera_error':self.data['error']='camera disconnected'
+                elif failure=='stop':self.data['demo']['state']='STOPPED'
+                self.o.step(self.data,101.3,101.3)
+                self.assertEqual(self.o.level,0)
+                self.assertEqual([a for m,a in self.b.calls if m=='arm_light'][-1],[0,0])
+
+    def test_replayed_or_skipped_face_check_cannot_accumulate_clear_frames(self):
+        self.downward()
+        for i in range(30):
+            now=100+i*.05;self.o.heartbeat=now;self.o.step(self.data,now,now)
+            self.assertEqual(self.o.level,0)
+        self.assertEqual(self.o.clear_frames,0)
+        self.data['face_guard']['checked']=False
+        for t in (102,102.5,103,103.5):self.frame(t);self.assertEqual(self.o.level,0)
+
+    def test_horizon_margin_hysteresis_and_current_pose_override_camera_pose(self):
+        self.downward()
+        def margin(degrees):self.data['joints'][2]['angle']=self.o.BEAM_HALF_DEG+degrees
+        margin(4)
+        for t in (100,100.4,100.8,101.2):self.frame(t)
+        self.assertEqual(self.o.level,0)
+        margin(6);self.frame(101.4);self.assertEqual(self.o.level,.4)
+        margin(3);self.frame(101.6);self.assertEqual(self.o.level,.4)
+        margin(1);self.frame(101.8);self.assertEqual(self.o.level,0)
+        margin(6);self.frame(102);self.assertEqual(self.o.level,.4)
+        # New physical readings always beat the earlier camera-time pose.
+        self.o.read_pose=lambda bridge:dict(self.data,pivot=dict(enabled=True,target=45,current=45,fault=0))
+        self.frame(102.2);self.assertEqual(self.o.level,0)
+
+    def test_automatic_light_refuses_firmware_without_expiry_support(self):
+        call=self.b.call
+        def old_firmware(method,args=None,**kw):
+            if method=='arm_light' and len(args)==3:
+                self.b.calls.append((method,args));return [4,1,0,0,0,0,-22]
+            return call(method,args,**kw)
+        self.b.call=old_firmware;self.downward();self.frame(100)
+        self.assertFalse(self.o.requested);self.assertFalse(self.o.claimed)
+        self.assertFalse(any(a[0]>0 for m,a in self.b.calls if m=='arm_light'))
 
     def test_only_tracking_pivot_commands_and_lamp_off_are_sent(self):
         self.o.step(self.data,100,100)

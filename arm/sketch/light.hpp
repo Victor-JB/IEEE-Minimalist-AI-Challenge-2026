@@ -8,26 +8,30 @@
 // the ease in/out ramps (apps/luxoiii/luxoiii/io/light.py); this only clamps, fades and maps to a
 // compare value. Portable: no hardware access, tested on the host (tests/light_test.cpp).
 //
-// Unlike motion, the light needs no owner and survives the session ending: a lamp that goes
-// dark whenever the app restarts would be worse than one that stays at its last level.
+// Manual levels survive the session ending. An optional renewable lease is for automatic
+// lighting: missing host updates force it off in the MCU's independent watchdog thread.
 namespace light {
 constexpr int MAX=1000;
 constexpr int MAX_FADE_MS=60000;
+constexpr int MAX_LEASE_MS=2000;
 
 struct Light {
     int from=0,to=0,current=0;
     uint32_t start=0,fade=0;
+    uint32_t leasedAt=0,lease=0;
 
     // Out-of-range levels are clamped, not refused (a refused command would end the host
     // session). A bad fade time is refused. fade 0 = jump.
-    int set(int level,int fadeMs,uint32_t now){
-        if(fadeMs<0||fadeMs>MAX_FADE_MS)return -EINVAL;
+    int set(int level,int fadeMs,uint32_t now,int leaseMs=0){
+        if(fadeMs<0||fadeMs>MAX_FADE_MS||leaseMs<0||leaseMs>MAX_LEASE_MS)return -EINVAL;
         tick(now);                                   // fade from wherever it is right now
         from=current;to=std::max(0,std::min(MAX,level));start=now;fade=uint32_t(fadeMs);
+        leasedAt=now;lease=uint32_t(leaseMs);
         if(!fade)current=to;
         return 0;
     }
     void tick(uint32_t now){
+        if(lease&&uint32_t(now-leasedAt)>=lease){from=to=current=0;fade=lease=0;return;}
         if(current==to)return;
         const uint32_t elapsed=now-start;
         if(elapsed>=fade){current=to;return;}

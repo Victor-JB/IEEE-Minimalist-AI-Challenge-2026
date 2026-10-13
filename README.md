@@ -30,9 +30,9 @@ The Arduino UNO Q runs camera perception and behavior on Linux, with light and m
 
 As confirmed by the team on October 13: the pivot, camera and lamp on **D7** work; the arm steppers are broken.
 The D7 lamp configuration uses D12 for the head stepper DIR signal. Do not revert that pin assignment.
-Keep the physical arm supported; the real light stays off during subject tracking. The hybrid demo in `tools/spatial` uses the physical pivot for subject tracking and the simulated arm for expressive motion and lighting.
+Keep the physical arm supported. The hybrid demo in `tools/spatial` uses the physical pivot for subject tracking and the simulated arm for expressive motion and gesture lighting. D7 can turn on only with fresh face-free observations and the entire estimated physical beam below horizontal; it uses an 800 ms firmware expiry.
 The preview automatically enables subject tracking with fresh data; its switch saves an explicit off preference, and Stop remains latched. Pointing selects an estimated desk
-spot in the simulated scene; the real light stays off while the camera follows people.
+spot in the simulated scene; the real light has a separate face/physical-orientation gate.
 The regular app’s `--fake-arm` still skips the hardware connection entirely. Book detection remains
 unimplemented; this demo does not claim to detect a book.
 

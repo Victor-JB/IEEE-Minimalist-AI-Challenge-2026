@@ -4,7 +4,7 @@
 The observation path only reads: arm_roll_status and stepper_command op 4, without HELLO or
 claim. Unclaimed status returns EACCES plus raw encoder samples; apply saved
 calibration here without changing firmware configuration. Keep HTTP on loopback. With --hybrid, explicit UI activation also claims the
-quiet arm solely for subject-tracking pivot control and keeps D7 off; no stepper commands.
+quiet arm for subject-tracking pivot control and face/downward-beam-gated D7; no stepper commands.
 """
 import argparse
 import base64
@@ -36,7 +36,7 @@ def main():
     p.add_argument('--repo', type=Path, required=True)
     p.add_argument('--package', default='luxoiii', choices=['luxoiii','lumen'])
     p.add_argument('--port', type=int, default=8083)
-    p.add_argument('--hybrid',action='store_true',help='Allow explicit UI activation of head-pivot subject tracking; lamp stays off')
+    p.add_argument('--hybrid',action='store_true',help='Allow UI activation of subject tracking and face/downward-beam-gated light')
     args=p.parse_args()
     sys.path.insert(0,str(args.repo/'apps'/args.package))
     FaceDetector=importlib.import_module(args.package+'.perception.face_detector').FaceDetector
@@ -51,10 +51,15 @@ def main():
     cal=json.loads((args.repo/'arm/calibration/arm-calibration-2026-10-11.json').read_text())['saved_calibration']['joints']
     if len(cal)!=3 or any(c.get('calibrated') is not True for c in cal):
         raise ValueError('Saved joint calibration required')
+    def physical_pose(bridge):
+        joints=[encoder(bridge.call('stepper_command',[4,j,2147483647],timeout=.25),j,cal[j]) for j in range(3)]
+        r=bridge.call('arm_roll_status',timeout=.25)
+        if len(r)!=6 or r[0]!=3:raise ValueError('Unsupported head pivot status')
+        return dict(joints=joints,pivot=dict(enabled=bool(r[1]),target=r[2]/1000,current=r[3]/1000,fault=r[5]))
     detector=FaceDetector(num_threads=2)
     hands=hands_module.HandLandmarker(num_threads=2,max_hands=2,landmark_threshold=.65)
     tracker=SubjectTracker();demo=Demo(simulated_aim);gate=MotionGate(4.0)
-    output=Outputs(Bridge()) if args.hybrid else None
+    output=Outputs(Bridge(),read_pose=physical_pose) if args.hybrid else None
     output_lock=threading.Lock();demo_lock=threading.Lock()
     metrics=dict(face_calls=0,hand_calls=0,palm_calls=0,gated_frames=0)
     started_at=time.monotonic()
@@ -98,12 +103,7 @@ def main():
                 joints=[];pivot={}; telemetry_error=None
                 try:
                     if not connected: raise ConnectionError('Encoder bridge unavailable')
-                    for j in range(3):
-                        raw=bridge.call('stepper_command',[4,j,2147483647],timeout=.25)
-                        joints.append(encoder(raw,j,cal[j]))
-                    r=bridge.call('arm_roll_status',timeout=.25)
-                    if len(r)!=6 or r[0]!=3: raise ValueError('Unsupported head pivot status')
-                    pivot=dict(enabled=bool(r[1]),target=r[2]/1000,current=r[3]/1000,fault=r[5])
+                    pose=physical_pose(bridge);joints=pose['joints'];pivot=pose['pivot']
                 except Exception as exc:
                     joints=[];telemetry_error=str(exc)
                     bridge.disconnect();connected=False
@@ -115,15 +115,19 @@ def main():
                 run_models=started<active_until or started-last_infer>=3
                 faces=[];hand_data=[]
                 model_start=time.monotonic()
-                if run_models:
+                run_faces=run_models or args.hybrid
+                # Empty results from a skipped model are not evidence of no faces.
+                # Automatic physical lighting always has a fresh face check.
+                if run_faces:
                     faces=detector.detect(frame);metrics['face_calls']+=1
+                if run_models:
                     hands.detect(frame);metrics['hand_calls']+=int(hands.available)
                     if not hands.last or any(not h.tracked for h in hands.last):metrics['palm_calls']+=int(hands.available)
                     for h in hands.last:
                         hand_data.append(dict(points=h.points,score=h.score,gesture=gestures.classify(h.points),tracked=h.tracked,right=h.right))
                     last_infer=started
-                    if faces or hand_data:active_until=started+2
                 else:metrics['gated_frames']+=1
+                if faces or hand_data:active_until=started+2
                 with demo_lock:
                     candidate=demo.select_pointing_hand(started,hand_data)
                     prefer_virtual=demo.point_following and started-demo.point_at<=.9 and demo.target_mode=='virtual_pointer'
@@ -139,10 +143,11 @@ def main():
                     control_pivot=dict(enabled=bool(r[1]),current=r[3]/1000,fault=r[5])
                 data=dict(size=[frame.shape[1],frame.shape[0]],
                     detections=[dict(x=d.x,y=d.y,w=d.w,h=d.h,score=d.score) for d in faces],
+                    face_guard=dict(checked=bool(run_faces),frame_at=stamp if run_faces else None),
                     frame_jpeg=base64.b64encode(jpeg).decode(),joints=joints,pivot=pivot,
                     hands=hand_data,hands_available=hands.available,max_hands=2,demo=demo_state,
                     tracking=tracker.update(time.monotonic(),faces,hand_data,control_pivot,frame.shape[1],observed_pivot=pivot),
-                    pipeline=dict(**metrics,mode='hand ROI tracking' if hand_data and hand_data[0]['tracked'] else 'face + palm detection' if run_models else 'motion gate · models sleeping',model_ms=model_ms,uptime_s=round(started-started_at,1)),
+                    pipeline=dict(**metrics,mode='hand ROI tracking' if hand_data and hand_data[0]['tracked'] else 'face + palm detection' if run_models else 'face guard · hands sleeping' if run_faces else 'motion gate · models sleeping',model_ms=model_ms,uptime_s=round(started-started_at,1)),
                     inference_ms=round((time.monotonic()-started)*1000,1),
                     telemetry_error=telemetry_error,source='UNO Q · face + hand w8a8',error=None)
                 with lock: current.update(data=data,time=stamp)

@@ -119,14 +119,15 @@ static std::vector<int> armRollStatus(){
         int(std::lround(headRoll.current*1000)),int(headRoll.pulseUs()),rollFault};
     k_mutex_unlock(&lock);return r;
 }
-// Lamp LED (version 4): [] or [-1] reads; [level 0-1000, fade ms] sets. No owner needed, and the
-// level survives the session ending. Reply: v, enabled, target, current, fade ms left, PWM
+// Lamp LED (version 4): [] or [-1] reads; [level 0-1000, fade ms, optional lease ms] sets.
+// No owner needed. Omitted/zero lease preserves manual levels; a 1-2000 ms lease expires off.
+// Reply: v, enabled, target, current, fade ms left, PWM
 // error (-ENODEV when built with LIGHT_ENABLED 0), refused (-EINVAL for a bad request).
 static std::vector<int> armLight(std::vector<int> args){
     k_mutex_lock(&lock,K_FOREVER);
     uint32_t now=millis();int refused=0;
-    if(args.size()==2&&!lightFault)refused=lamp.set(args[0],args[1],now);
-    else if(args.size()==2)refused=lightFault;
+    if((args.size()==2||args.size()==3)&&!lightFault)refused=lamp.set(args[0],args[1],now,args.size()==3?args[2]:0);
+    else if(args.size()==2||args.size()==3)refused=lightFault;
     else if(!(args.empty()||(args.size()==1&&args[0]==-1)))refused=-EINVAL;
     lightTick(now);
     std::vector<int> r={4,int(LIGHT_ENABLED&&!lightFault),lamp.to,lamp.current,int(lamp.remaining(now)),lightFault,refused};

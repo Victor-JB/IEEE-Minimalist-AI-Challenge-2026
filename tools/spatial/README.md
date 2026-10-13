@@ -3,10 +3,10 @@
 The Mac web view at port 8082 combines the full CAD assembly with read-only encoder readings,
 head-pivot command telemetry, a camera frustum and approximate face positions. Detection runs
 on the UNO Q using the existing quantized face model. The default observer is read-only. With `--hybrid`, the UI can explicitly activate only the physical
-head pivot for subject tracking; the D7 lamp stays off. Failed stepper joints are animated in the browser. The observer starts with outputs disabled; the preview enables subject tracking automatically once camera and encoders are fresh.
+head pivot for subject tracking and D7 under a face/downward-beam gate. Failed stepper joints are animated in the browser. The observer starts with outputs disabled; the preview enables tracking and automatic lighting once camera and encoders are fresh.
 
 The observer shares the standalone desk's MJPEG feed at port 8081 (does not open the USB camera
-again). It holds one frame in memory and runs face detection with two threads at a bounded active loop. A motion gate skips neural models when nobody is present, with a three-second
+again). It holds one frame in memory and runs face detection with two threads at a bounded active loop. In hybrid mode, every processed frame runs face detection, including quiet scenes: an unchecked frame never counts as face-free. A motion gate can still skip the hand model, with a three-second
 probe to recover stationary arrivals. Active hand tracking reuses landmark crops; UI counters expose
 actual model calls, gated frames and measured timing.
 Up to two hands are detected. Pointing and command gestures have independent hold timers:
@@ -80,8 +80,24 @@ at 60°/s, with smaller steps near the zone. Travel is ±45°;
 vertical centering is unavailable with the broken pitch joints. Losing a subject holds the last
 angle; the tracker does not scan or play emotional motions. This is not identity recognition.
 
-The D7 lamp stays off because the camera follows people. Lighting gestures affect the digital
-scene only. The hardware RPC allowlist contains claim/status/release and pivot config/move/off;
+The D7 lamp turns on at 40% duty only after at least three distinct face-checked frames and one
+second with no detected faces, and only when the entire estimated beam is below horizontal.
+Fresh physical encoder and swivel readings are taken separately in each output cycle, so a
+simulated pose or an old camera-time joint reading cannot authorize light. The current swivel,
+its command in flight and the next tracking target are checked before moving. The aperture model
+uses a half-angle of atan(10.5 cm / (14 cm − 5 cm)) ≈ 49.4°, with 5° clearance to turn on and
+2° to stay on. This assumes a level base, the saved encoder calibration, and the modeled LED
+position. The real beam profile/LED position are not measured, and the swivel is a command
+estimate rather than an encoder measurement. These are geometric/model limits, not a guarantee
+that no light can reach an unseen face. The page exposes the estimated upper beam edge.
+
+A detected face, a failed/skipped/older-than-one-second face check, an unsafe orientation,
+unavailable pose, Stop or stale camera turns D7 off. Every nonzero light command includes an
+800 ms MCU lease; if the observer crashes or its updates stop, the independent MCU tick turns
+the light off. Older firmware without lease support refuses activation. The updated firmware
+is required; its legacy two-argument manual light commands keep their previous behavior.
+
+Lighting gestures affect the digital scene only. The hardware motion RPC allowlist contains claim/status/release and pivot config/move/off;
 no stepper configuration, move, stream, jog or power-enable commands are sent. An owned or awake
 arm is refused. Browser heartbeat expiry (3 s), stale camera/encoders and Stop disable outputs.
 
@@ -157,7 +173,8 @@ animated model’s actual five-joint FK, rather than drawing a cone to the selec
 Thumb gestures change its distance from the target. No wireframe light cone is drawn; the target marker
 and pointing cursor remain visible. This is direct diffuse lighting, without shadow maps.
 **Preview desk light** is an explicitly labeled, digital-only lighting preview; it does not
-create a detection or turn on D7. AI mode restores live gesture lighting.
+create a detection or request D7. Physical automatic lighting uses its own face/pose gate in
+every display mode. AI mode restores live gesture lighting.
 
 Pointing/illumination reserves the desk aiming pose. The initial acknowledgment settles before
 continuous following; active pointing suppresses nods and return blends so the beam follows the
@@ -172,7 +189,7 @@ error clears its cached image and FPS; a timeout never retransmits the previous 
 also refuses to timestamp repeated identical JPEGs as fresh, covering older desk deployments.
 
 
-Automatic defaults: the preview opens in AI animation mode and enables subject tracking after
+Automatic defaults: the preview opens in AI animation mode and enables subject tracking and gated lighting after
 fresh camera and encoder data arrive. A manual tracking-off selection is saved in this browser.
 Reloading never clears a latched Stop; **Resume gestures** resumes the social loops and restores
 tracking when the saved preference is on. Stale data or heartbeat expiry still disables hardware;

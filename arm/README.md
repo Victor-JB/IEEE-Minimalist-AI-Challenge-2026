@@ -47,6 +47,13 @@ fades linearly to it over `fade ms` and drives a 20 kHz PWM. No session owner ne
 stays when the session ends. Firmware built with `LIGHT_ENABLED 0` (the old wiring) or older
 firmware answers `supported: False` and the light is a no-op, so nothing else breaks.
 
+Automatic lighting can use `arm_light([level, fade_ms, lease_ms])`, with a 1–2000 ms lease.
+The independent MCU tick forces the LED off when that lease expires, even if the Linux
+observer stops. Read requests do not renew it. Omitted/zero lease retains the manual behavior.
+The hybrid observer uses an 800 ms lease and checks fresh face results plus the physical
+beam's horizon clearance before every renewal. Firmware without this optional argument
+rejects it; the observer does not fall back to a persistent on command.
+
 **Pin: D7 (PB2, TIM8 CH4N).** TIM8 drives no other header pin, so the LED gets its own timer.
 Every other PWM pin shares a timer that is taken: TIM3 (D3, D6, D8), TIM1 (D5, D11-D13) and TIM4
 (D9, D10) run the STEP pulse trains, whose period and mode change constantly; TIM2 (D2, D20, D21)

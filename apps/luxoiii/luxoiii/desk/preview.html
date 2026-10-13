@@ -34,9 +34,11 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
 <p class="small">Alone: settle down, breathe, and occasionally stretch. On arrival: ease into an attentive pose and give one polite nod. While you linger: curious looks and playful invitations, with pauses for your response. Open palm says hello; gestures always take priority. Only Stop pauses the demo.</p>
 <p class="small" id="pointStatus" role="status">Pointing: a blue cursor previews the spot. If the 3D ray misses the desk, fingertip position controls the virtual desk cursor.</p>
 <progress id="gestureProgress" max="1" value="0" aria-label="Gesture hold progress"></progress>
-<div class="toolbar"><button id="aiMode" aria-pressed="true">AI-driven simulated arm</button><button id="hardware" aria-pressed="false">Enable subject tracking</button><button id="stopDemo" style="border-color:#ed8585">Stop & lamp off</button><button id="resumeDemo">Resume gestures</button></div>
+<div class="toolbar"><button id="aiMode" aria-pressed="true">AI-driven simulated arm</button><button id="hardware" aria-pressed="false">Enable tracking + auto light</button><button id="stopDemo" style="border-color:#ed8585">Stop & lamp off</button><button id="resumeDemo">Resume gestures</button></div>
 <p class="small" id="outputStatus">Automatic tracking starts with fresh camera data. Digital animation runs independently.</p>
-<p class="small">Tracking and social animations start automatically. The real swivel moves up to 60°/s within ±45°, with a wide hold zone (middle 40% of the image): face first, hand as fallback. It resumes only outside the middle 52% after two consistent detections, using small, damped corrections. It holds when centered or when the subject disappears. Camera view assumes 100° horizontal FOV. The real lamp stays off. Greetings, head wags, nods and desk gestures animate the digital arm only.</p>
+<p class="small" id="lampGate" role="status">Physical lamp: waiting for fresh face and angle checks.</p>
+<p class="small">The physical lamp turns on at 40% after one second without detected faces, only when its entire estimated beam is below horizontal. A face, an upward tilt, stale readings, or Stop turns it off. This uses the real joint angles and shade geometry, assuming the base is level; the beam width and servo angle are estimates.</p>
+<p class="small">Tracking and social animations start automatically. The real swivel moves up to 60°/s within ±45°, with a wide hold zone (middle 40% of the image): face first, hand as fallback. It resumes only outside the middle 52% after two consistent detections, using small, damped corrections. It holds when centered or when the subject disappears. Camera view assumes 100° horizontal FOV. Greetings, head wags, nods and desk gestures animate the digital arm only.</p>
 </section>
 <section class="sliders" aria-label="Live physical joint angles" style="border:1px solid #775f3c;margin-bottom:16px">
 <label>Real shoulder <output id="realShoulder">Waiting…</output></label>
@@ -84,7 +86,7 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
  <label>Head pitch <output id="headValue">55°</output><input id="head" aria-label="Head pitch" type="range" min="-180" max="180" value="55" step="0.1"></label>
  <label>Head pivot <output id="rollValue">0°</output><input id="roll" aria-label="Head pivot" type="range" min="-135" max="135" value="0" step="0.1"></label>
 </div>
-</details><p class="small">Model and choreography: full-model-animations · ef1b0d2. Full-body poses from lamp_demo; additive expressions from ELEGNT. Browser animation blends these kinematically; it is not a physics simulation. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; the real swivel tracks the subject after activation; the real lamp stays off. No stepper movement commands are sent. Finger-ray targets are approximate. The virtual cursor maps fingertip image position onto the simulated desk; it does not locate a real object.</p>
+</details><p class="small">Model and choreography: full-model-animations · ef1b0d2. Full-body poses from lamp_demo; additive expressions from ELEGNT. Browser animation blends these kinematically; it is not a physics simulation. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; the real swivel tracks the subject after activation. The physical lamp requires no detected faces and a downward beam. No stepper movement commands are sent. Finger-ray targets are approximate. The virtual cursor maps fingertip image position onto the simulated desk; it does not locate a real object.</p>
 </main>
 <script src="/cad-view.js"></script>
 <script src="/emotion-view.js"></script>
@@ -203,8 +205,11 @@ async function poll() {
   await startDefaultTracking();
   const o=live.outputs;
   if(o && !o.enabled && performance.now()-enabledAt>2000)wantHardware=false;
-  const hb=document.getElementById('hardware');hb.setAttribute('aria-pressed',String(!!o?.enabled));hb.textContent=o?.enabled?'Disable subject tracking':'Enable subject tracking';
+  const hb=document.getElementById('hardware');hb.setAttribute('aria-pressed',String(!!o?.enabled));hb.textContent=o?.enabled?'Disable tracking + auto light':'Enable tracking + auto light';
   document.getElementById('outputStatus').textContent=o ? `${o.reason} · Swivel ${o.swivel_mode||'auto'} ${Number.isFinite(o.swivel_target)?o.swivel_target.toFixed(1)+'°':''} · Real lamp ${Math.round((o.brightness||0)*100)}% · Steppers disabled` : 'Physical output status unavailable';
+  const gate=o?.lamp_gate,top=gate?.beam_top_deg;
+  document.getElementById('lampGate').textContent=!live.fresh?'Physical lamp: waiting for fresh readings':gate?
+   `Physical lamp: ${gate.reason}${Number.isFinite(top)?` · Estimated upper beam edge ${Math.abs(top).toFixed(1)}° ${top>0?'above':'below'} horizontal. Needs 5° below to turn on.`:''}`:'Physical lamp: waiting for the updated controller';
   const hs=live.hands||[];
   document.getElementById('handsText').textContent=!live.fresh?'Hand data unavailable':!live.hands_available?'Hand model unavailable':hs.length?hs.map((h,i)=>`Hand ${i+1}: ${h.gesture==='open_palm'?'open palm · say hello':(h.gesture||'tracking').replaceAll('_',' ')} · ${Math.round(h.score*100)}% detection score`).join(' | '):'No hands detected. Keep the whole hand in the camera view.';
   const pm=live.pipeline;
@@ -231,7 +236,7 @@ async function poll() {
   if(live.fresh && live.frame_jpeg) {img.src='data:image/jpeg;base64,'+live.frame_jpeg;img.style.opacity=1;} else {img.removeAttribute('src');}
   document.getElementById('frameInfo').textContent=live.fresh ? `${live.source} · ${Math.round(live.inference_ms)} ms read + inference · frame age ${live.age_s.toFixed(1)} s` : 'Camera unavailable';
  } catch(e) {
-  live=null;document.getElementById('trackingZone').hidden=true;cad.spatial(null);applyLive();document.getElementById('health').textContent='Live connection unavailable';document.getElementById('people').textContent='Old face markers are hidden.';document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
+  live=null;document.getElementById('lampGate').textContent='Physical lamp: connection lost · automatic light expires off';document.getElementById('trackingZone').hidden=true;cad.spatial(null);applyLive();document.getElementById('health').textContent='Live connection unavailable';document.getElementById('people').textContent='Old face markers are hidden.';document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
  }
  setTimeout(poll,150);
 }
@@ -240,6 +245,7 @@ setInterval(()=>{
  if(live?.fresh && (performance.now()-receivedAt)/1000+live.age_s>=2) {
   document.getElementById('trackingZone').hidden=true;live={...live,fresh:false,people:[],camera:null};cad.spatial(null);applyLive();
   document.getElementById('health').textContent='Camera data is stale';
+  document.getElementById('lampGate').textContent='Physical lamp: stale camera · automatic light expires off';
   document.getElementById('people').textContent='Waiting for fresh camera data. Old face markers are hidden.';
   document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
   document.getElementById('frameInfo').textContent='Camera unavailable';document.getElementById('handsText').textContent='Hand data unavailable';document.getElementById('demoStatus').textContent='AI paused · stale camera';document.getElementById('gestureProgress').value=0;
