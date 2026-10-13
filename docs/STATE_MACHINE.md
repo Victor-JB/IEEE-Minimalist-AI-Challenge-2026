@@ -57,7 +57,7 @@ stateDiagram-v2
     state "SEARCH · sweep the desk<br/>AI: book at each pause, hand 2 Hz<br/>pool: searching" as SEARCH
     state "AIM · move over book<br/>AI: book track<br/>pool: found" as AIM
     state "NOT FOUND<br/>AI: none<br/>pool: quizzical" as NOTFOUND
-    state "GOODBYE<br/>AI: none<br/>pool: done" as GOODBYE
+    state "GOODBYE<br/>AI: face 5 Hz<br/>pool: done" as GOODBYE
     state "LOST USER<br/>AI: face 5 Hz<br/>pool: looking around" as LOST
 
     state ILLUMINATE {
@@ -104,10 +104,11 @@ stateDiagram-v2
 stateDiagram-v2
     direction LR
     state "any state" as ANY
-    state "FAULT<br/>AI: none<br/>stop, drivers asleep, light dims" as FAULT
+    state "FAULT<br/>AI: hand 2 Hz (reset palm)<br/>stop, drivers asleep, light dims" as FAULT
     ANY --> FAULT : STALL · SENSOR_STALE · OVERTEMP · LINK_LOST
     FAULT --> BOOT : cooled + one auto retry
     FAULT --> FAULT : second fault, stays latched until reset
+    FAULT --> BOOT : RESET (open palm 3 s)
 ```
 
 The STM32 already stops on its own for stale encoders, joint limits and lease expiry. FAULT is the behavior layer catching up: stop sending targets, show it, recover once.
@@ -134,8 +135,8 @@ AI rates are starting points to tune against the power meter. Every rate cut is 
 | · ADJUST | — | hand at 8 Hz | closer: a step along the light axis with `approach_object__eager` flavor; further: `avoid_object__mild` flavor. Small anticipation, then the move. | move done → HOLD |
 | · CHECK-IN | dim the light slightly (`LightCoupling` rule) | face at 10 Hz for about 1.5 s | `look_at_user_return__slow_right`/`__quick_left` (`LookBackAtUser` rule) | glance done → HOLD |
 | · REACQUIRE | — | book at 3 Hz on a widening crop | `curious_head_tilt__single`, small local sweep | found → HOLD · 4 s → NOT FOUND |
-| GOODBYE | light ramps off | none | done: `nod_yes__small_calm`, `home__gentle` | face → STANDBY · none → IDLE |
-| FAULT | stop streaming, drivers asleep, light dims | none | `shrug_fail__small` once, only if motion is still allowed; otherwise stay still | cooled + 1 retry → BOOT |
+| GOODBYE | light ramps off | face at 5 Hz (decides STANDBY vs IDLE; the flag is cleared on enter so an old sighting doesn't count) | done: `nod_yes__small_calm`, `home__gentle` | face → STANDBY · none → IDLE |
+| FAULT | stop streaming, drivers asleep, light dims | hand at 2 Hz, only for RESET | `shrug_fail__small` once, only if motion is still allowed; otherwise stay still | cooled + 1 retry → BOOT · RESET → BOOT (clears the latch) |
 
 ---
 
@@ -152,7 +153,8 @@ The state machine never sees raw detections. A perception layer turns them into 
 | `CLOSER` / `FURTHER` | gesture held 0.4 s; repeats every 1 s while held | each repeat is one brightness step |
 | `STOP` / `EXIT` | open palm held 1 s | the same gesture means "stop" in SEARCH and "done" in ILLUMINATE |
 | `BOOK_FOUND` | book confidence ≥ 0.5 on 2 consecutive inferences | |
-| `BOOK_LOST` | no book for 2 s (about 1 check at 0.5 Hz, so add a quick 3 Hz confirm) | |
+| `BOOK_LOST` | 3 misses in a row and no book for 2 s | a miss raises the book rate to 3 Hz to confirm quickly; one missed 0.5 Hz check is not a loss |
+| `RESET` | open palm held 3 s | clears a latched FAULT |
 | `CLIP_DONE`, `MOVE_DONE` | from the motion player | |
 | `STALL`, `SENSOR_STALE`, `OVERTEMP`, `LINK_LOST` | from MCU status / gateway | |
 

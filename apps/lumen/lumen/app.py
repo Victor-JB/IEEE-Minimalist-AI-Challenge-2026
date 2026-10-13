@@ -42,7 +42,7 @@ def run(args):
 
     def entered(state, m):
         director.on_enter(state, m)
-        perception.on_state_change()
+        perception.on_state_change(m.ctx)
 
     worker.start()
     machine = Machine(on_enter=entered, on_exit=director.on_exit, now=time.monotonic())
@@ -71,7 +71,7 @@ def run(args):
                     log.write(tr, machine.models, expressive.energy, perception.sched.counts)
                     print(f"{tr.src:>10} --{tr.event}--> {machine.path}")
                     if tr.dst == "FAULT":
-                        latched = "" if director.faults <= 1 else " (latched: restart Lumen to clear)"
+                        latched = "" if director.faults <= 1 else " (latched: hold an open palm 3 s, or restart Lumen)"
                         why = director.fault_reason if tr.event == "FAULT" else f"{tr.src} {tr.event}"
                         print(f"FAULT #{director.faults}: {why}{latched}")
 
