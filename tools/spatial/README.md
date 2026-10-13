@@ -9,6 +9,11 @@ The observer shares the standalone desk's MJPEG feed at port 8081 (does not open
 again). It holds one frame in memory and runs face detection with two threads at a bounded active loop. A motion gate skips neural models when nobody is present, with a three-second
 probe to recover stationary arrivals. Active hand tracking reuses landmark crops; UI counters expose
 actual model calls, gated frames and measured timing.
+Up to two hands are detected. Pointing and command gestures have independent hold timers:
+one hand can steer the desk light while the other gives Close/Far. The pointer follows its
+previous wrist position when detector results reorder; a distant replacement needs a fresh hold.
+This is short-term spatial association, not persistent hand/person identity. Crossing or occluding
+hands can confuse it. Two opposite thumbs cancel. Keep both hands fully visible and separated.
 Images and detections are not saved. The observer is a temporary process, not a boot service.
 
 From the repo on the board, while the standalone desk is running:
@@ -94,9 +99,16 @@ The digital arm uses the full-model branch’s absolute choreography with blende
   pointer** maps fingertip image position to 25–65 cm forward and ±30 cm sideways. Image top/bottom
   controls far/near; image right maps to robot right. This fallback selects a simulated spot, not
   a measured real-world point. A blue ring previews selection in the scene and at the fingertip.
-  Keep pointing and move the fingertip to choose another spot: changes over 3 cm are accepted at
-  most once a second; a held stationary point does not repeatedly nod.
-- Thumbs up/down for 0.4 s: simulated brighter/closer or dimmer/further, at most once per second.
+  After that initial hold, every valid pointing observation updates the target, including small
+  movements. A 160 ms time-based filter reduces jitter; the browser smooths the arm each animation
+  frame and polls at 150 ms intervals without overlapping requests. Moving the finger does not
+  restart acknowledgments. Once a drag uses the virtual cursor, it keeps that mapping until release
+  instead of jumping back to a different ray target. Lowering/losing the hand holds the last spot;
+  reacquisition needs the brief hold again. No target motion is extrapolated from missing frames.
+- Thumbs up for 0.4 s: **Far**, moving away from the spot. Thumbs down: **Close**, moving toward
+  it. Steps request 3 cm at most once per second, within the model's reachable range and a ±24 cm
+  adjustment limit. Both keep the beam aimed at the spot; the chosen distance offset carries into
+  subsequent pointing. Lamp power stays constant, with natural distance falloff in the rendering.
 - Show an open palm for 0.4 s (at least two detections): the simulated arm greets back, in any
   active state. No lateral movement is required. A held palm triggers once; lower and show it again
   to repeat, with a three-second cooldown. Palm detections never pause gestures or tracking.
@@ -109,7 +121,7 @@ confirmed the camera moves with the head pivot. `pointing.py` converts relative 
 into estimated camera coordinates before intersecting the finger ray with the desk. A failed ray
 falls back to an explicitly labeled 2D virtual cursor; it is not silently clamped or called a
 physical hit. The digital base yaws toward the chosen target, and a raised wrist plus head pitch
-puts the actual simulated beam axis through it without the real arm’s SAFE_RANGES. Brightness
+puts the actual simulated beam axis through it without the real arm’s SAFE_RANGES. Close/Far
 adjustments preserve that yaw and target while moving along the simulated beam. Hand-world
 landmarks are not treated as absolute room coordinates. Oblique palms, occlusion, calibration
 error and monocular depth uncertainty can shift the target. View calibration controls currently
@@ -140,13 +152,14 @@ and numeric expressions without executing branch code, and records source hashes
 The scene includes a solid wood desktop lit by a per-fragment spotlight, with soft cone edges,
 angle/distance falloff and an emissive shade diffuser. Its origin and direction follow the
 animated model’s actual five-joint FK, rather than drawing a cone to the selected marker.
-Thumb gestures control its intensity. No wireframe light cone is drawn; the target marker
+Thumb gestures change its distance from the target. No wireframe light cone is drawn; the target marker
 and pointing cursor remain visible. This is direct diffuse lighting, without shadow maps.
 **Preview desk light** is an explicitly labeled, digital-only lighting preview; it does not
 create a detection or turn on D7. AI mode restores live gesture lighting.
 
-Pointing/illumination reserves the desk aiming pose. Brief additive acknowledgments settle back
-onto the exact target pose; breathing, gaze and unsolicited body motions yield to this task.
+Pointing/illumination reserves the desk aiming pose. The initial acknowledgment settles before
+continuous following; active pointing suppresses nods and return blends so the beam follows the
+finger. Breathing, gaze and unsolicited body motions yield to this task.
 **Show emotions** cycles full-body animations. **Try an animation mix** lets you combine any
 source action (including the original full show) with a nod, wag, bounce, or dance + sway.
 These previews are digital only; **AI-driven simulated arm** returns to interaction.

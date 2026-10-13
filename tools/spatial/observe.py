@@ -43,7 +43,7 @@ def main():
     hands_module=importlib.import_module(args.package+'.perception.hands')
     gestures=importlib.import_module(args.package+'.perception.gestures')
     MotionGate=importlib.import_module(args.package+'.perception.motion_gate').MotionGate
-    from pointing import target_from_hand, adjust_pose
+    from pointing import target_from_hand, simulated_aim
     from hybrid import Outputs
     from arduino.router_bridge import Bridge
     import cv2
@@ -52,8 +52,8 @@ def main():
     if len(cal)!=3 or any(c.get('calibrated') is not True for c in cal):
         raise ValueError('Saved joint calibration required')
     detector=FaceDetector(num_threads=2)
-    hands=hands_module.HandLandmarker(num_threads=2,max_hands=1,landmark_threshold=.65)
-    tracker=SubjectTracker();demo=Demo();demo.adjust=adjust_pose;gate=MotionGate(4.0)
+    hands=hands_module.HandLandmarker(num_threads=2,max_hands=2,landmark_threshold=.65)
+    tracker=SubjectTracker();demo=Demo(simulated_aim);gate=MotionGate(4.0)
     output=Outputs(Bridge()) if args.hybrid else None
     output_lock=threading.Lock();demo_lock=threading.Lock()
     metrics=dict(face_calls=0,hand_calls=0,palm_calls=0,gated_frames=0)
@@ -124,9 +124,11 @@ def main():
                     last_infer=started
                     if faces or hand_data:active_until=started+2
                 else:metrics['gated_frames']+=1
-                candidate=next((h for h in hand_data if h['gesture']=='point'),None)
-                target=target_from_hand(candidate,joints,pivot,frame.shape[1],frame.shape[0]) if candidate else None
-                with demo_lock: demo_state=demo.update(started,faces,hand_data,frame.shape[1],target)
+                with demo_lock:
+                    candidate=demo.select_pointing_hand(started,hand_data)
+                    prefer_virtual=demo.point_following and started-demo.point_at<=.9 and demo.target_mode=='virtual_pointer'
+                    target=target_from_hand(candidate,joints,pivot,frame.shape[1],frame.shape[0],prefer_virtual=prefer_virtual) if candidate else None
+                    demo_state=demo.update(started,faces,hand_data,frame.shape[1],target)
                 model_ms=round((time.monotonic()-model_start)*1000,1)
                 # Tracking uses a fresh command estimate after inference, compensating
                 # for swivel travel since the camera frame. Projection keeps frame-time pose.
@@ -138,7 +140,7 @@ def main():
                 data=dict(size=[frame.shape[1],frame.shape[0]],
                     detections=[dict(x=d.x,y=d.y,w=d.w,h=d.h,score=d.score) for d in faces],
                     frame_jpeg=base64.b64encode(jpeg).decode(),joints=joints,pivot=pivot,
-                    hands=hand_data,hands_available=hands.available,demo=demo_state,
+                    hands=hand_data,hands_available=hands.available,max_hands=2,demo=demo_state,
                     tracking=tracker.update(time.monotonic(),faces,hand_data,control_pivot,frame.shape[1],observed_pivot=pivot),
                     pipeline=dict(**metrics,mode='hand ROI tracking' if hand_data and hand_data[0]['tracked'] else 'face + palm detection' if run_models else 'motion gate · models sleeping',model_ms=model_ms,uptime_s=round(started-started_at,1)),
                     inference_ms=round((time.monotonic()-started)*1000,1),

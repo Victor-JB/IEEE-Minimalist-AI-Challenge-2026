@@ -29,7 +29,8 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
 <section class="live" style="display:block">
 <h2>Real tracking · digital personality</h2>
 <p id="demoStatus">Waiting for the on-board AI…</p>
-<p class="small">☝ Extend only your index finger and hold briefly to light a simulated desk spot · 👍 Brighter / closer · 👎 Dimmer / further · ✋ Show an open palm briefly to say hello — no waving needed</p>
+<p class="small">☝ Point briefly, then move your finger to guide the desk light smoothly. Lower your hand to leave it in place. · 👍 Far · 👎 Close · ✋ Open palm says hello — no waving needed</p>
+<p class="small">Two hands work together: point with one and use 👍 Far / 👎 Close with the other. If both point, the light stays with its selected hand. Keep both hands fully visible and apart.</p>
 <p class="small">Alone: settle down, breathe, and occasionally stretch. On arrival: wake up and greet you. While you linger: curious looks and playful invitations, with pauses for your response. Open palm says hello; gestures always take priority. Only Stop pauses the demo.</p>
 <p class="small" id="pointStatus" role="status">Pointing: a blue cursor previews the spot. If the 3D ray misses the desk, fingertip position controls the virtual desk cursor.</p>
 <progress id="gestureProgress" max="1" value="0" aria-label="Gesture hold progress"></progress>
@@ -191,12 +192,12 @@ async function poll() {
   const response=await fetch('/spatial?'+qs,{signal:AbortSignal.timeout(3500)});live=await response.json();receivedAt=performance.now();
   renderSpatial();applyLive();
   const d=live.demo;
-  document.getElementById('demoStatus').textContent=live.fresh && d ? `${d.state.toLowerCase()} · ${d.event} · simulated brightness ${Math.round(d.brightness*100)}%` : 'Waiting for fresh AI observations';
+  document.getElementById('demoStatus').textContent=live.fresh && d ? `${d.state.toLowerCase()} · ${d.event} · simulated light ${d.light_requested?'on':'off'}` : 'Waiting for fresh AI observations';
   document.getElementById('gestureProgress').value=live.fresh && d ? d.hold_progress : 0;
   const point=d?.point_preview;
   document.getElementById('pointStatus').textContent=!live.fresh?'Pointing: waiting for a fresh camera frame':point?
-   `${point.mode==='virtual_pointer'?'Virtual desk pointer':'Estimated finger ray'} · ${d.state==='ILLUMINATE'?'Move your fingertip to select another spot':'Hold briefly to select the blue cursor'}${point.mode==='virtual_pointer'?' · Move left/right for sideways, up/down for far/near. This is a simulated selection.':''}`:
-   d?.desk_target?`${d.target_source||'Desk target'} · spot selected. Point again to move it.`:
+   `${point.mode==='virtual_pointer'?'Virtual desk pointer':'Estimated finger ray'} · ${d.point_following?'Following your finger · lower your hand to hold this spot':'Hold briefly to select the blue cursor'}${point.mode==='virtual_pointer'?' · Move left/right for sideways, up/down for far/near. This is a simulated selection.':''}`:
+   d?.desk_target?`${d.target_source||'Desk target'} · holding your spot. Point again to guide the light.`:
    d?.gesture==='point'?'Point detected · keep your fingertip and palm inside the camera view':'Extend your index finger with the others curled. A blue cursor will preview the desk spot.';
 
   await startDefaultTracking();
@@ -232,7 +233,7 @@ async function poll() {
  } catch(e) {
   live=null;document.getElementById('trackingZone').hidden=true;cad.spatial(null);applyLive();document.getElementById('health').textContent='Live connection unavailable';document.getElementById('people').textContent='Old face markers are hidden.';document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
  }
- setTimeout(poll,500);
+ setTimeout(poll,150);
 }
 // Expire markers even if a request stalls or the browser loses its connection.
 setInterval(()=>{

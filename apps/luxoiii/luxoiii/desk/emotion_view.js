@@ -83,6 +83,7 @@ class Emotions {
   if(state==='STOPPED') {this.reset(now);this.state=state;this.label='Stopped';this.detail='Resume when ready';return null;}
   if(this.showcase!==showcase){this.reset(now);this.showcase=showcase;}
   const task=state==='ILLUMINATE'||state==='ACK';
+  const following=!showcase&&state==='ILLUMINATE'&&d.point_following;
   const visible=(data?.people?.length||data?.hands?.length||0)>0;
   let base=[...(task&&d.pose?d.pose:state==='IDLE'?lib.poses.sleep:lib.poses.look)];
   const previous=this.state;
@@ -96,7 +97,7 @@ class Emotions {
    this.event=d.event_id;
    if(d.event_age_s>=0 && d.event_age_s<3) {
     const event=d.event||'';
-    if(/^(Hello|More company|Open palm|Point |Brighter|Dimmer)/.test(event)) {
+    if(/^(Hello|More company|Open palm|Point |Close ·|Far ·)/.test(event)) {
      this.release(now);this.layers=[];this.invites=0;this.until=now+5;
      this.energy=Math.min(1,this.energy+.3);
      if(event.startsWith('Hello'))this.play(previous==='IDLE'?'wake':'greet',now);
@@ -111,10 +112,13 @@ class Emotions {
      } else if(event.startsWith('Point downward')||event.startsWith('Point unavailable')) {
       if(!task)this.play('shake',now);
       this.layer('shake',now,.5);this.label='Keep your fingertip and palm in view';
-     } else {this.layer('nod',now,.3);this.label=event.startsWith('Brighter')?'A little brighter':'A little softer';}
+     } else {this.layer('nod',now,.3);this.label=event.startsWith('Close ·')?'A little closer':'A little farther';}
     }
    }
   }
+  // Active pointing owns the beam. The outer frame-rate smoother handles pose
+  // continuity; no acknowledgment or return blend can pull it off the finger.
+  if(following){this.current=null;this.returning=null;this.layers=[];}
   if(showcase && now>=this.until) {
    const choices=['wake','curious','peek','nod','shake','joy','look_around','sleep'];
    const ref=choices[this.cycle++%choices.length];this.play(ref,now);
@@ -157,10 +161,10 @@ class Emotions {
    base=base.map((v,i)=>v+offset[i]*layer.weight*(.65+.35*this.energy));
   }
   if(!this.current&&!this.layers.length) {
-   this.label=task?'Holding your spot':state==='IDLE'?'Resting':visible?'Listening to you':'Where did you go?';
+   this.label=following?'Following your finger':task?'Holding your spot':state==='IDLE'?'Resting':visible?'Listening to you':'Where did you go?';
   }
   const activeLayers=this.layers.filter(l=>now>=l.started).map(l=>({shake:'head wag',bounce:'happy bounce',nod:'a small nod',dance:'dance',sway:'sway'})[l.ref]||l.ref);
-  this.detail=[this.current?'Full-body expression':task?'Steady desk light':'A quiet pause',
+  this.detail=[this.current?'Full-body expression':following?'Move your finger to guide the light':task?'Steady desk light':'A quiet pause',
    ...activeLayers,!task?'gentle breathing':null,attentionWeight&&visible?'attention toward you':null].filter(Boolean).join(' · ');
   // CAD joint ranges, independent of the failed steppers and ±45° physical swivel.
   this.lastPose=base.map((v,i)=>clamp(v,i===4?-135:-180,i===4?135:180));

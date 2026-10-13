@@ -9,7 +9,7 @@ from tracking import SubjectTracker
 from kinematics import fk, beam_hit, wrist_ik, HEAD_PIVOT, LIGHT_OFFSET, SHADE_CLEARANCE, SHADE_DEPTH
 
 
-def simulated_aim(target):
+def simulated_aim(target,closer=0.):
     """Turn the digital base toward the spot, then aim the shade from a raised wrist.
 
     The head link, light offset and beam share an axis at zero roll, so aiming
@@ -24,7 +24,8 @@ def simulated_aim(target):
     phi=math.degrees(math.atan2(radius-wrist[0],-wrist[2]))
     if phi<0:phi+=360
     q[2]=phi-q[0]-q[1]
-    return [yaw,*q,0.]
+    pose=[yaw,*q,0.]
+    return adjust_pose(pose,target,closer) if closer else pose
 
 
 def _finger_target(p,joints,pivot,width,height):
@@ -50,12 +51,15 @@ def _finger_target(p,joints,pivot,width,height):
     return hit,None
 
 
-def target_from_hand(hand,joints,pivot,width=640,height=480,allow_virtual=True):
+def target_from_hand(hand,joints,pivot,width=640,height=480,allow_virtual=True,prefer_virtual=False):
     p=hand.get('points',[])
     if width<=0 or height<=0 or len(p)!=21 or any(len(v)!=3 or not all(math.isfinite(c) for c in v) for v in p):return None
     # Only the palm and index need to be fully visible for a virtual cursor.
     if any(not (0<p[i][0]<width and 0<p[i][1]<height) for i in (0,5,6,8,9,17)):return None
     hit,reason=_finger_target(p,joints,pivot,width,height)
+    # Once a drag falls back to image control, keep that mapping until release.
+    # Alternating between unrelated ray/cursor coordinates makes the light jump.
+    if prefer_virtual and allow_virtual:hit=None;reason='Keeping the virtual pointer during this drag'
     mode='finger_ray';source='Estimated 3D finger ray'
     if hit is None:
         if not allow_virtual:return None
@@ -83,8 +87,8 @@ def physical_aim(joints,target):
 def adjust_pose(pose,target,delta):
     """Move the digital wrist along the beam while keeping its yaw and target."""
     h=fk(pose[1:4],pose[4],pose[0]);distance=math.dist(h.light,target)
-    standoff=max(SHADE_DEPTH-LIGHT_OFFSET+SHADE_CLEARANCE,distance-delta)
-    for _ in range(8):
+    desired=max(SHADE_DEPTH-LIGHT_OFFSET+SHADE_CLEARANCE,distance-delta)
+    def solve(standoff):
         pivot=[target[i]-(standoff+LIGHT_OFFSET)*h.axis[i] for i in range(3)]
         wrist=[pivot[i]-HEAD_PIVOT*h.axis[i] for i in range(3)]
         yaw=math.radians(pose[0]);radial=wrist[0]*math.cos(yaw)+wrist[1]*math.sin(yaw)
@@ -92,5 +96,15 @@ def adjust_pose(pose,target,delta):
             wr=h.phi-sh-el
             if -90<=sh<=90 and 0<=el<=135 and -125<=wr<=135:
                 return [pose[0],sh,el,wr,0.]
-        standoff=(standoff+distance)/2
-    return list(pose)
+        return None
+    result=solve(desired)
+    if result is not None:return result
+    # Saturate at the reachable boundary. Returning the first halved step can
+    # reverse a held Close/Far gesture as the requested offset grows.
+    low,high=0.,1.;result=list(pose)
+    for _ in range(24):
+        fraction=(low+high)/2
+        candidate=solve(distance+(desired-distance)*fraction)
+        if candidate is None:high=fraction
+        else:low=fraction;result=candidate
+    return result

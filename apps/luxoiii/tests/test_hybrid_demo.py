@@ -22,51 +22,154 @@ def hand(gesture='point',x=300):
 
 class BehaviorTests(unittest.TestCase):
     def test_point_needs_a_desk_intersection_and_a_hold(self):
-        d=Demo();h=hand();target=dict(point=[.4,0,0],pose=[0,-18,65,70,0])
+        d=Demo(simulated_aim);h=hand();target=dict(point=[.4,0,0],pose=[0,-18,65,70,0])
         d.update(10,[],[h],target=target)
         self.assertEqual(d.state,'ATTENTIVE')
         d.update(10.5,[],[h],target=target);self.assertEqual(d.state,'ACK')
         d.update(11.4,[],[],target=None);self.assertEqual(d.state,'ILLUMINATE')
         self.assertEqual(d.snapshot(12)['desk_target'],target['point'])
-        d=Demo();d.update(10,[],[h]);d.update(10.5,[],[h]);self.assertEqual(d.state,'ATTENTIVE')
+        d=Demo(simulated_aim);d.update(10,[],[h]);d.update(10.5,[],[h]);self.assertEqual(d.state,'ATTENTIVE')
         self.assertFalse(d.snapshot(11)['light_requested'])
 
     def test_missing_frames_do_not_accumulate_hold_time(self):
-        d=Demo();d.update(10,[],[hand()]);d.update(12,[],[hand()],target=dict(point=[.4,0,0],pose=[0,-18,65,70,0]))
+        d=Demo(simulated_aim);d.update(10,[],[hand()]);d.update(12,[],[hand()],target=dict(point=[.4,0,0],pose=[0,-18,65,70,0]))
         self.assertEqual(d.state,'ATTENTIVE')
 
-    def test_pointing_can_reselect_without_repeatedly_acknowledging_same_spot(self):
-        d=Demo();h=hand();first=dict(point=[.4,0,0],pose=simulated_aim([.4,0,0]),mode='virtual_pointer',source='Virtual desk pointer')
+    def test_point_follows_subcentimeter_moves_without_repeated_acknowledgments(self):
+        d=Demo(simulated_aim);h=hand();first=dict(point=[.4,0,0],mode='virtual_pointer',source='Virtual desk pointer')
         d.update(10,[],[h],target=first);d.update(10.5,[],[h],target=first)
         serial=d.serial
-        self.assertEqual(d.snapshot(10.6)['pose'],first['pose'])
+        self.assertEqual(d.snapshot(10.6)['pose'],simulated_aim(first['point']))
         self.assertEqual(d.snapshot(10.6)['target_mode'],'virtual_pointer')
         for t in (11,11.5,12):d.update(t,[],[h],target=first)
-        self.assertEqual(d.serial,serial);self.assertEqual(d.state,'ILLUMINATE')
-        second=dict(first,point=[.55,.12,0],pose=simulated_aim([.55,.12,0]))
-        d.update(12.6,[],[h],target=second)
-        self.assertEqual(d.target,second['point']);self.assertEqual(d.serial,serial+1)
         self.assertEqual(d.state,'ILLUMINATE')
+        # No old 3 cm threshold or 1-second repeat timer: all of these move.
+        for i in range(1,6):
+            previous=list(d.target);desired=[.4+i*.005,i*.003,0]
+            snapshot=d.update(12+i*.1,[],[h],target=dict(first,point=desired))
+            self.assertGreater(d.target[0],previous[0]);self.assertLess(d.target[0],desired[0])
+            self.assertEqual(d.serial,serial);self.assertTrue(snapshot['point_following'])
+            f=fk(d.aim_pose[1:4],d.aim_pose[4],d.aim_pose[0])
+            self.assertLess(math.dist(ray_plane(f.light,f.axis),d.target),1e-8)
+        saved=list(d.target)
+        self.assertFalse(d.snapshot(14)['point_following'])  # Expire without extrapolating.
         d.update(13,[],[])
-        self.assertIsNone(d.point_preview);self.assertEqual(d.target,second['point'])
+        self.assertIsNone(d.point_preview);self.assertEqual(d.target,saved)
+        self.assertFalse(d.snapshot(13)['point_following'])
+        # Re-acquire after the brief hold, without restarting the greeting/nod.
+        d.update(13.1,[],[h],target=first);self.assertEqual(d.target,saved)
+        d.update(13.6,[],[h],target=first);self.assertLess(d.target[0],saved[0])
+        self.assertEqual(d.serial,serial);self.assertEqual(d.state,'ILLUMINATE')
 
-    def test_brightness_repeats_only_when_illuminating(self):
-        d=Demo();h=hand('thumbs_up');d.update(10,[],[h]);d.update(10.5,[],[h]);self.assertEqual(d.level,.4)
-        d.state='ILLUMINATE';d.gesture=None
-        for i in range(100):d.update(20+i*.25,[],[h])
-        self.assertEqual(d.level,.8)
+    def test_following_filter_is_time_based_and_has_no_overshoot(self):
+        def run(step):
+            d=Demo(simulated_aim);h=hand()
+            d.update(10,[],[h],target=dict(point=[.4,0,0]));d.update(10.5,[],[h],target=dict(point=[.4,0,0]))
+            previous=.4
+            for i in range(1,round(.4/step)+1):
+                d.update(10.5+i*step,[],[h],target=dict(point=[.55,.15,0]))
+                self.assertGreater(d.target[0],previous);self.assertLess(d.target[0],.55)
+                previous=d.target[0]
+            return d.target
+        for a,b in zip(run(.05),run(.1)):self.assertAlmostEqual(a,b)
+        self.assertLess(math.dist(run(.1),[.55,.15,0]),.02)
+        d=Demo(simulated_aim);h=hand();center=dict(point=[.4,0,0])
+        d.update(20,[],[h],target=center);d.update(20.5,[],[h],target=center)
+        deviations=[]
+        for i in range(1,50):
+            d.update(20.5+i*.1,[],[h],target=dict(point=[.4+(.008 if i%2 else -.008),0,0]))
+            deviations.append(abs(d.target[0]-.4))
+        self.assertLess(max(deviations),.004)  # Attenuate 8 mm fingertip jitter.
+        saved=list(d.target)
+        d.update(26,[],[h],target=None);self.assertEqual(d.target,saved)
+        self.assertFalse(d.point_following)
+        d.stop(26.1)
+        for t in (26.2,26.7,27):d.update(t,[],[h],target=dict(point=[.6,.2,0]))
+        self.assertEqual(d.target,saved);self.assertFalse(d.point_following)
+
+    def test_thumb_up_is_far_down_is_close_and_distance_persists_while_pointing(self):
+        for gesture,sign,label in [('thumbs_up',-1,'Far'),('thumbs_down',1,'Close')]:
+            d=Demo(simulated_aim);h=hand(gesture);spot=[.4,.1,0]
+            d.update(10,[],[h]);d.update(10.5,[],[h]);self.assertEqual(d.distance_offset,0)
+            d.state='ILLUMINATE';d.command.gesture=None;d.target=spot;d.aim_pose=simulated_aim(spot)
+            def distance():
+                return math.dist(fk(d.aim_pose[1:4],d.aim_pose[4],d.aim_pose[0]).light,d.target)
+            before=distance()
+            d.update(20,[],[h]);d.update(20.5,[],[h])
+            self.assertAlmostEqual(d.distance_offset,.03*sign)
+            self.assertLess((distance()-before)*sign,0)
+            self.assertTrue(d.event.startswith(label));self.assertEqual(d.level,.4)
+            serial=d.serial
+            d.update(20.7,[],[h]);self.assertEqual(d.serial,serial)
+            d.update(21,[],[h]);d.update(21.5,[],[h]);self.assertAlmostEqual(d.distance_offset,.06*sign)
+            for i in range(80):d.update(21.75+i*.25,[],[h])
+            self.assertAlmostEqual(d.distance_offset,.24*sign);self.assertEqual(d.level,.4)
+            offset=d.distance_offset
+            d.update(42,[],[hand()],target=dict(point=[.5,-.1,0]))
+            d.update(42.5,[],[hand()],target=dict(point=[.5,-.1,0]))
+            self.assertEqual(d.distance_offset,offset)
+            self.assertEqual(d.aim_pose,simulated_aim(d.target,offset))
+            f=fk(d.aim_pose[1:4],d.aim_pose[4],d.aim_pose[0])
+            self.assertLess(math.dist(ray_plane(f.light,f.axis),d.target),1e-8)
 
     def test_stationary_open_palm_greets_once_and_never_stops(self):
         for state in ('IDLE','ATTENTIVE','ACK','ILLUMINATE'):
-            d=Demo();d.state=state;d.entered=10;h=hand('open_palm')
+            d=Demo(simulated_aim);d.state=state;d.entered=10;h=hand('open_palm')
             d.update(10,[],[h]);self.assertFalse(d.event.startswith('Open palm'))
             d.update(10.5,[],[h]);self.assertEqual(d.event,'Open palm · hello back')
             serial=d.serial
             for i in range(1,40):d.update(10.5+i*.25,[],[h])
             self.assertNotEqual(d.state,'STOPPED');self.assertEqual(d.serial,serial)
 
+    def test_two_hands_point_and_adjust_on_independent_hold_timers(self):
+        d=Demo(simulated_aim);pointer=hand(x=180);thumb=hand('thumbs_up',x=450)
+        spot=dict(point=[.4,0,0])
+        for t in (10,10.5,11,11.5):d.update(t,[],[pointer],target=spot)
+        serial=d.serial
+        d.update(11.7,[],[thumb,pointer],target=dict(point=[.42,.01,0]))
+        self.assertEqual(d.distance_offset,0);self.assertTrue(d.point_following)
+        d.update(11.9,[],[pointer,thumb],target=dict(point=[.44,.02,0]))
+        d.update(12.2,[],[thumb,pointer],target=dict(point=[.46,.03,0]))
+        self.assertAlmostEqual(d.distance_offset,-.03);self.assertGreater(d.target[0],.44)
+        self.assertEqual(d.serial,serial+1);self.assertTrue(d.point_following)
+        self.assertEqual(d.snapshot(12.2)['gestures'],['point','thumbs_up'])
+        # Changing only the other hand's gesture must not reacquire the pointer.
+        thumb['gesture']='thumbs_down'
+        d.update(12.4,[],[thumb,pointer],target=dict(point=[.48,.04,0]))
+        self.assertTrue(d.point_following);self.assertGreater(d.target[0],.46)
+        d.update(12.9,[],[pointer,thumb],target=dict(point=[.5,.05,0]))
+        self.assertAlmostEqual(d.distance_offset,0)
+        self.assertTrue(d.event.startswith('Close'));self.assertTrue(d.point_following)
+        d.stop(13)
+        for t in (13.1,13.6,14):d.update(t,[],[thumb,pointer],target=spot)
+        self.assertEqual(d.state,'STOPPED');self.assertEqual(d.distance_offset,0)
+
+    def test_two_pointers_keep_the_selected_hand_across_detection_reordering(self):
+        d=Demo(simulated_aim);left=hand(x=150);right=hand(x=440)
+        d.update(10,[],[left],target=dict(point=[.4,.2,0]))
+        d.update(10.5,[],[left],target=dict(point=[.4,.2,0]))
+        for i in range(6):
+            now=10.7+i*.2;hands=[left,right] if i%2 else [right,left]
+            selected=d.select_pointing_hand(now,hands)
+            self.assertIs(selected,left)
+            d.update(now,[],hands,target=dict(point=[.4,.2,0]))
+            self.assertTrue(d.point_following)
+        # If that hand disappears, a different distant hand needs its own hold.
+        saved=list(d.target)
+        self.assertIs(d.select_pointing_hand(12.1,[right]),right)
+        d.update(12.1,[],[right],target=dict(point=[.4,-.2,0]))
+        self.assertEqual(d.target,saved);self.assertFalse(d.point_following)
+        d.update(12.6,[],[right],target=dict(point=[.4,-.2,0]))
+        self.assertLess(d.target[1],saved[1]);self.assertTrue(d.point_following)
+
+    def test_opposite_thumbs_cancel_instead_of_oscillating(self):
+        d=Demo(simulated_aim);d.state='ILLUMINATE';d.target=[.4,0,0];d.aim_pose=simulated_aim(d.target)
+        hands=[hand('thumbs_up',150),hand('thumbs_down',440)]
+        for i in range(20):d.update(10+i*.25,[],hands if i%2 else hands[::-1])
+        self.assertEqual(d.distance_offset,0);self.assertEqual(d.serial,0)
+
     def test_open_palm_rearms_after_release_with_cooldown(self):
-        d=Demo();h=hand('open_palm')
+        d=Demo(simulated_aim);h=hand('open_palm')
         d.update(10,[],[h]);d.update(10.5,[],[h]);serial=d.serial
         d.update(11,[],[]);d.update(11.3,[],[h]);d.update(11.8,[],[h])
         self.assertEqual(d.serial,serial)
@@ -74,14 +177,14 @@ class BehaviorTests(unittest.TestCase):
         self.assertEqual(d.serial,serial+1)
 
     def test_only_explicit_stop_latches_until_resume(self):
-        d=Demo();d.stop(10)
+        d=Demo(simulated_aim);d.stop(10)
         for i in range(20):d.update(10.2+i*.3,[],[hand('open_palm')])
         self.assertEqual(d.state,'STOPPED');self.assertEqual(d.event,'Stopped · lamp off')
         d.resume(20);d.update(20.2,[],[hand('open_palm')]);d.update(20.7,[],[hand('open_palm')])
         self.assertEqual(d.event,'Open palm · hello back');self.assertEqual(d.state,'ATTENTIVE')
 
     def test_arrivals_group_greeting_and_quiet_return(self):
-        d=Demo();face=SimpleNamespace(x=200,w=80,h=80)
+        d=Demo(simulated_aim);face=SimpleNamespace(x=200,w=80,h=80)
         self.assertEqual(d.update(10,[face],[])['state'],'ATTENTIVE')
         self.assertTrue(d.event.startswith('Hello'))
         d.update(11,[face,face],[]);d.update(11.9,[face,face],[])
@@ -182,6 +285,12 @@ class HandProjection(unittest.TestCase):
         joints=[dict(angle=v,healthy=True,age_ms=1) for v in q]
         result=target_from_hand(hand_data,joints,dict(enabled=True,current=0))
         self.assertIsNotNone(result)
+        self.assertEqual(result['mode'],'finger_ray')
+        # A virtual drag must not jump back to a ray hit when the pose fluctuates.
+        locked=target_from_hand(hand_data,joints,dict(enabled=True,current=0),prefer_virtual=True)
+        self.assertEqual(locked['mode'],'virtual_pointer')
+        ray_only=target_from_hand(hand_data,joints,dict(enabled=True,current=0),allow_virtual=False,prefer_virtual=True)
+        self.assertEqual(ray_only['mode'],'finger_ray')
         expected=[center[i]-center[2]/h.up[2]*h.up[i] for i in range(3)]
         for a,b in zip(expected,result['point']):self.assertAlmostEqual(a,b)
 
@@ -215,10 +324,23 @@ class HandProjection(unittest.TestCase):
             for y in (-.3,-.15,0,.15,.3):
                 target=[x,y,0];pose=simulated_aim(target)
                 self.assertIsNotNone(pose)
-                for delta in (0,.03,-.03):
+                for delta in (0,.03,-.03,.24,-.24):
                     p=adjust_pose(pose,target,delta)
                     h=fk(p[1:4],p[4],p[0]);hit=ray_plane(h.light,h.axis)
                     self.assertLess(math.dist(hit,target),1e-8)
                     if delta>0:self.assertLess(math.dist(h.light,target),math.dist(fk(pose[1:4],pose[4],pose[0]).light,target))
+
+    def test_close_far_saturates_without_reversing_at_workspace_edges(self):
+        for x in (.2,.25,.4,.55,.65):
+            for y in (-.3,0,.3):
+                target=[x,y,0]
+                for sign in (-1,1):
+                    previous=None
+                    for i in range(9):
+                        p=simulated_aim(target,i*.03*sign);h=fk(p[1:4],p[4],p[0])
+                        distance=math.dist(h.light,target)
+                        if previous is not None:self.assertLessEqual((distance-previous)*sign,1e-7)
+                        self.assertLess(math.dist(ray_plane(h.light,h.axis),target),1e-8)
+                        previous=distance
 
 if __name__=='__main__':unittest.main()

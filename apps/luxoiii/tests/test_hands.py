@@ -245,6 +245,20 @@ class Pipeline(unittest.TestCase):
         self.assertEqual((self.palm.invokes, self.lm.invokes), (1, 3))
         self.assertTrue(h.last[0].tracked)
 
+    def test_two_hand_mode_discovers_a_second_hand_then_tracks_both(self):
+        h = self.make(max_hands=2)
+        self.assertEqual(len(h.detect(self.frame)), 1)
+        coords, scores = np.zeros((2944, 18), np.float32), np.zeros(2944, np.float32)
+        coords[7] = palm_detection(40, 40, 80, 80)
+        coords[17] = palm_detection(140, 40, 180, 80)
+        scores[7], scores[17] = 0.9, 0.85
+        self.palm.set("box_coords", coords)
+        self.palm.set("box_scores", scores)
+        self.assertEqual(len(h.detect(self.frame)), 2)
+        self.assertEqual(len(h.detect(self.frame)), 2)
+        self.assertTrue(all(hand.tracked for hand in h.last))
+        self.assertEqual((self.palm.invokes, self.lm.invokes), (2, 5))
+
     def test_lost_track_falls_back_to_palm_on_the_same_frame(self):
         h = self.make()
         h.detect(self.frame)                               # palm + landmark

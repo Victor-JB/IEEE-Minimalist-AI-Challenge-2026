@@ -44,6 +44,23 @@ a.sample(data('ILLUMINATE','Open palm · hello back',4,{pose:aim}),5);
 assert.equal(a.current,null);assert(a.layers.length===2);
 nearly(a.sample(data('ILLUMINATE','Open palm · hello back',4,{pose:aim}),9),aim);
 assert.equal(a.sample(data('STOPPED'),10),null);assert.equal(a.current,null);assert.equal(a.layers.length,0);
+// A pointing drag takes over immediately after acquisition, without nods or a
+// fresh return blend on each observation. The page smooths these goals at 60 Hz.
+const follower=engine();
+follower.sample(data('ACK','Point accepted',20,{pose:aim,point_following:true}),0);
+assert.equal(follower.layers.length,1);
+for(let i=0;i<8;i++) {
+ const pose=[i*2,20,55,70-i,0];
+ nearly(follower.sample(data('ILLUMINATE','Point accepted',20,{pose,point_following:true}),.8+i*.15),pose);
+ assert.equal(follower.label,'Following your finger');assert.equal(follower.layers.length,0);
+ assert.equal(follower.current,null);assert.equal(follower.returning,null);
+}
+follower.sample(data('ILLUMINATE','Point accepted',20,{pose:aim,point_following:false}),3);
+assert.equal(follower.label,'Holding your spot');
+follower.sample(data('ILLUMINATE','Far · moving away from your spot',21,{pose:aim}),4);
+assert.equal(follower.label,'A little farther');
+follower.sample(data('ILLUMINATE','Close · moving toward your spot',22,{pose:aim}),5);
+assert.equal(follower.label,'A little closer');
 // Reconnects must not replay a stale event; old data alone cannot become a greeting.
 const stale=engine();stale.sample(data('ATTENTIVE','Open palm · hello back',10,{event_age_s:20}),0);
 assert.equal(stale.current,null);assert.equal(stale.layers.length,0);
