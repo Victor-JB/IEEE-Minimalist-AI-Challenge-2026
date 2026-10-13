@@ -29,11 +29,8 @@ constexpr uint8_t STEP_PINS[AXES] = {3, 5, 9};
 // Lamp LED (light.hpp). LIGHT_ENABLED 1 (default, the board's wiring since 2026-10-13) puts the
 // LED's MOSFET gate on D7 and the head DIR on D12; 0 is the old wiring (head DIR on D7, no lamp:
 // the arm_light RPC reports "not enabled"). The build must match the wiring: the wrong one leaves
-// the head driver's DIR floating, and the head runs one way only. Why D7: it is TIM8 CH4N, and TIM8 drives no other header pin.
-// Every other PWM-capable header pin shares a timer that is already taken: D3/D6/D8 (TIM3),
-// D5/D11/D12/D13 (TIM1) and D9/D10 (TIM4) belong to the STEP pulse trains, which rewrite their
-// timer's prescaler/period and switch to forced/one-pulse modes; D2/D20/D21 (TIM2) are the
-// roll servo's fixed 50 Hz (visible flicker and camera banding) plus the encoder I2C.
+// the head driver's DIR floating, and the head runs one way only.
+// The lamp is a plain digital switch: LOW off, HIGH on. D7 uses no PWM timer.
 // D12 (PB14) only ever runs as a plain GPIO for DIR, like D6 already does on TIM3.
 #ifndef LIGHT_ENABLED
 #define LIGHT_ENABLED 1
@@ -54,12 +51,8 @@ static roll::Roll headRoll;
 static unsigned rollApplied = ~0u;
 static int rollFault = 0;
 constexpr uint8_t LIGHT_PIN = 7;
-constexpr uint32_t LIGHT_PWM_HZ = 20000;   // above hearing and far above camera/eye flicker
-#if LIGHT_ENABLED
-static const pwm_dt_spec lightOutput = PWM_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), 4); // D7 TIM8 CH4N
-#endif
 static light::Light lamp;
-static uint32_t lightPeriod = 0, lightApplied = ~0u;   // TIM8 counts per PWM period, compare sent
+static int lightApplied = -1;
 static int lightFault = LIGHT_ENABLED ? 0 : -ENODEV;
 static Motor motors[AXES];
 static joint_limit::Guard limits[AXES];
@@ -206,31 +199,19 @@ static void rollTick(uint32_t now) {
 static void lightTick(uint32_t now) {
     lamp.tick(now);
 #if LIGHT_ENABLED
-    if (lightFault || !lightPeriod) return;
-    const uint32_t c = lamp.compare(lightPeriod);
-    if (c == lightApplied) return;
-    int err = pwm_set_cycles(lightOutput.dev, lightOutput.channel, lightPeriod, c, lightOutput.flags);
-    if (err) lightFault = err;
-    else lightApplied = c;
+    if (lightFault) return;
+    const int on = lamp.current > 0;
+    if (on == lightApplied) return;
+    digitalWrite(LIGHT_PIN, on ? HIGH : LOW);
+    lightApplied = on;
 #endif
 }
 static void lightSetup() {
 #if LIGHT_ENABLED
-    analogWrite(LIGHT_PIN, 0); // Initialize PWM and only this pin's mux.
-    uint64_t hz = 0;
-    int err = !pwm_is_ready_dt(&lightOutput) ? -ENODEV
-            : pwm_get_cycles_per_sec(lightOutput.dev, lightOutput.channel, &hz);
-    if (!err) {
-        // Same trick as the STEP timers: recover the timer clock, then run TIM8 undivided so
-        // a 20 kHz period has thousands of counts (fine steps at the dim end of the gamma curve).
-        const uint64_t clock = hz * (LL_TIM_GetPrescaler(TIM8) + 1);
-        LL_TIM_SetPrescaler(TIM8, 0);
-        lightPeriod = uint32_t(clock / LIGHT_PWM_HZ);
-        if (lightPeriod < 1000 || lightPeriod > 65535) err = -ERANGE;
-        else err = pwm_set_cycles(lightOutput.dev, lightOutput.channel, lightPeriod, 0, lightOutput.flags);
-        LL_TIM_GenerateEvent_UPDATE(TIM8);
-    }
-    lightFault = err;
+    digitalWrite(LIGHT_PIN, LOW);
+    pinMode(LIGHT_PIN, OUTPUT);
+    digitalWrite(LIGHT_PIN, LOW);
+    lightFault = 0;
     lightApplied = 0;
 #endif
 }

@@ -10,7 +10,7 @@ from kinematics import shade_frame, SHADE_RADIUS, SHADE_DEPTH, LIGHT_OFFSET
 
 class Outputs:
     ALLOWED={0,4,7,16,17,18}
-    LIGHT_LEVEL=.4
+    LIGHT_LEVEL=1.
     LIGHT_LEASE_MS=800
     # Aperture geometry, not the narrower artistic cone in the web renderer.
     # Assumes a level base and the modeled axial LED location inside the shade.

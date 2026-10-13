@@ -230,25 +230,25 @@ class OutputTests(unittest.TestCase):
     def illuminate(self):
         self.downward()
         for t in (100,100.4,100.8,101.2):self.frame(t)
-        self.assertEqual(self.o.level,.4)
+        self.assertEqual(self.o.level,1.)
 
     def test_physical_light_needs_clear_frames_and_whole_downward_cone(self):
         self.downward();self.data['demo'].update(state='IDLE',light_requested=False,brightness=.1)
         for t in (100,100.4,100.8):
             self.frame(t);self.assertEqual(self.o.level,0)
-        self.frame(101.2);self.assertEqual(self.o.level,.4)
+        self.frame(101.2);self.assertEqual(self.o.level,1.)
         on=[args for method,args in self.b.calls if method=='arm_light' and args[0]>0]
-        self.assertEqual(on,[[400,0,800]])
+        self.assertEqual(on,[[1000,0,800]])
         self.assertLess(self.o.snapshot()['lamp_gate']['beam_top_deg'],-5)
         self.frame(101.4)
-        self.assertEqual([args for method,args in self.b.calls if method=='arm_light'][-1],[400,0,800])
+        self.assertEqual([args for method,args in self.b.calls if method=='arm_light'][-1],[1000,0,800])
         # A face cuts the light before any tracking/motion RPC on that cycle.
         self.b.calls.clear();self.data['detections']=[dict(score=.51)]
         self.frame(101.5);self.assertEqual(self.o.level,0)
         self.assertEqual(self.b.calls[0],('arm_light',[0,0]))
         self.data['detections']=[]
         for t in (101.6,102,102.4):self.frame(t);self.assertEqual(self.o.level,0)
-        self.frame(102.8);self.assertEqual(self.o.level,.4)
+        self.frame(102.8);self.assertEqual(self.o.level,1.)
 
     def test_automatic_light_turns_off_on_missing_inputs_or_horizon_crossing(self):
         for failure in ('face','horizon','bad_encoder','swivel_fault','swivel_released','future_swivel','in_flight_swivel','skipped_face','stale_face','missing_detections','camera_error','stop'):
@@ -285,10 +285,10 @@ class OutputTests(unittest.TestCase):
         margin(4)
         for t in (100,100.4,100.8,101.2):self.frame(t)
         self.assertEqual(self.o.level,0)
-        margin(6);self.frame(101.4);self.assertEqual(self.o.level,.4)
-        margin(3);self.frame(101.6);self.assertEqual(self.o.level,.4)
+        margin(6);self.frame(101.4);self.assertEqual(self.o.level,1.)
+        margin(3);self.frame(101.6);self.assertEqual(self.o.level,1.)
         margin(1);self.frame(101.8);self.assertEqual(self.o.level,0)
-        margin(6);self.frame(102);self.assertEqual(self.o.level,.4)
+        margin(6);self.frame(102);self.assertEqual(self.o.level,1.)
         # New physical readings always beat the earlier camera-time pose.
         self.o.read_pose=lambda bridge:dict(self.data,pivot=dict(enabled=True,target=45,current=45,fault=0))
         self.frame(102.2);self.assertEqual(self.o.level,0)

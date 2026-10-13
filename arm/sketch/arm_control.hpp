@@ -121,12 +121,13 @@ static std::vector<int> armRollStatus(){
 }
 // Lamp LED (version 4): [] or [-1] reads; [level 0-1000, fade ms, optional lease ms] sets.
 // No owner needed. Omitted/zero lease preserves manual levels; a 1-2000 ms lease expires off.
-// Reply: v, enabled, target, current, fade ms left, PWM
+// D7 is digital: positive levels mean full on, zero/negative mean off; fades are ignored.
+// Reply: v, enabled, target, current, fade ms left, output
 // error (-ENODEV when built with LIGHT_ENABLED 0), refused (-EINVAL for a bad request).
 static std::vector<int> armLight(std::vector<int> args){
     k_mutex_lock(&lock,K_FOREVER);
     uint32_t now=millis();int refused=0;
-    if((args.size()==2||args.size()==3)&&!lightFault)refused=lamp.set(args[0],args[1],now,args.size()==3?args[2]:0);
+    if((args.size()==2||args.size()==3)&&!lightFault)refused=lamp.setSwitch(args[0],args[1],now,args.size()==3?args[2]:0);
     else if(args.size()==2||args.size()==3)refused=lightFault;
     else if(!(args.empty()||(args.size()==1&&args[0]==-1)))refused=-EINVAL;
     lightTick(now);

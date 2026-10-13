@@ -80,7 +80,7 @@ at 60°/s, with smaller steps near the zone. Travel is ±45°;
 vertical centering is unavailable with the broken pitch joints. Losing a subject holds the last
 angle; the tracker does not scan or play emotional motions. This is not identity recognition.
 
-The D7 lamp turns on at 40% duty only after at least three distinct face-checked frames and one
+The D7 lamp switches fully on (digital HIGH, no PWM) only after at least three distinct face-checked frames and one
 second with no detected faces, and only when the entire estimated beam is below horizontal.
 Fresh physical encoder and swivel readings are taken separately in each output cycle, so a
 simulated pose or an old camera-time joint reading cannot authorize light. The current swivel,

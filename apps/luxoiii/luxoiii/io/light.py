@@ -148,7 +148,7 @@ class SimBackend:
 
 
 class FirmwareBackend:
-    """STM32 PWM via the motion worker (it owns the arm session; see MotionWorker.set_light)."""
+    """STM32 lamp via the motion worker. D7 firmware maps positive duty to digital on."""
     name = "firmware"
 
     def __init__(self, worker):

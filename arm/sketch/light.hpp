@@ -3,10 +3,9 @@
 #include <algorithm>
 #include <cerrno>
 #include <cstdint>
-// Lamp LED brightness: 0-1000 (per mille duty), with an optional linear fade so the 10-25 Hz
-// host updates don't step visibly. The host already applies the perceptual (gamma) curve and
-// the ease in/out ramps (apps/luxoiii/luxoiii/io/light.py); this only clamps, fades and maps to a
-// compare value. Portable: no hardware access, tested on the host (tests/light_test.cpp).
+// Portable light state and expiry. D7 uses setSwitch(): any positive level means
+// fully on, with no PWM or fade. The general set/fade/compare helpers remain for
+// other backends and existing host tests. No hardware access here.
 //
 // Manual levels survive the session ending. An optional renewable lease is for automatic
 // lighting: missing host updates force it off in the MCU's independent watchdog thread.
@@ -29,6 +28,12 @@ struct Light {
         leasedAt=now;lease=uint32_t(leaseMs);
         if(!fade)current=to;
         return 0;
+    }
+    // D7 is an on/off output. Keep the legacy request shape, but report the
+    // actual binary level and never ramp. Invalid requests cannot renew a lease.
+    int setSwitch(int level,int fadeMs,uint32_t now,int leaseMs=0){
+        if(fadeMs<0||fadeMs>MAX_FADE_MS)return -EINVAL;
+        return set(level>0?MAX:0,0,now,leaseMs);
     }
     void tick(uint32_t now){
         if(lease&&uint32_t(now-leasedAt)>=lease){from=to=current=0;fade=lease=0;return;}
