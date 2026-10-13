@@ -9,9 +9,10 @@ LIGHT_STEP_RAMP_S = 0.3                  # ADJUST brightness steps
 LIGHT_GAMMA = 2.2
 LIGHT_CHECKIN_SCALE = 0.7                # LightCoupling: dim to 70 % while glancing at the user
 LIGHT_COUPLING_RAMP_S = 0.3
-# Backend, chosen with env LUMEN_LIGHT: "sim" (default: logs only), "firmware" (LIGHT RPC on the
-# STM32 through the motion worker's arm session), "linux-pwm" (sysfs PWM), "gpio" (gpiod on/off).
-LIGHT_BACKEND = _os.environ.get("LUMEN_LIGHT", "sim")
+# Backend, chosen with env LUMEN_LIGHT: "firmware" (default: LIGHT RPC on the
+# STM32 through the motion worker's arm session; falls back to "sim" without one), "sim" (logs
+# only), "linux-pwm" (sysfs PWM), "gpio" (gpiod on/off).
+LIGHT_BACKEND = _os.environ.get("LUMEN_LIGHT", "firmware")   # the LED on D7 (luxoIII); "sim" = log only
 LIGHT_FIRMWARE_EVERY_S = 0.08            # firmware backend: at most one LIGHT per this, faded over it
 LIGHT_PWM_CHIP = int(_os.environ.get("LUMEN_LIGHT_PWMCHIP", "0"))    # /sys/class/pwm/pwmchipN
 LIGHT_PWM_CHANNEL = int(_os.environ.get("LUMEN_LIGHT_PWM_CHANNEL", "0"))

@@ -1,19 +1,19 @@
 #!/bin/bash
 # From the Mac: copy the arm module to the board, install its venv, compile and flash the
 # STM32 firmware. Run once, then again only when arm/sketch or arm/python changes.
-#   bash arm/scripts/deploy.sh                 # USB if plugged in, else Tailscale (daboard)
+#   bash arm/scripts/deploy.sh                 # USB if plugged in, else Tailscale (luxo3)
 #   ARM_NO_FLASH=1 bash arm/scripts/deploy.sh  # copy + venv only (no firmware flash)
 set -euo pipefail
 REPO_LOCAL="$(cd "$(dirname "$0")/../.." && pwd)"
 ADB="$(command -v adb || true)"
 [[ -z "$ADB" && -x /opt/homebrew/bin/adb ]] && ADB=/opt/homebrew/bin/adb
 LINK="${STEPPER_LINK:-auto}"
-if [[ "$LINK" != tailscale && -n "$ADB" ]] && "$ADB" -s 2709356903 forward tcp:2222 tcp:22 >/dev/null 2>&1; then
+if [[ "$LINK" != tailscale && -n "$ADB" ]] && "$ADB" -s "${ARDUINO_Q_SERIAL:-634018433}" forward tcp:2222 tcp:22 >/dev/null 2>&1; then
   PORT=2222; HOST=arduino@localhost; echo 'Link: USB'
 elif [[ "$LINK" == usb ]]; then
   echo 'Arduino Q not found over USB.' >&2; exit 1
 else
-  PORT=22; HOST="arduino@${STEPPER_HOST:-daboard}"; echo "Link: Tailscale ($HOST)"
+  PORT=22; HOST="arduino@${STEPPER_HOST:-luxo3}"; echo "Link: Tailscale ($HOST)"
 fi
 SSH=(ssh -p "$PORT" -o BatchMode=yes -o ConnectTimeout=5 "$HOST")
 REPO=/home/arduino/IEEE-Minimalist-AI-Challenge-2026

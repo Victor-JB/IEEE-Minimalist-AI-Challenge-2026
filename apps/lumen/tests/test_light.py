@@ -202,9 +202,14 @@ class Selection(unittest.TestCase):
         self.logged = []
         return self.logged.append
 
-    def test_default_is_sim(self):
+    def test_default_is_firmware_with_sim_fallback(self):
+        """The LED is wired on D7 (luxoIII): the default drives it through the arm session, and
+        falls back to sim when there is no worker to send through."""
         if "LUMEN_LIGHT" not in os.environ:
-            self.assertEqual(light_cfg.LIGHT_BACKEND, "sim")
+            self.assertEqual(light_cfg.LIGHT_BACKEND, "firmware")
+            w = W.MotionWorker(Expressive(random.Random(1)), fake=True)
+            self.assertIsInstance(L.make_backend(worker=w, log=self.quiet()), L.FirmwareBackend)
+            self.assertIsInstance(L.make_backend(log=self.quiet()), L.SimBackend)
         self.assertIsInstance(L.make_backend("sim", log=self.quiet()), L.SimBackend)
         self.assertIsInstance(L.Light().backend, L.SimBackend)
 
