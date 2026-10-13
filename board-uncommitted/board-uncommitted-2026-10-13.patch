@@ -1,0 +1,707 @@
+diff --git a/apps/luxoiii/luxoiii/desk/emotion_view.js b/apps/luxoiii/luxoiii/desk/emotion_view.js
+index 4005e30..4d475a5 100644
+--- a/apps/luxoiii/luxoiii/desk/emotion_view.js
++++ b/apps/luxoiii/luxoiii/desk/emotion_view.js
+@@ -113,9 +113,9 @@ class Emotions {
+      if(event.startsWith('Hello'))this.play('polite_greet',now);
+      else if(event.startsWith('More company')){this.play('look_around',now);this.layer('nod',now+.8,.5);}
+      else if(event.startsWith('Open palm')) {
+-      if(!task)this.play(this.cycle++%2?'joy':'greet',now);
+-      this.layer('shake',now+.2,task?.35:1);
+-      this.layer('bounce',now+.65,task?.12:.6);
++      this.play('greet',now);
++      this.layer('shake',now+.2,1);
++      this.layer('bounce',now+.65,.6);
+       this.label='Hello back!';
+      } else if(event.startsWith('Point accepted')) {
+       this.layer('nod',now,.6);this.label='That spot? Got it';
+@@ -128,7 +128,7 @@ class Emotions {
+   }
+   // Active pointing owns the beam. The outer frame-rate smoother handles pose
+   // continuity; no acknowledgment or return blend can pull it off the finger.
+-  if(following){this.current=null;this.returning=null;this.layers=[];}
++  if(following && this.current?.ref!=='greet'){this.current=null;this.returning=null;this.layers=[];}
+   if(showcase && now>=this.until) {
+    const choices=['wake','curious','peek','nod','shake','joy','look_around','sleep'];
+    const ref=choices[this.cycle++%choices.length];this.play(ref,now);
+diff --git a/apps/luxoiii/luxoiii/desk/preview.html b/apps/luxoiii/luxoiii/desk/preview.html
+index cb92ef4..93778f0 100644
+--- a/apps/luxoiii/luxoiii/desk/preview.html
++++ b/apps/luxoiii/luxoiii/desk/preview.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+-<title>luxoiii · Emotive robotic lamp</title>
++<title>LuxoIII · A light with a little life</title>
+ <style>
+ 
+ :root { color-scheme:light; --paper:#fcfaf6; --panel2:#fcfaf6; --ink:#514839; --muted:#817767; --rule:#d9d2c5; --amber:#a96b25; --serif:"Big Caslon","Baskerville",Georgia,serif; font:14px/1.55 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; background:var(--paper); color:var(--ink); }
+@@ -11,8 +11,8 @@ header { display:flex; align-items:center; justify-content:space-between; gap:24
+ h1,h2,h3 { font-family:var(--serif); font-weight:400; } h1 { margin:22px 0 25px; font-size:clamp(56px,6.4vw,104px); line-height:.98; letter-spacing:-3px; } h2 { font-size:clamp(32px,3vw,46px); line-height:1.1; margin:9px 0 20px; letter-spacing:-1px; } h3 { font-size:28px; margin:5px 0 9px; line-height:1.2; }
+ p { margin:12px 0; } .small { font-size:12px; color:var(--muted); } .eyebrow { margin:0; color:var(--amber); } .state { color:var(--amber); }
+ button,select,input { font:inherit; color:inherit; border-radius:0; } button { cursor:pointer; background:transparent; border:1px solid transparent; border-bottom-color:var(--rule); padding:9px 12px; line-height:1.3; transition:background .16s,color .16s; } button:hover { background:#ece6da; } button[aria-pressed=true] { background:var(--ink); color:var(--paper); border-color:var(--ink); } button:focus-visible,summary:focus-visible,a:focus-visible { outline:2px solid var(--amber); outline-offset:4px; } #stopDemo { border:1px solid #a88b75; color:#80533d; flex:none; } #stopDemo:hover { background:#f1ded0; }
+-.hero { display:grid; grid-template-columns:.9fr 1.35fr; align-items:center; position:relative; padding:32px 0 12px; isolation:isolate; }
+-.hero-copy { position:relative; z-index:1; padding:30px 0 50px; } .hero-copy:before { content:""; position:absolute; z-index:-1; pointer-events:none; inset:10% -90% -2% -50vw; background:linear-gradient(120deg,#fce7bf00 15%,#fce7bf80 72%,#fce7bf00); clip-path:polygon(100% 18%,92% 92%,0 100%,0 65%); }
++.hero { display:grid; grid-template-columns:.9fr 1.35fr; gap:clamp(24px,4vw,64px); align-items:center; position:relative; padding:32px 0 12px; isolation:isolate; }
++.hero-copy { position:relative; z-index:1; min-width:0; padding:0 0 18px; } .hero h1 { margin:12px 0 16px; } .hero .byline { margin:14px 0 24px; font-size:19px; } .camera-area { margin:0; max-width:480px; } .camera-heading { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px; } .camera-heading span { font-size:10px; color:var(--muted); } .hero-copy:before { content:""; position:absolute; z-index:-1; pointer-events:none; inset:10% -90% -2% -50vw; background:linear-gradient(120deg,#fce7bf00 15%,#fce7bf80 72%,#fce7bf00); clip-path:polygon(100% 18%,92% 92%,0 100%,0 65%); }
+ .intro { max-width:290px; font-size:15px; color:var(--muted); } .byline { font:22px var(--serif); margin-top:32px; }
+ .model-area { min-width:0; position:relative; z-index:2; } .stage { position:relative; } #cad { display:block; width:100%; height:clamp(410px,43vw,610px); background:transparent; touch-action:none; cursor:grab; } #labels { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+ .model-bar { display:flex; justify-content:space-between; gap:12px; align-items:center; border-bottom:1px solid var(--rule); padding:0 0 12px; flex-wrap:wrap; } .toolbar { display:flex; align-items:end; flex-wrap:wrap; gap:8px; margin:16px 0; } .model-bar .toolbar { margin:0; gap:2px; } .model-bar button { font-size:11px; padding:7px 9px; border-bottom:0; } .orbit-note { font-size:10px; letter-spacing:.4px; color:var(--muted); margin:8px 0; text-align:right; }
+@@ -20,19 +20,19 @@ button,select,input { font:inherit; color:inherit; border-radius:0; } button { c
+ .section { padding:42px 0; border-bottom:1px solid var(--rule); } .section-heading { display:flex; align-items:baseline; justify-content:space-between; gap:25px; } .section-heading p { max-width:360px; }
+ .gestures { display:grid; grid-template-columns:repeat(3,1fr); gap:42px; margin:16px 0 28px; } .gesture { padding-top:17px; border-top:1px solid var(--rule); } .gesture p { color:var(--muted); font-size:13px; max-width:270px; } .gesture-index { color:var(--amber); font-size:11px; letter-spacing:1px; display:block; margin-bottom:15px; } .gesture-index span { float:right; font:22px var(--serif); }
+ .point-feedback { max-width:850px; } #pointStatus { margin-bottom:7px; } progress { display:block; appearance:none; border:0; width:100%; max-width:360px; height:2px; background:#e5ddcd; color:var(--amber); } progress::-webkit-progress-bar { background:#e5ddcd; } progress::-webkit-progress-value { background:var(--amber); } progress::-moz-progress-bar { background:var(--amber); }
+-.live { display:grid; grid-template-columns:1fr 1fr; gap:clamp(25px,5vw,80px); align-items:start; } .videoFrame { position:relative; background:#e9e2d5; min-height:180px; } #video { display:block; width:100%; aspect-ratio:4/3; object-fit:contain; } #faceBoxes { position:absolute; inset:0; pointer-events:none; } .faceBox { position:absolute; border:2px solid #80f9d8; color:#80f9d8; font-size:11px; } #handOverlay { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; } #trackingZone { position:absolute;left:30%;width:40%;top:0;height:100%;border:1px dashed #dac49a;background:#e6bc690b;pointer-events:none; } #frameInfo { margin-top:10px; } #health { color:#61705b; } #handsText { color:#776484; } #pipeline { overflow-wrap:anywhere; }
+-.telemetry { margin-top:28px; display:grid; grid-template-columns:repeat(2,1fr); gap:18px; } .telemetry label { border-top:1px solid var(--rule); padding-top:12px; font-size:11px; color:var(--muted); } .telemetry output { display:block; color:var(--ink); font-variant-numeric:tabular-nums; font-size:13px; }
++.live-readings { padding:28px 0 32px; border-bottom:1px solid var(--rule); } .readings-heading { display:flex; justify-content:space-between; align-items:baseline; gap:20px; margin-bottom:20px; } .readings-heading h2 { font-size:30px; margin:0; } .readings-heading p { margin:0; text-align:right; } .live-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin:0; } .live-metrics div { border-top:1px solid var(--rule); padding-top:12px; } .live-metrics dt { color:var(--muted); font-size:11px; } .live-metrics dd { font:36px/1.2 var(--serif); margin:7px 0 0; font-variant-numeric:tabular-nums; } .perception-notes { margin-top:20px; } .perception-notes p { margin:6px 0; } .videoFrame { position:relative; background:#e9e2d5; min-height:180px; } #video { display:block; width:100%; aspect-ratio:4/3; object-fit:contain; } #faceBoxes { position:absolute; inset:0; pointer-events:none; } .faceBox { position:absolute; border:2px solid #80f9d8; color:#80f9d8; font-size:11px; } #handOverlay { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; } #trackingZone { position:absolute;left:30%;width:40%;top:0;height:100%;border:1px dashed #dac49a;background:#e6bc690b;pointer-events:none; } #frameInfo { margin-top:10px; } #health { color:#61705b; } #handsText { color:#776484; } #pipeline { overflow-wrap:anywhere; }
++.telemetry { margin:24px 0 15px; display:grid; grid-template-columns:repeat(4,1fr); gap:18px; } .telemetry label { border-top:1px solid var(--rule); padding-top:12px; font-size:11px; color:var(--muted); } .telemetry output { display:block; color:var(--ink); font-variant-numeric:tabular-nums; font-size:13px; }
+ details { border-bottom:1px solid var(--rule); padding:18px 0; } details details { border-bottom:0; } summary { cursor:pointer; list-style:none; font-family:var(--serif); font-size:24px; line-height:1.4; } summary::-webkit-details-marker { display:none; } summary:after { content:"+"; float:right; font:22px var(--serif); color:var(--muted); } details[open]>summary:after { content:"−"; } details>p { max-width:920px; } .view-options { border:0; padding:4px 0; } .view-options summary { font:12px/1.5 -apple-system,BlinkMacSystemFont,sans-serif; color:var(--muted); } .view-options .toolbar { margin-bottom:6px; }
+ .sliders { display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:24px; padding:20px 0 10px; } label { display:grid; gap:7px; font-size:12px; } input { width:100%; accent-color:var(--amber); } input[type=number],select { background:transparent; border:1px solid var(--rule); padding:10px; min-width:0; } output { color:var(--amber); } #cadmsg { margin:15px 0 0; } #exampleNote { color:var(--amber); } footer { padding:28px 0 40px; display:flex; justify-content:space-between; gap:20px; color:var(--muted); font-size:11px; } .credits { font:23px var(--serif); color:var(--ink); }
+-@media(max-width:850px) { .hero { grid-template-columns:1fr; padding-top:36px; } .hero-copy { padding:0; } h1 { font-size:76px; margin:17px 0; max-width:620px; } h1 br { display:none; } .intro { max-width:390px; } .byline { margin:16px 0; } #cad { height:460px; } .hero-copy:before { inset:0 -4% -280px -30%; } .scene-status { gap:25px; } .live { gap:30px; } .gestures { gap:25px; } }
+-@media(max-width:560px) { header { padding:20px 0;gap:12px; } .header-note { display:none; } #stopDemo { margin-left:auto;font-size:11px; } h1 { font-size:60px; letter-spacing:-2px; max-width:360px; } #cad { height:390px; } .hero { padding-top:28px; } .scene-status,.live { grid-template-columns:1fr; gap:22px; } .scene-status { padding:17px 0 25px; } .gestures { grid-template-columns:1fr; gap:8px; } .gesture { display:grid; grid-template-columns:70px 1fr; column-gap:12px;padding:16px 0; } .gesture-index { grid-row:1/3; margin-top:6px; } .gesture-index span { float:none;display:block;margin-top:12px; } .gesture h3,.gesture p { margin:0; } .gesture p { margin-top:8px;max-width:100%; } .section-heading { display:block; } .section { padding:30px 0; } .section-heading p { margin-bottom:25px; } .model-bar { gap:5px; } button { font-size:12px; } footer { flex-wrap:wrap; } }
++@media(max-width:850px) { .hero { grid-template-columns:1fr; padding-top:36px; } .hero-copy { padding:0; } h1 { font-size:76px; margin:17px 0; max-width:620px; } h1 br { display:none; } .intro { max-width:390px; } .byline { margin:16px 0; } #cad { height:460px; } .hero-copy:before { inset:0 -4% -280px -30%; } .scene-status { gap:25px; } .camera-area { max-width:560px; } .gestures { gap:25px; } }
++@media(max-width:560px) { header { padding:20px 0;gap:12px; } .header-note { display:none; } #stopDemo { margin-left:auto;font-size:11px; } h1 { font-size:60px; letter-spacing:-2px; max-width:360px; } #cad { height:390px; } .hero { padding-top:28px; } .scene-status { grid-template-columns:1fr; gap:22px; } .live-metrics,.telemetry { grid-template-columns:repeat(2,1fr); } .readings-heading { display:block; } .readings-heading p { text-align:left; margin-top:10px; } .scene-status { padding:17px 0 25px; } .gestures { grid-template-columns:1fr; gap:8px; } .gesture { display:grid; grid-template-columns:70px 1fr; column-gap:12px;padding:16px 0; } .gesture-index { grid-row:1/3; margin-top:6px; } .gesture-index span { float:none;display:block;margin-top:12px; } .gesture h3,.gesture p { margin:0; } .gesture p { margin-top:8px;max-width:100%; } .section-heading { display:block; } .section { padding:30px 0; } .section-heading p { margin-bottom:25px; } .model-bar { gap:5px; } button { font-size:12px; } footer { flex-wrap:wrap; } }
+ @media(prefers-reduced-motion:reduce) { button { transition:none; } }
+ </style>
+ 
+ <main>
+-<header><span class="wordmark">luxoiii</span><span class="header-note">Minimalist AI Challenge · 2026</span><button id="stopDemo">Stop &amp; lamp off</button></header>
++<header><span class="wordmark">LuxoIII</span><span class="header-note">Minimalist AI Challenge · 2026</span><button id="stopDemo">Stop &amp; lamp off</button></header>
+ <section class="hero" aria-labelledby="title">
+- <div class="hero-copy"><p class="eyebrow">A light with a little life</p><h1 id="title">Emotive<br> robotic lamp.</h1><p class="intro">A familiar presence. A curious glance.<br>A little light, right where you point.</p><p class="byline">Tongtong &amp; Victor</p></div>
++ <div class="hero-copy"><p class="eyebrow">A light with a little life</p><h1 id="title">LuxoIII</h1><p class="intro">A familiar presence. A curious glance.<br>A little light, right where you point.</p><p class="byline">Tongtong &amp; Victor</p><figure class="camera-area"><div class="camera-heading"><p class="eyebrow">Through its eyes</p><span>Live camera · UNO Q</span></div><div class="videoFrame"><img id="video" alt="Latest image from the robot camera, used for face detection"><div id="faceBoxes"></div><div id="trackingZone" aria-label="Tracking center deadzone" hidden></div><svg id="handOverlay" viewBox="0 0 640 480"></svg></div><div class="small" id="frameInfo">Waiting for camera…</div></figure></div>
+  <div class="model-area">
+   <div class="stage"><canvas id="cad" aria-label="Full luxoiii arm and base with transparent shells and animated internal cams"></canvas><canvas id="labels" aria-hidden="true"></canvas></div>
+   <div class="model-bar"><div class="toolbar" aria-label="Case appearance"><button data-shell="xray" aria-pressed="true">X-ray case</button><button data-shell="solid" aria-pressed="false">Solid case</button><button data-shell="hidden" aria-pressed="false">Hide case</button></div><div class="toolbar" aria-label="Camera angle"><button data-cam="3d">3D</button><button data-cam="side">Side</button><button data-cam="front">Front</button></div></div>
+@@ -41,20 +41,22 @@ details { border-bottom:1px solid var(--rule); padding:18px 0; } details details
+  </div>
+ </section>
+ <div class="scene-status"><div><p class="eyebrow">Digital personality</p><p id="demoStatus">Waiting for the on-board AI…</p><p id="personalityDetail" class="small state" role="status">Full-model personality is waking up…</p></div><div><p class="lamp-label">Physical lamp · automatic on / off</p><p class="small" id="lampGate" role="status">Waiting for fresh face and angle checks.</p></div></div>
++<section class="live-readings" aria-labelledby="perception-title">
++ <div class="readings-heading"><h2 id="perception-title">Live at a glance.</h2><p id="health" class="small" role="status">Connecting to the UNO Q…</p></div>
++ <dl class="live-metrics" aria-label="Live camera and AI statistics"><div><dt>Faces seen</dt><dd id="metricFaces">—</dd></div><div><dt>Hands seen</dt><dd id="metricHands">—</dd></div><div><dt>Processing time</dt><dd id="metricTime">—</dd></div><div><dt>Frame age</dt><dd id="metricAge">—</dd></div></dl>
++ <div class="telemetry" aria-label="Live physical joint angles"><label>Shoulder <output id="realShoulder">Waiting…</output></label><label>Elbow <output id="realElbow">Waiting…</output></label><label>Head pitch <output id="realHead">Waiting…</output></label><label>Head swivel <output id="realPivot">Waiting…</output></label></div>
++ <details class="view-options"><summary>Detection &amp; processing details</summary><div class="perception-notes"><p id="people" class="small">Waiting for detections…</p><p id="handsText" class="small">Waiting for hand detection…</p><p id="pipeline" class="small"></p><p class="small">Processing time covers camera decoding, joint readings, and AI for the latest observation. Mint marks faces; violet marks hands. Distance and finger direction are estimates. Pitch angles are measured; swivel is the servo command, without position feedback.</p></div></details>
++</section>
+ <section class="section" aria-labelledby="interaction-title">
+  <div class="section-heading"><div><p class="eyebrow">01 / An unspoken conversation</p><h2 id="interaction-title">Say hello. Stay a while.</h2></div><p class="small">It settles when alone, greets you with a nod, and grows curious when you linger.</p></div>
+  <div class="gestures"><div class="gesture"><div class="gesture-index">01 <span>✋</span></div><h3>Say hello</h3><p>Show an open palm. A simple hello is all it takes to get a greeting back.</p></div><div class="gesture"><div class="gesture-index">02 <span>☝</span></div><h3>Guide the light</h3><p>Point, pause briefly, then move your finger across the virtual desk. Lower your hand to leave the light there.</p></div><div class="gesture"><div class="gesture-index">03 <span>↕</span></div><h3>Close, or far</h3><p>Thumb up to move farther away. Thumb down to come closer. Try pointing with your other hand, too.</p></div></div>
+  <div class="point-feedback"><p class="small" id="pointStatus" role="status">Point to preview a spot on the virtual desk.</p><progress id="gestureProgress" max="1" value="0" aria-label="Gesture hold progress"></progress></div>
+  <div class="toolbar"><button id="aiMode" aria-pressed="true">AI-driven simulated arm</button><button id="hardware" aria-pressed="false">Enable tracking + auto light</button><button id="resumeDemo">Resume gestures</button></div>
+- <details class="view-options"><summary>How the real lamp responds</summary><p class="small" id="lampDetails"></p><p class="small" id="outputStatus">Automatic tracking starts with fresh camera data.</p><p class="small">The real swivel follows the subject within ±45°, with a quiet zone at the center. The digital arm has its own personality. Gestures stay on; Stop pauses the demo.</p><p class="small">The physical lamp switches fully on, without PWM, after one second with no detected faces and only when the entire estimated beam is below horizontal. A face, upward tilt, stale data, or Stop switches it off. Beam direction uses the measured joints and shade geometry, assuming a level base. Swivel and beam width are estimates.</p><p class="small">Keep both hands fully visible and apart. If both point, the light stays with its selected hand. If the estimated finger ray misses the desk, fingertip position guides a virtual cursor instead.</p></details>
+-</section>
+-<section class="section live" aria-labelledby="perception-title">
+- <div><div class="videoFrame"><img id="video" alt="Latest image from the robot camera, used for face detection"><div id="faceBoxes"></div><div id="trackingZone" aria-label="Tracking center deadzone" hidden></div><svg id="handOverlay" viewBox="0 0 640 480"></svg></div><div class="small" id="frameInfo">Waiting for camera…</div></div>
+- <div><p class="eyebrow">02 / Through its eyes</p><h2 id="perception-title">A sense of your presence.</h2><p id="health" class="small" role="status">Connecting to the UNO Q…</p><p id="people">Waiting for detections…</p><p id="handsText">Waiting for hand detection…</p><p class="small">Mint marks faces, violet marks hands, and amber shows the physical camera. Distances and finger direction are estimates.</p>
+- <div class="telemetry" aria-label="Live physical joint angles"><label>Shoulder <output id="realShoulder">Waiting…</output></label><label>Elbow <output id="realElbow">Waiting…</output></label><label>Head pitch <output id="realHead">Waiting…</output></label><label>Head swivel <output id="realPivot">Waiting…</output></label></div>
+- <details class="view-options"><summary>Live reading details</summary><p id="pipeline" class="small"></p><p class="small">Pitch angles are measured by encoders; swivel is the servo command, without position feedback. Depth assumes face and palm width. Symbols mark faces, not tracked body joints. The real steppers remain asleep.</p></details></div>
++ <p class="small" id="controlFeedback" role="status" hidden></p>
++ <p class="small" id="outputStatus" role="status">Automatic tracking starts with fresh camera data.</p>
++ <details class="view-options"><summary>How the real lamp responds</summary><p class="small" id="lampDetails"></p><p class="small">The real swivel follows the subject within ±45°, with a quiet zone at the center. The digital arm has its own personality. Gestures stay on; Stop pauses the demo.</p><p class="small">The physical lamp switches fully on, without PWM, after one second with no detected faces and only when the entire estimated beam is below horizontal. A face, upward tilt, stale data, or Stop switches it off. Beam direction uses the measured joints and shade geometry, assuming a level base. Swivel and beam width are estimates. A missing pitch sensor keeps the light off while tracking can continue.</p><p class="small">Keep both hands fully visible and apart. If both point, the light stays with its selected hand. If the estimated finger ray misses the desk, fingertip position guides a virtual cursor instead.</p></details>
+ </section>
+-<section class="section" style="border:0;padding-bottom:12px"><p class="eyebrow">03 / A closer look</p><h2>Explore the details.</h2>
++<section class="section" style="border:0;padding-bottom:12px"><p class="eyebrow">02 / A closer look</p><h2>Explore the details.</h2>
+ <details><summary>Camera calibration & assumptions</summary>
+ <p class="small">The camera moves with the head pivot. Starting assumptions: 100° horizontal view, 16 cm face width, camera 5 cm along the shade axis, base yaw fixed at zero. Adjust these to match the actual camera. A turned face or palm can make distance too large. Board gesture targeting currently uses the default 100° / 8 cm / 5 cm mount calibration; these controls adjust visualization only.</p>
+ <div class="sliders">
+@@ -82,7 +84,7 @@ details { border-bottom:1px solid var(--rule); padding:18px 0; } details details
+ </div>
+ </details><details><summary>About the model</summary><p class="small">Model and choreography: full-model-animations · ef1b0d2. Full-body poses from lamp_demo; additive expressions from ELEGNT. Browser animation blends these kinematically; it is not a physics simulation. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; the real swivel tracks the subject after activation. The physical lamp requires no detected faces and a downward beam. No stepper movement commands are sent. Finger-ray targets are approximate. The virtual cursor maps fingertip image position onto the simulated desk; it does not locate a real object.</p>
+ </details>
+-</section><footer><span class="credits">luxoiii</span><span>Tongtong &amp; Victor · Minimalist AI Challenge 2026</span></footer>
++</section><footer><span class="credits">LuxoIII</span><span>Tongtong &amp; Victor · Minimalist AI Challenge 2026</span></footer>
+ </main>
+ <script src="/cad-view.js"></script>
+ <script src="/emotion-view.js"></script>
+@@ -95,19 +97,22 @@ fetch('/emotions.json').then(r=>{if(!r.ok)throw Error('Clips unavailable');retur
+ let playing=false, following=false, aiReact=true, elapsed=0, last=null, live=null, example=false, receivedAt=0;
+ let displayPose=[...home], wantHardware=false, enabledAt=0, previewingLight=false;
+ let preferTracking=true, defaultTrackingPending=true;
++let controlPending=false, controlSequence=0;
+ try {preferTracking=localStorage.getItem('luxoiii.subjectTracking')!=='off';}catch(_){}
+ function saveTrackingPreference(value) {
+  preferTracking=value;try {localStorage.setItem('luxoiii.subjectTracking',value?'on':'off');}catch(_){}
+ }
+ async function startDefaultTracking() {
+- if(!defaultTrackingPending || !live?.fresh || !live.demo || !live.outputs)return;
++ if(controlPending || !defaultTrackingPending || !live?.fresh || !live.demo || !live.outputs)return;
+  if(live.demo.state==='STOPPED' || !preferTracking){defaultTrackingPending=false;return;}
+- if(!live.camera || live.age_s>1.2)return;
++ if(live.age_s>1.2)return;
+  defaultTrackingPending=false;
+- try {
+-  if(!live.outputs.enabled)await control('enable');
++ if(live.outputs.enabled){wantHardware=true;enabledAt=performance.now();return;}
++ const message=document.getElementById('controlFeedback').textContent.startsWith('Gestures resumed')?
++  'Gestures resumed. Tracking requested. Automatic light waits for its checks.':'Tracking requested. Automatic light waits for its checks.';
++ await requestControl('enable',message,()=>{
+   wantHardware=true;enabledAt=performance.now();
+- } catch(e){wantHardware=false;document.getElementById('outputStatus').textContent=e.message;}
++ });
+ }
+ function show(v) {
+  displayPose=[...v];
+@@ -154,14 +159,41 @@ async function control(action,extra={}) {
+  const r=await fetch('/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...extra}),signal:AbortSignal.timeout(2500)});
+  const d=await r.json();if(!r.ok || !d.ok)throw new Error(d.error||'Control failed');return d;
+ }
++function controlFeedback(message) {
++ const el=document.getElementById('controlFeedback');el.hidden=!message;el.textContent=message;
++}
++function renderControlButtons() {
++ const hb=document.getElementById('hardware');hb.disabled=controlPending;
++ const enabled=!!live?.outputs?.enabled||wantHardware;
++ hb.setAttribute('aria-pressed',String(enabled));
++ hb.textContent=controlPending?'Applying…':enabled?'Disable tracking + auto light':'Enable tracking + auto light';
++ document.getElementById('resumeDemo').disabled=controlPending;
++}
++async function requestControl(action,message,onSuccess,override=false) {
++ if(controlPending&&!override)return;
++ const sequence=++controlSequence;controlPending=true;renderControlButtons();controlFeedback('Applying…');
++ try {
++  await control(action);
++  if(sequence!==controlSequence)return;
++  onSuccess();controlFeedback(message);
++ } catch(e) {
++  if(sequence!==controlSequence)return;
++  controlFeedback('Could not '+({enable:'enable tracking',disable:'disable tracking',resume:'resume gestures',stop:'stop the lamp'}[action]||action)+': '+e.message);
++ } finally {
++  if(sequence===controlSequence){controlPending=false;renderControlButtons();}
++ }
++}
+ document.getElementById('hardware').onclick=async()=>{
++ if(controlPending)return;
+  defaultTrackingPending=false;
+- try {const action=live?.outputs?.enabled?'disable':'enable';await control(action);wantHardware=action==='enable';saveTrackingPreference(wantHardware);enabledAt=performance.now();}
+- catch(e){wantHardware=false;document.getElementById('outputStatus').textContent=e.message;}
++ const action=live?.outputs?.enabled||wantHardware?'disable':'enable';
++ await requestControl(action,action==='enable'?'Tracking requested. Automatic light waits for its checks.':'Tracking and automatic light disabled.',()=>{
++  wantHardware=action==='enable';saveTrackingPreference(wantHardware);enabledAt=performance.now();
++ });
+ };
+-document.getElementById('stopDemo').onclick=async()=>{setLightPreview(false);defaultTrackingPending=false;wantHardware=false;aiReact=true;following=false;setPlaying(false);updateFollow();try{await control('stop');}catch(e){document.getElementById('outputStatus').textContent='Stop connection failed; output lease will expire.';}};
+-document.getElementById('resumeDemo').onclick=async()=>{setLightPreview(false);try{await control('resume');aiReact=true;following=false;setPlaying(false);updateFollow();defaultTrackingPending=true;}catch(e){document.getElementById('demoStatus').textContent=e.message;}};
+-setInterval(()=>{if(wantHardware)control('heartbeat').catch(()=>{wantHardware=false;});},700);
++document.getElementById('stopDemo').onclick=async()=>{setLightPreview(false);defaultTrackingPending=false;wantHardware=false;aiReact=true;following=false;setPlaying(false);updateFollow();await requestControl('stop','Stopped. Physical outputs are off.',()=>{},true);};
++document.getElementById('resumeDemo').onclick=async()=>{if(controlPending)return;setLightPreview(false);await requestControl('resume','Gestures resumed. Open palm to say hello, or point to guide the digital light.',()=>{aiReact=true;following=false;setPlaying(false);updateFollow();defaultTrackingPending=true;});};
++setInterval(()=>{if(wantHardware)control('heartbeat').catch(()=>{wantHardware=false;controlFeedback('Connection lost. Physical outputs switch off automatically.');});},700);
+ document.getElementById('peopleView').onclick=()=>cad.fitPeople();
+ function renderSpatial() {
+  if(example && live?.camera && live.fresh) {
+@@ -171,9 +203,20 @@ function renderSpatial() {
+  } else cad.spatial(live);
+ }
+ document.getElementById('example').onclick=()=>{example=!example;document.getElementById('example').setAttribute('aria-pressed',String(example));renderSpatial();cad.fitPeople();document.getElementById('exampleNote').hidden=!example;};
++function renderMetrics() {
++ const fresh=live?.fresh, finite=v=>Number.isFinite(v);
++ const values={
++  metricFaces:fresh&&Array.isArray(live.detections)?live.detections.length:'—',
++  metricHands:fresh&&live.hands_available&&Array.isArray(live.hands)?live.hands.length:'—',
++  metricTime:fresh&&finite(live.inference_ms)?Math.round(live.inference_ms)+' ms':'—',
++  metricAge:fresh&&finite(live.age_s)?live.age_s.toFixed(1)+' s':'—'
++ };
++ for(const [id,value] of Object.entries(values))document.getElementById(id).textContent=value;
++}
+ function applyLive() {
++ renderMetrics();
+  ['realShoulder','realElbow','realHead'].forEach((id,i)=>{
+-  const j=live?.joints?.[i];document.getElementById(id).textContent=live?.fresh&&j?.healthy&&Number.isFinite(j.angle)?j.angle.toFixed(1)+'° · measured':'Unavailable';
++  const j=live?.joints?.[i];document.getElementById(id).textContent=live?.fresh&&j?.healthy&&Number.isFinite(j.angle)?j.angle.toFixed(1)+'° · measured':live?.fresh&&j?.reason?j.reason:'Unavailable';
+  });
+  const p=live?.pivot;
+  document.getElementById('realPivot').textContent=live?.fresh&&p?.enabled&&!p.fault?`${p.current.toFixed(1)}° · commanded`:'Released · angle unknown';
+@@ -201,11 +244,11 @@ async function poll() {
+   await startDefaultTracking();
+   const o=live.outputs;
+   if(o && !o.enabled && performance.now()-enabledAt>2000)wantHardware=false;
+-  const hb=document.getElementById('hardware');hb.setAttribute('aria-pressed',String(!!o?.enabled));hb.textContent=o?.enabled?'Disable tracking + auto light':'Enable tracking + auto light';
+-  document.getElementById('outputStatus').textContent=o ? `${o.reason} · Swivel ${o.swivel_mode||'auto'} ${Number.isFinite(o.swivel_target)?o.swivel_target.toFixed(1)+'°':''} · Real lamp ${o.brightness>0?'on':'off'} · Steppers disabled` : 'Physical output status unavailable';
++  renderControlButtons();
++  document.getElementById('outputStatus').textContent=o ? `${o.enabled?(o.connected?'Tracking on':'Tracking starting')+' · Automatic light armed':'Tracking and automatic light off'} · ${o.reason}` : 'Physical output status unavailable';
+   const gate=o?.lamp_gate,top=gate?.beam_top_deg;
+   document.getElementById('lampGate').textContent=!live.fresh?'Waiting for fresh readings':gate?
+-   `${o.brightness>0?'On':'Off'} · ${gate.reason}`:'Waiting for the lamp controller';
++   `${o.brightness>0?'On':o.enabled?'Armed · lamp off':'Off'} · ${o.enabled?gate.reason:o.reason}`:'Waiting for the lamp controller';
+   document.getElementById('lampDetails').textContent=Number.isFinite(top)?
+    `Estimated upper beam edge: ${Math.abs(top).toFixed(1)}° ${top>0?'above':'below'} horizontal. The whole beam needs 5° of clearance below horizontal to switch on.`:'';
+   const hs=live.hands||[];
+@@ -234,6 +277,7 @@ async function poll() {
+   if(live.fresh && live.frame_jpeg) {img.src='data:image/jpeg;base64,'+live.frame_jpeg;img.style.opacity=1;} else {img.removeAttribute('src');}
+   document.getElementById('frameInfo').textContent=live.fresh ? `${live.source} · ${Math.round(live.inference_ms)} ms read + inference · frame age ${live.age_s.toFixed(1)} s` : 'Camera unavailable';
+  } catch(e) {
++  document.getElementById('outputStatus').textContent='Connection lost · tracking unavailable · physical outputs expire off';
+   live=null;document.getElementById('lampGate').textContent='Physical lamp: connection lost · automatic light expires off';document.getElementById('trackingZone').hidden=true;cad.spatial(null);applyLive();document.getElementById('health').textContent='Live connection unavailable';document.getElementById('people').textContent='Old face markers are hidden.';document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
+  }
+  setTimeout(poll,150);
+@@ -244,6 +288,7 @@ setInterval(()=>{
+   document.getElementById('trackingZone').hidden=true;live={...live,fresh:false,people:[],camera:null};cad.spatial(null);applyLive();
+   document.getElementById('health').textContent='Camera data is stale';
+   document.getElementById('lampGate').textContent='Physical lamp: stale camera · automatic light expires off';
++  document.getElementById('outputStatus').textContent='Camera data is stale · tracking unavailable · physical outputs expire off';
+   document.getElementById('people').textContent='Waiting for fresh camera data. Old face markers are hidden.';
+   document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
+   document.getElementById('frameInfo').textContent='Camera unavailable';document.getElementById('handsText').textContent='Hand data unavailable';document.getElementById('demoStatus').textContent='AI paused · stale camera';document.getElementById('gestureProgress').value=0;
+diff --git a/apps/luxoiii/tests/test_emotion_view.cjs b/apps/luxoiii/tests/test_emotion_view.cjs
+index 4eeba72..549bcfa 100644
+--- a/apps/luxoiii/tests/test_emotion_view.cjs
++++ b/apps/luxoiii/tests/test_emotion_view.cjs
+@@ -40,10 +40,20 @@ a.sample(data('ACK','Point accepted · estimated desk spot selected',3,{pose:aim
+ assert.equal(a.current,null);assert.deepEqual(a.layers.map(l=>l.ref),['nod']);
+ a.sample(data('ILLUMINATE','Point accepted',3,{pose:aim}),2.2);
+ nearly(a.sample(data('ILLUMINATE','Point accepted',3,{pose:aim}),4),aim);
+-a.sample(data('ILLUMINATE','Open palm · hello back',4,{pose:aim}),5);
+-assert.equal(a.current,null);assert(a.layers.length===2);
+-nearly(a.sample(data('ILLUMINATE','Open palm · hello back',4,{pose:aim}),9),aim);
++a.sample(data('ATTENTIVE','Open palm · hello back',4,{light_requested:false,desk_target:null}),5);
++assert.equal(a.current.ref,'greet');assert(a.layers.length===2);
++const welcome=a.sample(data('ATTENTIVE','Open palm · hello back',4),7);
++assert(welcome.some((v,i)=>Math.abs(v-aim[i])>5));
++const welcomeStarted=a.current.started;
++a.sample(data('ATTENTIVE','Open palm · hello back',4),7.2);
++assert.equal(a.current.started,welcomeStarted);
+ assert.equal(a.sample(data('STOPPED'),10),null);assert.equal(a.current,null);assert.equal(a.layers.length,0);
++// Even a transitional snapshot that still says following must not erase the
++// fresh palm welcome in the same animation frame.
++const interrupt=engine();
++interrupt.sample(data('ILLUMINATE','Point accepted',8,{pose:aim,point_following:true}),0);
++interrupt.sample(data('ILLUMINATE','Open palm · hello back',9,{pose:aim,point_following:true}),1);
++assert.equal(interrupt.current.ref,'greet');assert.equal(interrupt.layers.length,2);
+ // A pointing drag takes over immediately after acquisition, without nods or a
+ // fresh return blend on each observation. The page smooths these goals at 60 Hz.
+ const follower=engine();
+diff --git a/apps/luxoiii/tests/test_hybrid_demo.py b/apps/luxoiii/tests/test_hybrid_demo.py
+index c034a54..57fbba1 100644
+--- a/apps/luxoiii/tests/test_hybrid_demo.py
++++ b/apps/luxoiii/tests/test_hybrid_demo.py
+@@ -121,6 +121,41 @@ class BehaviorTests(unittest.TestCase):
+             for i in range(1,40):d.update(10.5+i*.25,[],[h])
+             self.assertNotEqual(d.state,'STOPPED');self.assertEqual(d.serial,serial)
+ 
++    def test_open_palm_releases_lit_pointing_focus_and_welcomes_before_reacquiring(self):
++        d=Demo(simulated_aim);pointer=hand(x=180);palm=hand('open_palm',x=450)
++        spot=dict(point=[.4,.1,0],mode='virtual_pointer',source='Virtual desk pointer')
++        for t in (10,10.5,11,11.5):d.update(t,[],[pointer],target=spot)
++        self.assertTrue(d.snapshot(11.5)['light_requested']);self.assertTrue(d.point_following)
++        d.update(11.7,[],[pointer,palm],target=spot)
++        welcome=d.update(12.2,[],[palm,pointer],target=spot)
++        self.assertEqual(welcome['state'],'ATTENTIVE')
++        self.assertEqual(welcome['event'],'Open palm · hello back')
++        self.assertFalse(welcome['light_requested']);self.assertFalse(welcome['point_following'])
++        self.assertIsNone(welcome['desk_target']);self.assertIsNone(welcome['point_preview'])
++        self.assertIsNone(d.aim_pose);self.assertIsNone(d.target_mode)
++        serial=d.serial
++        # A continuously held second-hand point cannot cancel the greeting, even
++        # if the palm leaves the frame. No new point acknowledgments are emitted.
++        for t in (12.4,12.8,13.2,13.6,14,14.4,14.8,15.2,15.6,16,16.4,16.8):
++            snapshot=d.update(t,[],[pointer],target=spot)
++            self.assertEqual(snapshot['state'],'ATTENTIVE')
++            self.assertFalse(snapshot['light_requested']);self.assertIsNone(snapshot['desk_target'])
++            self.assertEqual(d.serial,serial)
++        d.update(17.3,[],[pointer],target=spot);self.assertEqual(d.state,'ATTENTIVE')
++        d.update(17.8,[],[pointer],target=spot);self.assertEqual(d.state,'ACK')
++        self.assertEqual(d.target,spot['point']);self.assertTrue(d.point_following)
++
++    def test_held_open_palm_keeps_priority_over_second_hand_point_after_welcome(self):
++        d=Demo(simulated_aim);hands=[hand('open_palm',450),hand('point',180)]
++        spot=dict(point=[.4,0,0])
++        d.update(10,[],hands,target=spot);d.update(10.5,[],hands,target=spot)
++        serial=d.serial
++        for i in range(1,30):
++            snapshot=d.update(10.5+i*.25,[],hands,target=spot)
++            self.assertEqual(snapshot['state'],'ATTENTIVE')
++            self.assertFalse(snapshot['light_requested']);self.assertIsNone(snapshot['desk_target'])
++            self.assertEqual(d.serial,serial)
++
+     def test_two_hands_point_and_adjust_on_independent_hold_timers(self):
+         d=Demo(simulated_aim);pointer=hand(x=180);thumb=hand('thumbs_up',x=450)
+         spot=dict(point=[.4,0,0])
+@@ -204,6 +239,7 @@ class Bridge:
+     def call(self,method,args=None,**kw):
+         self.calls.append((method,args))
+         if method=='arm_light':return [4,1,args[0],args[0],0,0,0]
++        if method=='arm_roll_status':return [3,1,0,0,1500,0]
+         r=[0]*38;r[0]=1;r[2]=self.owner;r[8]=1
+         if method=='arm_command':
+             if args[0]==0:self.owner=args[1]
+@@ -316,11 +352,113 @@ class OutputTests(unittest.TestCase):
+         self.assertTrue(all(a[0]==0 for a in light));self.assertEqual(self.o.last_target,4)
+         with self.assertRaises(ValueError):self.o.command(11,0)
+ 
+-    def test_heartbeat_and_bad_encoders_disable_outputs(self):
++    def test_heartbeat_disables_outputs_but_pitch_loss_only_blocks_light(self):
+         self.o.step(self.data,100,100);self.o.step(self.data,104,104)
+         self.assertFalse(self.o.requested);self.assertFalse(self.o.claimed)
+         self.o.requested=True;self.o.heartbeat=105;self.data['joints'][0]['healthy']=False
+-        self.o.step(self.data,105,105);self.assertFalse(self.o.requested)
++        self.o.step(self.data,105,105)
++        self.assertTrue(self.o.requested);self.assertTrue(self.o.claimed)
++        self.assertEqual(self.o.level,0)
++        self.assertIn('Shoulder angle unavailable',self.o.lamp_reason)
++
++    def test_missing_elbow_keeps_tracking_with_light_off_before_swivel(self):
++        self.data['joints'][1].update(healthy=False,angle=None,reason='Elbow magnet not detected')
++        self.o.step(self.data,100,100)
++        self.assertTrue(self.o.requested);self.assertTrue(self.o.claimed)
++        self.assertEqual(self.o.last_target,4);self.assertEqual(self.o.level,0)
++        self.assertIn('Elbow magnet not detected',self.o.lamp_reason)
++        moves=[i for i,(m,a) in enumerate(self.b.calls) if m=='arm_command' and a[0]==16]
++        off=[i for i,(m,a) in enumerate(self.b.calls) if m=='arm_light' and a[0]==0]
++        self.assertTrue(moves and off);self.assertLess(off[-1],moves[0])
++        self.assertFalse(any(a[0]>0 for m,a in self.b.calls if m=='arm_light'))
++
++    def test_released_servo_at_limit_can_wake_with_bad_elbow_and_lamp_off(self):
++        self.data['joints'][1].update(healthy=False,angle=None,reason='Elbow magnet not detected')
++        self.data['pivot'].update(enabled=False,current=45,target=45)
++        self.data['tracking']['target']=45
++        self.o.step(self.data,100,100)
++        self.assertTrue(self.o.requested);self.assertTrue(self.o.claimed)
++        self.assertEqual(self.o.last_target,45);self.assertEqual(self.o.level,0)
++        moves=[a for m,a in self.b.calls if m=='arm_command' and a[0]==16]
++        self.assertEqual(moves[0][2],45000)
++        self.assertFalse(any(a[0]>0 for m,a in self.b.calls if m=='arm_light'))
++
++    def test_pitch_loss_cuts_lit_lamp_and_recovery_still_requires_face_and_beam_gates(self):
++        self.illuminate();self.b.calls.clear()
++        self.data['joints'][1].update(healthy=False,angle=None)
++        self.data['tracking']['target']=4
++        self.frame(101.4)
++        self.assertEqual(self.b.calls[0],('arm_light',[0,0]))
++        self.assertTrue(self.o.requested);self.assertEqual(self.o.last_target,4)
++        self.assertEqual(self.o.level,0);self.assertIsNone(self.o.beam_top_deg)
++        self.data['joints'][1].update(healthy=True,angle=90)
++        self.data['detections']=[dict(score=.9)]
++        self.frame(101.6);self.assertEqual(self.o.level,0)
++        self.data['detections']=[]
++        self.data['joints'][2]['angle']=5
++        for t in (101.8,102.2,102.6,103):self.frame(t)
++        self.assertEqual(self.o.level,0)
++        self.data['joints'][2]['angle']=90
++        self.frame(103.2)
++        self.assertEqual(self.o.level,1.)
++        self.assertEqual([a for m,a in self.b.calls if m=='arm_light'][-1],[1000,0,800])
++
++    def test_pitch_read_failure_fetches_fresh_swivel_after_light_off(self):
++        self.illuminate();self.b.calls.clear()
++        def unavailable(_):raise TimeoutError('Pitch RPC failed')
++        self.o.read_pose=unavailable;self.data['tracking']['target']=4
++        self.frame(101.4)
++        self.assertTrue(self.o.requested);self.assertTrue(self.o.claimed)
++        self.assertEqual(self.o.level,0);self.assertEqual(self.o.last_target,4)
++        off=next(i for i,(m,a) in enumerate(self.b.calls) if m=='arm_light' and a[0]==0)
++        read=next(i for i,(m,a) in enumerate(self.b.calls) if m=='arm_roll_status')
++        move=next(i for i,(m,a) in enumerate(self.b.calls) if m=='arm_command' and a[0]==16)
++        self.assertLess(off,read);self.assertLess(read,move)
++
++    def test_pitch_rpc_failure_cannot_use_stale_camera_swivel_if_fresh_swivel_fails(self):
++        self.illuminate();self.b.calls.clear()
++        def unavailable(_):raise TimeoutError('Pitch RPC failed')
++        self.o.read_pose=unavailable
++        call=self.b.call
++        def no_servo(method,args=None,**kw):
++            if method=='arm_roll_status':raise TimeoutError('Servo RPC failed')
++            return call(method,args,**kw)
++        self.b.call=no_servo;self.data['tracking']['target']=4
++        self.frame(101.4)
++        self.assertFalse(self.o.requested);self.assertFalse(self.o.claimed)
++        self.assertEqual(self.o.level,0)
++        self.assertFalse(any(m=='arm_command' and a[0]==16 for m,a in self.b.calls))
++
++    def test_invalid_swivel_or_firmware_rejection_still_disables_everything(self):
++        for failure in ('fault','missing','nonfinite','out_of_range','firmware_power_lock'):
++            with self.subTest(failure=failure):
++                self.setUp();self.data['joints'][1].update(healthy=False,angle=None)
++                if failure=='fault':self.data['pivot']['fault']=-1
++                elif failure=='missing':self.data.pop('pivot')
++                elif failure=='nonfinite':self.data['pivot']['current']=math.nan
++                elif failure=='out_of_range':self.data['pivot']['target']=60
++                else:
++                    call=self.b.call
++                    def locked(method,args=None,**kw):
++                        result=call(method,args,**kw)
++                        if method=='arm_command' and args[0]==16:result[1]=-1
++                        return result
++                    self.b.call=locked
++                self.o.step(self.data,100,100)
++                self.assertFalse(self.o.requested);self.assertFalse(self.o.claimed)
++                self.assertEqual(self.o.level,0)
++
++    def test_camera_and_stop_guards_still_disable_with_missing_pitch(self):
++        for failure in ('stale','camera_error','stopped'):
++            with self.subTest(failure=failure):
++                self.setUp();self.data['joints'][1].update(healthy=False,angle=None)
++                self.o.step(self.data,100,100)
++                self.o.heartbeat=101
++                if failure=='camera_error':self.data['error']='Camera unavailable'
++                elif failure=='stopped':self.data['demo']['state']='STOPPED'
++                self.o.step(self.data,98 if failure=='stale' else 101,101)
++                self.assertFalse(self.o.requested);self.assertFalse(self.o.claimed)
++                self.assertEqual(self.o.level,0)
+ 
+     def test_face_or_upward_pose_never_lights(self):
+         for case in ('face','up'):
+diff --git a/tools/spatial/README.md b/tools/spatial/README.md
+index f164fac..fbe734d 100644
+--- a/tools/spatial/README.md
++++ b/tools/spatial/README.md
+@@ -3,7 +3,7 @@
+ The main web view at the UNO Q's port 8082 combines the full CAD assembly with read-only encoder readings,
+ head-pivot command telemetry, a camera frustum and approximate face positions. Detection runs
+ on the UNO Q using the existing quantized face model. The default observer is read-only. With `--hybrid`, the UI can explicitly activate only the physical
+-head pivot for subject tracking and D7 under a face/downward-beam gate. Failed stepper joints are animated in the browser. The observer starts with outputs disabled; the preview enables tracking and automatic lighting once camera and encoders are fresh.
++head pivot for subject tracking and D7 under a face/downward-beam gate. Failed stepper joints are animated in the browser. The observer starts with outputs disabled; the preview enables tracking and arms automatic lighting once the camera is fresh. Missing pitch encoder readings block the physical lamp, while image-based swivel tracking can continue with valid servo telemetry.
+ 
+ The observer owns the USB camera directly, with no separate 8080/8081 app. It holds one frame in
+ memory and runs face detection with four threads at a bounded active loop. In hybrid mode, every processed frame runs face detection, including quiet scenes: an unchecked frame never counts as face-free. A motion gate can still skip the hand model, with a three-second
+@@ -69,8 +69,9 @@ physical-output heartbeat expire. The old desk process is no longer part of the
+ ## Social behavior, gestures and subject tracking
+ 
+ The real swivel is exclusively an image-based subject tracker. The preview grants
+-it a quiet-arm session by default once observations are fresh. Faces take priority over hands; among multiple faces it follows the nearest
+-previous image-space subject. After a one-second face-loss grace period, a visible palm can become
++it a quiet-arm session by default once observations are fresh. Faces take priority over hands;
++among multiple faces it follows the largest bounding box in each frame. A clear change of subject
++resets the controller's motion history. After a one-second face-loss grace period, a visible palm can become
+ the target. It corrects horizontal camera error using current servo command telemetry and a 100°
+ HFOV assumption. The middle 40% of the image is a hold zone; tracking resumes outside the
+ middle 52% after two consistent observations. PD velocity control (Kp 1.8, Kd 0.35) brakes
+@@ -101,7 +102,10 @@ is required; its two-argument manual light commands also switch fully on/off, wi
+ 
+ Lighting gestures affect the digital scene only. The hardware motion RPC allowlist contains claim/status/release and pivot config/move/off;
+ no stepper configuration, move, stream, jog or power-enable commands are sent. An owned or awake
+-arm is refused. Browser heartbeat expiry (3 s), stale camera/encoders and Stop disable outputs.
++arm is refused. Browser heartbeat expiry (3 s), stale camera, invalid swivel telemetry and Stop
++disable outputs. Missing or stale pitch readings switch D7 off before any swivel command,
++without cancelling tracking. Automatic lighting stays armed and can recover only after fresh
++physical angles, face checks and the downward-beam gate all pass.
+ 
+ The digital arm uses the full-model branch’s absolute choreography with blended additive expressions. Gestures take priority over social loops:
+ 
+@@ -131,7 +135,9 @@ The digital arm uses the full-model branch’s absolute choreography with blende
+   subsequent pointing. Lamp power stays constant, with natural distance falloff in the rendering.
+ - Show an open palm for 0.4 s (at least two detections): the simulated arm greets back, in any
+   active state. No lateral movement is required. A held palm triggers once; lower and show it again
+-  to repeat, with a three-second cooldown. Palm detections never pause gestures or tracking.
++  to repeat, with a three-second cooldown. This releases the selected desk spot and its simulated
++  light, giving the welcome animation five seconds to finish. A held palm takes priority over a
++  second pointing hand; after the welcome, pointing needs a fresh hold. Physical tracking continues.
+ - Gestures stay active by default. Only the on-screen **Stop & lamp off** button latches Stop;
+   **Resume gestures** restores social interaction and the saved tracking preference.
+ 
+@@ -188,11 +194,13 @@ These previews are digital only; **AI-driven simulated arm** returns to interact
+ 
+ Camera capture now retries after USB disconnection while a viewer remains connected. A capture
+ error clears its cached image and FPS; a timeout never retransmits the previous JPEG. The observer
+-also refuses to timestamp repeated identical JPEGs as fresh, covering older desk deployments.
++uses the direct capture sequence to prove freshness. A stationary scene can produce identical
++JPEGs, but only a successful new capture refreshes its timestamp.
+ 
+ 
+ Automatic defaults: the preview opens in AI animation mode and enables subject tracking and gated lighting after
+-fresh camera and encoder data arrive. A manual tracking-off selection is saved in this browser.
++fresh camera data arrive. The physical light still requires healthy measured angles.
++A manual tracking-off selection is saved in this browser.
+ Reloading never clears a latched Stop; **Resume gestures** resumes the social loops and restores
+ tracking when the saved preference is on. Stale data or heartbeat expiry still disables hardware;
+ a failed activation is not retried repeatedly. The camera image shows the center hold zone.
+diff --git a/tools/spatial/behavior.py b/tools/spatial/behavior.py
+index a3fd1bd..77a7b8e 100644
+--- a/tools/spatial/behavior.py
++++ b/tools/spatial/behavior.py
+@@ -34,6 +34,9 @@ class GestureHold:
+ 
+ 
+ class Demo:
++    # The existing browser greet clip is 4.12 s plus its 0.65 s entry blend.
++    GREETING_FOCUS_S=5.
++
+     def __init__(self,aim):
+         self.state='IDLE';self.entered=0.;self.last_seen=0.;self.level=.4
+         self.pointer=GestureHold();self.command=GestureHold()
+@@ -44,6 +47,7 @@ class Demo:
+         self.point_x=.5;self.target=None;self.aim_pose=None
+         self.point_preview=None;self.target_source=None;self.target_mode=None
+         self.point_following=False;self.point_at=-1e9
++        self.greeting_until=-1e9
+ 
+     def emit(self,event,now):
+         self.event=event;self.serial+=1;self.event_at=now
+@@ -59,6 +63,7 @@ class Demo:
+     def resume(self,now):
+         self.transition('IDLE',now);self.emit('Ready for gestures',now)
+         self.pointer=GestureHold();self.command=GestureHold();self.point_following=False
++        self.greeting_until=-1e9
+ 
+     def select_pointing_hand(self,now,hands):
+         return self.pointer.select(now,[h for h in hands if h.get('gesture')=='point'])
+@@ -72,7 +77,12 @@ class Demo:
+         conflict={h['gesture'] for h in commands}>={'thumbs_up','thumbs_down'}
+         command_hand=self.command.select(now,palms or ([] if conflict else commands))
+         command_ready=self.command.update(now,command_hand)
+-        self.point_preview=target if hand and self.state!='STOPPED' else None
++        greeting_priority=(command_ready and self.command.gesture=='open_palm') or now<self.greeting_until
++        if greeting_priority:
++            # Do not let the other hand or a stale held point immediately take
++            # focus back. A new point needs its normal hold after the welcome.
++            self.pointer=GestureHold();point_ready=False
++        self.point_preview=target if hand and self.state!='STOPPED' and not greeting_priority else None
+         self.point_following=False
+         if faces or hands:self.last_seen=now
+         if self.state!='STOPPED':
+@@ -114,7 +124,12 @@ class Demo:
+         if self.state!='STOPPED' and command_ready and greeting_ready and (self.command.fired<self.command.since or repeat and now-self.command.fired>=1):
+             self.command.fired=now;self.last_interaction=now
+             if gesture=='open_palm':
+-                self.wave_at=now;self.emit('Open palm · hello back',now)
++                self.wave_at=now;self.greeting_until=now+self.GREETING_FOCUS_S
++                self.transition('ATTENTIVE',now)
++                self.target=None;self.aim_pose=None;self.target_source=None;self.target_mode=None
++                self.point_preview=None;self.point_following=False;self.point_at=-1e9
++                self.pointer=GestureHold()
++                self.emit('Open palm · hello back',now)
+             elif self.state=='ILLUMINATE' and repeat and self.target:
+                 # Up = farther, down = closer. Keep lamp power fixed; distance
+                 # changes the illuminated footprint naturally in the renderer.
+diff --git a/tools/spatial/hybrid.py b/tools/spatial/hybrid.py
+index 9d3d025..d5a1e0d 100644
+--- a/tools/spatial/hybrid.py
++++ b/tools/spatial/hybrid.py
+@@ -49,6 +49,37 @@ class Outputs:
+         ready=self.clear_frames>=3 and now-self.clear_since>=1.
+         return ready,'No faces detected' if ready else 'Waiting for one clear second'
+ 
++    @staticmethod
++    def pitch_problem(pose):
++        """Pitch encoders gate the beam, independently of the swivel servo."""
++        joints=pose.get('joints',[])
++        if not isinstance(joints,(list,tuple)) or len(joints)!=3:
++            return 'Physical pitch readings unavailable · lamp off'
++        for name,j in zip(('Shoulder','Elbow','Head'),joints):
++            if not isinstance(j,dict):return name+' angle unavailable · lamp off'
++            angle,age=j.get('angle'),j.get('age_ms')
++            if not (j.get('healthy') and isinstance(angle,(int,float)) and math.isfinite(angle)
++                    and isinstance(age,(int,float)) and math.isfinite(age) and 0<=age<=100):
++                reason=j.get('reason')
++                return (reason if isinstance(reason,str) and reason else name+' angle unavailable')+' · lamp off'
++        return None
++
++    def read_swivel(self):
++        """Fresh servo telemetry even when a pitch-encoder RPC failed."""
++        r=self.bridge.call('arm_roll_status',timeout=.2)
++        if len(r)!=6 or r[0]!=3:raise ValueError('Head swivel telemetry unavailable')
++        return dict(enabled=bool(r[1]),target=r[2]/1000,current=r[3]/1000,fault=r[5])
++
++    @staticmethod
++    def check_swivel(pose):
++        p=pose.get('pivot') or {}
++        if p.get('fault'):raise ValueError('Head swivel fault · outputs off')
++        if any(not isinstance(p.get(k),(int,float)) or not math.isfinite(p[k])
++               or abs(p[k])>SubjectTracker.LIMIT+.5 for k in ('current','target')):
++            raise ValueError('Head swivel pose unavailable · outputs off')
++        # Released is a valid starting state: op16 wakes the servo at its last
++        # command and firmware still checks power.enabled and rollFault.
++
+     def downward_cone(self,pose,target):
+         self.beam_top_deg=None;self.axis_elevation_deg=None
+         p=pose.get('pivot') or {}
+@@ -89,12 +120,10 @@ class Outputs:
+             if now-self.heartbeat>3:
+                 self.reason='Connection expired · outputs off';self.disable();return
+             demo=data.get('demo') or {}
+-            joints=data.get('joints',[])
+-            healthy=len(joints)==3 and all(j.get('healthy') and isinstance(j.get('angle'),(int,float)) and math.isfinite(j['angle']) and 0<=j.get('age_ms',999)<=100 for j in joints)
+-            if not 0<=age<=1.5 or not healthy or data.get('error') or demo.get('state')=='STOPPED':
++            if not 0<=age<=1.5 or data.get('error') or demo.get('state')=='STOPPED':
+                 self.reason='Stopped or stale camera · outputs off';self.disable();return
+             face_clear,face_reason=self.clear_faces(data,now)
+-            if self.connected and self.level and not face_clear:
++            if self.connected and self.level and (not face_clear or self.pitch_problem(data)):
+                 self.light(0);self.level=0.
+             # Never seize a running arm. Claiming a quiet arm does not configure or move steppers.
+             if not self.connected:
+@@ -112,23 +141,35 @@ class Outputs:
+                 self.command(17,1500,7407,-45000,45000,-1,round(SubjectTracker.SPEED*1000))
+             status=self.command(4)
+             if status[6] or status[7]:raise RuntimeError('Unexpected stepper activity · hybrid stopped')
+-            pose=self.read_pose(self.bridge) if self.read_pose else data
+-            joints=pose.get('joints',[])
+-            if len(joints)!=3 or not all(j.get('healthy') and isinstance(j.get('angle'),(int,float)) and math.isfinite(j['angle']) and 0<=j.get('age_ms',999)<=100 for j in joints):
+-                raise ValueError('Physical angle readings unavailable · lamp off')
++            try:
++                pose=self.read_pose(self.bridge) if self.read_pose else data
++                if not isinstance(pose,dict):raise ValueError('Invalid physical pose')
++                pitch_reason=self.pitch_problem(pose)
++            except Exception:
++                # Loss of pitch telemetry cannot authorize light. Check the
++                # independent servo status after switching D7 off, then permit
++                # only swivel tracking if that fresh status is still valid.
++                self.light(0);self.level=0.
++                pose=dict(joints=[],pivot=self.read_swivel())
++                pitch_reason='Physical pitch readings unavailable · lamp off'
++            self.check_swivel(pose)
+             tracking=data.get('tracking') or {}
+             value=tracking.get('target')
+             if not isinstance(value,(int,float)) or not math.isfinite(value):
+                 raise ValueError('Subject tracking unavailable')
+             target=max(-SubjectTracker.LIMIT,min(SubjectTracker.LIMIT,value))
+-            downward,direction_reason=self.downward_cone(pose,target)
++            if pitch_reason:
++                self.beam_top_deg=None;self.axis_elevation_deg=None
++                downward,direction_reason=False,pitch_reason
++            else:
++                downward,direction_reason=self.downward_cone(pose,target)
+             level=self.LIGHT_LEVEL if face_clear and downward else 0.
+             if not level:self.light(0);self.level=0.
+             if self.last_target is None or abs(target-self.last_target)>.5:
+                 self.command(16,round(target*1000),round(SubjectTracker.SPEED*1000));self.last_target=target
+             if level:self.light(level,lease=self.LIGHT_LEASE_MS)
+             self.level=level
+-            self.lamp_reason='No faces · whole beam below horizon' if level else face_reason if not face_clear else direction_reason
++            self.lamp_reason=pitch_reason or ('No faces · whole beam below horizon' if level else face_reason if not face_clear else direction_reason)
+             self.reason=tracking.get('status','Tracking subject')+' · '+self.lamp_reason+' · real lamp '+('on' if level else 'off')
+         except Exception as exc:
+             self.reason=str(exc)
+diff --git a/tools/spatial/observe.py b/tools/spatial/observe.py
+index 2e11884..dd0362f 100644
+--- a/tools/spatial/observe.py
++++ b/tools/spatial/observe.py
+@@ -52,7 +52,14 @@ def encoder(raw, joint, calibration):
+     count, magnet, error, age = raw[14:18]
+     good = 0 <= count < 4096 and magnet & 0x28 == 0x20 and error == 0 and 0 <= age <= 100
+     angle = ((count*360/4096-calibration['zero'])*(-1 if calibration['reversed'] else 1)+180)%360-180
+-    return dict(angle=angle if good else None, healthy=good, age_ms=age,
++    name = ('Shoulder', 'Elbow', 'Head pitch')[joint]
++    reason = None
++    if error: reason = name + ' sensor read failed'
++    elif not 0 <= age <= 100: reason = name + ' reading is stale'
++    elif not magnet & 0x20: reason = name + ' magnet not detected'
++    elif magnet & 0x08: reason = name + ' magnet field too strong'
++    elif not 0 <= count < 4096: reason = name + ' angle is invalid'
++    return dict(angle=angle if good else None, healthy=good, age_ms=age, reason=reason,
+                 source='raw encoder + saved calibration')
+ 
+ 
+diff --git a/tools/spatial/tracking.py b/tools/spatial/tracking.py
+index 5702fcb..ee900f8 100644
+--- a/tools/spatial/tracking.py
++++ b/tools/spatial/tracking.py
+@@ -45,7 +45,18 @@ class SubjectTracker:
+             self.error=0.;self.reset_motion()
+         else:
+             same=kind==self.kind and now-self.last_seen<1.5
+-            x=(min(candidates,key=lambda c:abs(c[0]-self.center)) if self.center is not None and same else max(candidates,key=lambda c:c[1]))[0]
++            nearest=min(candidates,key=lambda c:abs(c[0]-self.center)) if self.center is not None and same else None
++            if kind=='face':
++                # The largest visible head always wins, including when the old
++                # subject remains visible. Association is only used to detect a
++                # switch, never to keep following a smaller face.
++                selected=max(candidates,key=lambda c:c[1])
++                if nearest is not None and (selected is not nearest or abs(selected[0]-self.center)>.35):
++                    same=False
++            else:
++                # Keep hand identity stable when detection order/score changes.
++                selected=nearest if nearest is not None else max(candidates,key=lambda c:c[1])
++            x=selected[0]
+             if not same:self.reset_motion()
+             self.center=x;self.kind=kind;self.last_seen=now
+             error=math.degrees(math.atan((x-.5)*2*math.tan(math.radians(self.HFOV/2))))

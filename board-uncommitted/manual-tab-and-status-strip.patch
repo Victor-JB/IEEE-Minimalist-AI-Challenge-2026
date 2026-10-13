@@ -1,0 +1,713 @@
+--- a/tools/spatial/hybrid.py
++++ b/tools/spatial/hybrid.py
+@@ -1,6 +1,11 @@
+ """Subject-tracking swivel and a face/physical-orientation gate for D7. No stepper motion.
+ 
+ Browser heartbeat expires after 3 seconds; Stop and stale data release the servo.
++
++Manual mode (the page's Manual tab, set_manual()): the swivel goes to the angle the page sets and
++the lamp follows the page's On/Off, without subject tracking or the face/beam gates. The rest is
++unchanged: outputs must be enabled, the heartbeat must stay fresh, the lamp keeps its 800 ms lease,
++Stop switches everything off, and stepper operations stay forbidden.
+ """
+ import math
+ import secrets
+@@ -24,7 +29,19 @@
+         self.reason='Physical outputs disabled';self.level=0.;self.last_target=None
+         self.clear_since=None;self.clear_frames=0;self.face_stamp=None
+         self.beam_top_deg=None;self.axis_elevation_deg=None;self.lamp_reason='Physical outputs disabled'
++        self.manual=None                     # None: automatic; else dict(swivel=deg, lamp=bool)
+ 
++    def set_manual(self,swivel=None,lamp=None):
++        """Manual control: keep the given fields, change only what was sent."""
++        m=dict(self.manual or dict(swivel=0.,lamp=False))
++        if swivel is not None:
++            if not isinstance(swivel,(int,float)) or not math.isfinite(swivel):raise ValueError('Swivel angle must be a number')
++            m['swivel']=max(-SubjectTracker.LIMIT,min(SubjectTracker.LIMIT,float(swivel)))
++        if lamp is not None:
++            if not isinstance(lamp,bool):raise ValueError('Lamp must be true or false')
++            m['lamp']=lamp
++        self.manual=m
++
+     def command(self,op,*args):
+         if op not in self.ALLOWED:raise ValueError('Stepper operations are forbidden in hybrid mode')
+         raw=self.bridge.call('arm_command',[op,self.owner,*args],timeout=.2)
+@@ -97,7 +114,7 @@
+         return permitted,'Beam below horizon' if permitted else 'Tilt the whole beam farther downward'
+ 
+     def disable(self,force_light=False):
+-        self.requested=False;self.level=0.;self.last_target=None
++        self.requested=False;self.level=0.;self.last_target=None;self.manual=None
+         self.clear_since=None;self.clear_frames=0;self.face_stamp=None
+         self.beam_top_deg=None;self.axis_elevation_deg=None;self.lamp_reason='Physical outputs disabled'
+         try:
+@@ -120,11 +137,13 @@
+             if now-self.heartbeat>3:
+                 self.reason='Connection expired · outputs off';self.disable();return
+             demo=data.get('demo') or {}
+-            if not 0<=age<=1.5 or data.get('error') or demo.get('state')=='STOPPED':
++            manual=self.manual
++            if manual is None and (not 0<=age<=1.5 or data.get('error') or demo.get('state')=='STOPPED'):
+                 self.reason='Stopped or stale camera · outputs off';self.disable();return
+-            face_clear,face_reason=self.clear_faces(data,now)
+-            if self.connected and self.level and (not face_clear or self.pitch_problem(data)):
+-                self.light(0);self.level=0.
++            if manual is None:
++                face_clear,face_reason=self.clear_faces(data,now)
++                if self.connected and self.level and (not face_clear or self.pitch_problem(data)):
++                    self.light(0);self.level=0.
+             # Never seize a running arm. Claiming a quiet arm does not configure or move steppers.
+             if not self.connected:
+                 self.connected=self.bridge.connect(timeout=1)
+@@ -141,6 +160,17 @@
+                 self.command(17,1500,7407,-45000,45000,-1,round(SubjectTracker.SPEED*1000))
+             status=self.command(4)
+             if status[6] or status[7]:raise RuntimeError('Unexpected stepper activity · hybrid stopped')
++            if manual is not None:
++                target=manual['swivel']
++                if self.last_target is None or abs(target-self.last_target)>.5:
++                    self.command(16,round(target*1000),round(SubjectTracker.SPEED*1000));self.last_target=target
++                level=self.LIGHT_LEVEL if manual['lamp'] else 0.
++                if level:self.light(level,lease=self.LIGHT_LEASE_MS)
++                else:self.light(0)
++                self.level=level
++                self.lamp_reason='Manual · lamp '+('on' if level else 'off')+' (face/beam checks bypassed)'
++                self.reason=f"Manual control · swivel {target:+.0f}° · real lamp {'on' if level else 'off'}"
++                return
+             try:
+                 pose=self.read_pose(self.bridge) if self.read_pose else data
+                 if not isinstance(pose,dict):raise ValueError('Invalid physical pose')
+@@ -178,6 +208,7 @@
+ 
+     def snapshot(self):
+         return dict(enabled=self.requested,connected=self.claimed,brightness=self.level,
+-                    reason=self.reason,swivel_mode='subject tracking',swivel_target=self.last_target,steppers='disabled · no motion commands',
++                    reason=self.reason,swivel_mode='manual' if self.manual is not None else 'subject tracking',
++                    manual=self.manual,swivel_target=self.last_target,steppers='disabled · no motion commands',
+                     lamp_gate=dict(reason=self.lamp_reason,beam_top_deg=self.beam_top_deg,axis_elevation_deg=self.axis_elevation_deg,
+                                    half_angle_deg=self.BEAM_HALF_DEG,lease_ms=self.LIGHT_LEASE_MS,clear_frames=self.clear_frames))
+--- a/tools/spatial/observe.py
++++ b/tools/spatial/observe.py
+@@ -102,7 +102,7 @@
+     # preprocessing stays single-threaded to avoid another competing worker pool.
+     cv2.setNumThreads(1)
+     detector=FaceDetector(num_threads=args.inference_threads)
+-    hands=hands_module.HandLandmarker(num_threads=args.inference_threads,max_hands=2,landmark_threshold=.65)
++    hands=hands_module.HandLandmarker(num_threads=args.inference_threads,max_hands=2,landmark_threshold=.65,prioritize_largest=True)
+     gesture_model='landmark-mlp-v1' if getattr(gestures,'_classifier',lambda:None)() is not None else 'legacy-rules'
+     inference=Inference(detector,hands,parallel=args.parallel_inference)
+     tracker=SubjectTracker();demo=Demo(simulated_aim);gate=MotionGate(4.0)
+@@ -210,7 +210,7 @@
+                 length=int(self.headers.get('Content-Length','0'))
+                 if not 0<length<=256:raise ValueError('Invalid command length')
+                 request=json.loads(self.rfile.read(length));action=request.get('action')
+-                if action not in ('enable','disable','heartbeat','stop','resume'):raise ValueError('Unknown control')
++                if action not in ('enable','disable','heartbeat','stop','resume','manual','auto'):raise ValueError('Unknown control')
+                 now=time.monotonic()
+                 if action in ('stop','resume'):
+                     with demo_lock:
+@@ -221,6 +221,11 @@
+                         if not output:raise ValueError('Hybrid outputs are not configured')
+                         output.requested=True;output.heartbeat=now
+                     elif action=='heartbeat' and output:output.heartbeat=now
++                    elif action=='manual':
++                        if not output:raise ValueError('Hybrid outputs are not configured')
++                        output.set_manual(request.get('swivel'),request.get('lamp'))
++                        output.requested=True;output.heartbeat=now
++                    elif action=='auto' and output:output.manual=None
+                     elif action in ('disable','stop') and output:
+                         output.disable(force_light=action=='stop');output.reason='Physical outputs disabled'
+                 body=json.dumps(dict(ok=True)).encode()
+--- a/apps/luxoiii/luxoiii/web.py
++++ b/apps/luxoiii/luxoiii/web.py
+@@ -30,7 +30,7 @@
+             data=json.loads(self.rfile.read(n));action=data.get('action')
+             if action not in ('enable','disable','heartbeat','stop','resume'):raise ValueError('Unknown control')
+             if not self.server.observer_url:raise ConnectionError('Board observer unavailable')
+-            req=Request(self.server.observer_url+'/control',data=json.dumps({k:v for k,v in data.items() if k == 'action'}).encode(),headers={'Content-Type':'application/json'})
++            req=Request(self.server.observer_url+'/control',data=json.dumps({k:v for k,v in data.items() if k in ('action','swivel','lamp')}).encode(),headers={'Content-Type':'application/json'})
+             with urlopen(req,timeout=2) as response:body=response.read(4096)
+             self.send_response(200)
+         except Exception as exc:
+--- a/apps/luxoiii/luxoiii/desk/preview.html
++++ b/apps/luxoiii/luxoiii/desk/preview.html
+@@ -20,19 +20,97 @@
+ .section { padding:42px 0; border-bottom:1px solid var(--rule); } .section-heading { display:flex; align-items:baseline; justify-content:space-between; gap:25px; } .section-heading p { max-width:360px; }
+ .gestures { display:grid; grid-template-columns:repeat(3,1fr); gap:42px; margin:16px 0 28px; } .gesture { padding-top:17px; border-top:1px solid var(--rule); } .gesture p { color:var(--muted); font-size:13px; max-width:270px; } .gesture-index { color:var(--amber); font-size:11px; letter-spacing:1px; display:block; margin-bottom:15px; } .gesture-index span { float:right; font:22px var(--serif); }
+ .point-feedback { max-width:850px; } #pointStatus { margin-bottom:7px; } progress { display:block; appearance:none; border:0; width:100%; max-width:360px; height:2px; background:#e5ddcd; color:var(--amber); } progress::-webkit-progress-bar { background:#e5ddcd; } progress::-webkit-progress-value { background:var(--amber); } progress::-moz-progress-bar { background:var(--amber); }
+-.live-readings { padding:28px 0 32px; border-bottom:1px solid var(--rule); } .readings-heading { display:flex; justify-content:space-between; align-items:baseline; gap:20px; margin-bottom:20px; } .readings-heading h2 { font-size:30px; margin:0; } .readings-heading p { margin:0; text-align:right; } .live-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin:0; } .live-metrics div { border-top:1px solid var(--rule); padding-top:12px; } .live-metrics dt { color:var(--muted); font-size:11px; } .live-metrics dd { font:36px/1.2 var(--serif); margin:7px 0 0; font-variant-numeric:tabular-nums; } .perception-notes { margin-top:20px; } .perception-notes p { margin:6px 0; } .videoFrame { position:relative; background:#e9e2d5; min-height:180px; } #video { display:block; width:100%; aspect-ratio:4/3; object-fit:contain; } #faceBoxes { position:absolute; inset:0; pointer-events:none; } .faceBox { position:absolute; border:2px solid #80f9d8; color:#80f9d8; font-size:11px; } #handOverlay { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; } #trackingZone { position:absolute;left:30%;width:40%;top:0;height:100%;border:1px dashed #dac49a;background:#e6bc690b;pointer-events:none; } #frameInfo { margin-top:10px; } #health { color:#61705b; } #handsText { color:#776484; } #pipeline { overflow-wrap:anywhere; }
++.live-readings { padding:28px 0 32px; border-bottom:1px solid var(--rule); } .readings-heading { display:flex; justify-content:space-between; align-items:baseline; gap:20px; margin-bottom:20px; } .readings-heading h2 { font-size:30px; margin:0; } .readings-heading p { margin:0; text-align:right; } .live-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin:0; } .live-metrics div { border-top:1px solid var(--rule); padding-top:12px; } .live-metrics dt { color:var(--muted); font-size:11px; } .live-metrics dd { font:36px/1.2 var(--serif); margin:7px 0 0; font-variant-numeric:tabular-nums; } .perception-notes { margin-top:20px; } .perception-notes p { margin:6px 0; } .videoFrame { position:relative; background:#e9e2d5; min-height:180px; } #video { display:block; width:100%; aspect-ratio:4/3; object-fit:contain; } #faceBoxes { position:absolute; inset:0; pointer-events:none; } .faceBox { position:absolute; border:2px solid #80f9d8; color:#80f9d8; font-size:11px; text-shadow:0 1px 3px #000; } .faceBox.selected { border:3px solid #ffe0a3; color:#ffe0a3; } #cameraTracking { margin:7px 0 0; color:var(--amber); font-size:11px; } #handOverlay { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; } #trackingZone { position:absolute;left:30%;width:40%;top:0;height:100%;border:1px dashed #dac49a;background:#e6bc690b;pointer-events:none; } #frameInfo { margin-top:10px; } #health { color:#61705b; } #handsText { color:#776484; } #pipeline { overflow-wrap:anywhere; }
+ .telemetry { margin:24px 0 15px; display:grid; grid-template-columns:repeat(4,1fr); gap:18px; } .telemetry label { border-top:1px solid var(--rule); padding-top:12px; font-size:11px; color:var(--muted); } .telemetry output { display:block; color:var(--ink); font-variant-numeric:tabular-nums; font-size:13px; }
+ details { border-bottom:1px solid var(--rule); padding:18px 0; } details details { border-bottom:0; } summary { cursor:pointer; list-style:none; font-family:var(--serif); font-size:24px; line-height:1.4; } summary::-webkit-details-marker { display:none; } summary:after { content:"+"; float:right; font:22px var(--serif); color:var(--muted); } details[open]>summary:after { content:"−"; } details>p { max-width:920px; } .view-options { border:0; padding:4px 0; } .view-options summary { font:12px/1.5 -apple-system,BlinkMacSystemFont,sans-serif; color:var(--muted); } .view-options .toolbar { margin-bottom:6px; }
+ .sliders { display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:24px; padding:20px 0 10px; } label { display:grid; gap:7px; font-size:12px; } input { width:100%; accent-color:var(--amber); } input[type=number],select { background:transparent; border:1px solid var(--rule); padding:10px; min-width:0; } output { color:var(--amber); } #cadmsg { margin:15px 0 0; } #exampleNote { color:var(--amber); } footer { padding:28px 0 40px; display:flex; justify-content:space-between; gap:20px; color:var(--muted); font-size:11px; } .credits { font:23px var(--serif); color:var(--ink); }
+ @media(max-width:850px) { .hero { grid-template-columns:1fr; padding-top:36px; } .hero-copy { padding:0; } h1 { font-size:76px; margin:17px 0; max-width:620px; } h1 br { display:none; } .intro { max-width:390px; } .byline { margin:16px 0; } #cad { height:460px; } .hero-copy:before { inset:0 -4% -280px -30%; } .scene-status { gap:25px; } .camera-area { max-width:560px; } .gestures { gap:25px; } }
+ @media(max-width:560px) { header { padding:20px 0;gap:12px; } .header-note { display:none; } #stopDemo { margin-left:auto;font-size:11px; } h1 { font-size:60px; letter-spacing:-2px; max-width:360px; } #cad { height:390px; } .hero { padding-top:28px; } .scene-status { grid-template-columns:1fr; gap:22px; } .live-metrics,.telemetry { grid-template-columns:repeat(2,1fr); } .readings-heading { display:block; } .readings-heading p { text-align:left; margin-top:10px; } .scene-status { padding:17px 0 25px; } .gestures { grid-template-columns:1fr; gap:8px; } .gesture { display:grid; grid-template-columns:70px 1fr; column-gap:12px;padding:16px 0; } .gesture-index { grid-row:1/3; margin-top:6px; } .gesture-index span { float:none;display:block;margin-top:12px; } .gesture h3,.gesture p { margin:0; } .gesture p { margin-top:8px;max-width:100%; } .section-heading { display:block; } .section { padding:30px 0; } .section-heading p { margin-bottom:25px; } .model-bar { gap:5px; } button { font-size:12px; } footer { flex-wrap:wrap; } }
+ @media(prefers-reduced-motion:reduce) { button { transition:none; } }
++
++.lux-performance{--perf-ink:#514a3d;--perf-muted:#746b5e;--perf-line:#ded7c9;--perf-before:#766e61;--perf-after:#c78a30;--perf-paper:var(--paper);--perf-wash:#fbf7ef;box-sizing:border-box;width:100%;max-width:none;margin:0;padding:42px 0;color:var(--perf-ink);background:var(--perf-paper);font-family:inherit;line-height:1.5}
++.lux-performance *{box-sizing:border-box}
++.lux-performance h2,.lux-performance h3,.lux-performance .perf-value{font-family:"Big Caslon","Baskerville","Times New Roman",serif;font-weight:400}
++.lux-performance h2{font-size:clamp(32px,3vw,46px);line-height:1.1;letter-spacing:-.035em;margin:0 0 18px}
++.lux-performance h3{font-size:clamp(1.55rem,2.4vw,2rem);line-height:1.15;letter-spacing:-.02em;margin:0 0 10px}
++.lux-performance p{margin:0 0 14px}
++.lux-performance .perf-date{font-size:.85rem;color:var(--perf-muted);margin-bottom:14px}
++.lux-performance .perf-intro{font-size:1.05rem;max-width:900px}
++.lux-performance .perf-scope{font-size:.9rem;color:var(--perf-muted);max-width:960px}
++.lux-performance .perf-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:34px;margin:38px 0 32px}
++.lux-performance figure{margin:0;padding:22px 0 0;border-top:1px solid var(--perf-line);min-width:0}
++.lux-performance figcaption{margin:0 0 26px;min-height:79px}
++.lux-performance .perf-result{font-size:1rem;color:var(--perf-muted)}
++.lux-performance .perf-bars{display:grid;gap:17px}
++.lux-performance .perf-row{display:grid;grid-template-columns:68px minmax(0,1fr) 86px;gap:10px;align-items:center;font-size:.87rem}
++.lux-performance .perf-track{height:18px;border-left:1px solid var(--perf-line);background:var(--perf-wash)}
++.lux-performance .perf-bar{display:block;height:100%;width:var(--bar-width);background:var(--perf-before)}
++.lux-performance .perf-row--after .perf-bar{background:var(--perf-after)}
++.lux-performance .perf-value{font-size:1.33rem;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--perf-ink)}
++.lux-performance .perf-unit{font-family:inherit;font-size:.78rem;color:var(--perf-muted)}
++.lux-performance .perf-axis{display:flex;justify-content:space-between;margin:11px 96px 20px 78px;padding-top:5px;border-top:1px solid var(--perf-line);font-size:.7rem;color:var(--perf-muted)}
++.lux-performance .perf-caption{font-size:.9rem;color:var(--perf-muted);margin:0 0 9px}
++.lux-performance .perf-tail{font-size:.8rem;color:var(--perf-muted)}
++.lux-performance a{color:var(--perf-ink);text-decoration:underline;text-decoration-color:#b6a388;text-underline-offset:3px}
++.lux-performance a:hover{color:#8e5b16;text-decoration-color:currentColor}
++.lux-performance a:focus-visible,.lux-performance summary:focus-visible{outline:2px solid var(--perf-after);outline-offset:5px}
++.lux-performance .perf-accuracy{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:40px;padding:28px 0;border-top:1px solid var(--perf-line);border-bottom:1px solid var(--perf-line)}
++.lux-performance .perf-accuracy p{font-size:.95rem}
++.lux-performance .perf-table-wrap{overflow-x:auto}
++.lux-performance table{width:100%;border-collapse:collapse;font-size:.9rem;line-height:1.35}
++.lux-performance caption{text-align:left;color:var(--perf-muted);padding-bottom:14px;font-size:.85rem}
++.lux-performance th,.lux-performance td{padding:13px 10px;border-bottom:1px solid var(--perf-line);text-align:right;vertical-align:top;font-variant-numeric:tabular-nums}
++.lux-performance th:first-child,.lux-performance td:first-child{text-align:left;padding-left:0}
++.lux-performance th:last-child,.lux-performance td:last-child{padding-right:0}
++.lux-performance thead th{font-weight:500;color:var(--perf-muted);padding-top:0}
++.lux-performance tbody th{font-weight:400}
++.lux-performance tbody tr:last-child th,.lux-performance tbody tr:last-child td{border-bottom:0}
++.lux-performance .perf-count{display:block;font-size:.78rem;color:var(--perf-muted);padding-top:3px}
++.lux-performance .perf-method{max-width:1050px;margin-top:24px;font-size:.86rem;color:var(--perf-muted)}
++.lux-performance .perf-method summary{cursor:pointer;color:var(--perf-ink);padding:5px 0;margin-bottom:12px}
++.lux-performance .perf-method p{margin-bottom:12px}
++.lux-performance .perf-links{display:flex;flex-wrap:wrap;gap:10px 24px;font-size:.85rem;margin:20px 0 0}
++.lux-performance .training-story{padding:32px 0;margin-bottom:24px;border-bottom:1px solid var(--perf-line)}
++.lux-performance .training-intro{max-width:900px;font-size:.95rem}
++.lux-performance .training-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;list-style:none;padding:0;margin:26px 0 30px}
++.lux-performance .training-flow li{border-top:1px solid var(--perf-line);padding-top:12px}
++.lux-performance .training-flow strong{display:block;font:27px/1.2 var(--serif);font-weight:400;margin-bottom:7px}
++.lux-performance .training-flow span{font-size:.85rem;color:var(--perf-muted)}
++.lux-performance .training-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 40px}
++.lux-performance .training-grid h4{font:23px/1.2 var(--serif);font-weight:400;margin:0 0 12px}
++.lux-performance .training-grid p{font-size:.95rem;max-width:650px}
++.lux-performance .training-story .perf-method{margin-top:12px}
++@media(max-width:700px){.lux-performance .training-grid{grid-template-columns:1fr;gap:12px}.lux-performance .training-flow{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}}
++@media(max-width:980px){.lux-performance .perf-grid{grid-template-columns:1fr;gap:28px}.lux-performance figcaption{min-height:0;margin-bottom:20px}.lux-performance .perf-row{grid-template-columns:90px minmax(0,1fr) 100px}.lux-performance .perf-axis{margin-left:100px;margin-right:110px}.lux-performance .perf-accuracy{grid-template-columns:1fr;gap:15px}}
++@media(max-width:480px){.lux-performance{padding:32px 0}.lux-performance .perf-row{grid-template-columns:62px minmax(0,1fr) 82px;gap:8px}.lux-performance .perf-axis{margin-left:70px;margin-right:90px}.lux-performance .perf-value{font-size:1.2rem}.lux-performance th,.lux-performance td{padding:12px 7px}.lux-performance .perf-table-wrap{font-size:.82rem}}
++@media(prefers-contrast:more){.lux-performance{--perf-muted:#514a3d;--perf-line:#807665;--perf-before:#514a3d;--perf-after:#a5640b}}
++
++.build-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; margin:24px 0 0; } .build-grid h3 { font-size:25px; } .build-grid p { color:var(--muted); font-size:13px; } .optimization-list { padding-left:19px; max-width:1000px; } .optimization-list li { margin:10px 0; padding-left:4px; } @media(max-width:700px) { .build-grid { grid-template-columns:1fr; gap:14px; } }
++/* Always-visible status: what state the AI is in and what the model is playing */
++.status-strip { position:sticky; top:0; z-index:20; display:flex; flex-wrap:wrap; gap:8px; padding:10px 0; background:var(--paper); border-bottom:1px solid var(--rule); }
++.pill { display:inline-flex; gap:7px; align-items:baseline; padding:5px 11px; border:1px solid var(--rule); border-radius:999px; font-size:12px; background:var(--panel2); max-width:100%; overflow-wrap:anywhere; }
++.pill b { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); }
++.pill span { font-family:ui-monospace,Menlo,monospace; color:var(--ink); }
++.pill.hot { border-color:var(--amber); } .pill.hot span { color:var(--amber); }
++.tabs { display:flex; gap:4px; } .tabs button[aria-selected="true"] { border-bottom-color:var(--amber); color:var(--amber); }
++#manualTab .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:32px; margin:20px 0; }
++#manualTab .card { border-top:1px solid var(--rule); padding-top:14px; } #manualTab .row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:10px 0; }
++#manualTab dl { display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:13px; margin:10px 0; } #manualTab dt { color:var(--muted); } #manualTab dd { margin:0; font-family:ui-monospace,Menlo,monospace; }
++#manualTab button[aria-pressed="true"] { border-color:var(--amber); color:var(--amber); }
+ </style>
+ 
+ <main>
+-<header><span class="wordmark">LuxoIII</span><span class="header-note">Minimalist AI Challenge · 2026</span><button id="stopDemo">Stop &amp; lamp off</button></header>
++<header><span class="wordmark">LuxoIII</span><span class="header-note">Minimalist AI Challenge · 2026</span><nav class="tabs" role="tablist" aria-label="View"><button role="tab" id="tabExperience" aria-selected="true" aria-controls="experienceTab">Experience</button><button role="tab" id="tabManual" aria-selected="false" aria-controls="manualTab">Manual control</button></nav><button id="stopDemo">Stop &amp; lamp off</button></header>
++<div class="status-strip" aria-label="Current state" aria-live="polite">
++ <span class="pill hot"><b>State</b><span id="pillState">—</span></span>
++ <span class="pill hot"><b>Playing</b><span id="pillAnim">—</span></span>
++ <span class="pill"><b>Last event</b><span id="pillEvent">—</span></span>
++ <span class="pill"><b>Model</b><span id="pillSource">—</span></span>
++ <span class="pill"><b>Real lamp</b><span id="pillPhysical">—</span></span>
++</div>
++<div id="experienceTab" role="tabpanel" aria-labelledby="tabExperience">
+ <section class="hero" aria-labelledby="title">
+- <div class="hero-copy"><p class="eyebrow">A light with a little life</p><h1 id="title">LuxoIII</h1><p class="intro">A familiar presence. A curious glance.<br>A little light, right where you point.</p><p class="byline">Tongtong &amp; Victor</p><figure class="camera-area"><div class="camera-heading"><p class="eyebrow">Through its eyes</p><span>Live camera · UNO Q</span></div><div class="videoFrame"><img id="video" alt="Latest image from the robot camera, used for face detection"><div id="faceBoxes"></div><div id="trackingZone" aria-label="Tracking center deadzone" hidden></div><svg id="handOverlay" viewBox="0 0 640 480"></svg></div><div class="small" id="frameInfo">Waiting for camera…</div></figure></div>
++ <div class="hero-copy"><p class="eyebrow">A light with a little life</p><h1 id="title">LuxoIII</h1><p class="intro">A familiar presence. A curious glance.<br>A little light, right where you point.</p><p class="byline">Tongtong &amp; Victor</p><figure class="camera-area"><div class="camera-heading"><p class="eyebrow">Through its eyes</p><span>Live camera · UNO Q</span></div><div class="videoFrame"><img id="video" alt="Latest image from the robot camera, used for face detection"><div id="faceBoxes"></div><div id="trackingZone" aria-label="Tracking center deadzone" hidden></div><svg id="handOverlay" viewBox="0 0 640 480"></svg></div><div class="small" id="frameInfo">Waiting for camera…</div><p id="cameraTracking" role="status">Waiting for tracking…</p></figure></div>
+  <div class="model-area">
+   <div class="stage"><canvas id="cad" aria-label="Full luxoiii arm and base with transparent shells and animated internal cams"></canvas><canvas id="labels" aria-hidden="true"></canvas></div>
+   <div class="model-bar"><div class="toolbar" aria-label="Case appearance"><button data-shell="xray" aria-pressed="true">X-ray case</button><button data-shell="solid" aria-pressed="false">Solid case</button><button data-shell="hidden" aria-pressed="false">Hide case</button></div><div class="toolbar" aria-label="Camera angle"><button data-cam="3d">3D</button><button data-cam="side">Side</button><button data-cam="front">Front</button></div></div>
+@@ -47,16 +125,159 @@
+  <div class="telemetry" aria-label="Live physical joint angles"><label>Shoulder <output id="realShoulder">Waiting…</output></label><label>Elbow <output id="realElbow">Waiting…</output></label><label>Head pitch <output id="realHead">Waiting…</output></label><label>Head swivel <output id="realPivot">Waiting…</output></label></div>
+  <details class="view-options"><summary>Detection &amp; processing details</summary><div class="perception-notes"><p id="people" class="small">Waiting for detections…</p><p id="handsText" class="small">Waiting for hand detection…</p><p id="pipeline" class="small"></p><p class="small">Processing time covers camera decoding, joint readings, and AI for the latest observation. Mint marks faces; violet marks hands. Distance and finger direction are estimates. Pitch angles are measured; swivel is the servo command, without position feedback.</p></div></details>
+ </section>
++<section class="section" aria-labelledby="build-title">
++ <p class="eyebrow">01 / What we built</p><h2 id="build-title">We made a lamp that responds.</h2>
++ <p>We wanted desk lighting to feel attentive without spoken commands. LuxoIII notices people, welcomes an open palm, and follows a finger across a virtual desk. We run the AI locally so the interaction does not depend on a cloud service.</p>
++ <div class="build-grid"><div><h3>We see and interpret.</h3><p>We process the USB camera on the Arduino UNO Q: face detection, palm detection, 21 hand landmarks, and our gesture classifier. We use short gesture holds to avoid reacting to every uncertain frame.</p></div><div><h3>We connect the real and digital.</h3><p>We host this app on the UNO Q. Your browser renders our full mechanical model, blends its expressions, and shows the camera beside it. Pointing moves the simulated desk light; an open palm brings its attention back to you.</p></div><div><h3>We control what works.</h3><p>We track the largest face with the physical swivel, limited to ±45°. We switch D7 fully on or off, without PWM, using fresh face and beam-angle checks. Our stepper joints are damaged, so full-arm movement is simulated in this demo.</p></div></div>
++</section>
++<section class="lux-performance" aria-labelledby="lux-performance-title">
++  <div class="performance-intro">
++    <p class="eyebrow">02 / AI optimization &amp; measured performance</p><p class="perf-date">Recorded on our Arduino UNO Q · 13 October 2026</p>
++    <h2 id="lux-performance-title">We made every millisecond count.</h2>
++    <p class="perf-intro">We cut face + hand acquisition time by 34.9%. We then improved gesture recognition with a small classifier and kept measured processing time essentially unchanged.</p>
++    <p class="perf-scope">Recorded model-processing time; lower is faster. These tests include preprocessing, inference and decoding model outputs. Camera capture, image decoding, network and hardware delays are excluded. Our latest larger-hand priority update is not included; current live processing time is shown above.</p>
++  </div>
++
++  <div class="perf-grid">
++    <figure aria-labelledby="perf-faces-title">
++      <figcaption>
++        <h3 id="perf-faces-title">Face detection</h3>
++        <p class="perf-result">40.3% lower mean latency</p>
++      </figcaption>
++      <div class="perf-bars">
++        <div class="perf-row"><span>Before</span><span class="perf-track" aria-hidden="true"><span class="perf-bar" style="--bar-width:37.70846%"></span></span><span class="perf-value">132.0 <span class="perf-unit">ms</span></span></div>
++        <div class="perf-row perf-row--after"><span>Optimized</span><span class="perf-track" aria-hidden="true"><span class="perf-bar" style="--bar-width:22.52971%"></span></span><span class="perf-value">78.9 <span class="perf-unit">ms</span></span></div>
++      </div>
++      <div class="perf-axis" aria-hidden="true"><span>0</span><span>350 ms</span></div>
++      <p class="perf-caption">We measured the same 240 WIDER FACE images before and after optimization. All face predictions stayed identical.</p>
++      <p class="perf-tail">95th percentile: 134.5 ms before, 84.6 ms optimized.</p>
++    </figure>
++
++    <figure aria-labelledby="perf-hands-title">
++      <figcaption>
++        <h3 id="perf-hands-title">Face + hand acquisition</h3>
++        <p class="perf-result">34.9% lower mean latency</p>
++      </figcaption>
++      <div class="perf-bars">
++        <div class="perf-row"><span>Before</span><span class="perf-track" aria-hidden="true"><span class="perf-bar" style="--bar-width:90.26213%"></span></span><span class="perf-value">315.9 <span class="perf-unit">ms</span></span></div>
++        <div class="perf-row perf-row--after"><span>Optimized</span><span class="perf-track" aria-hidden="true"><span class="perf-bar" style="--bar-width:58.76524%"></span></span><span class="perf-value">205.7 <span class="perf-unit">ms</span></span></div>
++      </div>
++      <div class="perf-axis" aria-hidden="true"><span>0</span><span>350 ms</span></div>
++      <p class="perf-caption">We measured 210 fixed HaGRID images with the original gesture rules. All hand boxes, scores and labels stayed identical.</p>
++      <p class="perf-tail">95th percentile: 338.2 ms before, 226.3 ms optimized.</p>
++    </figure>
++
++    <figure aria-labelledby="perf-classifier-title">
++      <figcaption>
++        <h3 id="perf-classifier-title">Better gesture recognition</h3>
++        <p class="perf-result">Essentially unchanged total latency</p>
++      </figcaption>
++      <div class="perf-bars">
++        <div class="perf-row"><span>Old rules</span><span class="perf-track" aria-hidden="true"><span class="perf-bar" style="--bar-width:52.43844%"></span></span><span class="perf-value">183.53 <span class="perf-unit">ms</span></span></div>
++        <div class="perf-row perf-row--after"><span>New model</span><span class="perf-track" aria-hidden="true"><span class="perf-bar" style="--bar-width:52.33678%"></span></span><span class="perf-value">183.18 <span class="perf-unit">ms</span></span></div>
++      </div>
++      <div class="perf-axis" aria-hidden="true"><span>0</span><span>350 ms</span></div>
++      <p class="perf-caption">We compared face, hand and gesture processing on 35 images in old/new/new/old order: 70 timings per recognizer. This is a separate workload from the 210-image benchmark.</p>
++      <p class="perf-tail">95th percentile: 195.00 ms old, 194.89 ms new. The small mean difference is measurement noise, not another speed gain.</p>
++    </figure>
++  </div>
++
++
++  <h3>What we optimized</h3>
++  <ul class="optimization-list">
++   <li>We tested 1, 2 and 4 CPU threads and chose four per model, running face and hand models sequentially. We kept OpenCV at one thread to avoid competing worker pools.</li>
++   <li>We select face candidates directly from 8-bit outputs and use a cached score lookup. We decode only the candidates we need, preserving the detector’s results.</li>
++   <li>We reuse tracked hand crops. We rejected a more aggressive scan-skipping experiment because it missed additional hands.</li>
++   <li>We replaced gesture rules with a 21 KB network trained on hand landmarks. We kept the image models and their input resolution unchanged.</li>
++  </ul>
++
++  <div class="perf-accuracy">
++    <div>
++      <h3>More accurate gestures, a small added cost</h3>
++      <p>We trained a 21,168-byte classifier on hand landmarks. It adds about 1.2 ms per detected hand and does not run another image model. Our paired test kept total model-workload latency effectively unchanged.</p>
++      <p>We froze the model before evaluating 210 fresh HaGRID test images from 189 subjects, with no training or validation subjects in the test sample. Pointing improved from 18 to 30 correct hands out of 60.</p>
++      <p class="perf-scope">Hand localization remains the main limit: 82 of 259 annotated hands did not match a prediction. The still-image test does not measure motion blur, live gesture stability or desk-target accuracy.</p>
++    </div>
++    <div class="perf-table-wrap">
++      <table>
++        <caption>Fresh test sample, same model outputs and matching rule for both recognizers</caption>
++        <thead><tr><th scope="col">Measure</th><th scope="col">Old rules</th><th scope="col">New model</th></tr></thead>
++        <tbody>
++          <tr><th scope="row">Correct gesture recall, including missed hands</th><td>45.9%<span class="perf-count">119 / 259</span></td><td>67.2%<span class="perf-count">174 / 259</span></td></tr>
++          <tr><th scope="row">Correct pointing, including missed hands</th><td>30.0%<span class="perf-count">18 / 60</span></td><td>50.0%<span class="perf-count">30 / 60</span></td></tr>
++          <tr><th scope="row">Gesture accuracy among localized hands</th><td>67.2%<span class="perf-count">119 / 177</span></td><td>98.3%<span class="perf-count">174 / 177</span></td></tr>
++        </tbody>
++      </table>
++    </div>
++  </div>
++
++  <section class="training-story" aria-labelledby="training-title">
++    <h3 id="training-title">How we trained the gesture model</h3>
++    <p class="training-intro">We kept the pretrained face, palm and hand-landmark image models. We trained the small network that reads the hand’s shape and chooses a gesture. Our old rules compared fingertip distances to the wrist; pointing toward the camera can shorten those distances in the image. Learning from examples lets us use the whole hand shape while reusing the landmarks we already compute.</p>
++    <ol class="training-flow" aria-label="Gesture classifier architecture">
++      <li><strong>21 landmarks</strong><span>We take each hand joint’s 2D position.</span></li>
++      <li><strong>106 features</strong><span>We describe hand shape and finger direction.</span></li>
++      <li><strong>48 hidden units</strong><span>We learn combinations of those features.</span></li>
++      <li><strong>5 outcomes</strong><span>Point, open palm, thumb up, thumb down, or no command.</span></li>
++    </ol>
++    <div class="training-grid">
++      <div>
++        <h4>We started with labeled examples.</h4>
++        <p>We used the public HaGRIDv2 dataset: human gesture labels paired with automatically generated MediaPipe landmarks. Our training set contains 28,819 hands from 13,428 people, including secondary hands. We mapped “one” and “point” to pointing, “palm” to open palm, and “like” / “dislike” to thumb up / down. Fist, peace, OK and other non-command hands teach the model when to do nothing.</p>
++      </div>
++      <div>
++        <h4>We gave the network useful geometry.</h4>
++        <p>We center and scale the landmark coordinates, then add positions relative to the palm, finger bends, straightness, fingertip-to-wrist distance ratios and thumb direction. This reduces dependence on where the hand appears and how large it is. We retain image orientation so thumb up and thumb down remain different. The network has 5,381 float32 parameters; its saved weights occupy 21,168 bytes.</p>
++      </div>
++      <div>
++        <h4>We balanced and varied the training data.</h4>
++        <p>We trained for 100 epochs with equal sampling across the five outcomes, so common non-command poses did not overwhelm smaller gesture classes. We augmented about half the sampled hands with rotations, horizontal flips, aspect changes and small coordinate noise. We limited thumb rotations to about ±20° to preserve up/down meaning. This varies the training landmarks; it does not simulate camera motion blur.</p>
++      </div>
++      <div>
++        <h4>We tested on people the model had not seen.</h4>
++        <p>We selected the checkpoint using 4,447 validation hands from 1,551 different people, maximizing average recall across the five classes. Epoch 100 was selected. We then froze the model and thresholds before testing 210 fresh photos from 189 further people, with no training or validation subject overlap. We ran those photos through the actual UNO Q image models, so the results above include missed or poorly localized hands.</p>
++      </div>
++    </div>
++    <p class="perf-scope">We achieved 98.0% classification accuracy on the supplied validation landmarks. That assumes usable landmarks: our complete image-to-gesture test on public photographs reached 67.2% recall, including missed hands. We still cannot classify a hand that the image models fail to locate. Recognizing “point” and estimating its desk location are separate steps; this network was not trained to predict desk coordinates.</p>
++    <details class="perf-method">
++      <summary>Training recipe &amp; deployment</summary>
++      <p>We implemented training in NumPy with seed 103, batches of 256, softmax cross-entropy and Adam. Each epoch samples 5,000 hands per output class with replacement. We start the learning rate at 0.0015 and reduce it each epoch, with an L2 weight penalty of 0.0001. The hidden layer uses ReLU and the output layer produces five softmax scores.</p>
++      <p>We select checkpoints by validation macro recall: the mean of the five class recalls, giving each outcome equal weight. We keep training, validation and final test subjects separate and record input hashes, training history and the frozen model hash. We do not tune on the final test results.</p>
++      <p>We load the weights once on the UNO Q and classify each detected hand with two small matrix multiplications. If the highest score is below 0.5, we return no command. Gesture holds and animation choices remain in our interaction logic. This adds about 1.2 ms per hand without another image-model pass.</p>
++    </details>
++    <nav class="perf-links" aria-label="Gesture training evidence">
++      <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/apps/luxoiii/models/gesture_landmarks_v1.md" target="_blank" rel="noopener noreferrer">Model card &amp; dataset attribution</a>
++      <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/tools/efficiency/train_gesture_classifier.py" target="_blank" rel="noopener noreferrer">Training code</a>
++      <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/reports/gestures/training-report.json" target="_blank" rel="noopener noreferrer">Training history &amp; validation results</a>
++    </nav>
++  </section>
++
++  <p class="perf-scope">We use the supplied 8-bit image models on the UNO Q CPU. We have not measured power savings or memory reduction. The live observation loop is capped at four updates per second.</p>
++  <p class="perf-scope">Next, we would improve hand localization, test motion blur and overlapping hands in real video, and repair the stepper joints to bring the full expressions into the physical lamp.</p>
++  <details class="perf-method">
++    <summary>How we measured the tradeoff</summary>
++    <p>We used the UNO Q CPU with four LiteRT threads per image model, sequential face/hand inference and one OpenCV thread. Our first optimization kept the supplied 8-bit image models, input sizes and detection thresholds unchanged. We paused competing live inference during controlled runs and used six warmup calls for the original detector comparison.</p>
++    <p>The gesture speed test used the first five images in each of seven categories from a frozen test manifest. We reset hand tracks between old/new/new/old passes. The classifier-only figures average 765 calls per recognizer: 0.023 ms for the original rules and 1.242 ms for the new model. The 183.18 ms result uses different images from the earlier 205.7 ms result, so we do not treat that difference as a speedup.</p>
++    <p>Our accuracy metric first requires a predicted hand box to overlap its human annotation at IoU ≥ 0.5, then requires the correct gesture. We retained missed hands and negative/no-command hands in the denominator. We trained on 28,819 landmark hands and selected the model with a separate validation split.</p>
++    <p>The detector optimization increased CPU work per face + hand acquisition slightly, from 583.1 to 602.6 CPU-ms. We did not measure power savings. Its active image models stayed at 6.48 MB, and evaluation-process peak memory stayed about 130 MiB. The new landmark classifier adds about 21 kB of weights.</p>
++  </details>
++  <nav class="perf-links" aria-label="Recorded performance evidence">
++    <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/reports/efficiency/README.md" target="_blank" rel="noopener noreferrer">Detector benchmarks and method</a>
++    <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/reports/gestures/README.md" target="_blank" rel="noopener noreferrer">Gesture accuracy and timing evidence</a>
++    <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/reports/gestures/runtime.json" target="_blank" rel="noopener noreferrer">Raw paired timing observations</a>
++  </nav>
++</section>
++
+ <section class="section" aria-labelledby="interaction-title">
+- <div class="section-heading"><div><p class="eyebrow">01 / An unspoken conversation</p><h2 id="interaction-title">Say hello. Stay a while.</h2></div><p class="small">It settles when alone, greets you with a nod, and grows curious when you linger.</p></div>
+- <div class="gestures"><div class="gesture"><div class="gesture-index">01 <span>✋</span></div><h3>Say hello</h3><p>Show an open palm. A simple hello is all it takes to get a greeting back.</p></div><div class="gesture"><div class="gesture-index">02 <span>☝</span></div><h3>Guide the light</h3><p>Point, pause briefly, then move your finger across the virtual desk. Lower your hand to leave the light there.</p></div><div class="gesture"><div class="gesture-index">03 <span>↕</span></div><h3>Close, or far</h3><p>Thumb up to move farther away. Thumb down to come closer. Try pointing with your other hand, too.</p></div></div>
++ <div class="section-heading"><div><p class="eyebrow">03 / An unspoken conversation</p><h2 id="interaction-title">Say hello. Stay a while.</h2></div><p class="small">It settles when alone, greets you with a nod, and grows curious when you linger.</p></div>
++ <div class="gestures"><div class="gesture"><div class="gesture-index">01 <span>✋</span></div><h3>Say hello</h3><p>Show an open palm to get a welcome, even while the digital lamp is lighting a spot.</p></div><div class="gesture"><div class="gesture-index">02 <span>☝</span></div><h3>Guide the light</h3><p>Point, pause briefly, then move your finger across the virtual desk. Lower your hand to leave the light there.</p></div><div class="gesture"><div class="gesture-index">03 <span>↕</span></div><h3>Close, or far</h3><p>Thumb up to move farther away. Thumb down to come closer. Try pointing with your other hand, too.</p></div></div>
+  <div class="point-feedback"><p class="small" id="pointStatus" role="status">Point to preview a spot on the virtual desk.</p><progress id="gestureProgress" max="1" value="0" aria-label="Gesture hold progress"></progress></div>
+  <div class="toolbar"><button id="aiMode" aria-pressed="true">AI-driven simulated arm</button><button id="hardware" aria-pressed="false">Enable tracking + auto light</button><button id="resumeDemo">Resume gestures</button></div>
+  <p class="small" id="controlFeedback" role="status" hidden></p>
+  <p class="small" id="outputStatus" role="status">Automatic tracking starts with fresh camera data.</p>
+- <details class="view-options"><summary>How the real lamp responds</summary><p class="small" id="lampDetails"></p><p class="small">The real swivel follows the subject within ±45°, with a quiet zone at the center. The digital arm has its own personality. Gestures stay on; Stop pauses the demo.</p><p class="small">The physical lamp switches fully on, without PWM, after one second with no detected faces and only when the entire estimated beam is below horizontal. A face, upward tilt, stale data, or Stop switches it off. Beam direction uses the measured joints and shade geometry, assuming a level base. Swivel and beam width are estimates. A missing pitch sensor keeps the light off while tracking can continue.</p><p class="small">Keep both hands fully visible and apart. If both point, the light stays with its selected hand. If the estimated finger ray misses the desk, fingertip position guides a virtual cursor instead.</p></details>
++ <details class="view-options"><summary>How the real lamp responds</summary><p class="small" id="lampDetails"></p><p class="small">The real swivel follows the subject within ±45°, with a quiet zone at the center. The digital arm has its own personality. Gestures stay on; Stop pauses the demo.</p><p class="small">The physical lamp switches fully on, without PWM, after one second with no detected faces and only when the entire estimated beam is below horizontal. A face, upward tilt, stale data, or Stop switches it off. Beam direction uses the measured joints and shade geometry, assuming a level base. Swivel and beam width are estimates. A missing pitch sensor keeps the light off while tracking can continue.</p><p class="small">Keep both hands fully visible and apart. We prioritize the two largest detected palms. If both point, a clearly larger palm takes over; similar sizes keep the current selection stable. If the estimated finger ray misses the desk, fingertip position guides a virtual cursor instead.</p></details>
+ </section>
+-<section class="section" style="border:0;padding-bottom:12px"><p class="eyebrow">02 / A closer look</p><h2>Explore the details.</h2>
++<section class="section" style="border:0;padding-bottom:12px"><p class="eyebrow">04 / A closer look</p><h2>Explore the details.</h2>
+ <details><summary>Camera calibration & assumptions</summary>
+ <p class="small">The camera moves with the head pivot. Starting assumptions: 100° horizontal view, 16 cm face width, camera 5 cm along the shade axis, base yaw fixed at zero. Adjust these to match the actual camera. A turned face or palm can make distance too large. Board gesture targeting currently uses the default 100° / 8 cm / 5 cm mount calibration; these controls adjust visualization only.</p>
+ <div class="sliders">
+@@ -84,6 +305,27 @@
+ </div>
+ </details><details><summary>About the model</summary><p class="small">Model and choreography: full-model-animations · ef1b0d2. Full-body poses from lamp_demo; additive expressions from ELEGNT. Browser animation blends these kinematically; it is not a physics simulation. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; the real swivel tracks the subject after activation. The physical lamp requires no detected faces and a downward beam. No stepper movement commands are sent. Finger-ray targets are approximate. The virtual cursor maps fingertip image position onto the simulated desk; it does not locate a real object.</p>
+ </details>
++</section>
++</div>
++<section id="manualTab" class="section" role="tabpanel" aria-labelledby="tabManual" hidden>
++ <p class="eyebrow">Manual control · testing</p><h2>Drive the real lamp.</h2>
++ <p class="small">Manual mode moves the head swivel and switches the D7 lamp directly, without subject tracking or the face and beam checks. It keeps the other safety: it needs this page open (heartbeat), the lamp's 800 ms lease, and Stop &amp; lamp off. The steppers are disabled and never move.</p>
++ <div class="row"><button id="mTake">Take manual control</button><button id="mAuto">Back to automatic tracking</button><button id="mRelease">Release · all outputs off</button></div>
++ <p class="small" id="mFeedback" role="status">Not in manual control.</p>
++ <div class="grid">
++  <div class="card"><h3>Head swivel</h3>
++   <label>Angle <output id="mSwivelV">0°</output><input id="mSwivel" type="range" min="-45" max="45" step="1" value="0" aria-label="Swivel angle"></label>
++   <div class="row"><button data-sw="-45">−45°</button><button data-sw="-20">−20°</button><button data-sw="0">Center</button><button data-sw="20">+20°</button><button data-sw="45">+45°</button></div>
++   <div class="row"><button id="mSweep">Sweep test (−45 → +45 → 0)</button></div></div>
++  <div class="card"><h3>Lamp (D7)</h3>
++   <div class="row"><button id="mLamp" aria-pressed="false">Turn lamp on</button><button id="mBlink">Blink test (3×)</button></div>
++   <p class="small">On/Off only (no dimming). It switches off within 0.8 s if this page stops sending.</p></div>
++  <div class="card"><h3>Live readings</h3><dl>
++   <dt>Mode</dt><dd id="mMode">—</dd><dt>Arm link</dt><dd id="mLink">—</dd>
++   <dt>Swivel</dt><dd id="mPivot">—</dd><dt>Lamp</dt><dd id="mLampState">—</dd>
++   <dt>Shoulder</dt><dd id="mJ0">—</dd><dt>Elbow</dt><dd id="mJ1">—</dd><dt>Head pitch</dt><dd id="mJ2">—</dd>
++   <dt>Steppers</dt><dd id="mSteppers">—</dd><dt>Status</dt><dd id="mReason">—</dd></dl></div>
++ </div>
+ </section><footer><span class="credits">LuxoIII</span><span>Tongtong &amp; Victor · Minimalist AI Challenge 2026</span></footer>
+ </main>
+ <script src="/cad-view.js"></script>
+@@ -203,6 +445,26 @@
+  } else cad.spatial(live);
+ }
+ document.getElementById('example').onclick=()=>{example=!example;document.getElementById('example').setAttribute('aria-pressed',String(example));renderSpatial();cad.fitPeople();document.getElementById('exampleNote').hidden=!example;};
++function renderImageTracking() {
++ const boxes=document.getElementById('faceBoxes');boxes.replaceChildren();
++ const status=document.getElementById('cameraTracking');
++ if(!live?.fresh){status.textContent='Waiting for fresh camera tracking…';return;}
++ status.textContent=live.outputs?.enabled?'Tracking on · '+(live.tracking?.status||'Waiting for a subject')+' · ±45°':'Physical tracking off';
++ const [width,height]=live.size||[];
++ if(!(width>0&&height>0))return;
++ const detections=(live.detections||[]).filter(b=>[b.x,b.y,b.w,b.h].every(Number.isFinite)&&b.w>0&&b.h>0);
++ const candidates=detections.filter(b=>b.x+b.w/2>=0&&b.x+b.w/2<=width);
++ const largest=candidates.reduce((best,b)=>!best||b.w*b.h>best.w*best.h?b:best,null);
++ detections.forEach((b,i)=>{
++  const x=Math.max(0,b.x),y=Math.max(0,b.y),right=Math.min(width,b.x+b.w),bottom=Math.min(height,b.y+b.h);
++  if(right<=x||bottom<=y)return;
++  const selected=b===largest&&live.outputs?.enabled&&live.tracking?.subject==='face'&&live.tracking?.visible;
++  const el=document.createElement('div');el.className='faceBox'+(selected?' selected':'');
++  el.textContent=selected?'Tracking · largest face':'Face '+(i+1);
++  el.style.cssText=`left:${x/width*100}%;top:${y/height*100}%;width:${(right-x)/width*100}%;height:${(bottom-y)/height*100}%`;
++  boxes.append(el);
++ });
++}
+ function renderMetrics() {
+  const fresh=live?.fresh, finite=v=>Number.isFinite(v);
+  const values={
+@@ -214,7 +476,7 @@
+  for(const [id,value] of Object.entries(values))document.getElementById(id).textContent=value;
+ }
+ function applyLive() {
+- renderMetrics();
++ renderMetrics();renderImageTracking();
+  ['realShoulder','realElbow','realHead'].forEach((id,i)=>{
+   const j=live?.joints?.[i];document.getElementById(id).textContent=live?.fresh&&j?.healthy&&Number.isFinite(j.angle)?j.angle.toFixed(1)+'° · measured':live?.fresh&&j?.reason?j.reason:'Unavailable';
+  });
+@@ -267,8 +529,6 @@
+   }
+   document.getElementById('health').textContent=live.fresh ? (live.camera?'Live encoders · ':'Camera-relative only · encoders unavailable · ')+live.pivot_source : (live.error || 'Live data unavailable');
+   document.getElementById('people').textContent=live.fresh ? (live.people.length ? live.people.map((p,i)=>`Face ${i+1}: ~${p.range_m.toFixed(2)} m away · ${Math.abs(p.camera[0]).toFixed(2)} m ${p.camera[0]>=0?'right':'left'} · ${Math.abs(p.camera[1]).toFixed(2)} m ${p.camera[1]>=0?'above':'below'} camera`).join(' | ') : 'No complete faces detected in this frame.') : 'Waiting for fresh camera data. Old face markers are hidden.';
+-  const boxes=document.getElementById('faceBoxes');boxes.replaceChildren();
+-  if(live.fresh) live.people.forEach((p,i)=>{const b=document.createElement('div');b.className='faceBox';b.textContent='Face '+(i+1);const [x,y,w,h]=p.bbox;b.style.cssText=`left:${x/live.size[0]*100}%;top:${y/live.size[1]*100}%;width:${w/live.size[0]*100}%;height:${h/live.size[1]*100}%`;boxes.append(b);});
+   document.getElementById('trackingZone').hidden=!live.fresh;
+   const holdZone=live.tracking?.deadzone_fraction||.4;
+   document.getElementById('trackingZone').style.left=(50-holdZone*50)+'%';
+@@ -296,4 +556,61 @@
+ },250);
+ show(home);requestAnimationFrame(tick);poll();
+ </script>
++<script>
++// ---- tabs ------------------------------------------------------------------------------------
++function showTab(manual){
++ document.getElementById('experienceTab').hidden=manual;document.getElementById('manualTab').hidden=!manual;
++ document.getElementById('tabExperience').setAttribute('aria-selected',String(!manual));
++ document.getElementById('tabManual').setAttribute('aria-selected',String(manual));
++}
++document.getElementById('tabExperience').onclick=()=>showTab(false);
++document.getElementById('tabManual').onclick=()=>showTab(true);
++// ---- status strip: the AI state and what the model is playing, always visible ----------------
++function renderStatusStrip(){
++ const d=live?.fresh?live.demo:null, o=live?.outputs, np=emotions.nowPlaying(performance.now()/1000);
++ document.getElementById('pillState').textContent=d?d.state:'no fresh AI data';
++ document.getElementById('pillEvent').textContent=d&&d.event?d.event:'—';
++ const extra=np.layers.length?' + '+np.layers.join(' + '):'';
++ document.getElementById('pillAnim').textContent=np.clip?`${np.clip} · ${np.label} · ${Math.round(100*(np.progress||0))}%${extra}`
++  :`no clip (${np.returning?'returning to rest':np.label})${extra}`;
++ document.getElementById('pillSource').textContent=aiReact?'AI-driven':playing?'Showcase':following?'Following measured joints':'Manual preview';
++ document.getElementById('pillPhysical').textContent=!o?'unavailable':o.swivel_mode==='manual'?`manual · ${o.brightness>0?'ON':'off'}`
++  :o.enabled?(o.brightness>0?'ON (auto)':'auto · off'):'off';
++}
++setInterval(renderStatusStrip,200);
++// ---- manual control --------------------------------------------------------------------------
++let manualOn=false, swTimer=null;
++function mSay(t){document.getElementById('mFeedback').textContent=t;}
++async function manualSend(extra,msg){
++ try{await control('manual',extra);manualOn=true;wantHardware=false;if(msg)mSay(msg);}
++ catch(e){mSay('Manual control failed: '+e.message);}
++}
++setInterval(()=>{if(manualOn)control('heartbeat').catch(()=>{manualOn=false;mSay('Connection lost · physical outputs switch off automatically.');});},700);
++const sleep=ms=>new Promise(r=>setTimeout(r,ms));
++function setSwivelUI(v){document.getElementById('mSwivel').value=v;document.getElementById('mSwivelV').textContent=`${v>0?'+':''}${v}°`;}
++document.getElementById('mTake').onclick=()=>{
++ const p=live?.pivot, start=p?.enabled&&Number.isFinite(p.current)?Math.round(p.current):0;
++ setSwivelUI(start);defaultTrackingPending=false;manualSend({swivel:start,lamp:false},'Manual control: the swivel and lamp follow this tab.');
++};
++document.getElementById('mAuto').onclick=async()=>{try{await control('auto');manualOn=false;wantHardware=true;enabledAt=performance.now();mSay('Back to automatic subject tracking.');}catch(e){mSay('Could not switch back: '+e.message);}};
++document.getElementById('mRelease').onclick=async()=>{try{await control('disable');manualOn=false;wantHardware=false;mSay('Released: swivel limp, lamp off.');}catch(e){mSay('Could not release: '+e.message);}};
++document.getElementById('mSwivel').oninput=()=>{const v=Number(document.getElementById('mSwivel').value);setSwivelUI(v);clearTimeout(swTimer);swTimer=setTimeout(()=>manualSend({swivel:v}),120);};
++document.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{const v=Number(b.dataset.sw);setSwivelUI(v);manualSend({swivel:v});});
++document.getElementById('mSweep').onclick=async()=>{for(const v of [-45,45,0]){setSwivelUI(v);await manualSend({swivel:v},`Sweep test · ${v}°`);await sleep(1800);}mSay('Sweep test done.');};
++document.getElementById('mLamp').onclick=()=>{const on=!(live?.outputs?.manual?.lamp);manualSend({lamp:on},on?'Lamp on.':'Lamp off.');};
++document.getElementById('mBlink').onclick=async()=>{for(let i=0;i<3;i++){await manualSend({lamp:true},`Blink ${i+1}/3`);await sleep(600);await manualSend({lamp:false});await sleep(600);}mSay('Blink test done.');};
++function renderManual(){
++ const o=live?.outputs, m=o?.manual, p=live?.pivot;
++ document.getElementById('mMode').textContent=!o?'—':m?'MANUAL':o.enabled?'automatic tracking':'outputs off';
++ document.getElementById('mLink').textContent=!o?'—':o.connected?'connected':'not connected';
++ document.getElementById('mPivot').textContent=p&&p.enabled&&!p.fault?`${p.current.toFixed(1)}° (target ${p.target.toFixed(1)}°)`:p&&p.fault?'fault '+p.fault:'released';
++ document.getElementById('mLampState').textContent=!o?'—':o.brightness>0?'ON':'off';
++ ['mJ0','mJ1','mJ2'].forEach((id,i)=>{const j=live?.joints?.[i];document.getElementById(id).textContent=j&&j.healthy&&Number.isFinite(j.angle)?j.angle.toFixed(1)+'°':(j?.reason||'—');});
++ document.getElementById('mSteppers').textContent=o?.steppers||'—';
++ document.getElementById('mReason').textContent=o?.reason||'—';
++ const lb=document.getElementById('mLamp'),on=!!m?.lamp;lb.textContent=on?'Turn lamp off':'Turn lamp on';lb.setAttribute('aria-pressed',String(on));
++ if(m && manualOn===false && o.enabled){manualOn=true;}
++}
++setInterval(renderManual,250);
++</script>
+ </html>
+--- a/apps/luxoiii/luxoiii/desk/emotion_view.js
++++ b/apps/luxoiii/luxoiii/desk/emotion_view.js
+@@ -49,6 +49,14 @@
+   this.until=now+entry+clip.duration+2+this.random()*2;
+   this.label=labels[ref]||ref;this.returning=null;
+  }
++ nowPlaying(now) {
++  // What the model is playing right now, for the page's "Playing" pill: the full-body clip (its
++  // library ref, label and progress 0-1) and any additive overlay layers still running.
++  const c=this.current,layers=this.layers.filter(l=>now>=l.started&&now-l.started<=l.spec.duration).map(l=>l.ref);
++  if(!c)return {clip:null,label:this.label,progress:null,layers,returning:!!this.returning,state:this.state};
++  const total=c.entry+c.clip.duration;
++  return {clip:c.ref,label:labels[c.ref]||c.ref,progress:total>0?Math.max(0,Math.min(1,(now-c.started)/total)):null,layers,returning:false,state:this.state};
++ }
+  layer(ref,now,weight=1) {
+   const spec=this.clips.overlays?.[ref];if(!spec)return;
+   this.layers.push({ref,spec,started:now,weight});
+--- a/apps/luxoiii/tests/test_hybrid_demo.py
++++ b/apps/luxoiii/tests/test_hybrid_demo.py
+@@ -7,7 +7,7 @@
+ 
+ ROOT=Path(__file__).resolve().parents[3]
+ sys.path[:0]=[str(ROOT/'tools/spatial'),str(ROOT/'arm/python'),str(ROOT/'apps/luxoiii')]
+-from behavior import Demo
++from behavior import Demo, GestureHold, palm_footprint
+ from hybrid import Outputs
+ from pointing import target_from_hand,physical_aim,simulated_aim,adjust_pose
+ from kinematics import beam_hit, fk, ray_plane
+@@ -20,7 +20,60 @@
+     return dict(points=points,gesture=gesture,score=.95)
+ 
+ 
++def sized_hand(gesture='point',x=300,scale=1.,score=.95):
++    h=hand(gesture,x);origin=h['points'][0]
++    h['points']=[[origin[i]+scale*(p[i]-origin[i]) for i in range(3)] for p in h['points']]
++    h['score']=score
++    return h
++
++
+ class BehaviorTests(unittest.TestCase):
++    def test_initial_pointer_and_command_selection_prefers_larger_palm_over_score(self):
++        for gesture in ('point','open_palm','thumbs_up'):
++            with self.subTest(gesture=gesture):
++                hold=GestureHold()
++                small=sized_hand(gesture,150,scale=.7,score=.99)
++                large=sized_hand(gesture,440,scale=1.5,score=.65)
++                self.assertIs(hold.select(10,[small,large]),large)
++                self.assertIs(hold.select(10,[large,small]),large)
++
++    def test_palm_priority_is_rotation_invariant_and_not_changed_by_fingertips(self):
++        h=sized_hand(scale=1.5);area=palm_footprint(h)
++        for index in (4,8,12,16,20):h['points'][index]=[2000,3000,0]
++        self.assertEqual(palm_footprint(h),area)
++        h['points']=[[-p[1]+500,p[0]-200,p[2]] for p in h['points']]
++        self.assertAlmostEqual(palm_footprint(h),area)
++
++    def test_nearly_equal_hands_stay_associated_but_clearly_larger_hand_takes_over(self):
++        d=Demo(simulated_aim);old=sized_hand(x=180);near=sized_hand(x=220,scale=1.1,score=.99)
++        first=dict(point=[.4,.2,0]);second=dict(point=[.4,-.2,0])
++        d.update(10,[],[old],target=first);d.update(10.5,[],[old],target=first)
++        for i in range(3):
++            now=10.6+i*.15
++            self.assertIs(d.select_pointing_hand(now,[near,old]),old)
++            d.update(now,[],[near,old],target=first)
++        large=sized_hand(x=220,scale=1.6,score=.6)
++        saved=list(d.target)
++        self.assertIs(d.select_pointing_hand(11.1,[old,large]),large)
++        d.update(11.1,[],[large,old],target=second)
++        self.assertEqual(d.target,saved);self.assertFalse(d.point_following)
++        # Close wrists still require a new hold when a distinctly larger hand
++        # takes over; the old hand's accumulated confirmation cannot transfer.
++        d.update(11.6,[],[old,large],target=second)
++        self.assertLess(d.target[1],saved[1]);self.assertTrue(d.point_following)
++
++    def test_small_open_palm_still_interrupts_larger_pointing_hand(self):
++        d=Demo(simulated_aim)
++        pointer=sized_hand('point',180,scale=2.)
++        palm=sized_hand('open_palm',450,scale=.7)
++        spot=dict(point=[.4,0,0])
++        for t in (10,10.5,11.4):d.update(t,[],[pointer],target=spot)
++        d.update(11.6,[],[pointer,palm],target=spot)
++        snapshot=d.update(12.1,[],[palm,pointer],target=spot)
++        self.assertEqual(snapshot['state'],'ATTENTIVE')
++        self.assertEqual(snapshot['event'],'Open palm · hello back')
++        self.assertFalse(snapshot['light_requested']);self.assertIsNone(snapshot['desk_target'])
++
+     def test_point_needs_a_desk_intersection_and_a_hold(self):
+         d=Demo(simulated_aim);h=hand();target=dict(point=[.4,0,0],pose=[0,-18,65,70,0])
+         d.update(10,[],[h],target=target)
+@@ -156,6 +209,22 @@
+             self.assertFalse(snapshot['light_requested']);self.assertIsNone(snapshot['desk_target'])
+             self.assertEqual(d.serial,serial)
+ 
++    def test_arrivals_during_palm_welcome_update_count_without_interrupting(self):
++        d=Demo(simulated_aim);palm=hand('open_palm')
++        face=SimpleNamespace(x=200,w=80,h=80)
++        d.update(10,[],[palm]);d.update(10.5,[],[palm]);serial=d.serial
++        d.update(11,[face,face],[])
++        d.update(12,[face,face],[])
++        self.assertEqual(d.group_count,2)
++        self.assertEqual(d.serial,serial);self.assertEqual(d.event,'Open palm · hello back')
++        # Those arrivals are not replayed after the welcome ends.
++        d.update(15.8,[face,face],[])
++        self.assertEqual(d.serial,serial)
++        # A subsequent, genuinely new arrival still receives the group greeting.
++        d.update(16,[face,face,face],[]);d.update(16.9,[face,face,face],[])
++        self.assertEqual(d.group_count,3);self.assertEqual(d.serial,serial+1)
++        self.assertTrue(d.event.startswith('More company'))
++
+     def test_two_hands_point_and_adjust_on_independent_hold_timers(self):
+         d=Demo(simulated_aim);pointer=hand(x=180);thumb=hand('thumbs_up',x=450)
+         spot=dict(point=[.4,0,0])
+@@ -565,5 +634,38 @@
+                         if previous is not None:self.assertLessEqual((distance-previous)*sign,1e-7)
+                         self.assertLess(math.dist(ray_plane(h.light,h.axis),target),1e-8)
+                         previous=distance
++
+ 
++class ManualOutputTests(unittest.TestCase):
++    """The Manual tab: swivel to a set angle and lamp On/Off, no tracking or face/beam gates."""
++    def setUp(self):
++        self.b=Bridge();self.o=Outputs(self.b);self.o.requested=True;self.o.heartbeat=100
++        self.data=dict(joints=[],detections=[dict(score=.9)],pivot=dict(enabled=True,current=0,target=0,fault=0),
++                       tracking=dict(target=30,status='Tracking face'),demo=dict(state='IDLE'))
++
++    def test_manual_swivel_and_lamp_ignore_tracking_and_face_gate(self):
++        self.o.set_manual(swivel=-20,lamp=True)
++        self.o.step(self.data,100,100)
++        moves=[a for m,a in self.b.calls if m=='arm_command' and a[0]==16]
++        self.assertEqual(moves[-1][2],-20000)                 # not the tracking target (30)
++        self.assertEqual([a for m,a in self.b.calls if m=='arm_light'][-1],[1000,0,800])   # face in view, still on
++        self.assertEqual(self.o.snapshot()['swivel_mode'],'manual')
++        self.o.set_manual(lamp=False);self.o.step(self.data,100.1,100.1)
++        self.assertEqual([a for m,a in self.b.calls if m=='arm_light'][-1],[0,0])
++        self.assertEqual(self.o.manual['swivel'],-20)         # unchanged field kept
++
++    def test_manual_still_needs_heartbeat_and_stop_clears_it(self):
++        self.o.set_manual(swivel=10,lamp=True);self.o.step(self.data,100,100)
++        self.o.step(self.data,104,104)                         # heartbeat 4 s old
++        self.assertFalse(self.o.requested);self.assertIsNone(self.o.manual);self.assertEqual(self.o.level,0)
++
++    def test_manual_clamps_and_validates(self):
++        self.o.set_manual(swivel=200);self.assertEqual(self.o.manual['swivel'],45)
++        with self.assertRaises(ValueError):self.o.set_manual(lamp='on')
++        with self.assertRaises(ValueError):self.o.set_manual(swivel=float('nan'))
++
++    def test_manual_never_sends_stepper_operations(self):
++        self.o.set_manual(swivel=5,lamp=True);self.o.step(self.data,100,100)
++        self.assertTrue({a[0] for m,a in self.b.calls if m=='arm_command'}<=Outputs.ALLOWED)
++
+ if __name__=='__main__':unittest.main()
+--- a/apps/luxoiii/luxoiii/web.py
++++ b/apps/luxoiii/luxoiii/web.py
+@@ -12,6 +12,7 @@
+ import re
+ from urllib.parse import unquote, urlparse, parse_qs
+ from .spatial import read_observer
++from urllib.error import HTTPError
+ from urllib.request import Request, urlopen
+ 
+ DESK = Path(__file__).parent / "desk"
+@@ -28,11 +29,15 @@
+             n=int(self.headers.get('Content-Length','0'))
+             if not 0<n<=256:raise ValueError('Invalid control request')
+             data=json.loads(self.rfile.read(n));action=data.get('action')
+-            if action not in ('enable','disable','heartbeat','stop','resume'):raise ValueError('Unknown control')
++            if action not in ('enable','disable','heartbeat','stop','resume','manual','auto'):raise ValueError('Unknown control')
+             if not self.server.observer_url:raise ConnectionError('Board observer unavailable')
+             req=Request(self.server.observer_url+'/control',data=json.dumps({k:v for k,v in data.items() if k in ('action','swivel','lamp')}).encode(),headers={'Content-Type':'application/json'})
+-            with urlopen(req,timeout=2) as response:body=response.read(4096)
+-            self.send_response(200)
++            try:
++                with urlopen(req,timeout=2) as response:body=response.read(4096)
++            except HTTPError as e:                       # the observer refused: pass its reason on
++                body=e.read(4096);self.send_response(400)
++            else:
++                self.send_response(200)
+         except Exception as exc:
+             body=json.dumps(dict(ok=False,error=str(exc))).encode();self.send_response(400)
+         self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)))
