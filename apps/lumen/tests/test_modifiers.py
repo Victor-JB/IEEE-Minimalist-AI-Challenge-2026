@@ -89,5 +89,13 @@ class Modifiers(unittest.TestCase):
         self.assertEqual(M.glance_before_move(list(C.HOME), end, 1.0, self.rng, 0.5), [("goto", end, 1.0)])
 
 
+
+class RollPoses(unittest.TestCase):
+    def test_move_time_ignores_a_roll_value(self):
+        """Poses from lumen-geometry carry J5 roll as a 4th value; planning must not index caps with it."""
+        from lumen.behavior import modifiers as M
+        a, b = [0.0, 60.0, 5.0], [5.0, 55.0, 15.0]
+        self.assertEqual(M.move_time(a + [10.0], b + [-10.0]), M.move_time(a, b))
+
 if __name__ == "__main__":
     unittest.main()

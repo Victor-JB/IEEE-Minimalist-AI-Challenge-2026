@@ -241,5 +241,23 @@ class Wave(unittest.TestCase):
         self.assertIsNone(Machine(start="STANDBY").handle(E.WAVE, 1.0))   # no transition
 
 
+class GatedFaceCount(unittest.TestCase):
+    def test_gated_face_runs_are_not_counted(self):
+        class StillGate:
+            def update(self, frame):
+                return False
+        calls = []
+
+        class CountingFace(FakeFace):
+            def detect(self, frame, now):
+                calls.append(now)
+                return []
+        p = Perception(face=CountingFace(), gate=StillGate())
+        p.last_motion_t = 0.0                                       # one motion at t=0, then stillness
+        run(p, {"gate": 10, "face": 1}, {}, 0, 30)
+        self.assertEqual(p.sched.counts.get("face", 0), len(calls))   # logged == real model calls
+        self.assertLessEqual(len(calls), 2)                           # gated after 1 s of no motion
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -42,7 +42,7 @@ def clamp_pose(pose):
 def move_time(start, end, margin=SPEED_MARGIN):
     """Shortest min-jerk duration from start to end inside the speed, elbow-lift and accel caps."""
     t = 0.0
-    for j, (a, b) in enumerate(zip(start, end)):
+    for j, (a, b) in enumerate(zip(start[:3], end[:3])):   # a 4th value (J5 roll) has no cap here
         d = abs(b - a)
         cap = C.SPEED_CAPS[j]
         if j == 1 and b < a:                      # elbow straightening lifts the forearm + head
