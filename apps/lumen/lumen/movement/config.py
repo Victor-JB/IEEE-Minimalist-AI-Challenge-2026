@@ -48,6 +48,7 @@ SWEEP_ROLLS = (-20.0, 20.0)
 SWEEP_Z = 0.36                           # m: search from high up (bigger footprint)...
 SWEEP_STANDOFF = 0.40                    # ...and from far back
 SWEEP_FRAME_INSET = 0.1                  # coverage counts only this far inside the frame edges
+SWEEP_DWELL_S = 0.6                      # hold still this long at each pause (the book model runs BOOK_PER_POSE times)
 SETTLE_TOL_DEG = 1.5                     # a pause counts as settled when every joint is this close...
 SETTLE_MIN_S = 0.25                      # ...and at least this long after the setpoint arrived
 SETTLE_MAX_S = 1.0                       # (or this long: backlash may keep it from closing in)
@@ -56,6 +57,7 @@ ANTICIPATION = 0.25                      # counter-move first, this fraction of 
 ANTICIPATION_S = 0.25                    # ...over this long
 
 # --- Per-state moves (state/director.py) ----------------------------------------------------------
+BOOT_HOME_S = 3.0                        # BOOT: the move to HOME takes this long
 GAP_S = {"bored": (2.0, 6.0), "attentive": (1.5, 4.0), "holding": (4.0, 9.0),
          "looking_around": (0.5, 1.5), "asleep": (0.5, 2.0)}                 # pause between looping clips
 SLEEP_ENTRY = "go_to_sleep/drowsy"       # once on entering SLEEP; the lamp stays slumped after it

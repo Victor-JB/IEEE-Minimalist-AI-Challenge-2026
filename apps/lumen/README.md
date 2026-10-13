@@ -53,7 +53,8 @@ apps/lumen/
 ├── scripts/      deploy.sh (Mac → board: apps/lumen + arm/) · run.sh (on the board, foreground)
 ├── tests/        python3 -m unittest discover -s apps/lumen/tests
 ├── tools/        simulate.py (whole demo on a fake clock) · scorecard.py (logs → RESULTS rows)
-├── models/       the .tflite files (paths are set in each model's config)
+├── models/       the .tflite files (paths are set in each model's config): face, hands, book
+├── bench/        book detector eval + export tools (docs/MODEL_SELECTION.md)
 └── lumen/
     ├── __main__.py · app.py        entry point · main loop (camera → AI → state → movement + light)
     ├── movement/                   ★ everything that moves the arm
@@ -68,7 +69,7 @@ apps/lumen/
     │   ├── face/       config.py · detector.py · tracker.py    model path, thresholds, which face
     │   ├── hands/      config.py · landmarker.py · gestures.py model, thresholds, tracking, gesture
     │   │                                                       rules, hold times, wave
-    │   ├── book/       config.py · detector.py                 found/lost rules (model: in progress)
+    │   ├── book/       config.py · detector.py                 YOLOX-S w8a8: model, threshold, found/lost
     │   └── motion_gate/ config.py · gate.py                    the free frame-difference gate
     ├── state/                      ★ the behavior state machine
     │   ├── config.py               state timers (boot, fault cooldown, notice, lost, check-in, reacquire)
@@ -85,6 +86,11 @@ The arm's hardware limits (HOME, speed/accel caps, joint safe ranges) live in
 `arm/python/arm_config.py`, shared with the firmware tools; `movement/config.py` re-exports them.
 `tests/test_layout.py` fails if Lumen ever defines its own copy of an arm parameter.
 
+Why these models, how the book detector was benchmarked and quantized, and the compute budget
+on the UNO Q: [docs/MODEL_SELECTION.md](../../docs/MODEL_SELECTION.md). Book benchmark tools:
+`bench/` (`eval_detector.py`, `coco_bookset.py`, `capture_desk_set.py`, `book_candidates.py`,
+`export_yolox.py`; data and candidate models are gitignored).
+
 ## Debugging: what to edit
 
 | Symptom | Edit |
@@ -94,7 +100,7 @@ The arm's hardware limits (HOME, speed/accel caps, joint safe ranges) live in
 | Head overshoots or crawls when centering a face | `movement/config.py` `RATE_DEG_S`, `DEADBAND` |
 | Gesture not recognized | `ai/hands/config.py` gesture rules + `GESTURE_HOLD_S` / `PALM_HOLD_S`; check with `python -m lumen.ai.hands.compare_gestures DIR` |
 | Hands not found | `ai/hands/config.py` `PALM_THRESHOLD`, `LANDMARK_THRESHOLD`, `TRACKING` |
-| Book found/lost flicker | `ai/book/config.py` |
+| Book found/lost flicker, missed books | `ai/book/config.py` (`SCORE_THRESHOLD`, found/lost rules) |
 | Arm stalls / gives up / FAULTs | `movement/config.py` stall section; caps in `arm/python/arm_config.py` |
 | Aims at the wrong spot | `movement/config.py` camera + desk geometry (`CAMERA_HFOV_DEG`, `DESK_AREA`) |
 | CHECK-IN too long | `movement/config.py` `CHECKIN_MAX_UP` |

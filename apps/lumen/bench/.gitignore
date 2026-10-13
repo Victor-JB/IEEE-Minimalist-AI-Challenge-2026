@@ -1,0 +1,4 @@
+# Eval / calibration images and COCO annotations (coco_bookset.py): never commit
+data/
+# Candidate models and exports (book_candidates.py)
+models/
