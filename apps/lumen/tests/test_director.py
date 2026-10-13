@@ -251,5 +251,61 @@ class FalseAlarm(unittest.TestCase):
         self.assertNotEqual(ref, "hesitate/subtle")
 
 
+class CheckIn(unittest.TestCase):
+    def lit(self, face_y=None):
+        r = Rig()
+        r.to(E.READY, E.FACE_SEEN, E.FACE_CONFIRMED)
+        if face_y is not None:                             # STANDBY sees the face, above center
+            r.p.target = Det(320, face_y)
+            r.tick()
+        r.p.target = None
+        r.to(E.POINT, E.CLIP_DONE, E.BOOK_FOUND)
+        r.finish(E.AT_POSE)
+        self.assertEqual(r.m.state, "HOLD")
+        r.w.current = list(r.d.aim_pose)
+        r.tick(dt=16.0)                                    # check-in timer (8-15 s)
+        self.assertEqual(r.m.state, "CHECKIN")
+        return r
+
+    def test_looks_up_toward_the_face_then_back_to_the_aim_pose(self):
+        r = self.lit(face_y=120)
+        name, (plan, tok), kw = r.w.last()
+        self.assertEqual(name, "seq")
+        self.assertEqual([s[0] for s in plan], ["goto", "mark", "wait", "mark", "goto"])
+        up, back = plan[0][1], plan[-1]
+        aim = r.d.aim_pose
+        self.assertEqual(up[:2], aim[:2])
+        self.assertLess(up[2], aim[2] - 10)                # head up, most of the way to the face
+        want = r.d.user_pitch - sum(aim)
+        self.assertLessEqual(abs(up[2] - aim[2]), abs(want) + 1e-6)
+        self.assertEqual(back[1], aim)
+        self.assertTrue(back[3])                           # the look-at offset is cleared on the way back
+        for speeds in [[1.875 * abs(b - a) / plan[0][2] for a, b in zip(aim, up)]]:
+            for j, v in enumerate(speeds):
+                self.assertLessEqual(v, C.SPEED_CAPS[j])
+
+    def test_tracks_the_face_only_while_looking(self):
+        r = self.lit(face_y=120)
+        r.p.target = Det(320, 60)                          # face high in the image
+        r.tick()
+        self.assertEqual(r.w.offset, [0.0, 0.0, 0.0])      # still moving up: no steering
+        r.finish(E.STEP, 0)
+        for _ in range(5):
+            r.tick()
+        self.assertLess(r.w.offset[2], 0)                  # head goes up toward the face
+        r.finish(E.STEP, 1)
+        self.assertEqual(r.w.offset, [0.0, 0.0, 0.0])
+        r.tick()
+        self.assertEqual(r.w.offset, [0.0, 0.0, 0.0])      # and stays cleared on the way back
+        r.finish()
+        self.assertEqual(r.m.state, "HOLD")
+        self.assertEqual(r.w.base, r.d.aim_pose)
+
+    def test_no_face_ever_seen_still_looks_up(self):
+        r = self.lit()
+        name, (plan, tok), kw = r.w.last()
+        self.assertLess(plan[0][1][2], r.d.aim_pose[2])
+
+
 if __name__ == "__main__":
     unittest.main()

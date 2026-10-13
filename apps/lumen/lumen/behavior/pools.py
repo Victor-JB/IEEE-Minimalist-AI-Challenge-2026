@@ -10,7 +10,7 @@ clips, if any, are flourishes played on top. Keep clips the real arm can do: try
 apps/stepper_desk/scripts/emote.py first (lamp_wake needs more shoulder torque than it has).
 """
 
-PROCEDURAL = {"attentive", "holding", "searching", "adjust", "found"}
+PROCEDURAL = {"attentive", "holding", "searching", "adjust", "found", "checkin"}
 
 POOLS = {
     "boot":           [("home/gentle", "mid")],
@@ -36,6 +36,8 @@ POOLS = {
                        ("hesitate/unsure", "low")],
     "holding":        [("idle_breathe/calm", "low")],
     "adjust":         [],
+    # CHECK-IN is a procedural look-up toward the face (director._enter_checkin). These canned
+    # glances need base/wrist yaw, which the 3-joint arm drops; kept for when yaw exists.
     "checkin":        [("look_at_user_return/slow_right", "low"), ("look_at_user_return/quick_left", "mid")],
     "peek":           [("curious_head_tilt/single", "mid")],
     "done":           [("nod_yes/small_calm", "low"), ("home/gentle", "low")],

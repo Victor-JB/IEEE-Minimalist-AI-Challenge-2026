@@ -20,6 +20,13 @@ ADJUST_STEP = (3.0, -4.0, 1.0)   # (shoulder, elbow, head) deg per CLOSER; TODO:
 SLEEP_ENTRY = "go_to_sleep/drowsy"     # once on entering SLEEP; the lamp stays slumped after it
 SLEEP_BREATHE = (0.3, 2.0)             # (amplitude, time_scale) of the slow breathe while asleep
 SLEEP_BREATHE_S = 16.0                 # breathing per loop (whole 8 s breaths)
+# CHECK-IN (LookBackAtUser): pitch the head up toward where the face was last seen, track it a
+# moment, then glide back to the aim pose. Camera pitch is taken as shoulder + elbow + head (all
+# pitch joints about parallel axes, motion_lib's convention); TODO check the signs on the arm.
+CAMERA_HALF_VFOV_DEG = 22.0            # a face at the top/bottom edge is this far off-axis; TODO measure
+CHECKIN_LOOK_S = 1.5                   # face at 10 Hz this long while looking up
+CHECKIN_DEFAULT_UP = -20.0             # head change when no face was ever seen (- = look up)
+CHECKIN_MAX_UP = 45.0                  # never pitch the head more than this away from the aim pose
 FALSE_ALARM_CLIP = "hesitate/subtle"   # NOTICE -> IDLE on TIMEOUT: sheepish "oh, nobody"
 WAKE_CLIP = "wake_up/slow_groggy"      # NOTICE right after SLEEP -> IDLE, instead of the notice pool
 WAKE_AMPLITUDE = 0.7                   # ~18 s on the real arm (the elbow-lift cap slows it ~4x)
@@ -37,6 +44,8 @@ class Director:
         self.look, self.last_tick = LookAt(), None
         self.slumped = False                # SLEEP left the arm at go_to_sleep's end pose
         self.wake_tok = None                # token of a wake-up still playing (it may outlive NOTICE)
+        self.user_pitch = None              # camera pitch (sum of joints) that last centered the face
+        self.checkin_phase = None           # CHECK-IN plan: "up" -> "look" -> "back"
 
     # -- state machine callbacks ------------------------------------------------
     def on_enter(self, state, m):
@@ -72,6 +81,8 @@ class Director:
             self.light.step(0.15 * sign)
             self.aim_pose = [a + sign * d for a, d in zip(self.aim_pose, ADJUST_STEP)]
             self._expressive_goto(self.aim_pose, 0.8, tok, E.MOVE_DONE, "adjust")
+        elif state == "CHECKIN":
+            self._enter_checkin(tok)
         elif state == "FAULT":
             if m.entered_at - self.last_fault_t > C.FAULT_FORGET_S:
                 self.faults = 0
@@ -100,6 +111,8 @@ class Director:
             h, w = frame_shape[:2]
             err = face_error(perception.target, w, h) if perception.target is not None else None
             self.w.set_offset(self.look.update(err, now, dt))
+            self._note_user_pitch(perception, err)
+        self._steer_checkin(m, perception, frame_shape, now, dt)
         pool = m.spec.pool
         waiting = (m.state in CENTER_FIRST and not self.look.centered(now)
                    and now - m.entered_at < CENTER_TIMEOUT_S)
@@ -214,6 +227,50 @@ class Director:
         self.slumped, self.wake_tok = False, tok
         self.w.seq([("play", WAKE_CLIP, WAKE_AMPLITUDE, 1.0), ("rebase",)], tok)
 
+    # -- CHECK-IN -----------------------------------------------------------------------
+    def _note_user_pitch(self, perception, err):
+        """Remember where the face is (camera pitch that centers it), for CHECK-IN later."""
+        if err is None or not getattr(perception, "faces", True):
+            return
+        self.user_pitch = sum(self.w.base) + self.look.head + err[1] * CAMERA_HALF_VFOV_DEG
+
+    def _checkin_pose(self):
+        """The aim pose with the head pitched (most of the way) toward the last-seen face."""
+        aim = list(self.aim_pose)
+        if self.user_pitch is None:
+            turn = CHECKIN_DEFAULT_UP
+        else:
+            turn = self.user_pitch - sum(aim)                  # head change that centers the face
+        share = min(1.0, M.jitter(self.rng, 0.6 + 0.4 * M.gamma_for(self.x.energy, social=True)))
+        turn = max(-CHECKIN_MAX_UP, min(CHECKIN_MAX_UP, share * turn))
+        return M.clamp_pose([aim[0], aim[1], aim[2] + turn])
+
+    def _enter_checkin(self, tok):
+        """Up toward the user, mark 0 (track the face), hold, mark 1, glide back to the aim pose
+        (clearing the look-at offset). CLIP_DONE at the end returns to HOLD."""
+        self.checkin_phase = "up"
+        look = self._checkin_pose()
+        plan = [("goto", look, M.jitter(self.rng, 0.5)), ("mark", 0), ("wait", CHECKIN_LOOK_S),
+                ("mark", 1), ("goto", list(self.aim_pose), M.jitter(self.rng, 0.6), True)]
+        self.w.seq(M.respect_caps(plan, self._arm_pose()), tok)
+
+    def _checkin_step(self, index):
+        self.look.reset()
+        self.w.set_offset(self.look.offset)
+        self.checkin_phase = "look" if index == 0 else "back"
+
+    def _steer_checkin(self, m, perception, frame_shape, now, dt):
+        """While looking up: center the face with the look-at, and refine where the user is."""
+        if m.state != "CHECKIN":
+            self.checkin_phase = None
+            return
+        if self.checkin_phase != "look":
+            return
+        h, w = frame_shape[:2]
+        err = face_error(perception.target, w, h) if perception.target is not None else None
+        self.w.set_offset(self.look.update(err, now, dt))
+        self._note_user_pitch(perception, err)
+
     # -- SLEEP ------------------------------------------------------------------------
     def _enter_sleep(self, tok):
         """Save power (camera to SLEEP_CAMERA_FPS, opt-in CPU governor), slump once, then breathe
@@ -230,6 +287,8 @@ class Director:
 
     def _on_step(self, m, index, now):
         """A plan reached one of its marks (see the per-state plans below)."""
+        if m.state == "CHECKIN":
+            self._checkin_step(index)
 
     def _expressive_goto(self, pose, duration, tok, done, style):
         """goto dressed by the modifier rules (glance / windup / hesitation), inside the caps."""
