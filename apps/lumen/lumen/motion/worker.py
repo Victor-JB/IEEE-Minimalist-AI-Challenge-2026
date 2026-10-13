@@ -41,11 +41,11 @@ STALL_RETRIES = 3                         # slower pushes per setpoint before ab
 RETRY_SPEED = (10.0, 6.0, 4.0)            # deg/s of each successive push
 STALL_SLOWDOWN = 1.5                      # the rest of a clip plays this much slower after a stall
 GIVE_UP_LIMIT, GIVE_UP_WINDOW_S = 6, 60.0 # abandoned commands this close together -> FAULT (jammed)
+KEEPALIVE_S = 0.5                         # relaxed: STATUS this often (the MCU drops a silent owner after 2 s)
 EASE_SPEED = 20.0                         # deg/s when easing onto a clip's first pose
 OFFSET_SLEW = 25.0                        # deg/s: look-at offset changes are smoothed to this
 ROLL_RETURN_SPEED = 60.0                  # deg/s the head tilt eases back to ROLL_HOME after a clip
 ROLL_DEADBAND = 0.3                       # deg: smaller roll changes aren't sent (saves an RPC per tick)
-KEEPALIVE_S = 0.5                         # relaxed: STATUS this often (the MCU drops a silent owner after 2 s)
 
 
 class Stalled(Exception):
