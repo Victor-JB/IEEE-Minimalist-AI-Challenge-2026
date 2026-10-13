@@ -134,6 +134,10 @@ class FakeWorker:
     """Director's view of MotionWorker: every command is a no-op."""
     fake = True
 
+    def __init__(self):
+        self.current = list(C.HOME)          # data, not commands: AIM/ADJUST plan from these
+        self.base_roll = 0.0
+
     def __getattr__(self, name):
         return lambda *a, **k: None
 
