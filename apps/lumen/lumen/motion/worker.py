@@ -8,8 +8,15 @@ Real mode uses ArmMotion from the shared arm module (arm/python; the closed-loop
 already be flashed by arm/scripts/deploy.sh). Fake mode (--fake-arm) plays the same timing with no
 board, so the whole app runs on a laptop with a webcam.
 
-Head tilt (the J5 roll servo): clips play their head_roll track on it; holds and moves bring it
-back to arm_config.ROLL_HOME. It is skipped (no-op) when the firmware has no roll servo.
+Head tilt (the J5 roll servo): clips play their head_roll track on it, around the base roll; holds
+and moves bring it back to the base roll (arm_config.ROLL_HOME unless a pose sets it: a pose may
+carry a 4th value, the roll, e.g. AIM's sideways aim). It is skipped (no-op) when the firmware has
+no roll servo.
+
+Sweeps settle before they report: AT_POSE (which lets the book model run) is only sent once the
+measured angles are within SETTLE_TOL_DEG of the pause pose and at least SETTLE_MIN_S have passed
+(or SETTLE_MAX_S, if backlash keeps a joint from closing in), so inference never sees motion blur.
+The pause holds exactly there: no hold drift, no look-at offset.
 
 Every command carries a token; finished-events come back as (event, token) so the director can
 ignore a CLIP_DONE from a clip that a state change already interrupted.
@@ -43,6 +50,7 @@ EASE_SPEED = 20.0                         # deg/s when easing onto a clip's firs
 OFFSET_SLEW = 25.0                        # deg/s: look-at offset changes are smoothed to this
 ROLL_RETURN_SPEED = 60.0                  # deg/s the head tilt eases back to ROLL_HOME after a clip
 ROLL_DEADBAND = 0.3                       # deg: smaller roll changes aren't sent (saves an RPC per tick)
+SWEEP_MIN_MOVE_S = 1.0                    # sweep moves take at least this long (longer if the caps need it)
 
 
 class Stalled(Exception):
@@ -59,6 +67,8 @@ class MotionWorker(threading.Thread):
         self.x, self.fake = expressive, fake
         self.cmds, self.events = queue.Queue(), queue.Queue()
         self.base = list(C.HOME)            # pose that clips and holds are relative to
+        self.base_roll = A.ROLL_HOME        # head tilt that holds and moves return to
+        self.measured = None                # last measured angles (from stream_point), None = unknown
         self.offset = [0.0, 0.0, 0.0]       # look-at offset, set by the director every frame
         self._off = [0.0, 0.0, 0.0]         # the offset actually applied, slewed toward self.offset
         self.stall_time = 0.0               # seconds spent recovering from stalls (clips pause their clock)
@@ -75,10 +85,17 @@ class MotionWorker(threading.Thread):
         self.cmds.put(("play", ref, amplitude, time_scale, token))
 
     def goto(self, pose, duration, token, done=E.MOVE_DONE):
+        """pose: (shoulder, elbow, head) or (shoulder, elbow, head, roll)."""
         self.cmds.put(("goto", list(pose), duration, token, done))
 
+    def path(self, segments, token, done=E.MOVE_DONE):
+        """Several gotos as one command [(pose, duration), ...] (e.g. anticipation, then the move);
+        one `done` event at the end. Separate goto()s would interrupt each other."""
+        self.cmds.put(("path", [(list(p), d) for p, d in segments], token, done))
+
     def sweep(self, poses, dwell, token):
-        """Visit each pose, pausing `dwell` s; emits AT_PAUSE per pose, then SWEEP_DONE."""
+        """Visit each pose, settle, pause `dwell` s; emits AT_POSE (info: index) per pose once
+        settled, then SWEEP_DONE."""
         self.cmds.put(("sweep", [list(p) for p in poses], dwell, token))
 
     def relax(self):
@@ -89,7 +106,9 @@ class MotionWorker(threading.Thread):
         self.cmds.put(("connect",))
 
     def set_base(self, pose):
-        self.base = list(pose)
+        """Pose holds and clips are relative to; a 4th value sets the base roll (else ROLL_HOME)."""
+        self.base = list(pose[:3])
+        self.base_roll = pose[3] if len(pose) > 3 else A.ROLL_HOME
 
     def set_offset(self, offset):
         self.offset = list(offset)
@@ -191,7 +210,12 @@ class MotionWorker(threading.Thread):
             elif kind == "goto":
                 _, pose, dur, token, done = cmd
                 if self._guard(self._goto, pose, dur) is not False:
-                    self.base = list(pose)
+                    self.set_base(pose)
+                    self.events.put((done, token, None))
+            elif kind == "path":
+                _, segments, token, done = cmd
+                if self._guard(self._path, segments) is not False:
+                    self.set_base(segments[-1][0])
                     self.events.put((done, token, None))
             elif kind == "sweep":
                 _, poses, dwell, token = cmd
@@ -212,21 +236,61 @@ class MotionWorker(threading.Thread):
                                    f"through in {GIVE_UP_WINDOW_S:.0f} s; last: {e}")
             return None
 
+    def _path(self, segments):
+        return all(self._goto(pose, dur) for pose, dur in segments)
+
     def _sweep(self, poses, dwell, token):
-        for i, pose in enumerate(poses):
-            if not self._goto(pose, 1.0):
+        base, base_roll = self.base, self.base_roll
+        try:
+            for i, pose in enumerate(poses):
+                if not self._goto(pose, self._capped_duration(pose, SWEEP_MIN_MOVE_S)):
+                    return False
+                self.base, self.base_roll = list(pose[:3]), (pose[3] if len(pose) > 3 else A.ROLL_HOME)
+                t0 = time.monotonic()
+                if not self._settle(pose[:3]):
+                    return False
+                self.events.put((E.AT_POSE, token, i))
+                if not self._wait(max(0.0, dwell - (time.monotonic() - t0)), still=True):
+                    return False
+            self.events.put((E.SWEEP_DONE, token, None))
+            return True
+        finally:
+            self.base, self.base_roll = base, base_roll   # clips after the sweep play around home again
+
+    def settled(self, target, since):
+        """Arrived and still: the measured angles are close to target (real arm), after SETTLE_MIN_S;
+        or SETTLE_MAX_S have passed anyway. `since`: seconds since the setpoint arrived."""
+        if since < C.SETTLE_MIN_S:
+            return False
+        if self.measured is None or since >= C.SETTLE_MAX_S:
+            return True
+        return all(abs(m - t) <= C.SETTLE_TOL_DEG for m, t in zip(self.measured, target))
+
+    def _settle(self, target):
+        """Hold target (no drift, no offset) until settled(); False if interrupted."""
+        t0 = time.monotonic()
+        while not self.settled(target, time.monotonic() - t0):
+            if self._interrupted():
                 return False
-            self.events.put((E.AT_POSE, token, i))
-            if not self._wait(dwell):
-                return False
-        self.events.put((E.SWEEP_DONE, token, None))
+            self._hold_tick(still=True)
         return True
+
+    def _capped_duration(self, pose, minimum):
+        """Long enough that a min-jerk move from here to pose stays under the speed caps."""
+        t = minimum
+        for j, (a, b) in enumerate(zip(self.current, pose[:3])):
+            cap = C.ELBOW_LIFT_CAP if j == 1 and b < a else C.SPEED_CAPS[j]
+            t = max(t, 1.875 * abs(b - a) / cap)
+        return t
 
     # -- motion primitives (return False if interrupted by a new command) ----------
     def _send(self, pose, vel=None):
         pose = [max(lo, min(hi, v)) for v, (lo, hi) in zip(pose, C.SAFE_RANGES)]
-        if self.arm and self.arm.stream_point(pose, vel, horizon=0.12)["state"] == "stalled":
-            self._push_through(pose)
+        if self.arm:
+            s = self.arm.stream_point(pose, vel, horizon=0.12)
+            self.measured = s.get("angles")
+            if s["state"] == "stalled":
+                self._push_through(pose)
         self.current = pose
 
     def _push_through(self, pose):
@@ -286,27 +350,33 @@ class MotionWorker(threading.Thread):
     def _interrupted(self):
         return not self.cmds.empty() or self._stop.is_set()
 
-    def _wait(self, seconds):
+    def _wait(self, seconds, still=False):
         end = time.monotonic() + seconds
         while time.monotonic() < end:
             if self._interrupted():
                 return False
-            self._hold_tick()
+            self._hold_tick(still)
         return True
 
-    def _hold_tick(self):
+    def _hold_tick(self, still=False):
         if self.relaxed:
             time.sleep(DT)
             return
-        drift = self.x.drift_step(DT)
-        off = self._slew_offset()
-        self._roll(A.ROLL_HOME, ROLL_RETURN_SPEED)
-        self._send([b + o + d for b, o, d in zip(self.base, off, drift)])
+        self._roll(self.base_roll, ROLL_RETURN_SPEED)
+        if still:                                 # a sweep pause: exactly the pose (the camera is looking)
+            self._send(list(self.base))
+        else:
+            drift = self.x.drift_step(DT)
+            off = self._slew_offset()
+            self._send([b + o + d for b, o, d in zip(self.base, off, drift)])
         time.sleep(DT)
 
     def _goto(self, pose, duration):
+        """Min-jerk to pose[:3]; pose[3], if given, is the roll (else the base roll)."""
+        roll = pose[3] if len(pose) > 3 else self.base_roll
+        pose = pose[:3]
         start, n = list(self.current), max(1, int(duration / DT))
-        self._roll(A.ROLL_HOME, ROLL_RETURN_SPEED)
+        self._roll(roll, ROLL_RETURN_SPEED)
         for k in range(1, n + 1):
             if self._interrupted():
                 return False
@@ -324,7 +394,7 @@ class MotionWorker(threading.Thread):
         import numpy as np
         off0 = list(self._slew_offset())
         home = [b + o for b, o in zip(self.base, off0)]
-        t, q, vel, _, roll = trajectory_with_roll(ref, home, amplitude, roll_home=A.ROLL_HOME)
+        t, q, vel, _, roll = trajectory_with_roll(ref, home, amplitude, roll_home=self.base_roll)
         if not self._ease_to(q[0].tolist()):
             return False
         stretch = max(1.0, time_scale)             # only ever slower: trajectory() already sits at the caps
