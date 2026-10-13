@@ -9,7 +9,7 @@ from . import paths
 from kinematics import fk
 
 
-def estimate(snapshot, hfov=60.0, face_width=.16, pivot_fallback=0.0,
+def estimate(snapshot, hfov=100.0, face_width=.16, pivot_fallback=0.0,
              camera_offset=.05, camera_pitch=0.0, camera_yaw=0.0, palm_width=.08):
     if not (.04 <= palm_width <= .14 and 20 <= hfov <= 150 and .08 <= face_width <= .30 and
             -.2 <= camera_offset <= .3 and -90 <= camera_pitch <= 90 and

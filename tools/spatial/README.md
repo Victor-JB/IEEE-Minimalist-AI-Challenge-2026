@@ -40,7 +40,7 @@ explicitly labeled illustration for verifying the geometry when nobody is in the
 
 Calibration controls set horizontal field of view, assumed face width, camera offset along the
 shade, mount yaw/pitch, and the released servo's manually estimated angle. Defaults are assumptions:
-60° horizontal FOV, 16 cm face width, 5 cm along the shade, zero mount rotation and zero released
+100° horizontal FOV, 16 cm face width, 5 cm along the shade, zero mount rotation and zero released
 pivot. The user confirmed the camera moves with the pivot. Its exact mounting offset/orientation
 and lens intrinsics still need measurement. Base yaw is a fixed zero reference, not a sensor.
 
@@ -64,8 +64,8 @@ Stopping the observer, SSH tunnel, or preview does not stop or alter the existin
 The real swivel is exclusively an image-based subject tracker. **Enable subject tracking** grants
 it a quiet-arm session. Faces take priority over hands; among multiple faces it follows the nearest
 previous image-space subject. After a one-second face-loss grace period, a visible palm can become
-the target. It corrects horizontal camera error using current servo command telemetry and a 60°
-HFOV assumption. A 3.5% image-width deadband and 12°/s rate limit reduce jitter. Travel is ±10°;
+the target. It corrects horizontal camera error using current servo command telemetry and a 100°
+HFOV assumption. A 3.5% image-width deadband and 12°/s rate limit reduce jitter. Travel is ±45°;
 vertical centering is unavailable with the broken pitch joints. Losing a subject holds the last
 angle; the tracker does not scan or play emotional motions. This is not identity recognition.
 
@@ -88,7 +88,7 @@ The digital arm uses the original authored clips, with gestures taking priority 
 - A moving palm can wave. A **still** open palm held for one second latches Stop, freezes the
   digital arm and releases physical tracking. Choose **Resume gestures**, then enable tracking.
 
-Targeting uses the saved joint calibration and fixed assumptions: 60° HFOV, 8 cm palm width,
+Targeting uses the saved joint calibration and fixed assumptions: 100° HFOV, 8 cm palm width,
 5 cm axial camera mount, no mount rotation, zero base yaw, and zero released pivot. The user
 confirmed the camera moves with the head pivot. `pointing.py` converts relative landmark depth
 into estimated camera coordinates before intersecting the finger ray with the desk. Hand-world

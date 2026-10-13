@@ -4,7 +4,7 @@ Browser heartbeat expires after 3 seconds; Stop and stale data release the servo
 """
 import math
 import secrets
-import time
+from tracking import SubjectTracker
 
 
 class Outputs:
@@ -60,14 +60,14 @@ class Outputs:
                     raise RuntimeError('Disconnect other arm controls and let the stepper drivers sleep first')
                 self.command(0);self.claimed=True
                 self.light(0)
-                self.command(17,1500,7407,-12000,12000,-1,20000)
+                self.command(17,1500,7407,-45000,45000,-1,12000)
             status=self.command(4)
             if status[6] or status[7]:raise RuntimeError('Unexpected stepper activity · hybrid stopped')
             tracking=data.get('tracking') or {}
             value=tracking.get('target')
             if not isinstance(value,(int,float)) or not math.isfinite(value):
                 raise ValueError('Subject tracking unavailable')
-            target=max(-10.,min(10.,value))
+            target=max(-SubjectTracker.LIMIT,min(SubjectTracker.LIMIT,value))
             if self.last_target is None or abs(target-self.last_target)>.5:
                 self.command(16,round(target*1000),12000);self.last_target=target
             # The camera points at the subject. Gesture lighting is digital only.

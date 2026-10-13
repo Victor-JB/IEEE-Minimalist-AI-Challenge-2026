@@ -98,6 +98,8 @@ class OutputTests(unittest.TestCase):
         self.assertTrue(self.o.claimed)
         ops=[a[0] for m,a in self.b.calls if m=='arm_command']
         self.assertEqual(ops,[0,17,4,16]);self.assertTrue(set(ops)<=Outputs.ALLOWED)
+        config=next(a for m,a in self.b.calls if m=='arm_command' and a[0]==17)
+        self.assertEqual(config[4:6],[-45000,45000])
         light=[a for m,a in self.b.calls if m=='arm_light']
         self.assertTrue(all(a[0]==0 for a in light));self.assertEqual(self.o.last_target,4)
         with self.assertRaises(ValueError):self.o.command(11,0)
@@ -123,7 +125,7 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(self.o.last_target,4)
             self.assertEqual(self.o.level,0)
         self.data['tracking']['target']=50
-        self.o.step(self.data,100,100);self.assertEqual(self.o.last_target,10)
+        self.o.step(self.data,100,100);self.assertEqual(self.o.last_target,45)
         self.data['demo']['state']='STOPPED'
         self.o.step(self.data,100,100);self.assertFalse(self.o.requested)
 
@@ -146,7 +148,7 @@ class HandProjection(unittest.TestCase):
         self.assertEqual(estimate(dict(size=[640,480],age_s=.1,hands=[h]))['hands_3d'],[])
 
     def test_finger_ray_projects_to_the_expected_desk_spot(self):
-        q=(-18,65,70);h=fk(q);f=640/(2*math.tan(math.pi/6));depth=.3
+        q=(-18,65,70);h=fk(q);f=640/(2*math.tan(math.radians(50)));depth=.3
         center=[h.camera[i]+depth*h.axis[i] for i in range(3)]
         def pixel(right,up):return [320+right*f/depth,240-up*f/depth,0]
         pts=[pixel(0,0) for _ in range(21)]

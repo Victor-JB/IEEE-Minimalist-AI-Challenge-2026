@@ -33,7 +33,7 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
 <progress id="gestureProgress" max="1" value="0" aria-label="Gesture hold progress"></progress>
 <div class="toolbar"><button id="aiMode" aria-pressed="true">AI-driven simulated arm</button><button id="hardware" aria-pressed="false">Enable subject tracking</button><button id="stopDemo" style="border-color:#ed8585">Stop & lamp off</button><button id="resumeDemo">Resume gestures</button></div>
 <p class="small" id="outputStatus">Subject tracking disabled. Digital animation runs independently.</p>
-<p class="small">The real swivel follows the subject: face first, hand as fallback. It holds position when the subject disappears. The real lamp stays off. Greetings, waves, nods and desk gestures animate the digital arm only.</p>
+<p class="small">The real swivel tracks within ±45° using an assumed 100° horizontal field of view: face first, hand as fallback. It holds position when the subject disappears. The real lamp stays off. Greetings, waves, nods and desk gestures animate the digital arm only.</p>
 </section>
 <section class="sliders" aria-label="Live physical joint angles" style="border:1px solid #775f3c;margin-bottom:16px">
 <label>Real shoulder <output id="realShoulder">Waiting…</output></label>
@@ -56,9 +56,9 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
  <div><h2>Where the camera sees people</h2><p id="health" role="status">Connecting to the UNO Q…</p><p id="people">Waiting for detections…</p><p id="handsText" style="color:#c5a5ff">Waiting for hand detection…</p><p id="pipeline" class="small"></p><p class="small">Depth uses assumed face and palm width, so distance and finger direction are approximate. Symbols mark faces, not tracked body joints. Sideways and vertical positions are relative to the camera.</p></div>
 </section>
 <details><summary>Camera calibration & assumptions</summary>
-<p class="small">The camera moves with the head pivot. Starting assumptions: 60° horizontal view, 16 cm face width, camera 5 cm along the shade axis, base yaw fixed at zero. Adjust these to match the actual camera. A turned face or palm can make distance too large. Board gesture targeting currently uses the default 60° / 8 cm / 5 cm mount calibration; these controls adjust visualization only.</p>
+<p class="small">The camera moves with the head pivot. Starting assumptions: 100° horizontal view, 16 cm face width, camera 5 cm along the shade axis, base yaw fixed at zero. Adjust these to match the actual camera. A turned face or palm can make distance too large. Board gesture targeting currently uses the default 100° / 8 cm / 5 cm mount calibration; these controls adjust visualization only.</p>
 <div class="sliders">
-<label>Horizontal field of view (°)<input id="hfov" type="number" min="20" max="150" value="60"></label>
+<label>Horizontal field of view (°)<input id="hfov" type="number" min="20" max="150" value="100"></label>
 <label>Assumed palm width (cm)<input id="palmWidth" type="number" min="4" max="14" value="8"></label>
 <label>Assumed face width (cm)<input id="faceWidth" type="number" min="8" max="30" value="16"></label>
 <label>Released pivot estimate (°)<input id="pivotFallback" type="number" min="-90" max="90" value="0"></label>

@@ -1,5 +1,6 @@
 """Estimated index-finger ray -> desk intersection, using the physical head frame."""
 import math
+from tracking import SubjectTracker
 from kinematics import fk, aim, beam_hit, move_along_beam
 
 
@@ -9,7 +10,7 @@ def target_from_hand(hand,joints,pivot,width=640,height=480):
     if len(p)!=21 or any(not (0<v[0]<width and 0<v[1]<height) for v in p):return None
     span=math.dist(p[5][:2],p[17][:2])
     if span<12:return None
-    f=width/(2*math.tan(math.radians(60)/2));scale=.08/span;depth=f*scale
+    f=width/(2*math.tan(math.radians(SubjectTracker.HFOV)/2));scale=.08/span;depth=f*scale
     if not .15<depth<3:return None
     midz=(p[5][2]+p[17][2])/2
     # Released pivot is explicitly the same manual zero assumption as the initial view.
@@ -26,7 +27,7 @@ def target_from_hand(hand,joints,pivot,width=640,height=480):
     if not (.20<=hit[0]<=.65 and abs(hit[1])<=.30):return None
     pose=aim(hit)
     if pose is None:return None
-    return dict(point=hit,pose=[0,*pose.q,pose.roll],source='estimated finger ray on desk · 60° FOV / 8 cm palm')
+    return dict(point=hit,pose=[0,*pose.q,pose.roll],source='estimated finger ray on desk · 100° FOV / 8 cm palm')
 
 
 def physical_aim(joints,target):
@@ -35,7 +36,7 @@ def physical_aim(joints,target):
     q=[j['angle'] for j in joints];h=fk(q)
     dx=target[0]-h.pivot[0];dz=-h.pivot[2]
     roll=math.degrees(math.atan2(-(target[1]-h.pivot[1]),math.hypot(dx,dz)))
-    roll=max(-10,min(10,roll));hit=beam_hit(q,roll)
+    roll=max(-45,min(45,roll));hit=beam_hit(q,roll)
     if hit is None or math.dist(hit,target)>.18:return None
     return roll
 

@@ -3,7 +3,8 @@ import math
 
 
 class SubjectTracker:
-    LIMIT=10.0
+    LIMIT=45.0
+    HFOV=100.0
     def __init__(self):
         self.target=0.;self.last_seen=-1e9;self.previous=None;self.center=None;self.kind=None
         self.status='Waiting for a subject';self.error=0.
@@ -27,7 +28,7 @@ class SubjectTracker:
             # Keep the nearest image-space subject instead of hopping to the largest face.
             x=(min(candidates,key=lambda c:abs(c[0]-self.center)) if self.center is not None and kind==self.kind and now-self.last_seen<1.5 else max(candidates,key=lambda c:c[1]))[0]
             self.center=x;self.kind=kind;self.last_seen=now
-            self.error=math.degrees(math.atan((x-.5)*2*math.tan(math.radians(30))))
+            self.error=math.degrees(math.atan((x-.5)*2*math.tan(math.radians(self.HFOV/2))))
             # Positive swivel turns the camera to image-right. Use current servo
             # telemetry, a central deadband and bounded speed to avoid chasing noise.
             correction=0. if abs(x-.5)<.035 else self.error*.6
@@ -36,4 +37,4 @@ class SubjectTracker:
             self.target=max(self.target-step,min(self.target+step,desired))
             self.status=('At swivel limit · subject outside centre' if abs(self.target)>=self.LIMIT-.1 and abs(self.error)>3 else 'Tracking '+kind)
         return dict(target=self.target,status=self.status,subject=self.kind,
-                    visible=bool(candidates),error_deg=self.error,limit_deg=self.LIMIT)
+                    visible=bool(candidates),error_deg=self.error,limit_deg=self.LIMIT,hfov=self.HFOV)

@@ -37,8 +37,11 @@ class TrackingTests(unittest.TestCase):
         t=SubjectTracker()
         for i in range(30):
             s=t.update(i*.25,[face(600)],[],pivot(t.target))
-            self.assertLessEqual(abs(s['target']),10)
-        self.assertEqual(s['target'],10)
+            self.assertLessEqual(abs(s['target']),45)
+        self.assertEqual(s['target'],45)
+        self.assertEqual(s['hfov'],100)
+        for i in range(30,70):s=t.update(i*.25,[face(40)],[],pivot(t.target))
+        self.assertEqual(s['target'],-45)
         t=SubjectTracker();t.update(0,[face(200)],[],pivot(0))
         t.update(.25,[face(205),face(500,200)],[],pivot(t.target))
         self.assertAlmostEqual(t.center,205/640)

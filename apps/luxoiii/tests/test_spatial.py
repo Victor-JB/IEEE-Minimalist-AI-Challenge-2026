@@ -26,7 +26,7 @@ class Spatial(unittest.TestCase):
         p=d['people'][0];c=d['camera']
         self.assertAlmostEqual(p['camera'][0],0)
         self.assertAlmostEqual(p['camera'][1],0)
-        self.assertAlmostEqual(p['depth_m'],640/(2*math.tan(math.pi/6))*.16/88)
+        self.assertAlmostEqual(p['depth_m'],640/(2*math.tan(math.radians(50)))*.16/88)
         for i in range(3):
             self.assertAlmostEqual(p['world'][i],c['position'][i]+p['depth_m']*c['forward'][i])
         self.assertAlmostEqual(estimate(self.s,face_width=.24)['people'][0]['depth_m'],p['depth_m']*1.5)

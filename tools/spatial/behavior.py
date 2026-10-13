@@ -106,4 +106,4 @@ class Demo:
             gesture=self.gesture,hold_progress=min(1,max(0,(now-self.since)/(1 if self.gesture=='open_palm' else .4))) if self.gesture else 0,
             brightness=self.level,light_requested=self.state=='ILLUMINATE',
             pose=pose,desk_target=target if self.state in ('ACK','ILLUMINATE') else None,
-            target_source='estimated finger ray on desk · 60° FOV / 8 cm palm; not a detected book')
+            target_source='estimated finger ray on desk · 100° FOV / 8 cm palm; not a detected book')
