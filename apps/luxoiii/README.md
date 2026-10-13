@@ -48,12 +48,12 @@ state-dependent inference scheduling, expressive behavior, light ramps, firmware
 performance logging, a shared manual desk, and the complete browser CAD renderer.
 
 The separate hybrid demo in `tools/spatial` now connects hand/face inference to the full simulated
-arm and optionally to real pivot/light outputs. It selects desk spots using an estimated finger ray.
+arm and independently to real-pivot subject tracking. It selects desk spots using an estimated finger ray.
 Book detection remains unimplemented. The regular arm mode still expects working joints;
 `--fake-arm` skips all physical arm outputs. The supplied board source and simulated tests do not by
 themselves establish live demo reliability.
 
-Keep the real lamp aimed at the desk. Camera and pivot are team-verified. Avoid full-arm hardware
+Keep the real light off during subject tracking. Camera and pivot are team-verified. Avoid full-arm hardware
 commands while the steppers are broken. Do not interpret an animated preview as measured arm motion.
 
 ## Development and measurement
@@ -77,5 +77,5 @@ for testing the tooling, not competition efficiency claims.
 See [the spatial observer guide](../../tools/spatial/README.md) to show estimated face locations
 relative to the physical head camera beside the full X-ray arm. Inference runs on the UNO Q;
 the Mac receives camera/encoder/hand snapshots. The dedicated hybrid controls optionally activate
-only the pivot and D7 lamp. View calibration assumptions are adjustable; board targeting uses the
+only the pivot for subject tracking; D7 stays off. View calibration assumptions are adjustable; board targeting uses the
 documented default calibration. Read the guide before changing calibration.

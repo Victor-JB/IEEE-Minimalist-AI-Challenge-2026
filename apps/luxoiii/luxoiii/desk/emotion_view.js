@@ -27,7 +27,7 @@ class Emotions {
  }
  sample(data,now,showcase=false) {
   const d=data?.demo||{},state=d.state||'IDLE';
-  const measured=data?.camera?[0,...data.camera.joints,data.camera.roll]:[0,-20,65,35,0];
+  const measured=data?.camera?[0,...data.camera.joints,0]:[0,-20,65,35,0];
   const base=!showcase&&state==='ILLUMINATE'&&d.pose?[...d.pose]:measured;
   if(!showcase && state==='STOPPED'){this.current=null;this.state=state;this.label='Stopped';return null;}
   let ref=null;
@@ -41,9 +41,10 @@ class Emotions {
     // Do not replay an old gesture when opening/reconnecting the page.
     if(d.event_age_s<3) {
      if(e.startsWith('Hello'))ref='perk_up__small';
+     else if(e.startsWith('More company'))ref='curious_head_tilt__single';
      else if(e.startsWith('Wave'))ref='tail_wag__small';
      else if(e.startsWith('Point accepted'))ref='nod_yes__medium';
-     else if(e.startsWith('Point downward'))ref='shrug_fail__small';
+     else if(e.startsWith('Point downward')&&this.current?.name!=='shrug_fail')ref='shrug_fail__small';
      else if(e.startsWith('Brighter')||e.startsWith('Dimmer'))ref='nod_yes__small_calm';
     }
    }
@@ -54,8 +55,8 @@ class Emotions {
     this.state=state;
    }
    if(!ref&&now>=this.until&&state!=='ACK') {
-    const pool=state==='ATTENTIVE'?['idle_breathe__alert','curious_head_tilt__single','lean_in_interest__subtle']:
-     state==='ILLUMINATE'?[]:['idle_breathe__calm','idle_breathe__calm','scan_room__calm'];
+    const pool=state==='ATTENTIVE'?(d.interaction_idle_s>8?['curious_head_tilt__single','lean_in_interest__subtle','tail_wag__small','excited_bounce__medium','idle_breathe__alert']:['idle_breathe__alert','curious_head_tilt__single','lean_in_interest__subtle']):
+     state==='ILLUMINATE'?['idle_breathe__calm','nod_yes__small_calm']:['idle_breathe__calm','idle_breathe__calm','scan_room__calm'];
     if(pool.length)ref=pool[this.cycle++%pool.length];
    }
   }

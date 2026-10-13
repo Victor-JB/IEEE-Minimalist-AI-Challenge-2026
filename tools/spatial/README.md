@@ -3,7 +3,7 @@
 The Mac web view at port 8082 combines the full CAD assembly with read-only encoder readings,
 head-pivot command telemetry, a camera frustum and approximate face positions. Detection runs
 on the UNO Q using the existing quantized face model. The default observer is read-only. With `--hybrid`, the UI can explicitly activate only the physical
-head pivot and D7 lamp; failed stepper joints are animated in the browser. All outputs start disabled.
+head pivot for subject tracking; the D7 lamp stays off. Failed stepper joints are animated in the browser. All outputs start disabled.
 
 The observer shares the standalone desk's MJPEG feed at port 8081 (does not open the USB camera
 again). It holds one frame in memory and runs face detection with two threads at a bounded active loop. A motion gate skips neural models when nobody is present, with a three-second
@@ -18,7 +18,7 @@ apps/luxoiii/.venv/bin/python tools/spatial/observe.py --repo "$PWD" --hybrid
 ```
 
 For the existing, unmigrated board deployment, use `--package lumen` and its existing
-`apps/lumen/.venv/bin/python`. Copy all four Python files from this folder together if running from `/tmp`; it imports the
+`apps/lumen/.venv/bin/python`. Copy all five Python files from this folder together if running from `/tmp`; it imports the
 installed detector without replacing the running application.
 
 On the Mac, in one terminal:
@@ -54,41 +54,39 @@ Raw encoder samples use the saved October 11 calibration, applied off-board from
 reads. Read-only status may return EACCES/EBUSY alongside valid samples; these are not motor claims.
 Unhealthy or >100 ms old encoder samples never produce world coordinates. Frames older than two
 seconds clear face markers. The servo has no encoder: powered readings are commanded angles,
-and a released servo uses the visible manual estimate. The geometric hand estimates select a desk target for the hybrid demo. Physical outputs are separately
-gated using encoder telemetry and the fixed arm’s reach; they do not command stepper movement.
+and a released servo uses the visible manual estimate. The geometric hand estimates select a desk target for the hybrid demo. The real head tracks subjects independently; no gesture or digital animation commands its position.
 
 Stopping the observer, SSH tunnel, or preview does not stop or alter the existing desk process.
 
 
-## Gestures and physical outputs
+## Social behavior, gestures and subject tracking
 
-- Point downward and hold for 0.4 s (at least two detections): an estimated index-finger ray intersects
-  the desk plane. Only reachable points 20–65 cm forward and within 30 cm sideways are accepted.
-  The display marks that point and the simulated arm acknowledges, then aims using shared arm IK.
-  A held point that misses the desk is retried; the UI asks for a reachable downward point.
-- Thumbs up/down, held 0.4 s: brighter/closer or dimmer/further, repeating at most once a second.
-  Simulation steps along the beam; real hardware changes brightness within 10–80% perceptual level.
-- Open palm, held one second: latch Stop, turn off demo outputs, and freeze the simulated arm.
-  Choose **Resume gestures** to clear the latch, then separately enable physical outputs if wanted.
-- Slow wave: two wrist reversals within 2.5 s greet back in the attentive state. The simulated arm
-  and enabled physical pivot make a small wave. A stationary held open palm always wins as Stop.
+The real swivel is exclusively an image-based subject tracker. **Enable subject tracking** grants
+it a quiet-arm session. Faces take priority over hands; among multiple faces it follows the nearest
+previous image-space subject. After a one-second face-loss grace period, a visible palm can become
+the target. It corrects horizontal camera error using current servo command telemetry and a 60°
+HFOV assumption. A 3.5% image-width deadband and 12°/s rate limit reduce jitter. Travel is ±10°;
+vertical centering is unavailable with the broken pitch joints. Losing a subject holds the last
+angle; the tracker does not scan or play emotional motions. This is not identity recognition.
 
-**Enable real lamp + pivot** grants the sidecar a quiet-arm session. The driver’s explicit allowlist
-contains claim/status/release and pivot config/move/off only. It never sends stepper configuration,
-move, stream, jog, or power-enable commands. It refuses an already owned or awake arm and bounds
-pivot commands to ±10° at 20°/s. The existing desk remains the camera owner.
+The D7 lamp stays off because the camera follows people. Lighting gestures affect the digital
+scene only. The hardware RPC allowlist contains claim/status/release and pivot config/move/off;
+no stepper configuration, move, stream, jog or power-enable commands are sent. An owned or awake
+arm is refused. Browser heartbeat expiry (3 s), stale camera/encoders and Stop disable outputs.
 
-The physical lamp is inhibited unless pitch encoders are healthy, the shade points downward
-(110–170° cumulative pitch), no face is in view, the commanded pivot has settled, and the selected
-spot is within 18 cm of the desk intersection reachable by the real pivot. The fixed arm cannot
-follow all targets reachable by the simulation. The current physical pose is above the desk, so
-its lamp remains off until the supported head is positioned appropriately.
+The digital arm uses the original authored clips, with gestures taking priority over social loops:
 
-Browser heartbeat expiry (3 s), stale camera/encoders, Stop, or a bridge failure disables outputs.
-The lamp refresh is a positive-level write followed immediately by an 800 ms fade-to-zero write,
-renewed at 10 Hz. This provides ordinary process-loss fadeout, but is **not an atomic firmware
-watchdog**: failure between those writes can leave the level set. An MCU light-lease protocol would
-be required to guarantee cutoff in that narrow case; no firmware was reflashed for this demo.
+- After ten seconds without a face or hand: idle breathing and occasional room-scanning loops.
+- First arrival: perk-up greeting or double-take. Another person joining for at least 0.8 s elicits
+  a curious greeting. Detection counts are not identity tracking.
+- After eight seconds without an accepted gesture: curious tilts, leaning, a playful wave/bounce,
+  and attentive breathing while someone remains visible.
+- Point downward for 0.4 s: intersect the estimated finger ray with the simulated desk. Reachable
+  points 20–65 cm forward and within 30 cm sideways receive a nod, an IK aiming pose, and a visible
+  simulated light cone and target ring. Invalid points produce a shrug.
+- Thumbs up/down for 0.4 s: simulated brighter/closer or dimmer/further, at most once per second.
+- A moving palm can wave. A **still** open palm held for one second latches Stop, freezes the
+  digital arm and releases physical tracking. Choose **Resume gestures**, then enable tracking.
 
 Targeting uses the saved joint calibration and fixed assumptions: 60° HFOV, 8 cm palm width,
 5 cm axial camera mount, no mount rotation, zero base yaw, and zero released pivot. The user
@@ -109,15 +107,11 @@ command estimate (there is no swivel encoder). **Follow measured joints** puts t
 model at that pose. In **AI-driven simulated arm**, the measured pose anchors the original authored
 motion curves: perk-up on arrival, curious tilts and breathing while attentive, a wave in response,
 a nod for accepted pointing/brightness changes, and a shrug for an unreachable desk point. Accepted
-desk targets use the simulated IK pose. The camera and amber physical skeleton always use telemetry.
+desk targets use the simulated IK pose with gentle loops. The digital head roll does not copy the
+physical tracker; pitch encoder readings provide its neutral pose. The camera and amber physical skeleton always use telemetry.
 **Show emotions** cycles the authored clips without creating AI events or physical commands. The
 browser samples sparse per-joint curves at display rate; the lamp’s unsupported wrist-yaw channel
 is omitted. **People + robot** fits the wider scene; **3D** returns to a closer arm view.
-
-With physical outputs enabled, **Swivel −8°**, **Center swivel**, and **Swivel +8°** command the
-working head servo. Manual swivel inhibits the lamp. **Automatic swivel** restores small head tilts
-in response to a visible person/hand and the gesture response. This is an expressive tilt, not
-calibrated gaze tracking. Keep the preview open to renew its output heartbeat.
 
 Camera capture now retries after USB disconnection while a viewer remains connected. A capture
 error clears its cached image and FPS; a timeout never retransmits the previous JPEG. The observer

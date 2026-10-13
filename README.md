@@ -8,7 +8,7 @@ The Arduino UNO Q runs camera perception and behavior on Linux, with light and m
 - **Full model / X-ray preview:** `python3 sim/lamp_show.py`, then open `http://127.0.0.1:8082/`.
   Includes the complete base, 112 CAD parts and mechanically coupled internal cams from `full-model-animations`.
   Without an observer it is a mechanical preview. Connect the observer for live faces, hands and gesture-driven simulation.
-- **Live 3D people view:** [tools/spatial/README.md](tools/spatial/README.md), with on-board hand/face inference, gesture-driven simulation, and optional pivot/D7 outputs.
+- **Live 3D people view:** [tools/spatial/README.md](tools/spatial/README.md), with on-board hand/face inference, gesture-driven simulation, and independent real-head subject tracking.
 - **App and board commands:** [apps/luxoiii/README.md](apps/luxoiii/README.md).
 - **Hardware/API:** [arm/README.md](arm/README.md).
 - **Naming and deployment migration:** [docs/NAMING.md](docs/NAMING.md).
@@ -30,9 +30,9 @@ The Arduino UNO Q runs camera perception and behavior on Linux, with light and m
 
 As confirmed by the team on October 13: the pivot, camera and lamp on **D7** work; the arm steppers are broken.
 The D7 lamp configuration uses D12 for the head stepper DIR signal. Do not revert that pin assignment.
-Keep the physical arm supported and the lamp aimed at the desk. The hybrid demo in `tools/spatial` uses physical light/pivot outputs with simulated failed joints.
+Keep the physical arm supported; the real light stays off during subject tracking. The hybrid demo in `tools/spatial` uses the physical pivot for subject tracking and the simulated arm for expressive motion and lighting.
 Physical outputs start disabled and have a dedicated UI switch. Pointing selects an estimated desk
-spot; the light is gated by physical encoder direction, face presence and the pivot’s limited reach.
+spot in the simulated scene; the real light stays off while the camera follows people.
 The regular app’s `--fake-arm` still skips the hardware connection entirely. Book detection remains
 unimplemented; this demo does not claim to detect a book.
 

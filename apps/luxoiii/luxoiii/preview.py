@@ -22,9 +22,9 @@ class Handler(BaseHTTPRequestHandler):
             n=int(self.headers.get('Content-Length','0'))
             if not 0<n<=256:raise ValueError('Invalid control request')
             data=json.loads(self.rfile.read(n));action=data.get('action')
-            if action not in ('enable','disable','heartbeat','stop','resume','swivel'):raise ValueError('Unknown control')
+            if action not in ('enable','disable','heartbeat','stop','resume'):raise ValueError('Unknown control')
             if not self.server.observer_url:raise ConnectionError('Board observer unavailable')
-            req=Request(self.server.observer_url+'/control',data=json.dumps({k:v for k,v in data.items() if k in ('action','angle')}).encode(),headers={'Content-Type':'application/json'})
+            req=Request(self.server.observer_url+'/control',data=json.dumps({k:v for k,v in data.items() if k == 'action'}).encode(),headers={'Content-Type':'application/json'})
             with urlopen(req,timeout=2) as response:body=response.read(4096)
             self.send_response(200)
         except Exception as exc:

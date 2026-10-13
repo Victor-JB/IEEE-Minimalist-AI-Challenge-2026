@@ -4,7 +4,7 @@
 The observation path only reads: arm_roll_status and stepper_command op 4, without HELLO or
 claim. Unclaimed status returns EACCES plus raw encoder samples; apply saved
 calibration here without changing firmware configuration. Keep HTTP on loopback. With --hybrid, explicit UI activation also claims the
-quiet arm solely for pivot control and drives the D7 lamp; no stepper commands.
+quiet arm solely for subject-tracking pivot control and keeps D7 off; no stepper commands.
 """
 import argparse
 import base64
@@ -31,11 +31,12 @@ def encoder(raw, joint, calibration):
 
 def main():
     from behavior import Demo
+    from tracking import SubjectTracker
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--repo', type=Path, required=True)
     p.add_argument('--package', default='luxoiii', choices=['luxoiii','lumen'])
     p.add_argument('--port', type=int, default=8083)
-    p.add_argument('--hybrid',action='store_true',help='Allow explicit UI activation of pivot + lamp only')
+    p.add_argument('--hybrid',action='store_true',help='Allow explicit UI activation of head-pivot subject tracking; lamp stays off')
     args=p.parse_args()
     sys.path.insert(0,str(args.repo/'apps'/args.package))
     FaceDetector=importlib.import_module(args.package+'.perception.face_detector').FaceDetector
@@ -52,7 +53,7 @@ def main():
         raise ValueError('Saved joint calibration required')
     detector=FaceDetector(num_threads=2)
     hands=hands_module.HandLandmarker(num_threads=2,max_hands=1,landmark_threshold=.65)
-    demo=Demo();demo.adjust=adjust_pose;gate=MotionGate(4.0)
+    tracker=SubjectTracker();demo=Demo();demo.adjust=adjust_pose;gate=MotionGate(4.0)
     output=Outputs(Bridge()) if args.hybrid else None
     output_lock=threading.Lock();demo_lock=threading.Lock()
     metrics=dict(face_calls=0,hand_calls=0,palm_calls=0,gated_frames=0)
@@ -131,6 +132,7 @@ def main():
                     detections=[dict(x=d.x,y=d.y,w=d.w,h=d.h,score=d.score) for d in faces],
                     frame_jpeg=base64.b64encode(jpeg).decode(),joints=joints,pivot=pivot,
                     hands=hand_data,hands_available=hands.available,demo=demo_state,
+                    tracking=tracker.update(started,faces,hand_data,pivot,frame.shape[1]),
                     pipeline=dict(**metrics,mode='hand ROI tracking' if hand_data and hand_data[0]['tracked'] else 'face + palm detection' if run_models else 'motion gate · models sleeping',model_ms=model_ms,uptime_s=round(started-started_at,1)),
                     inference_ms=round((time.monotonic()-started)*1000,1),
                     telemetry_error=telemetry_error,source='UNO Q · face + hand w8a8',error=None)
@@ -154,7 +156,7 @@ def main():
                 length=int(self.headers.get('Content-Length','0'))
                 if not 0<length<=256:raise ValueError('Invalid command length')
                 request=json.loads(self.rfile.read(length));action=request.get('action')
-                if action not in ('enable','disable','heartbeat','stop','resume','swivel'):raise ValueError('Unknown control')
+                if action not in ('enable','disable','heartbeat','stop','resume'):raise ValueError('Unknown control')
                 now=time.monotonic()
                 if action in ('stop','resume'):
                     with demo_lock:
@@ -164,9 +166,6 @@ def main():
                     if action=='enable':
                         if not output:raise ValueError('Hybrid outputs are not configured')
                         output.requested=True;output.heartbeat=now
-                    elif action=='swivel':
-                        if not output:raise ValueError('Hybrid outputs are not configured')
-                        output.swivel(request.get('angle'));output.heartbeat=now
                     elif action=='heartbeat' and output:output.heartbeat=now
                     elif action in ('disable','stop') and output:
                         output.disable(force_light=action=='stop');output.reason='Physical outputs disabled'

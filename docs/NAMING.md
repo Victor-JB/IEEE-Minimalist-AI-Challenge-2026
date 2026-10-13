@@ -43,4 +43,4 @@ preview. The old reduced `model.json` remains for compatibility but is no longer
 X-ray is the default, with solid and hidden-case options. The preview animates base yaw, shoulder, elbow,
 head pitch and head pivot. Internal drive motion is derived kinematically; it is not measured telemetry.
 The physical pivot, camera and D7 lamp are team-verified. The `tools/spatial` hybrid demo connects live hand/face events to this simulation and optional
-physical pivot/light outputs; see its README for the separate, non-service deployment.
+physical subject tracking; see its README for the separate, non-service deployment.

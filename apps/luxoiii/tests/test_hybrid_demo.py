@@ -3,11 +3,12 @@ import math
 from pathlib import Path
 import sys
 import unittest
+from types import SimpleNamespace
 
 ROOT=Path(__file__).resolve().parents[3]
 sys.path[:0]=[str(ROOT/'tools/spatial'),str(ROOT/'arm/python'),str(ROOT/'apps/luxoiii')]
 from behavior import Demo
-from hybrid import Outputs,light_gate
+from hybrid import Outputs
 from pointing import target_from_hand,physical_aim
 from kinematics import beam_hit, fk
 from luxoiii.spatial import estimate
@@ -52,6 +53,24 @@ class BehaviorTests(unittest.TestCase):
         for t,x in [(10,300),(10.4,350),(10.8,300),(11.2,350)]:d.update(t,[],[hand(None,x)])
         self.assertEqual(d.event,'Wave · hello back')
 
+    def test_arrivals_group_greeting_and_quiet_return(self):
+        d=Demo();face=SimpleNamespace(x=200,w=80,h=80)
+        self.assertEqual(d.update(10,[face],[])['state'],'ATTENTIVE')
+        self.assertTrue(d.event.startswith('Hello'))
+        d.update(11,[face,face],[]);d.update(11.9,[face,face],[])
+        self.assertTrue(d.event.startswith('More company'))
+        self.assertEqual(d.snapshot(20)['people_count'],2)
+        self.assertGreater(d.snapshot(21)['interaction_idle_s'],8)
+        self.assertEqual(d.update(23,[],[])['state'],'IDLE')
+        d.state='ILLUMINATE';d.last_seen=23
+        self.assertEqual(d.update(34,[],[])['state'],'IDLE')
+
+    def test_moving_open_palm_waves_instead_of_triggering_stop(self):
+        d=Demo()
+        for t,x in [(10,300),(10.4,350),(10.8,300),(11.2,350)]:
+            d.update(t,[],[hand('open_palm',x)])
+        self.assertEqual(d.state,'ATTENTIVE');self.assertEqual(d.event,'Wave · hello back')
+
 
 class Bridge:
     def __init__(self):self.calls=[];self.owner=0
@@ -72,15 +91,15 @@ class OutputTests(unittest.TestCase):
         self.b=Bridge();self.o=Outputs(self.b);self.o.requested=True;self.o.heartbeat=100
         q=(-18,65,70)
         self.data=dict(joints=[dict(angle=v,healthy=True,age_ms=5) for v in q],detections=[],
-            pivot=dict(enabled=True,current=0,fault=0),demo=dict(state='ILLUMINATE',light_requested=True,brightness=.4,pivot_target=0,desk_target=beam_hit(q)))
+            pivot=dict(enabled=True,current=0,fault=0),tracking=dict(target=4,status='Tracking face'),demo=dict(state='ILLUMINATE',light_requested=True,brightness=.4,pivot_target=0,desk_target=beam_hit(q)))
 
-    def test_only_pivot_commands_and_expiring_light_are_sent(self):
+    def test_only_tracking_pivot_commands_and_lamp_off_are_sent(self):
         self.o.step(self.data,100,100)
         self.assertTrue(self.o.claimed)
         ops=[a[0] for m,a in self.b.calls if m=='arm_command']
         self.assertEqual(ops,[0,17,4,16]);self.assertTrue(set(ops)<=Outputs.ALLOWED)
         light=[a for m,a in self.b.calls if m=='arm_light']
-        self.assertGreater(light[-2][0],0);self.assertEqual(light[-1],[0,800])
+        self.assertTrue(all(a[0]==0 for a in light));self.assertEqual(self.o.last_target,4)
         with self.assertRaises(ValueError):self.o.command(11,0)
 
     def test_heartbeat_and_bad_encoders_disable_outputs(self):
@@ -97,18 +116,16 @@ class OutputTests(unittest.TestCase):
             self.o.step(self.data,100,100)
             self.assertFalse(any(a[0]>0 for m,a in self.b.calls if m=='arm_light'))
 
-    def test_manual_swivel_is_bounded_and_keeps_lamp_off(self):
-        for bad in (11,-11,float('nan'),float('inf'),True,'8'):
-            with self.assertRaises(ValueError):self.o.swivel(bad)
-        for angle in (-8,8,0):
-            self.o.swivel(angle);self.o.step(self.data,100,100)
-            self.assertEqual(self.o.last_target,angle)
+    def test_gestures_never_override_subject_tracking(self):
+        for state in ('IDLE','ATTENTIVE','ACK','ILLUMINATE'):
+            self.data['demo'].update(state=state,pivot_target=-8,brightness=.8)
+            self.o.step(self.data,100,100)
+            self.assertEqual(self.o.last_target,4)
             self.assertEqual(self.o.level,0)
-        self.assertFalse(any(m=='arm_light' and a[0]>0 for m,a in self.b.calls))
-        self.o.swivel(None);self.o.step(self.data,100,100)
-        self.assertGreater(self.o.level,0)
-        self.o.disable()
-        with self.assertRaises(ValueError):self.o.swivel(8)
+        self.data['tracking']['target']=50
+        self.o.step(self.data,100,100);self.assertEqual(self.o.last_target,10)
+        self.data['demo']['state']='STOPPED'
+        self.o.step(self.data,100,100);self.assertFalse(self.o.requested)
 
     def test_owned_arm_is_not_claimed(self):
         self.b.owner=99;self.o.step(self.data,100,100)

@@ -26,14 +26,14 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
 <header><h1>luxoiii</h1><span class="badge">EDGE AI · HYBRID DEMO</span></header>
 <p>People in the robot’s camera space. <span style="color:#80f9d8">Mint: faces.</span> <span style="color:#c5a5ff">Violet: estimated hand skeletons.</span> <span style="color:#ffbc65">Amber: physical head and camera.</span><br>Complete arm and base, with an X-ray case to reveal the internal cams.</p>
 <section class="live" style="display:block">
-<h2>Gesture-controlled desk light</h2>
+<h2>Real tracking · digital personality</h2>
 <p id="demoStatus">Waiting for the on-board AI…</p>
-<p class="small">☝ Point down at a desk spot · 👍 Brighter / closer · 👎 Dimmer / further · ✋ Hold an open palm for 1 second to stop · 👋 Slow wave to say hello</p>
+<p class="small">☝ Point to light a simulated desk spot · 👍 Brighter / closer · 👎 Dimmer / further · ✋ Hold a still open palm for 1 second to stop · 👋 Wave to say hello</p>
+<p class="small">After 10 seconds alone: idle loops. On arrival: a greeting or curious look. After 8 seconds without a gesture: playful invitations. Gestures take priority.</p>
 <progress id="gestureProgress" max="1" value="0" aria-label="Gesture hold progress"></progress>
-<div class="toolbar"><button id="aiMode" aria-pressed="true">AI-driven simulated arm</button><button id="hardware" aria-pressed="false">Enable real lamp + pivot</button><button id="stopDemo" style="border-color:#ed8585">Stop & lamp off</button><button id="resumeDemo">Resume gestures</button></div>
-<p class="small" id="outputStatus">Real outputs disabled. Broken stepper joints move only in the model.</p>
-<div class="toolbar" aria-label="Physical swivel controls"><button data-swivel="-8">Swivel −8°</button><button data-swivel="0">Center swivel</button><button data-swivel="8">Swivel +8°</button><button id="autoSwivel">Automatic swivel</button></div>
-<p class="small">Real swivel: limited to ±10°. Manual swivel keeps the lamp off. Automatic mode gives small head reactions to people and waves.</p>
+<div class="toolbar"><button id="aiMode" aria-pressed="true">AI-driven simulated arm</button><button id="hardware" aria-pressed="false">Enable subject tracking</button><button id="stopDemo" style="border-color:#ed8585">Stop & lamp off</button><button id="resumeDemo">Resume gestures</button></div>
+<p class="small" id="outputStatus">Subject tracking disabled. Digital animation runs independently.</p>
+<p class="small">The real swivel follows the subject: face first, hand as fallback. It holds position when the subject disappears. The real lamp stays off. Greetings, waves, nods and desk gestures animate the digital arm only.</p>
 </section>
 <section class="sliders" aria-label="Live physical joint angles" style="border:1px solid #775f3c;margin-bottom:16px">
 <label>Real shoulder <output id="realShoulder">Waiting…</output></label>
@@ -74,7 +74,7 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
  <label>Head pitch <output id="headValue">55°</output><input id="head" aria-label="Head pitch" type="range" min="-30" max="85" value="55" step="0.1"></label>
  <label>Head pivot <output id="rollValue">0°</output><input id="roll" aria-label="Head pivot" type="range" min="-30" max="30" value="0" step="0.1"></label>
 </div>
-</details><p class="small">Model source: full-model-animations · ef1b0d2. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; real outputs use only the pivot and D7 lamp after activation. No stepper movement commands are sent. Gesture targets are estimates, not book detection.</p>
+</details><p class="small">Model source: full-model-animations · ef1b0d2. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; the real swivel tracks the subject after activation; the real lamp stays off. No stepper movement commands are sent. Gesture targets are estimates, not book detection.</p>
 </main>
 <script src="/cad-view.js"></script>
 <script src="/emotion-view.js"></script>
@@ -116,12 +116,6 @@ async function control(action,extra={}) {
  const r=await fetch('/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...extra}),signal:AbortSignal.timeout(2500)});
  const d=await r.json();if(!r.ok || !d.ok)throw new Error(d.error||'Control failed');return d;
 }
-document.querySelectorAll('[data-swivel]').forEach(b=>b.onclick=async()=>{
- try {await control('swivel',{angle:Number(b.dataset.swivel)});}catch(e){document.getElementById('outputStatus').textContent=e.message;}
-});
-document.getElementById('autoSwivel').onclick=async()=>{
- try {await control('swivel',{angle:null});}catch(e){document.getElementById('outputStatus').textContent=e.message;}
-};
 document.getElementById('hardware').onclick=async()=>{
  try {const action=live?.outputs?.enabled?'disable':'enable';await control(action);wantHardware=action==='enable';enabledAt=performance.now();}
  catch(e){wantHardware=false;document.getElementById('outputStatus').textContent=e.message;}
@@ -144,7 +138,6 @@ function applyLive() {
  });
  const p=live?.pivot;
  document.getElementById('realPivot').textContent=live?.fresh&&p?.enabled&&!p.fault?`${p.current.toFixed(1)}° · commanded`:'Released · angle unknown';
- document.querySelectorAll('[data-swivel],#autoSwivel').forEach(b=>b.disabled=!live?.outputs?.enabled);
 
  if(following) {
   if(live?.fresh && live.camera) {show([0,...live.camera.joints,live.camera.roll]);document.getElementById('state').textContent='Measured pitch joints · '+live.pivot_source;}
@@ -158,11 +151,11 @@ async function poll() {
   const response=await fetch('/spatial?'+qs,{signal:AbortSignal.timeout(3500)});live=await response.json();receivedAt=performance.now();
   renderSpatial();applyLive();
   const d=live.demo;
-  document.getElementById('demoStatus').textContent=live.fresh && d ? `${d.state.toLowerCase()} · ${d.event} · brightness ${Math.round(d.brightness*100)}%` : 'Waiting for fresh AI observations';
+  document.getElementById('demoStatus').textContent=live.fresh && d ? `${d.state.toLowerCase()} · ${d.event} · simulated brightness ${Math.round(d.brightness*100)}%` : 'Waiting for fresh AI observations';
   document.getElementById('gestureProgress').value=live.fresh && d ? d.hold_progress : 0;
   const o=live.outputs;
   if(o && !o.enabled && performance.now()-enabledAt>2000)wantHardware=false;
-  const hb=document.getElementById('hardware');hb.setAttribute('aria-pressed',String(!!o?.enabled));hb.textContent=o?.enabled?'Disable real lamp + pivot':'Enable real lamp + pivot';
+  const hb=document.getElementById('hardware');hb.setAttribute('aria-pressed',String(!!o?.enabled));hb.textContent=o?.enabled?'Disable subject tracking':'Enable subject tracking';
   document.getElementById('outputStatus').textContent=o ? `${o.reason} · Swivel ${o.swivel_mode||'auto'} ${Number.isFinite(o.swivel_target)?o.swivel_target.toFixed(1)+'°':''} · Real lamp ${Math.round((o.brightness||0)*100)}% · Steppers disabled` : 'Physical output status unavailable';
   const hs=live.hands||[];
   document.getElementById('handsText').textContent=!live.fresh?'Hand data unavailable':!live.hands_available?'Hand model unavailable':hs.length?hs.map((h,i)=>`Hand ${i+1}: ${(h.gesture||'tracking').replaceAll('_',' ')} · ${Math.round(h.score*100)}% detection score`).join(' | '):'No hands detected. Keep the whole hand in the camera view.';

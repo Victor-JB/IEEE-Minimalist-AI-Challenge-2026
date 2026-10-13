@@ -191,6 +191,18 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
       const target=worldPoint(spatial.demo.desk_target);
       for(let j=0;j<32;j++){const p=t=>[target[0]+6*Math.cos(t),.3,target[2]+6*Math.sin(t)];add(p(j*Math.PI/16),p((j+1)*Math.PI/16),amber);}
       text(target,'Estimated desk target','#ffbc65');
+      if(spatial.demo.state==='ILLUMINATE' && angles.every(Number.isFinite)) {
+        // Same link lengths/frame as kinematics.py; the digital emitter moves
+        // with the animated model, while the amber camera remains physical.
+        const [a,b,h]=angles.map(v=>v*Math.PI/180),phi=a+b+h,r=(roll||0)*Math.PI/180,y=yaw*Math.PI/180;
+        const x=.185*Math.sin(a)+.185*Math.sin(a+b)+.045*Math.sin(phi)+.05*Math.cos(r)*Math.sin(phi);
+        const side=-.05*Math.sin(r),z=.049+.185*Math.cos(a)+.185*Math.cos(a+b)+.045*Math.cos(phi)+.05*Math.cos(r)*Math.cos(phi);
+        const emitter=worldPoint([x*Math.cos(y)-side*Math.sin(y),x*Math.sin(y)+side*Math.cos(y),z]);
+        const level=spatial.demo.brightness||.4,color=[1,.65+level*.3,.2+level*.6];
+        add(emitter,target,color);
+        for(let j=0;j<8;j++)add(emitter,[target[0]+6*Math.cos(j*Math.PI/4),.3,target[2]+6*Math.sin(j*Math.PI/4)],color);
+        text(emitter,`Simulated light · ${Math.round(level*100)}%`,'#fff0ac');
+      }
     }
     const values=new Float32Array(lines.flatMap(l=>[...l.a,0,1,0,...l.b,0,1,0]));
     gl.bindBuffer(gl.ARRAY_BUFFER,lineBuffer);gl.bufferData(gl.ARRAY_BUFFER,values,gl.DYNAMIC_DRAW);
