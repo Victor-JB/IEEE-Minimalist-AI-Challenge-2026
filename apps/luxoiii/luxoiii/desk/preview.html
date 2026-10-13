@@ -4719,6 +4719,35 @@ z
     </nav>
   </section>
 
+  <!-- live-resource-results:start -->
+  <section class="training-story" aria-labelledby="resource-title">
+    <h3 id="resource-title">CPU, memory &amp; energy</h3>
+    <p>We measured our running UNO Q for 60 seconds, with the camera and controls left running. These are recorded live readings from 13 October 2026, 1:57–1:58 pm Pacific. CPU percentages use the board’s full four-core capacity: one fully busy core is 25%.</p>
+    <div class="perf-table-wrap">
+      <table>
+        <caption>Average and sampled peak during the same live session.</caption>
+        <thead><tr><th scope="col">Scope</th><th scope="col">CPU average</th><th scope="col">CPU peak</th><th scope="col">RAM average</th><th scope="col">RAM peak</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">AI observer</th><td>57.0%</td><td>60.0%</td><td>112.3 MiB</td><td>112.5 MiB</td></tr>
+          <tr><th scope="row">Web server</th><td>0.8%</td><td>1.3%</td><td>24.0 MiB</td><td>24.3 MiB</td></tr>
+          <tr><th scope="row">LuxoIII combined</th><td>57.9%</td><td>61.0%</td><td>136.3 MiB</td><td>136.5 MiB</td></tr>
+          <tr><th scope="row">Whole board</th><td>66.8%</td><td>72.9%</td><td>757.8 MiB</td><td>764.4 MiB</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="perf-scope">We account for shared process memory using PSS. Whole-board RAM is total memory minus available memory, including Linux, camera capture and other processes; Linux reports 3,669.9 MiB total. Browser rendering on the viewing computer is excluded. Peaks are sampled about once per second.</p>
+    <p>We completed 189 face passes and 189 hand-search updates over a 60.2-second observation window: <strong>3.14 updates per second</strong>. All 61 sampled observations were fresh, with 0–3 detected faces and no detected hands. This measures active face + palm search; it does not measure the extra landmark work when two hands are visible. The counters overlap, so we do not add them into a total inference count.</p>
+    <p class="perf-scope">Our earlier 60-second sample returned 20 invalid observer snapshots out of 61 polls. It averaged 36.0% app CPU and 135.2 MiB app RAM. We retain both runs; their different scenes and interruptions mean they are not a before/after optimization comparison.</p>
+    <h4>Inferences per joule: not measured</h4>
+    <p>We have no usable on-board power reading or external power measurement. CPU load and the charger’s rating cannot tell us electrical energy. To measure efficiency, we would count a defined workload over the same interval as an input-power meter: <strong>completed workloads ÷ measured joules</strong>, equivalent to updates per second ÷ average watts. We would state whether the camera, servo and separately powered lamp are included.</p>
+    <nav class="perf-links" aria-label="Live resource measurement evidence">
+      <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/reports/efficiency/live-resources.json" target="_blank" rel="noopener noreferrer">60-second resource sample</a>
+      <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/reports/efficiency/live-resources-initial.json" target="_blank" rel="noopener noreferrer">Initial sample with interruptions</a>
+      <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/tools/efficiency/measure_live_resources.py" target="_blank" rel="noopener noreferrer">Measurement code</a>
+    </nav>
+  </section>
+  <!-- live-resource-results:end -->
+
   <p class="perf-scope">We use the supplied 8-bit image models on the UNO Q CPU. We have not measured power savings or memory reduction. The live observation loop is capped at four updates per second.</p>
   <p class="perf-scope">Next, we would improve hand localization, test motion blur and overlapping hands in real video, and repair the stepper joints to bring the full expressions into the physical lamp.</p>
   <details class="perf-method">

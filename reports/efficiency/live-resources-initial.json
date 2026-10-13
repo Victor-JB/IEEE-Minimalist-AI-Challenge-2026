@@ -1,0 +1,3136 @@
+{
+  "schema_version": 1,
+  "started_utc": "2026-10-13T20:55:40.370819+00:00",
+  "ended_utc": "2026-10-13T20:56:40.400245+00:00",
+  "platform": "Linux-6.16.7-g0dd6551ae96b-aarch64-with-glibc2.41",
+  "logical_cpus": 4,
+  "clock_ticks_per_second": 100,
+  "services": {
+    "observer": "luxoiii-observer.service",
+    "web": "luxoiii.service"
+  },
+  "requested_interval_s": 1,
+  "scope": "Live uncontrolled scene; observer and web are single-process services. No services paused or hardware controls changed. Browser rendering runs on the viewing computer.",
+  "definitions": {
+    "cpu_percent": "Percentage of all logical CPU capacity; 100% means all cores busy. Process CPU includes all threads. System idle and iowait are excluded from busy time.",
+    "ram": "MiB = 1048576 bytes. System used = MemTotal - MemAvailable; process RSS is resident memory, PSS apportions shared pages. Combined app RAM sums PSS, not RSS.",
+    "peak": "Largest sampled memory or interval CPU value in this window; not an instantaneous or lifetime peak.",
+    "workload": "face_calls = face passes; hand_calls = hand pipeline updates; palm_calls = palm model invocations. These overlap and must not be summed as total neural inferences. Rates use observer uptime between counter snapshots.",
+    "sampling": "Approximately 1 Hz /proc plus read-only /spatial HTTP polling; sampler overhead is included in whole-board metrics. Only counts and timings are retained from the camera API."
+  },
+  "energy": {
+    "status": "not_measured",
+    "inferences_per_joule": null,
+    "reason": "No exposed power/energy sensor and no external power measurement available.",
+    "formula": "Defined completed workloads / measured input joules, or matching workloads per second / average measured watts.",
+    "limitation": "CPU utilization and supply ratings cannot establish electrical energy or inferences per joule."
+  },
+  "summary": {
+    "duration_s": 60.00045091799984,
+    "interval_count": 60,
+    "system_cpu_percent": {
+      "mean": 46.22406288298187,
+      "max": 69.03553299492386
+    },
+    "system_ram_used_mib": {
+      "mean": 764.4577356557377,
+      "min": 759.45703125,
+      "max": 770.45703125
+    },
+    "system_ram_total_mib": 3669.9375,
+    "processes": {
+      "observer": {
+        "cpu_seconds": 84.49,
+        "cpu_percent": {
+          "mean": 35.20390209878131,
+          "max": 61.74930982799009
+        },
+        "rss_mib": {
+          "mean": 121.3342725409836,
+          "min": 118.12890625,
+          "max": 122.49609375
+        },
+        "pss_mib": {
+          "mean": 111.173828125,
+          "min": 107.9658203125,
+          "max": 112.3359375
+        }
+      },
+      "web": {
+        "cpu_seconds": 1.83,
+        "cpu_percent": {
+          "mean": 0.7624942696268174,
+          "max": 1.245195322947288
+        },
+        "rss_mib": {
+          "mean": 33.59861680327869,
+          "min": 33.59765625,
+          "max": 33.609375
+        },
+        "pss_mib": {
+          "mean": 23.98642418032787,
+          "min": 23.9794921875,
+          "max": 24.26953125
+        }
+      }
+    },
+    "app_cpu_percent": {
+      "mean": 35.966396368408134,
+      "max": 62.249304239552764
+    },
+    "app_pss_mib": {
+      "mean": 135.16025230532787,
+      "min": 131.9453125,
+      "max": 136.427734375
+    },
+    "workload": {
+      "successful_polls": 41,
+      "failed_polls": 20,
+      "mode_poll_counts": {
+        "face guard \u00b7 hands sleeping": 14,
+        "face + palm detection": 27
+      },
+      "faces_seen": {
+        "mean": 0.43902439024390244,
+        "min": 0,
+        "max": 2
+      },
+      "hands_seen": {
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "observation_age_s": {
+        "mean": 0.4508536585365854,
+        "min": 0.188,
+        "max": 0.62
+      },
+      "counter_window_s": 59.59999999999991,
+      "counters": {
+        "face_calls": {
+          "count": 141,
+          "per_second": 2.3657718120805407
+        },
+        "hand_calls": {
+          "count": 89,
+          "per_second": 1.4932885906040292
+        },
+        "palm_calls": {
+          "count": 89,
+          "per_second": 1.4932885906040292
+        },
+        "gated_frames": {
+          "count": 52,
+          "per_second": 0.8724832214765114
+        }
+      }
+    }
+  },
+  "intervals": [
+    {
+      "duration_s": 1.0001062769997588,
+      "system_cpu_percent": 46.25,
+      "observer_cpu_percent": 35.746201001004835,
+      "web_cpu_percent": 0.9998937342938415,
+      "app_cpu_percent": 36.746094735298676
+    },
+    {
+      "duration_s": 1.0000319440005114,
+      "system_cpu_percent": 47.858942065491185,
+      "observer_cpu_percent": 39.2487462380301,
+      "web_cpu_percent": 0.49998402850993756,
+      "app_cpu_percent": 39.748730266540036
+    },
+    {
+      "duration_s": 1.000044909999815,
+      "system_cpu_percent": 47.58269720101781,
+      "observer_cpu_percent": 39.74821490767585,
+      "web_cpu_percent": 0.9999550920170025,
+      "app_cpu_percent": 40.748169999692855
+    },
+    {
+      "duration_s": 0.9999802660004207,
+      "system_cpu_percent": 45.84382871536524,
+      "observer_cpu_percent": 36.750725238796406,
+      "web_cpu_percent": 0.7500148007917633,
+      "app_cpu_percent": 37.500740039588166
+    },
+    {
+      "duration_s": 1.0000087009993877,
+      "system_cpu_percent": 45.5919395465995,
+      "observer_cpu_percent": 36.99967806582381,
+      "web_cpu_percent": 0.9999912990763191,
+      "app_cpu_percent": 37.99966936490013
+    },
+    {
+      "duration_s": 1.0004882029998043,
+      "system_cpu_percent": 51.851851851851855,
+      "observer_cpu_percent": 42.479261497107636,
+      "web_cpu_percent": 0.7496340264195466,
+      "app_cpu_percent": 43.228895523527186
+    },
+    {
+      "duration_s": 0.9997542010005418,
+      "system_cpu_percent": 42.89405684754522,
+      "observer_cpu_percent": 24.756085020928648,
+      "web_cpu_percent": 0.7501843945735953,
+      "app_cpu_percent": 25.506269415502242
+    },
+    {
+      "duration_s": 1.0001517709997643,
+      "system_cpu_percent": 24.22680412371134,
+      "observer_cpu_percent": 0.49992412601558833,
+      "web_cpu_percent": 0.9998482520311767,
+      "app_cpu_percent": 1.499772378046765
+    },
+    {
+      "duration_s": 1.0000191569997696,
+      "system_cpu_percent": 18.3206106870229,
+      "observer_cpu_percent": 1.2499760542090175,
+      "web_cpu_percent": 0.49999042168360697,
+      "app_cpu_percent": 1.7499664758926246
+    },
+    {
+      "duration_s": 1.0010464510005477,
+      "system_cpu_percent": 25.641025641025642,
+      "observer_cpu_percent": 0.49947732145721024,
+      "web_cpu_percent": 0.7492159821858153,
+      "app_cpu_percent": 1.2486933036430257
+    },
+    {
+      "duration_s": 0.9989481550001074,
+      "system_cpu_percent": 20.865139949109416,
+      "observer_cpu_percent": 0.7507897144070699,
+      "web_cpu_percent": 0.7507897144070699,
+      "app_cpu_percent": 1.5015794288141397
+    },
+    {
+      "duration_s": 0.9999713849992986,
+      "system_cpu_percent": 12.919896640826874,
+      "observer_cpu_percent": 2.000057231639086,
+      "web_cpu_percent": 0.7500214618646573,
+      "app_cpu_percent": 2.7500786935037436
+    },
+    {
+      "duration_s": 0.9998568979999618,
+      "system_cpu_percent": 24.681933842239186,
+      "observer_cpu_percent": 1.0001431224811514,
+      "web_cpu_percent": 0.5000715612405757,
+      "app_cpu_percent": 1.5002146837217272
+    },
+    {
+      "duration_s": 0.9999547140005234,
+      "system_cpu_percent": 5.303030303030303,
+      "observer_cpu_percent": 0.5000226440251956,
+      "web_cpu_percent": 1.0000452880503912,
+      "app_cpu_percent": 1.5000679320755868
+    },
+    {
+      "duration_s": 1.0000015369996618,
+      "system_cpu_percent": 18.46965699208443,
+      "observer_cpu_percent": 0.7499988472520255,
+      "web_cpu_percent": 0.9999984630027006,
+      "app_cpu_percent": 1.749997310254726
+    },
+    {
+      "duration_s": 1.0000160670006153,
+      "system_cpu_percent": 5.037783375314861,
+      "observer_cpu_percent": 0.49999196662876455,
+      "web_cpu_percent": 0.49999196662876455,
+      "app_cpu_percent": 0.9999839332575291
+    },
+    {
+      "duration_s": 0.9997910579995732,
+      "system_cpu_percent": 6.169665809768637,
+      "observer_cpu_percent": 0.7501567392497325,
+      "web_cpu_percent": 0.7501567392497325,
+      "app_cpu_percent": 1.500313478499465
+    },
+    {
+      "duration_s": 0.9999915839998721,
+      "system_cpu_percent": 29.591836734693878,
+      "observer_cpu_percent": 0.7500063120532182,
+      "web_cpu_percent": 1.0000084160709575,
+      "app_cpu_percent": 1.7500147281241758
+    },
+    {
+      "duration_s": 1.0002836820003722,
+      "system_cpu_percent": 16.209476309226932,
+      "observer_cpu_percent": 3.9988655938091284,
+      "web_cpu_percent": 0.49985819922614105,
+      "app_cpu_percent": 4.4987237930352695
+    },
+    {
+      "duration_s": 0.999649479999789,
+      "system_cpu_percent": 68.19338422391857,
+      "observer_cpu_percent": 55.769548342096634,
+      "web_cpu_percent": 0.7502629821806722,
+      "app_cpu_percent": 56.519811324277306
+    },
+    {
+      "duration_s": 1.0000181969999176,
+      "system_cpu_percent": 63.104325699745544,
+      "observer_cpu_percent": 55.2489946340492,
+      "web_cpu_percent": 0.9999818033312072,
+      "app_cpu_percent": 56.248976437380406
+    },
+    {
+      "duration_s": 1.001410875000147,
+      "system_cpu_percent": 65.64885496183206,
+      "observer_cpu_percent": 55.921102314763445,
+      "web_cpu_percent": 0.7489433345727247,
+      "app_cpu_percent": 56.67004564933617
+    },
+    {
+      "duration_s": 0.9988484479999897,
+      "system_cpu_percent": 46.373056994818654,
+      "observer_cpu_percent": 30.284874607924817,
+      "web_cpu_percent": 0.7508646597006152,
+      "app_cpu_percent": 31.03573926762543
+    },
+    {
+      "duration_s": 0.9999972579998939,
+      "system_cpu_percent": 5.527638190954774,
+      "observer_cpu_percent": 0.7500020565057185,
+      "web_cpu_percent": 0.7500020565057185,
+      "app_cpu_percent": 1.500004113011437
+    },
+    {
+      "duration_s": 1.0000110609998956,
+      "system_cpu_percent": 5.037783375314861,
+      "observer_cpu_percent": 0.4999944695612244,
+      "web_cpu_percent": 0.7499917043418366,
+      "app_cpu_percent": 1.249986173903061
+    },
+    {
+      "duration_s": 0.9999867369997446,
+      "system_cpu_percent": 8.60759493670886,
+      "observer_cpu_percent": 0.7500099473821237,
+      "web_cpu_percent": 0.7500099473821237,
+      "app_cpu_percent": 1.5000198947642474
+    },
+    {
+      "duration_s": 0.9997896960003345,
+      "system_cpu_percent": 31.297709923664122,
+      "observer_cpu_percent": 1.000210348236741,
+      "web_cpu_percent": 0.7501577611775557,
+      "app_cpu_percent": 1.7503681094142967
+    },
+    {
+      "duration_s": 1.0002469600003678,
+      "system_cpu_percent": 9.975062344139651,
+      "observer_cpu_percent": 0.7498148257303618,
+      "web_cpu_percent": 0.7498148257303618,
+      "app_cpu_percent": 1.4996296514607237
+    },
+    {
+      "duration_s": 0.99998934299947,
+      "system_cpu_percent": 9.644670050761421,
+      "observer_cpu_percent": 3.750039964177886,
+      "web_cpu_percent": 1.000010657114103,
+      "app_cpu_percent": 4.750050621291989
+    },
+    {
+      "duration_s": 0.9997986580001452,
+      "system_cpu_percent": 56.8922305764411,
+      "observer_cpu_percent": 48.50976705351104,
+      "web_cpu_percent": 0.5001006912733097,
+      "app_cpu_percent": 49.00986774478435
+    },
+    {
+      "duration_s": 1.0000342960001944,
+      "system_cpu_percent": 66.92111959287531,
+      "observer_cpu_percent": 56.248070916148926,
+      "web_cpu_percent": 0.9999657051759808,
+      "app_cpu_percent": 57.24803662132491
+    },
+    {
+      "duration_s": 1.000898874000086,
+      "system_cpu_percent": 68.5,
+      "observer_cpu_percent": 57.44836116180411,
+      "web_cpu_percent": 0.7493264499365754,
+      "app_cpu_percent": 58.19768761174068
+    },
+    {
+      "duration_s": 0.9990345079995677,
+      "system_cpu_percent": 47.71573604060914,
+      "observer_cpu_percent": 39.03769057796838,
+      "web_cpu_percent": 1.0009664250761123,
+      "app_cpu_percent": 40.03865700304449
+    },
+    {
+      "duration_s": 1.0001339939999525,
+      "system_cpu_percent": 44.67005076142132,
+      "observer_cpu_percent": 36.995042886225264,
+      "web_cpu_percent": 0.7498995179640255,
+      "app_cpu_percent": 37.74494240418929
+    },
+    {
+      "duration_s": 0.999825439000233,
+      "system_cpu_percent": 47.59493670886076,
+      "observer_cpu_percent": 37.25650353250445,
+      "web_cpu_percent": 1.0001745914766298,
+      "app_cpu_percent": 38.25667812398108
+    },
+    {
+      "duration_s": 0.9999915950002105,
+      "system_cpu_percent": 48.091603053435115,
+      "observer_cpu_percent": 38.75032569647932,
+      "web_cpu_percent": 1.000008405070434,
+      "app_cpu_percent": 39.750334101549754
+    },
+    {
+      "duration_s": 1.0000326419994963,
+      "system_cpu_percent": 45.29262086513995,
+      "observer_cpu_percent": 36.74880044567436,
+      "web_cpu_percent": 0.9999673590659691,
+      "app_cpu_percent": 37.74876780474033
+    },
+    {
+      "duration_s": 1.000011445000382,
+      "system_cpu_percent": 42.56410256410256,
+      "observer_cpu_percent": 34.499605152005856,
+      "web_cpu_percent": 0.7499914163479533,
+      "app_cpu_percent": 35.24959656835381
+    },
+    {
+      "duration_s": 1.0000056660001064,
+      "system_cpu_percent": 57.21518987341772,
+      "observer_cpu_percent": 48.99972236756785,
+      "web_cpu_percent": 0.7499957505239977,
+      "app_cpu_percent": 49.74971811809185
+    },
+    {
+      "duration_s": 0.9999587920001431,
+      "system_cpu_percent": 66.24365482233503,
+      "observer_cpu_percent": 56.25231804551397,
+      "web_cpu_percent": 0.7500309072735195,
+      "app_cpu_percent": 57.002348952787486
+    },
+    {
+      "duration_s": 0.9999854640000194,
+      "system_cpu_percent": 65.11627906976744,
+      "observer_cpu_percent": 56.50082129593726,
+      "web_cpu_percent": 1.000014536211279,
+      "app_cpu_percent": 57.50083583214854
+    },
+    {
+      "duration_s": 1.0003771539995796,
+      "system_cpu_percent": 65.6641604010025,
+      "observer_cpu_percent": 56.47869883284414,
+      "web_cpu_percent": 0.49981149409596587,
+      "app_cpu_percent": 56.9785103269401
+    },
+    {
+      "duration_s": 0.9996311820004848,
+      "system_cpu_percent": 68.93939393939394,
+      "observer_cpu_percent": 58.02139933643233,
+      "web_cpu_percent": 1.0003689540764196,
+      "app_cpu_percent": 59.02176829050875
+    },
+    {
+      "duration_s": 1.0000693329993737,
+      "system_cpu_percent": 67.17557251908397,
+      "observer_cpu_percent": 58.49594430073043,
+      "web_cpu_percent": 0.7499480038555184,
+      "app_cpu_percent": 59.24589230458595
+    },
+    {
+      "duration_s": 0.9999603209998895,
+      "system_cpu_percent": 64.98740554156171,
+      "observer_cpu_percent": 55.00218243160278,
+      "web_cpu_percent": 1.000039680574596,
+      "app_cpu_percent": 56.00222211217738
+    },
+    {
+      "duration_s": 1.0006262970000535,
+      "system_cpu_percent": 65.21739130434783,
+      "observer_cpu_percent": 55.71510579638206,
+      "web_cpu_percent": 0.7495305712517767,
+      "app_cpu_percent": 56.46463636763384
+    },
+    {
+      "duration_s": 0.9993748320002851,
+      "system_cpu_percent": 68.09045226130654,
+      "observer_cpu_percent": 58.786751595904946,
+      "web_cpu_percent": 1.0006255590792332,
+      "app_cpu_percent": 59.78737715498418
+    },
+    {
+      "duration_s": 1.0000530480001544,
+      "system_cpu_percent": 67.2544080604534,
+      "observer_cpu_percent": 56.99697642438584,
+      "web_cpu_percent": 0.74996021611034,
+      "app_cpu_percent": 57.74693664049618
+    },
+    {
+      "duration_s": 1.0014625519997935,
+      "system_cpu_percent": 68.51385390428212,
+      "observer_cpu_percent": 56.667121388291015,
+      "web_cpu_percent": 0.7489046879509825,
+      "app_cpu_percent": 57.416026076242
+    },
+    {
+      "duration_s": 0.998460582000007,
+      "system_cpu_percent": 67.51269035532995,
+      "observer_cpu_percent": 56.33672576971056,
+      "web_cpu_percent": 0.7511563435961408,
+      "app_cpu_percent": 57.087882113306705
+    },
+    {
+      "duration_s": 0.9999808720003784,
+      "system_cpu_percent": 65.9846547314578,
+      "observer_cpu_percent": 57.50109988101676,
+      "web_cpu_percent": 0.7500143462741317,
+      "app_cpu_percent": 58.2511142272909
+    },
+    {
+      "duration_s": 1.0038585729998886,
+      "system_cpu_percent": 64.52442159383034,
+      "observer_cpu_percent": 55.53571140344905,
+      "web_cpu_percent": 1.245195322947288,
+      "app_cpu_percent": 56.78090672639634
+    },
+    {
+      "duration_s": 0.9961740259996077,
+      "system_cpu_percent": 67.99007444168734,
+      "observer_cpu_percent": 58.97563926247474,
+      "web_cpu_percent": 0.5019203341487213,
+      "app_cpu_percent": 59.477559596623465
+    },
+    {
+      "duration_s": 0.9999870350002311,
+      "system_cpu_percent": 65.67901234567901,
+      "observer_cpu_percent": 57.00073901456815,
+      "web_cpu_percent": 0.25000324129196555,
+      "app_cpu_percent": 57.25074225586011
+    },
+    {
+      "duration_s": 1.0000053759995353,
+      "system_cpu_percent": 66.49616368286445,
+      "observer_cpu_percent": 60.74967340978398,
+      "web_cpu_percent": 0.0,
+      "app_cpu_percent": 60.74967340978398
+    },
+    {
+      "duration_s": 1.0004664990001402,
+      "system_cpu_percent": 64.70588235294117,
+      "observer_cpu_percent": 57.22330538525306,
+      "web_cpu_percent": 0.4997668592598521,
+      "app_cpu_percent": 57.72307224451291
+    },
+    {
+      "duration_s": 0.9995242190007048,
+      "system_cpu_percent": 63.037974683544306,
+      "observer_cpu_percent": 55.276299412972044,
+      "web_cpu_percent": 0.25011900186865177,
+      "app_cpu_percent": 55.5264184148407
+    },
+    {
+      "duration_s": 1.0000111769995783,
+      "system_cpu_percent": 69.03553299492386,
+      "observer_cpu_percent": 61.74930982799009,
+      "web_cpu_percent": 0.4999944115626728,
+      "app_cpu_percent": 62.249304239552764
+    },
+    {
+      "duration_s": 0.9999996200003807,
+      "system_cpu_percent": 66.58354114713217,
+      "observer_cpu_percent": 57.25002175498647,
+      "web_cpu_percent": 1.0000003799997637,
+      "app_cpu_percent": 58.25002213498623
+    },
+    {
+      "duration_s": 1.0003218309993827,
+      "system_cpu_percent": 68.01007556675063,
+      "observer_cpu_percent": 57.481500671192975,
+      "web_cpu_percent": 0.49983913627124327,
+      "app_cpu_percent": 57.98133980746422
+    }
+  ],
+  "samples": [
+    {
+      "t_s": 4.739000360132195e-06,
+      "system": {
+        "cpu_total_ticks": 2439339,
+        "cpu_busy_ticks": 1280728,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2979356,
+        "ram_used_kib": 778660
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 333270,
+          "rss_kib": 125212,
+          "pss_kib": 114850,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8693,
+          "rss_kib": 34408,
+          "pss_kib": 24852,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5952,
+          "hand_calls": 3246,
+          "palm_calls": 3098,
+          "gated_frames": 2706
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1901.0,
+        "age_s": 0.321,
+        "inference_ms": 171.6,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 1.000111016000119,
+      "system": {
+        "cpu_total_ticks": 2439739,
+        "cpu_busy_ticks": 1280913,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2978884,
+        "ram_used_kib": 779132
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 333413,
+          "rss_kib": 125212,
+          "pss_kib": 114808,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8697,
+          "rss_kib": 34408,
+          "pss_kib": 24561,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5956,
+          "hand_calls": 3246,
+          "palm_calls": 3098,
+          "gated_frames": 2710
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1902.0,
+        "age_s": 0.226,
+        "inference_ms": 144.6,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 2.0001429600006304,
+      "system": {
+        "cpu_total_ticks": 2440136,
+        "cpu_busy_ticks": 1281103,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2978436,
+        "ram_used_kib": 779580
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 333570,
+          "rss_kib": 125212,
+          "pss_kib": 114808,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8699,
+          "rss_kib": 34408,
+          "pss_kib": 24561,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5959,
+          "hand_calls": 3246,
+          "palm_calls": 3098,
+          "gated_frames": 2713
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1902.7,
+        "age_s": 0.48,
+        "inference_ms": 146.4,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 3.0001878700004454,
+      "system": {
+        "cpu_total_ticks": 2440529,
+        "cpu_busy_ticks": 1281290,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2979780,
+        "ram_used_kib": 778236
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 333729,
+          "rss_kib": 125212,
+          "pss_kib": 114808,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8703,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5963,
+          "hand_calls": 3247,
+          "palm_calls": 3099,
+          "gated_frames": 2716
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1903.8,
+        "age_s": 0.386,
+        "inference_ms": 157.0,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 4.000168136000866,
+      "system": {
+        "cpu_total_ticks": 2440926,
+        "cpu_busy_ticks": 1281472,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2979556,
+        "ram_used_kib": 778460
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 333876,
+          "rss_kib": 125212,
+          "pss_kib": 114808,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8706,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5967,
+          "hand_calls": 3247,
+          "palm_calls": 3099,
+          "gated_frames": 2720
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1904.8,
+        "age_s": 0.438,
+        "inference_ms": 153.5,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 5.000176837000254,
+      "system": {
+        "cpu_total_ticks": 2441323,
+        "cpu_busy_ticks": 1281653,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2979332,
+        "ram_used_kib": 778684
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334024,
+          "rss_kib": 125212,
+          "pss_kib": 114808,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8710,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5971,
+          "hand_calls": 3247,
+          "palm_calls": 3099,
+          "gated_frames": 2724
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1905.8,
+        "age_s": 0.41,
+        "inference_ms": 161.3,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 6.000665040000058,
+      "system": {
+        "cpu_total_ticks": 2441728,
+        "cpu_busy_ticks": 1281863,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2978984,
+        "ram_used_kib": 779032
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334194,
+          "rss_kib": 125212,
+          "pss_kib": 114808,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8713,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5975,
+          "hand_calls": 3248,
+          "palm_calls": 3100,
+          "gated_frames": 2727
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1906.9,
+        "age_s": 0.328,
+        "inference_ms": 166.7,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 7.0004192410006,
+      "system": {
+        "cpu_total_ticks": 2442115,
+        "cpu_busy_ticks": 1282029,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2980332,
+        "ram_used_kib": 777684
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334293,
+          "rss_kib": 120964,
+          "pss_kib": 110557,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8716,
+          "rss_kib": 34408,
+          "pss_kib": 24559,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6182.59,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 8.000571012000364,
+      "system": {
+        "cpu_total_ticks": 2442503,
+        "cpu_busy_ticks": 1282123,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2978280,
+        "ram_used_kib": 779736
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334295,
+          "rss_kib": 120964,
+          "pss_kib": 110557,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8720,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6183.589,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 9.000590169000134,
+      "system": {
+        "cpu_total_ticks": 2442896,
+        "cpu_busy_ticks": 1282195,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2976312,
+        "ram_used_kib": 781704
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334300,
+          "rss_kib": 120964,
+          "pss_kib": 110557,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8722,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6184.59,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 10.001636620000681,
+      "system": {
+        "cpu_total_ticks": 2443286,
+        "cpu_busy_ticks": 1282295,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2976316,
+        "ram_used_kib": 781700
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334302,
+          "rss_kib": 120964,
+          "pss_kib": 110557,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8725,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6185.595,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 11.000584775000789,
+      "system": {
+        "cpu_total_ticks": 2443679,
+        "cpu_busy_ticks": 1282377,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2976316,
+        "ram_used_kib": 781700
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334305,
+          "rss_kib": 121568,
+          "pss_kib": 111161,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8728,
+          "rss_kib": 34408,
+          "pss_kib": 24563,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6186.589,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 12.000556160000087,
+      "system": {
+        "cpu_total_ticks": 2444066,
+        "cpu_busy_ticks": 1282427,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975560,
+        "ram_used_kib": 782456
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334313,
+          "rss_kib": 122636,
+          "pss_kib": 112229,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8731,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6187.589,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 13.00041305800005,
+      "system": {
+        "cpu_total_ticks": 2444459,
+        "cpu_busy_ticks": 1282524,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975420,
+        "ram_used_kib": 782596
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334317,
+          "rss_kib": 122636,
+          "pss_kib": 112229,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8733,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6188.593,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 14.000367772000573,
+      "system": {
+        "cpu_total_ticks": 2444855,
+        "cpu_busy_ticks": 1282545,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975316,
+        "ram_used_kib": 782700
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334319,
+          "rss_kib": 122636,
+          "pss_kib": 112229,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8737,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6189.598,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 15.000369309000234,
+      "system": {
+        "cpu_total_ticks": 2445234,
+        "cpu_busy_ticks": 1282615,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975316,
+        "ram_used_kib": 782700
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334322,
+          "rss_kib": 122636,
+          "pss_kib": 112229,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8741,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6190.598,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 16.00038537600085,
+      "system": {
+        "cpu_total_ticks": 2445631,
+        "cpu_busy_ticks": 1282635,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975316,
+        "ram_used_kib": 782700
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334324,
+          "rss_kib": 122636,
+          "pss_kib": 112229,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8743,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6191.598,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 17.000176434000423,
+      "system": {
+        "cpu_total_ticks": 2446020,
+        "cpu_busy_ticks": 1282659,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975316,
+        "ram_used_kib": 782700
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334327,
+          "rss_kib": 122636,
+          "pss_kib": 112229,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8746,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6192.596,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 18.000168018000295,
+      "system": {
+        "cpu_total_ticks": 2446412,
+        "cpu_busy_ticks": 1282775,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2974332,
+        "ram_used_kib": 783684
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334330,
+          "rss_kib": 122636,
+          "pss_kib": 112229,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8750,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6193.603,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 19.000451700000667,
+      "system": {
+        "cpu_total_ticks": 2446813,
+        "cpu_busy_ticks": 1282840,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2974336,
+        "ram_used_kib": 783680
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334346,
+          "rss_kib": 125108,
+          "pss_kib": 114701,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8752,
+          "rss_kib": 34416,
+          "pss_kib": 24567,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6194.59,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 20.000101180000456,
+      "system": {
+        "cpu_total_ticks": 2447206,
+        "cpu_busy_ticks": 1283108,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2973952,
+        "ram_used_kib": 784064
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334569,
+          "rss_kib": 125184,
+          "pss_kib": 114777,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8755,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5981,
+          "hand_calls": 3251,
+          "palm_calls": 3103,
+          "gated_frames": 2730
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1920.9,
+        "age_s": 0.392,
+        "inference_ms": 316.7,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 21.000119377000374,
+      "system": {
+        "cpu_total_ticks": 2447599,
+        "cpu_busy_ticks": 1283356,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2977404,
+        "ram_used_kib": 780612
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 334790,
+          "rss_kib": 125184,
+          "pss_kib": 114777,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8759,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5984,
+          "hand_calls": 3254,
+          "palm_calls": 3106,
+          "gated_frames": 2730
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1921.8,
+        "age_s": 0.434,
+        "inference_ms": 303.5,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 22.00153025200052,
+      "system": {
+        "cpu_total_ticks": 2447992,
+        "cpu_busy_ticks": 1283614,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2976932,
+        "ram_used_kib": 781084
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335014,
+          "rss_kib": 125184,
+          "pss_kib": 114780,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8762,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5987,
+          "hand_calls": 3257,
+          "palm_calls": 3109,
+          "gated_frames": 2730
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1922.8,
+        "age_s": 0.421,
+        "inference_ms": 291.9,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 23.00037870000051,
+      "system": {
+        "cpu_total_ticks": 2448378,
+        "cpu_busy_ticks": 1283793,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975320,
+        "ram_used_kib": 782696
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335135,
+          "rss_kib": 121932,
+          "pss_kib": 111526,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8765,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6198.598,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 24.000375958000404,
+      "system": {
+        "cpu_total_ticks": 2448776,
+        "cpu_busy_ticks": 1283815,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975432,
+        "ram_used_kib": 782584
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335138,
+          "rss_kib": 121932,
+          "pss_kib": 111526,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8768,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6199.598,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 25.0003870190003,
+      "system": {
+        "cpu_total_ticks": 2449173,
+        "cpu_busy_ticks": 1283835,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975432,
+        "ram_used_kib": 782584
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335140,
+          "rss_kib": 121932,
+          "pss_kib": 111526,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8771,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6200.598,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 26.000373756000045,
+      "system": {
+        "cpu_total_ticks": 2449568,
+        "cpu_busy_ticks": 1283869,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2976308,
+        "ram_used_kib": 781708
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335143,
+          "rss_kib": 121932,
+          "pss_kib": 111527,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8774,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6201.598,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 27.00016345200038,
+      "system": {
+        "cpu_total_ticks": 2449961,
+        "cpu_busy_ticks": 1283992,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975476,
+        "ram_used_kib": 782540
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335147,
+          "rss_kib": 121932,
+          "pss_kib": 111525,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8777,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6202.599,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 28.000410412000747,
+      "system": {
+        "cpu_total_ticks": 2450362,
+        "cpu_busy_ticks": 1284032,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2976340,
+        "ram_used_kib": 781676
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335150,
+          "rss_kib": 123632,
+          "pss_kib": 113225,
+          "lifetime_peak_rss_kib": 125216
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8780,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6203.598,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 29.000399755000217,
+      "system": {
+        "cpu_total_ticks": 2450756,
+        "cpu_busy_ticks": 1284070,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2976132,
+        "ram_used_kib": 781884
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335165,
+          "rss_kib": 124236,
+          "pss_kib": 113829,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8784,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": null,
+          "hand_calls": null,
+          "palm_calls": null,
+          "gated_frames": null
+        },
+        "mode": null,
+        "uptime_s": null,
+        "age_s": 6204.598,
+        "inference_ms": null,
+        "faces": 0,
+        "hands": 0,
+        "error": "Invalid observer snapshot: missing pipeline or stale age; raw API error was not retained in this first sample."
+      }
+    },
+    {
+      "t_s": 30.000198413000362,
+      "system": {
+        "cpu_total_ticks": 2451155,
+        "cpu_busy_ticks": 1284297,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975440,
+        "ram_used_kib": 782576
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335359,
+          "rss_kib": 125168,
+          "pss_kib": 114761,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8786,
+          "rss_kib": 34404,
+          "pss_kib": 24555,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5993,
+          "hand_calls": 3259,
+          "palm_calls": 3111,
+          "gated_frames": 2734
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1930.7,
+        "age_s": 0.551,
+        "inference_ms": 306.9,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 31.000232709000556,
+      "system": {
+        "cpu_total_ticks": 2451548,
+        "cpu_busy_ticks": 1284560,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2976112,
+        "ram_used_kib": 781904
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335584,
+          "rss_kib": 125168,
+          "pss_kib": 114764,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8790,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5996,
+          "hand_calls": 3262,
+          "palm_calls": 3114,
+          "gated_frames": 2734
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1931.7,
+        "age_s": 0.537,
+        "inference_ms": 294.3,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 32.00113158300064,
+      "system": {
+        "cpu_total_ticks": 2451948,
+        "cpu_busy_ticks": 1284834,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975824,
+        "ram_used_kib": 782192
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335814,
+          "rss_kib": 125168,
+          "pss_kib": 114764,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8793,
+          "rss_kib": 34408,
+          "pss_kib": 24561,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 5999,
+          "hand_calls": 3265,
+          "palm_calls": 3117,
+          "gated_frames": 2734
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1932.6,
+        "age_s": 0.58,
+        "inference_ms": 280.9,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 33.00016609100021,
+      "system": {
+        "cpu_total_ticks": 2452342,
+        "cpu_busy_ticks": 1285022,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975600,
+        "ram_used_kib": 782416
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 335970,
+          "rss_kib": 125168,
+          "pss_kib": 114764,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8797,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6004,
+          "hand_calls": 3266,
+          "palm_calls": 3118,
+          "gated_frames": 2738
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1934.0,
+        "age_s": 0.209,
+        "inference_ms": 157.0,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 34.00030008500016,
+      "system": {
+        "cpu_total_ticks": 2452736,
+        "cpu_busy_ticks": 1285198,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975472,
+        "ram_used_kib": 782544
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 336118,
+          "rss_kib": 125180,
+          "pss_kib": 114776,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8800,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6008,
+          "hand_calls": 3266,
+          "palm_calls": 3118,
+          "gated_frames": 2742
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1935.0,
+        "age_s": 0.188,
+        "inference_ms": 157.3,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 35.000125524000396,
+      "system": {
+        "cpu_total_ticks": 2453131,
+        "cpu_busy_ticks": 1285386,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975384,
+        "ram_used_kib": 782632
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 336267,
+          "rss_kib": 125180,
+          "pss_kib": 114776,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8804,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6011,
+          "hand_calls": 3266,
+          "palm_calls": 3118,
+          "gated_frames": 2745
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1935.8,
+        "age_s": 0.439,
+        "inference_ms": 155.9,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 36.000117119000606,
+      "system": {
+        "cpu_total_ticks": 2453524,
+        "cpu_busy_ticks": 1285575,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975384,
+        "ram_used_kib": 782632
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 336422,
+          "rss_kib": 125188,
+          "pss_kib": 114784,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8808,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6015,
+          "hand_calls": 3267,
+          "palm_calls": 3119,
+          "gated_frames": 2748
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1936.9,
+        "age_s": 0.343,
+        "inference_ms": 146.8,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 37.0001497610001,
+      "system": {
+        "cpu_total_ticks": 2453917,
+        "cpu_busy_ticks": 1285753,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975384,
+        "ram_used_kib": 782632
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 336569,
+          "rss_kib": 125188,
+          "pss_kib": 114784,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8812,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6019,
+          "hand_calls": 3267,
+          "palm_calls": 3119,
+          "gated_frames": 2752
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1937.9,
+        "age_s": 0.408,
+        "inference_ms": 153.0,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 38.000161206000485,
+      "system": {
+        "cpu_total_ticks": 2454307,
+        "cpu_busy_ticks": 1285919,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975384,
+        "ram_used_kib": 782632
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 336707,
+          "rss_kib": 125188,
+          "pss_kib": 114784,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8815,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6023,
+          "hand_calls": 3267,
+          "palm_calls": 3119,
+          "gated_frames": 2756
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1938.9,
+        "age_s": 0.375,
+        "inference_ms": 145.9,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 39.00016687200059,
+      "system": {
+        "cpu_total_ticks": 2454702,
+        "cpu_busy_ticks": 1286145,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975404,
+        "ram_used_kib": 782612
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 336903,
+          "rss_kib": 125188,
+          "pss_kib": 114784,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8818,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6026,
+          "hand_calls": 3268,
+          "palm_calls": 3120,
+          "gated_frames": 2758
+        },
+        "mode": "face guard \u00b7 hands sleeping",
+        "uptime_s": 1939.7,
+        "age_s": 0.564,
+        "inference_ms": 144.4,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 40.000125664000734,
+      "system": {
+        "cpu_total_ticks": 2455096,
+        "cpu_busy_ticks": 1286406,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975240,
+        "ram_used_kib": 782776
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 337128,
+          "rss_kib": 125188,
+          "pss_kib": 114784,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8821,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6029,
+          "hand_calls": 3271,
+          "palm_calls": 3123,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1940.6,
+        "age_s": 0.61,
+        "inference_ms": 280.9,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 41.00011112800075,
+      "system": {
+        "cpu_total_ticks": 2455483,
+        "cpu_busy_ticks": 1286658,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975848,
+        "ram_used_kib": 782168
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 337354,
+          "rss_kib": 125188,
+          "pss_kib": 114784,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8825,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6033,
+          "hand_calls": 3275,
+          "palm_calls": 3127,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1941.9,
+        "age_s": 0.374,
+        "inference_ms": 300.3,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 42.00048828200033,
+      "system": {
+        "cpu_total_ticks": 2455882,
+        "cpu_busy_ticks": 1286920,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975848,
+        "ram_used_kib": 782168
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 337580,
+          "rss_kib": 125188,
+          "pss_kib": 114784,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8827,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6036,
+          "hand_calls": 3278,
+          "palm_calls": 3130,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1942.8,
+        "age_s": 0.455,
+        "inference_ms": 265.0,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 43.00011946400082,
+      "system": {
+        "cpu_total_ticks": 2456278,
+        "cpu_busy_ticks": 1287193,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975240,
+        "ram_used_kib": 782776
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 337812,
+          "rss_kib": 125188,
+          "pss_kib": 114788,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8831,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6039,
+          "hand_calls": 3281,
+          "palm_calls": 3133,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1943.7,
+        "age_s": 0.579,
+        "inference_ms": 286.0,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 44.00018879700019,
+      "system": {
+        "cpu_total_ticks": 2456671,
+        "cpu_busy_ticks": 1287457,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975176,
+        "ram_used_kib": 782840
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 338046,
+          "rss_kib": 125188,
+          "pss_kib": 114784,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8834,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6042,
+          "hand_calls": 3284,
+          "palm_calls": 3136,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1944.6,
+        "age_s": 0.587,
+        "inference_ms": 268.9,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 45.00014911800008,
+      "system": {
+        "cpu_total_ticks": 2457068,
+        "cpu_busy_ticks": 1287715,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975184,
+        "ram_used_kib": 782832
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 338266,
+          "rss_kib": 125188,
+          "pss_kib": 114784,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8838,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6046,
+          "hand_calls": 3288,
+          "palm_calls": 3140,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1945.8,
+        "age_s": 0.422,
+        "inference_ms": 300.2,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 46.000775415000135,
+      "system": {
+        "cpu_total_ticks": 2457459,
+        "cpu_busy_ticks": 1287970,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975632,
+        "ram_used_kib": 782384
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 338489,
+          "rss_kib": 125188,
+          "pss_kib": 114784,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8841,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6049,
+          "hand_calls": 3291,
+          "palm_calls": 3143,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1946.8,
+        "age_s": 0.405,
+        "inference_ms": 294.4,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 47.00015024700042,
+      "system": {
+        "cpu_total_ticks": 2457857,
+        "cpu_busy_ticks": 1288241,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975416,
+        "ram_used_kib": 782600
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 338724,
+          "rss_kib": 125200,
+          "pss_kib": 114796,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8845,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6052,
+          "hand_calls": 3294,
+          "palm_calls": 3146,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1947.7,
+        "age_s": 0.507,
+        "inference_ms": 287.9,
+        "faces": 2,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 48.000203295000574,
+      "system": {
+        "cpu_total_ticks": 2458254,
+        "cpu_busy_ticks": 1288508,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975288,
+        "ram_used_kib": 782728
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 338952,
+          "rss_kib": 125368,
+          "pss_kib": 114964,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8848,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6055,
+          "hand_calls": 3297,
+          "palm_calls": 3149,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1948.7,
+        "age_s": 0.575,
+        "inference_ms": 287.6,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 49.00166584700037,
+      "system": {
+        "cpu_total_ticks": 2458651,
+        "cpu_busy_ticks": 1288780,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2974208,
+        "ram_used_kib": 783808
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 339179,
+          "rss_kib": 125368,
+          "pss_kib": 114964,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8851,
+          "rss_kib": 34408,
+          "pss_kib": 24561,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6058,
+          "hand_calls": 3300,
+          "palm_calls": 3152,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1949.6,
+        "age_s": 0.565,
+        "inference_ms": 294.1,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 50.000126429000375,
+      "system": {
+        "cpu_total_ticks": 2459045,
+        "cpu_busy_ticks": 1289046,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2973988,
+        "ram_used_kib": 784028
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 339404,
+          "rss_kib": 125368,
+          "pss_kib": 114964,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8854,
+          "rss_kib": 34408,
+          "pss_kib": 24561,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6061,
+          "hand_calls": 3303,
+          "palm_calls": 3155,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1950.6,
+        "age_s": 0.62,
+        "inference_ms": 269.7,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 51.00010730100075,
+      "system": {
+        "cpu_total_ticks": 2459436,
+        "cpu_busy_ticks": 1289304,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2973984,
+        "ram_used_kib": 784032
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 339634,
+          "rss_kib": 125368,
+          "pss_kib": 114964,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8857,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6065,
+          "hand_calls": 3307,
+          "palm_calls": 3159,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1951.9,
+        "age_s": 0.323,
+        "inference_ms": 279.3,
+        "faces": 2,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 52.00396587400064,
+      "system": {
+        "cpu_total_ticks": 2459825,
+        "cpu_busy_ticks": 1289555,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2973984,
+        "ram_used_kib": 784032
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 339857,
+          "rss_kib": 125436,
+          "pss_kib": 115032,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8862,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6068,
+          "hand_calls": 3310,
+          "palm_calls": 3162,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1952.8,
+        "age_s": 0.436,
+        "inference_ms": 282.1,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 53.00013990000025,
+      "system": {
+        "cpu_total_ticks": 2460228,
+        "cpu_busy_ticks": 1289829,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2970812,
+        "ram_used_kib": 787204
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 340092,
+          "rss_kib": 123552,
+          "pss_kib": 113148,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8864,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6071,
+          "hand_calls": 3313,
+          "palm_calls": 3165,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1953.8,
+        "age_s": 0.488,
+        "inference_ms": 269.1,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 54.00012693500048,
+      "system": {
+        "cpu_total_ticks": 2460633,
+        "cpu_busy_ticks": 1290095,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2969356,
+        "ram_used_kib": 788660
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 340320,
+          "rss_kib": 125196,
+          "pss_kib": 114792,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8865,
+          "rss_kib": 34408,
+          "pss_kib": 24561,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6074,
+          "hand_calls": 3316,
+          "palm_calls": 3168,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1954.7,
+        "age_s": 0.534,
+        "inference_ms": 314.0,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 55.000132311000016,
+      "system": {
+        "cpu_total_ticks": 2461024,
+        "cpu_busy_ticks": 1290355,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2969424,
+        "ram_used_kib": 788592
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 340563,
+          "rss_kib": 125028,
+          "pss_kib": 114624,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8865,
+          "rss_kib": 34412,
+          "pss_kib": 24565,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6077,
+          "hand_calls": 3319,
+          "palm_calls": 3171,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1955.6,
+        "age_s": 0.573,
+        "inference_ms": 285.3,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 56.000598810000156,
+      "system": {
+        "cpu_total_ticks": 2461415,
+        "cpu_busy_ticks": 1290608,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2969068,
+        "ram_used_kib": 788948
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 340792,
+          "rss_kib": 125084,
+          "pss_kib": 114680,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8867,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6081,
+          "hand_calls": 3323,
+          "palm_calls": 3175,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1956.9,
+        "age_s": 0.347,
+        "inference_ms": 299.1,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 57.00012302900086,
+      "system": {
+        "cpu_total_ticks": 2461810,
+        "cpu_busy_ticks": 1290857,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2969068,
+        "ram_used_kib": 788948
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 341013,
+          "rss_kib": 125324,
+          "pss_kib": 114920,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8868,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6084,
+          "hand_calls": 3326,
+          "palm_calls": 3178,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1957.8,
+        "age_s": 0.396,
+        "inference_ms": 285.0,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 58.00013420600044,
+      "system": {
+        "cpu_total_ticks": 2462204,
+        "cpu_busy_ticks": 1291129,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2969068,
+        "ram_used_kib": 788948
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 341260,
+          "rss_kib": 125324,
+          "pss_kib": 114920,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8870,
+          "rss_kib": 34408,
+          "pss_kib": 24561,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6087,
+          "hand_calls": 3329,
+          "palm_calls": 3181,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1958.7,
+        "age_s": 0.507,
+        "inference_ms": 291.4,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 59.00013382600082,
+      "system": {
+        "cpu_total_ticks": 2462605,
+        "cpu_busy_ticks": 1291396,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2969684,
+        "ram_used_kib": 788332
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 341489,
+          "rss_kib": 125380,
+          "pss_kib": 114976,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8874,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6090,
+          "hand_calls": 3332,
+          "palm_calls": 3184,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1959.7,
+        "age_s": 0.553,
+        "inference_ms": 278.8,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 60.0004556570002,
+      "system": {
+        "cpu_total_ticks": 2463002,
+        "cpu_busy_ticks": 1291666,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2969460,
+        "ram_used_kib": 788556
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 341719,
+          "rss_kib": 125380,
+          "pss_kib": 114976,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8876,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6093,
+          "hand_calls": 3335,
+          "palm_calls": 3187,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1960.6,
+        "age_s": 0.599,
+        "inference_ms": 278.5,
+        "faces": 1,
+        "hands": 0
+      }
+    }
+  ],
+  "measurement_note": "Initial sample; 20 invalid observer snapshots were excluded from scene statistics after auditing the saved counters/ages. Resource readings are valid, but this is a degraded live workload."
+}

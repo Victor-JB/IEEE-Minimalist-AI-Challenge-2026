@@ -131,3 +131,58 @@ the JavaScript emotion and desk-light checks passed. After deployment, twelve
 successive 8082 snapshots were fresh, hands were available, tracking was enabled
 and connected, and the steppers remained disabled. The light was correctly off
 because the estimated physical beam extended above the horizon.
+
+## Live CPU, RAM and energy audit
+
+We sampled the running UNO Q twice for 60 seconds on October 13, 2026, without
+pausing services or changing hardware controls. These are uncontrolled live
+workloads, separate from the fixed-image tests above.
+
+The second sample ran from **20:57:17 to 20:58:17 UTC (1:57–1:58 pm Pacific)**.
+All 61 observer snapshots were fresh; the observer and web process IDs stayed
+unchanged. CPU percentages use the full four-core capacity (one core = 25%).
+
+| Scope | Mean CPU | Sampled peak CPU | Mean RAM | Sampled peak RAM |
+|---|---:|---:|---:|---:|
+| AI observer | 57.0% | 60.0% | 112.3 MiB | 112.5 MiB |
+| Web server | 0.8% | 1.3% | 24.0 MiB | 24.3 MiB |
+| LuxoIII combined | 57.9% | 61.0% | 136.3 MiB | 136.5 MiB |
+| Whole board | 66.8% | 72.9% | 757.8 MiB | 764.4 MiB |
+
+Process RAM is proportional set size (PSS), which apportions shared pages;
+combined app RAM sums the two services' PSS. For comparison, observer mean RSS
+was 122.5 MiB and web mean RSS was 33.6 MiB; summing RSS would
+double-count shared pages. Whole-board RAM is `MemTotal - MemAvailable`, including
+Linux and other services, out of 3669.9 MiB reported by Linux. Browser
+rendering on the viewing computer is excluded. Peaks are sampled about once per
+second, not guaranteed instantaneous maxima. Sampler overhead is included in
+whole-board usage.
+
+We counted **189 face passes and 189 hand-pipeline updates over 60.2 seconds**,
+or **3.14 updates/s**. Palm detection also ran 189 times. These counters overlap
+and must not be summed into a total neural-inference count. The scene had 0–3
+detected faces and **no detected hands**, so this is an active face + palm search
+sample, not a two-hand landmark workload. The counter window follows cached
+observation timestamps and differs slightly from the resource window.
+
+The first sample (20:55:40–20:56:40 UTC) had **20/61 invalid observer snapshots**
+(32.8%). Its valid resource readings averaged **36.0% app CPU and 135.2 MiB app
+PSS**, with whole-board CPU 46.2% and RAM 764.5 MiB. We excluded invalid snapshots
+from scene statistics after auditing their missing counters and stale ages. The
+initial sampler did not retain the API's underlying error, so its cause is not
+established. Both runs are retained; different scenes and interruptions mean
+this is not a before/after optimization comparison.
+
+**Inferences per joule: not measured.** The board exposed no power-supply devices,
+IIO devices, powercap interface, or voltage/current/power/energy readings in its
+11 thermal/Wi-Fi hwmon devices. No external measurement was available. CPU usage,
+CPU time, latency, and charger ratings cannot establish electrical efficiency.
+A future measurement needs a defined completed workload and matched measured
+input energy: `workloads/J = completed workloads / measured joules`, equivalent
+to matching throughput divided by average watts. State whether camera, servo,
+and separately powered lamp consumption is included. We claim no power savings.
+
+- [Second sample with all resource readings and code hashes](live-resources.json)
+- [Initial sample, including invalid observation markers](live-resources-initial.json)
+- [Read-only sampler](../../tools/efficiency/measure_live_resources.py) and
+  [reproduction instructions](../../tools/efficiency/README.md#live-cpu-ram-and-processing-rates)

@@ -83,6 +83,43 @@ hand acquisition latency. `--only-temporal` repeats just the motion audit.
   provided by the Qualcomm models. CPU time is not electrical energy; actual
   power/energy savings require an external meter.
 
+## Live CPU, RAM and processing rates
+
+Run the read-only sampler **on the UNO Q**, while the normal services and viewing
+browser remain running:
+
+```sh
+python3 tools/efficiency/measure_live_resources.py --duration 60 --output reports/efficiency/live-resources.json
+```
+
+This samples both user services and the whole Linux system about once per second.
+CPU percentages use all logical CPU capacity: on the four-core board, one fully
+occupied core is 25%. The full-window average uses CPU counter differences and
+actual elapsed time; the maximum is the highest sampled interval. Process CPU
+includes all its threads. These service processes have no worker subprocesses.
+
+RAM is in MiB. RSS measures each process's resident memory; PSS apportions shared
+pages, allowing the observer and web service's PSS to be added without counting
+shared pages twice. System memory in use is `MemTotal - MemAvailable`, including
+other services. Memory peaks are sampled, not guaranteed instantaneous maxima.
+The browser's rendering memory/CPU belongs to the viewing computer and is excluded
+from these board measurements. Sampler overhead is included in system usage.
+
+Face passes, hand-pipeline updates and palm detector calls are reported separately.
+They overlap and cannot be added into a total neural-inference count. Counter rates
+use the observer's own uptime between cached observation snapshots; their window
+differs slightly from the resource-sampling window. Camera images and landmarks
+are discarded. Scene counts and modes describe an uncontrolled live workload,
+not a repeat of the fixed-image benchmark.
+
+**Energy remains unmeasured.** The board exposes no usable electrical power or
+energy reading, and no external input-power measurement was available. We cannot
+calculate numerical inferences per joule from CPU usage, latency or charger ratings.
+A future measurement must define its workload and supply boundary, measure joules
+over the same window, then divide completed workloads by those joules. With average
+watts and a matching measured throughput, `workloads/J = workloads/s ÷ watts`.
+Document whether the camera, servo and separately powered lamp are included.
+
 ## References
 
 Shuo Yang, Ping Luo, Chen Change Loy and Xiaoou Tang. *WIDER FACE: A Face

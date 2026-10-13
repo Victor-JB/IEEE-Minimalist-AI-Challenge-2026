@@ -1,0 +1,3130 @@
+{
+  "schema_version": 1,
+  "started_utc": "2026-10-13T20:57:17.845586+00:00",
+  "ended_utc": "2026-10-13T20:58:17.870228+00:00",
+  "platform": "Linux-6.16.7-g0dd6551ae96b-aarch64-with-glibc2.41",
+  "logical_cpus": 4,
+  "clock_ticks_per_second": 100,
+  "services": {
+    "observer": "luxoiii-observer.service",
+    "web": "luxoiii.service"
+  },
+  "requested_interval_s": 1,
+  "scope": "Live uncontrolled scene; observer and web are single-process services. No services paused or hardware controls changed. Browser rendering runs on the viewing computer.",
+  "definitions": {
+    "cpu_percent": "Percentage of all logical CPU capacity; 100% means all cores busy. Process CPU includes all threads. System idle and iowait are excluded from busy time.",
+    "ram": "MiB = 1048576 bytes. System used = MemTotal - MemAvailable; process RSS is resident memory, PSS apportions shared pages. Combined app RAM sums PSS, not RSS.",
+    "peak": "Largest sampled memory or interval CPU value in this window; not an instantaneous or lifetime peak.",
+    "workload": "face_calls = face passes; hand_calls = hand pipeline updates; palm_calls = palm model invocations. These overlap and must not be summed as total neural inferences. Rates use observer uptime between counter snapshots.",
+    "sampling": "Approximately 1 Hz /proc plus read-only /spatial HTTP polling; sampler overhead is included in whole-board metrics. Only counts and timings are retained from the camera API."
+  },
+  "energy": {
+    "status": "not_measured",
+    "inferences_per_joule": null,
+    "reason": "No exposed power/energy sensor and no external power measurement available.",
+    "formula": "Defined completed workloads / measured input joules, or matching workloads per second / average measured watts.",
+    "limitation": "CPU utilization and supply ratings cannot establish electrical energy or inferences per joule."
+  },
+  "summary": {
+    "duration_s": 60.0001668040004,
+    "interval_count": 60,
+    "system_cpu_percent": {
+      "mean": 66.79667627607257,
+      "max": 72.89002557544757
+    },
+    "system_ram_used_mib": {
+      "mean": 757.8368980532787,
+      "min": 754.12109375,
+      "max": 764.44921875
+    },
+    "system_ram_total_mib": 3669.9375,
+    "processes": {
+      "observer": {
+        "cpu_seconds": 136.89,
+        "cpu_percent": {
+          "mean": 57.03734143238794,
+          "max": 60.013209447524936
+        },
+        "rss_mib": {
+          "mean": 122.46561219262296,
+          "min": 120.61328125,
+          "max": 122.63671875
+        },
+        "pss_mib": {
+          "mean": 112.3053758965164,
+          "min": 110.453125,
+          "max": 112.4765625
+        }
+      },
+      "web": {
+        "cpu_seconds": 1.99,
+        "cpu_percent": {
+          "mean": 0.8291643615344585,
+          "max": 1.250017478994305
+        },
+        "rss_mib": {
+          "mean": 33.59816854508197,
+          "min": 33.59765625,
+          "max": 33.60546875
+        },
+        "pss_mib": {
+          "mean": 23.985735783811474,
+          "min": 23.927734375,
+          "max": 24.26171875
+        }
+      }
+    },
+    "app_cpu_percent": {
+      "mean": 57.8665057939224,
+      "max": 61.013429604983685
+    },
+    "app_pss_mib": {
+      "mean": 136.29111168032787,
+      "min": 134.4345703125,
+      "max": 136.4580078125
+    },
+    "workload": {
+      "successful_polls": 61,
+      "failed_polls": 0,
+      "mode_poll_counts": {
+        "face + palm detection": 61
+      },
+      "faces_seen": {
+        "mean": 1.1967213114754098,
+        "min": 0,
+        "max": 3
+      },
+      "hands_seen": {
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "observation_age_s": {
+        "mean": 0.4997213114754098,
+        "min": 0.341,
+        "max": 0.657
+      },
+      "counter_window_s": 60.200000000000045,
+      "counters": {
+        "face_calls": {
+          "count": 189,
+          "per_second": 3.139534883720928
+        },
+        "hand_calls": {
+          "count": 189,
+          "per_second": 3.139534883720928
+        },
+        "palm_calls": {
+          "count": 189,
+          "per_second": 3.139534883720928
+        },
+        "gated_frames": {
+          "count": 0,
+          "per_second": 0.0
+        }
+      }
+    }
+  },
+  "intervals": [
+    {
+      "duration_s": 1.0001563499999975,
+      "system_cpu_percent": 65.88541666666667,
+      "observer_cpu_percent": 54.74144117567232,
+      "web_cpu_percent": 0.7498827558311277,
+      "app_cpu_percent": 55.49132393150345
+    },
+    {
+      "duration_s": 0.9999636989996361,
+      "system_cpu_percent": 65.4353562005277,
+      "observer_cpu_percent": 57.75209645887457,
+      "web_cpu_percent": 1.0000363023181744,
+      "app_cpu_percent": 58.75213276119274
+    },
+    {
+      "duration_s": 0.9999947040005281,
+      "system_cpu_percent": 64.22976501305483,
+      "observer_cpu_percent": 55.50029392952734,
+      "web_cpu_percent": 0.5000026480137598,
+      "app_cpu_percent": 56.0002965775411
+    },
+    {
+      "duration_s": 0.9999861770002099,
+      "system_cpu_percent": 66.40826873385014,
+      "observer_cpu_percent": 58.00080174507035,
+      "web_cpu_percent": 1.0000138231908682,
+      "app_cpu_percent": 59.00081556826122
+    },
+    {
+      "duration_s": 1.0000667689992042,
+      "system_cpu_percent": 65.39440203562341,
+      "observer_cpu_percent": 57.99612765659865,
+      "web_cpu_percent": 0.9999332354585974,
+      "app_cpu_percent": 58.99606089205725
+    },
+    {
+      "duration_s": 1.0028018030006933,
+      "system_cpu_percent": 67.09511568123393,
+      "observer_cpu_percent": 57.837949459650005,
+      "web_cpu_percent": 0.4986030125831897,
+      "app_cpu_percent": 58.336552472233194
+    },
+    {
+      "duration_s": 0.9971601560000636,
+      "system_cpu_percent": 65.3061224489796,
+      "observer_cpu_percent": 56.159484174171546,
+      "web_cpu_percent": 1.0028479316816348,
+      "app_cpu_percent": 57.16233210585318
+    },
+    {
+      "duration_s": 0.9999875909998082,
+      "system_cpu_percent": 65.64102564102564,
+      "observer_cpu_percent": 56.750704219499546,
+      "web_cpu_percent": 0.5000062045770886,
+      "app_cpu_percent": 57.25071042407664
+    },
+    {
+      "duration_s": 1.0002627229996506,
+      "system_cpu_percent": 67.08542713567839,
+      "observer_cpu_percent": 57.98476606832449,
+      "web_cpu_percent": 0.9997373460055947,
+      "app_cpu_percent": 58.984503414330085
+    },
+    {
+      "duration_s": 0.9997232880004958,
+      "system_cpu_percent": 66.32911392405063,
+      "observer_cpu_percent": 57.26584614679058,
+      "web_cpu_percent": 0.5001383942951142,
+      "app_cpu_percent": 57.76598454108569
+    },
+    {
+      "duration_s": 1.0005080259998067,
+      "system_cpu_percent": 68.29896907216495,
+      "observer_cpu_percent": 58.22042251164435,
+      "web_cpu_percent": 0.9994922319595597,
+      "app_cpu_percent": 59.21991474360391
+    },
+    {
+      "duration_s": 0.9995252369999434,
+      "system_cpu_percent": 66.58291457286433,
+      "observer_cpu_percent": 55.77648060926665,
+      "web_cpu_percent": 0.7503562413802689,
+      "app_cpu_percent": 56.526836850646916
+    },
+    {
+      "duration_s": 1.0000067860000854,
+      "system_cpu_percent": 66.15384615384616,
+      "observer_cpu_percent": 55.99961998657399,
+      "web_cpu_percent": 0.9999932140459641,
+      "app_cpu_percent": 56.999613200619955
+    },
+    {
+      "duration_s": 1.0000225320000027,
+      "system_cpu_percent": 66.07142857142857,
+      "observer_cpu_percent": 56.49872697068375,
+      "web_cpu_percent": 0.49998873425383844,
+      "app_cpu_percent": 56.99871570493759
+    },
+    {
+      "duration_s": 0.9999504620000152,
+      "system_cpu_percent": 64.98740554156171,
+      "observer_cpu_percent": 54.75271233986306,
+      "web_cpu_percent": 0.7500371553405898,
+      "app_cpu_percent": 55.50274949520365
+    },
+    {
+      "duration_s": 1.0000348570001734,
+      "system_cpu_percent": 66.0,
+      "observer_cpu_percent": 56.4980306481359,
+      "web_cpu_percent": 0.7499738581610961,
+      "app_cpu_percent": 57.248004506297
+    },
+    {
+      "duration_s": 0.9999860170000829,
+      "system_cpu_percent": 66.32390745501286,
+      "observer_cpu_percent": 57.00079704214031,
+      "web_cpu_percent": 1.250017478994305,
+      "app_cpu_percent": 58.250814521134615
+    },
+    {
+      "duration_s": 0.9999796809997861,
+      "system_cpu_percent": 67.33668341708542,
+      "observer_cpu_percent": 58.25118360581215,
+      "web_cpu_percent": 0.5000101597065421,
+      "app_cpu_percent": 58.75119376551869
+    },
+    {
+      "duration_s": 1.0000346469996657,
+      "system_cpu_percent": 69.03553299492386,
+      "observer_cpu_percent": 58.2479818821912,
+      "web_cpu_percent": 0.7499740156505305,
+      "app_cpu_percent": 58.99795589784173
+    },
+    {
+      "duration_s": 0.9999815900000613,
+      "system_cpu_percent": 68.55670103092784,
+      "observer_cpu_percent": 58.75108160740879,
+      "web_cpu_percent": 1.0000184103388732,
+      "app_cpu_percent": 59.75110001774767
+    },
+    {
+      "duration_s": 1.0027381360005165,
+      "system_cpu_percent": 63.775510204081634,
+      "observer_cpu_percent": 56.09640042649283,
+      "web_cpu_percent": 0.49863467045771404,
+      "app_cpu_percent": 56.59503509695054
+    },
+    {
+      "duration_s": 1.000032721000025,
+      "system_cpu_percent": 68.10126582278481,
+      "observer_cpu_percent": 58.49808588413032,
+      "web_cpu_percent": 0.9999672800706038,
+      "app_cpu_percent": 59.498053164200925
+    },
+    {
+      "duration_s": 0.9972402189996501,
+      "system_cpu_percent": 66.66666666666667,
+      "observer_cpu_percent": 57.1577428527479,
+      "web_cpu_percent": 0.5013837092346307,
+      "app_cpu_percent": 57.65912656198253
+    },
+    {
+      "duration_s": 0.9999892650002948,
+      "system_cpu_percent": 68.01007556675063,
+      "observer_cpu_percent": 57.250614585330695,
+      "web_cpu_percent": 1.0000107351149465,
+      "app_cpu_percent": 58.25062532044564
+    },
+    {
+      "duration_s": 1.0005969669991828,
+      "system_cpu_percent": 67.75,
+      "observer_cpu_percent": 58.71494911302083,
+      "web_cpu_percent": 0.9994033891578014,
+      "app_cpu_percent": 59.71435250217863
+    },
+    {
+      "duration_s": 0.9993849000002228,
+      "system_cpu_percent": 68.10126582278481,
+      "observer_cpu_percent": 58.28585162732298,
+      "web_cpu_percent": 0.750461608935489,
+      "app_cpu_percent": 59.036313236258465
+    },
+    {
+      "duration_s": 0.9999881220001043,
+      "system_cpu_percent": 65.75,
+      "observer_cpu_percent": 54.000641419613146,
+      "web_cpu_percent": 0.7500089086057382,
+      "app_cpu_percent": 54.75065032821888
+    },
+    {
+      "duration_s": 1.0027846170005432,
+      "system_cpu_percent": 69.0,
+      "observer_cpu_percent": 59.83338693354477,
+      "web_cpu_percent": 0.9972231155590795,
+      "app_cpu_percent": 60.83061004910385
+    },
+    {
+      "duration_s": 0.9972354349993111,
+      "system_cpu_percent": 65.65656565656566,
+      "observer_cpu_percent": 55.90455176719479,
+      "web_cpu_percent": 1.0027722290079781,
+      "app_cpu_percent": 56.90732399620277
+    },
+    {
+      "duration_s": 1.0001889169998321,
+      "system_cpu_percent": 67.51918158567774,
+      "observer_cpu_percent": 57.98904488361745,
+      "web_cpu_percent": 0.7498583390122947,
+      "app_cpu_percent": 58.738903222629745
+    },
+    {
+      "duration_s": 0.9998231380004654,
+      "system_cpu_percent": 66.24685138539043,
+      "observer_cpu_percent": 55.759861800651834,
+      "web_cpu_percent": 1.0001768932852346,
+      "app_cpu_percent": 56.76003869393707
+    },
+    {
+      "duration_s": 1.0003519310002957,
+      "system_cpu_percent": 67.58104738154613,
+      "observer_cpu_percent": 57.4797710866647,
+      "web_cpu_percent": 0.99964819281156,
+      "app_cpu_percent": 58.47941927947626
+    },
+    {
+      "duration_s": 0.9996091059992978,
+      "system_cpu_percent": 66.41604010025063,
+      "observer_cpu_percent": 57.27238743265332,
+      "web_cpu_percent": 0.7502932851439299,
+      "app_cpu_percent": 58.02268071779725
+    },
+    {
+      "duration_s": 1.0002239440000267,
+      "system_cpu_percent": 63.3587786259542,
+      "observer_cpu_percent": 54.237853758076554,
+      "web_cpu_percent": 0.99977610613966,
+      "app_cpu_percent": 55.23762986421622
+    },
+    {
+      "duration_s": 0.9997948300006101,
+      "system_cpu_percent": 68.43434343434343,
+      "observer_cpu_percent": 59.762261423139726,
+      "web_cpu_percent": 0.5001026060513785,
+      "app_cpu_percent": 60.262364029191104
+    },
+    {
+      "duration_s": 0.9999946509997244,
+      "system_cpu_percent": 64.94845360824742,
+      "observer_cpu_percent": 56.0002995456177,
+      "web_cpu_percent": 0.5000026745144438,
+      "app_cpu_percent": 56.50030222013214
+    },
+    {
+      "duration_s": 1.0002463490000082,
+      "system_cpu_percent": 68.68686868686869,
+      "observer_cpu_percent": 57.98571527702674,
+      "web_cpu_percent": 0.9997537116728749,
+      "app_cpu_percent": 58.985468988699616
+    },
+    {
+      "duration_s": 0.9997798909998892,
+      "system_cpu_percent": 68.83116883116882,
+      "observer_cpu_percent": 60.013209447524936,
+      "web_cpu_percent": 1.000220157458749,
+      "app_cpu_percent": 61.013429604983685
+    },
+    {
+      "duration_s": 0.9999678350004615,
+      "system_cpu_percent": 67.26342710997443,
+      "observer_cpu_percent": 56.75182542243852,
+      "web_cpu_percent": 1.000032166034159,
+      "app_cpu_percent": 57.75185758847268
+    },
+    {
+      "duration_s": 1.0000127029998112,
+      "system_cpu_percent": 64.73551637279597,
+      "observer_cpu_percent": 54.74930451959503,
+      "web_cpu_percent": 0.7499904728711647,
+      "app_cpu_percent": 55.49929499246619
+    },
+    {
+      "duration_s": 1.0000010039993867,
+      "system_cpu_percent": 68.70229007633588,
+      "observer_cpu_percent": 59.249940513096064,
+      "web_cpu_percent": 0.9999989960016212,
+      "app_cpu_percent": 60.249939509097686
+    },
+    {
+      "duration_s": 1.0000634230000287,
+      "system_cpu_percent": 72.89002557544757,
+      "observer_cpu_percent": 48.746908324831914,
+      "web_cpu_percent": 0.7499524357666448,
+      "app_cpu_percent": 49.49686076059856
+    },
+    {
+      "duration_s": 0.999933699000394,
+      "system_cpu_percent": 70.7808564231738,
+      "observer_cpu_percent": 57.003779407556046,
+      "web_cpu_percent": 0.75004972904679,
+      "app_cpu_percent": 57.75382913660284
+    },
+    {
+      "duration_s": 1.0000537260002602,
+      "system_cpu_percent": 67.09183673469387,
+      "observer_cpu_percent": 58.24687062861345,
+      "web_cpu_percent": 0.7499597076645509,
+      "app_cpu_percent": 58.996830336278
+    },
+    {
+      "duration_s": 0.9999538989995926,
+      "system_cpu_percent": 65.72890025575448,
+      "observer_cpu_percent": 57.00262787817103,
+      "web_cpu_percent": 1.0000461031258077,
+      "app_cpu_percent": 58.00267398129684
+    },
+    {
+      "duration_s": 1.000418888999775,
+      "system_cpu_percent": 66.751269035533,
+      "observer_cpu_percent": 57.226028646099344,
+      "web_cpu_percent": 0.9995812863947484,
+      "app_cpu_percent": 58.225609932494095
+    },
+    {
+      "duration_s": 1.00037224100015,
+      "system_cpu_percent": 65.99496221662469,
+      "observer_cpu_percent": 56.728883183786266,
+      "web_cpu_percent": 0.7497209231337393,
+      "app_cpu_percent": 57.47860410692
+    },
+    {
+      "duration_s": 1.0006366500001604,
+      "system_cpu_percent": 66.92111959287531,
+      "observer_cpu_percent": 58.96246154884547,
+      "web_cpu_percent": 0.7495228162988831,
+      "app_cpu_percent": 59.71198436514435
+    },
+    {
+      "duration_s": 0.9985750750001898,
+      "system_cpu_percent": 63.70558375634518,
+      "observer_cpu_percent": 55.07848270696076,
+      "web_cpu_percent": 0.7510702187312831,
+      "app_cpu_percent": 55.82955292569205
+    },
+    {
+      "duration_s": 0.9999995319994923,
+      "system_cpu_percent": 67.2544080604534,
+      "observer_cpu_percent": 55.75002609104051,
+      "web_cpu_percent": 1.0000004680007266,
+      "app_cpu_percent": 56.75002655904124
+    },
+    {
+      "duration_s": 1.000005283000064,
+      "system_cpu_percent": 67.18346253229974,
+      "observer_cpu_percent": 58.249692266872025,
+      "web_cpu_percent": 0.9999947170278458,
+      "app_cpu_percent": 59.24968698389987
+    },
+    {
+      "duration_s": 0.9999941610003589,
+      "system_cpu_percent": 66.16161616161617,
+      "observer_cpu_percent": 56.25032844564761,
+      "web_cpu_percent": 1.250007298792169,
+      "app_cpu_percent": 57.50033574443978
+    },
+    {
+      "duration_s": 0.9999961619996611,
+      "system_cpu_percent": 67.42424242424242,
+      "observer_cpu_percent": 57.25021972636271,
+      "web_cpu_percent": 0.5000019190075345,
+      "app_cpu_percent": 57.750221645370246
+    },
+    {
+      "duration_s": 1.0000144140003613,
+      "system_cpu_percent": 67.78350515463917,
+      "observer_cpu_percent": 59.2491459827884,
+      "web_cpu_percent": 0.9999855862073991,
+      "app_cpu_percent": 60.2491315689958
+    },
+    {
+      "duration_s": 1.0003560670002116,
+      "system_cpu_percent": 66.41414141414141,
+      "observer_cpu_percent": 57.229622420021656,
+      "web_cpu_percent": 0.7497330448037772,
+      "app_cpu_percent": 57.97935546482543
+    },
+    {
+      "duration_s": 1.0011482059999253,
+      "system_cpu_percent": 64.63104325699746,
+      "observer_cpu_percent": 54.43749454214581,
+      "web_cpu_percent": 0.7491398331487955,
+      "app_cpu_percent": 55.1866343752946
+    },
+    {
+      "duration_s": 0.9985182250002254,
+      "system_cpu_percent": 68.70229007633588,
+      "observer_cpu_percent": 58.837183467519324,
+      "web_cpu_percent": 1.0014839739152226,
+      "app_cpu_percent": 59.838667441434545
+    },
+    {
+      "duration_s": 0.9999999239998942,
+      "system_cpu_percent": 65.72164948453609,
+      "observer_cpu_percent": 57.500004370006415,
+      "web_cpu_percent": 0.7500000570000837,
+      "app_cpu_percent": 58.2500044270065
+    },
+    {
+      "duration_s": 1.0003136069999528,
+      "system_cpu_percent": 65.1948051948052,
+      "observer_cpu_percent": 57.731894873647086,
+      "web_cpu_percent": 0.7497648684889232,
+      "app_cpu_percent": 58.48165974213601
+    },
+    {
+      "duration_s": 0.999695845000133,
+      "system_cpu_percent": 67.58793969849246,
+      "observer_cpu_percent": 57.767570295335496,
+      "web_cpu_percent": 0.7502281856537077,
+      "app_cpu_percent": 58.51779848098921
+    }
+  ],
+  "samples": [
+    {
+      "t_s": 4.167000042798463e-06,
+      "system": {
+        "cpu_total_ticks": 2477782,
+        "cpu_busy_ticks": 1301595,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2985316,
+        "ram_used_kib": 772700
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 350176,
+          "rss_kib": 125236,
+          "pss_kib": 114874,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8994,
+          "rss_kib": 34404,
+          "pss_kib": 24844,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6210,
+          "hand_calls": 3452,
+          "palm_calls": 3304,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1998.2,
+        "age_s": 0.577,
+        "inference_ms": 390.0,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 1.0001605170000403,
+      "system": {
+        "cpu_total_ticks": 2478166,
+        "cpu_busy_ticks": 1301848,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984952,
+        "ram_used_kib": 773064
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 350395,
+          "rss_kib": 125376,
+          "pss_kib": 114972,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 8997,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6213,
+          "hand_calls": 3455,
+          "palm_calls": 3307,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 1999.3,
+        "age_s": 0.432,
+        "inference_ms": 321.4,
+        "faces": 2,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 2.0001242159996764,
+      "system": {
+        "cpu_total_ticks": 2478545,
+        "cpu_busy_ticks": 1302096,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984732,
+        "ram_used_kib": 773284
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 350626,
+          "rss_kib": 125380,
+          "pss_kib": 114976,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9001,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6216,
+          "hand_calls": 3458,
+          "palm_calls": 3310,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2000.2,
+        "age_s": 0.482,
+        "inference_ms": 304.9,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 3.0001189200002045,
+      "system": {
+        "cpu_total_ticks": 2478928,
+        "cpu_busy_ticks": 1302342,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984732,
+        "ram_used_kib": 773284
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 350848,
+          "rss_kib": 125380,
+          "pss_kib": 114976,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9003,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6219,
+          "hand_calls": 3461,
+          "palm_calls": 3313,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2001.2,
+        "age_s": 0.524,
+        "inference_ms": 315.2,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 4.000105097000414,
+      "system": {
+        "cpu_total_ticks": 2479315,
+        "cpu_busy_ticks": 1302599,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984732,
+        "ram_used_kib": 773284
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 351080,
+          "rss_kib": 125448,
+          "pss_kib": 115044,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9007,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6222,
+          "hand_calls": 3464,
+          "palm_calls": 3316,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2002.2,
+        "age_s": 0.504,
+        "inference_ms": 288.2,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 5.000171865999619,
+      "system": {
+        "cpu_total_ticks": 2479708,
+        "cpu_busy_ticks": 1302856,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984732,
+        "ram_used_kib": 773284
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 351312,
+          "rss_kib": 125452,
+          "pss_kib": 115048,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9011,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6225,
+          "hand_calls": 3467,
+          "palm_calls": 3319,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2003.1,
+        "age_s": 0.562,
+        "inference_ms": 309.2,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 6.002973669000312,
+      "system": {
+        "cpu_total_ticks": 2480097,
+        "cpu_busy_ticks": 1303117,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984732,
+        "ram_used_kib": 773284
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 351544,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9013,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6228,
+          "hand_calls": 3470,
+          "palm_calls": 3322,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2004.1,
+        "age_s": 0.602,
+        "inference_ms": 297.0,
+        "faces": 2,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 7.0001338250003755,
+      "system": {
+        "cpu_total_ticks": 2480489,
+        "cpu_busy_ticks": 1303373,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984732,
+        "ram_used_kib": 773284
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 351768,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9017,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6231,
+          "hand_calls": 3473,
+          "palm_calls": 3325,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2005.1,
+        "age_s": 0.639,
+        "inference_ms": 314.1,
+        "faces": 3,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 8.000121416000184,
+      "system": {
+        "cpu_total_ticks": 2480879,
+        "cpu_busy_ticks": 1303629,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984508,
+        "ram_used_kib": 773508
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 351995,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9019,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6235,
+          "hand_calls": 3477,
+          "palm_calls": 3329,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2006.3,
+        "age_s": 0.346,
+        "inference_ms": 273.6,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 9.000384138999834,
+      "system": {
+        "cpu_total_ticks": 2481277,
+        "cpu_busy_ticks": 1303896,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2985796,
+        "ram_used_kib": 772220
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 352227,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9023,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6238,
+          "hand_calls": 3480,
+          "palm_calls": 3332,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2007.3,
+        "age_s": 0.452,
+        "inference_ms": 267.4,
+        "faces": 3,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 10.00010742700033,
+      "system": {
+        "cpu_total_ticks": 2481672,
+        "cpu_busy_ticks": 1304158,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2985544,
+        "ram_used_kib": 772472
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 352456,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9025,
+          "rss_kib": 34408,
+          "pss_kib": 24565,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6241,
+          "hand_calls": 3483,
+          "palm_calls": 3335,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2008.2,
+        "age_s": 0.502,
+        "inference_ms": 293.0,
+        "faces": 2,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 11.000615453000137,
+      "system": {
+        "cpu_total_ticks": 2482060,
+        "cpu_busy_ticks": 1304423,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984872,
+        "ram_used_kib": 773144
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 352689,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9029,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6244,
+          "hand_calls": 3486,
+          "palm_calls": 3338,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2009.1,
+        "age_s": 0.554,
+        "inference_ms": 304.7,
+        "faces": 3,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 12.00014069000008,
+      "system": {
+        "cpu_total_ticks": 2482458,
+        "cpu_busy_ticks": 1304688,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984440,
+        "ram_used_kib": 773576
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 352912,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9032,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6247,
+          "hand_calls": 3489,
+          "palm_calls": 3341,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2010.1,
+        "age_s": 0.597,
+        "inference_ms": 325.4,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 13.000147476000166,
+      "system": {
+        "cpu_total_ticks": 2482848,
+        "cpu_busy_ticks": 1304946,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984452,
+        "ram_used_kib": 773564
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 353136,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9036,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6250,
+          "hand_calls": 3492,
+          "palm_calls": 3344,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2011.1,
+        "age_s": 0.645,
+        "inference_ms": 283.9,
+        "faces": 2,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 14.000170008000168,
+      "system": {
+        "cpu_total_ticks": 2483240,
+        "cpu_busy_ticks": 1305205,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984448,
+        "ram_used_kib": 773568
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 353362,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9038,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6254,
+          "hand_calls": 3496,
+          "palm_calls": 3348,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2012.3,
+        "age_s": 0.35,
+        "inference_ms": 297.5,
+        "faces": 2,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 15.000120470000184,
+      "system": {
+        "cpu_total_ticks": 2483637,
+        "cpu_busy_ticks": 1305463,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984448,
+        "ram_used_kib": 773568
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 353581,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9041,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6257,
+          "hand_calls": 3499,
+          "palm_calls": 3351,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2013.3,
+        "age_s": 0.395,
+        "inference_ms": 288.6,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 16.000155327000357,
+      "system": {
+        "cpu_total_ticks": 2484037,
+        "cpu_busy_ticks": 1305727,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984448,
+        "ram_used_kib": 773568
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 353807,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9044,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6260,
+          "hand_calls": 3502,
+          "palm_calls": 3354,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2014.2,
+        "age_s": 0.443,
+        "inference_ms": 314.7,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 17.00014134400044,
+      "system": {
+        "cpu_total_ticks": 2484426,
+        "cpu_busy_ticks": 1305985,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984224,
+        "ram_used_kib": 773792
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 354035,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9049,
+          "rss_kib": 34412,
+          "pss_kib": 24565,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6263,
+          "hand_calls": 3505,
+          "palm_calls": 3357,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2015.2,
+        "age_s": 0.493,
+        "inference_ms": 301.4,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 18.000121025000226,
+      "system": {
+        "cpu_total_ticks": 2484824,
+        "cpu_busy_ticks": 1306253,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984224,
+        "ram_used_kib": 773792
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 354268,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9051,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6266,
+          "hand_calls": 3508,
+          "palm_calls": 3360,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2016.2,
+        "age_s": 0.531,
+        "inference_ms": 295.8,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 19.00015567199989,
+      "system": {
+        "cpu_total_ticks": 2485218,
+        "cpu_busy_ticks": 1306525,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984224,
+        "ram_used_kib": 773792
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 354501,
+          "rss_kib": 125520,
+          "pss_kib": 115116,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9054,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6269,
+          "hand_calls": 3511,
+          "palm_calls": 3363,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2017.1,
+        "age_s": 0.585,
+        "inference_ms": 302.7,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 20.000137261999953,
+      "system": {
+        "cpu_total_ticks": 2485606,
+        "cpu_busy_ticks": 1306791,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984004,
+        "ram_used_kib": 774012
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 354736,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9058,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6273,
+          "hand_calls": 3515,
+          "palm_calls": 3367,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2018.4,
+        "age_s": 0.353,
+        "inference_ms": 277.7,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 21.00287539800047,
+      "system": {
+        "cpu_total_ticks": 2485998,
+        "cpu_busy_ticks": 1307041,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983780,
+        "ram_used_kib": 774236
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 354961,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9060,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6276,
+          "hand_calls": 3518,
+          "palm_calls": 3370,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2019.3,
+        "age_s": 0.403,
+        "inference_ms": 282.9,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 22.002908119000494,
+      "system": {
+        "cpu_total_ticks": 2486393,
+        "cpu_busy_ticks": 1307310,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984744,
+        "ram_used_kib": 773272
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 355195,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9064,
+          "rss_kib": 34412,
+          "pss_kib": 24565,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6279,
+          "hand_calls": 3521,
+          "palm_calls": 3373,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2020.2,
+        "age_s": 0.517,
+        "inference_ms": 311.3,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 23.000148338000145,
+      "system": {
+        "cpu_total_ticks": 2486789,
+        "cpu_busy_ticks": 1307574,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984312,
+        "ram_used_kib": 773704
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 355423,
+          "rss_kib": 125580,
+          "pss_kib": 115176,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9066,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6282,
+          "hand_calls": 3524,
+          "palm_calls": 3376,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2021.2,
+        "age_s": 0.495,
+        "inference_ms": 308.3,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 24.00013760300044,
+      "system": {
+        "cpu_total_ticks": 2487186,
+        "cpu_busy_ticks": 1307844,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983636,
+        "ram_used_kib": 774380
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 355652,
+          "rss_kib": 125580,
+          "pss_kib": 115176,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9070,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6285,
+          "hand_calls": 3527,
+          "palm_calls": 3379,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2022.1,
+        "age_s": 0.545,
+        "inference_ms": 297.8,
+        "faces": 2,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 25.000734569999622,
+      "system": {
+        "cpu_total_ticks": 2487586,
+        "cpu_busy_ticks": 1308115,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983636,
+        "ram_used_kib": 774380
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 355887,
+          "rss_kib": 125580,
+          "pss_kib": 115176,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9074,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6288,
+          "hand_calls": 3530,
+          "palm_calls": 3382,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2023.1,
+        "age_s": 0.657,
+        "inference_ms": 311.6,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 26.000119469999845,
+      "system": {
+        "cpu_total_ticks": 2487981,
+        "cpu_busy_ticks": 1308384,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983636,
+        "ram_used_kib": 774380
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 356120,
+          "rss_kib": 125580,
+          "pss_kib": 115176,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9077,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6292,
+          "hand_calls": 3534,
+          "palm_calls": 3386,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2024.4,
+        "age_s": 0.354,
+        "inference_ms": 282.5,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 27.00010759199995,
+      "system": {
+        "cpu_total_ticks": 2488381,
+        "cpu_busy_ticks": 1308647,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2985160,
+        "ram_used_kib": 772856
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 356336,
+          "rss_kib": 125412,
+          "pss_kib": 115008,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9080,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6295,
+          "hand_calls": 3537,
+          "palm_calls": 3389,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2025.3,
+        "age_s": 0.394,
+        "inference_ms": 301.0,
+        "faces": 2,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 28.002892209000493,
+      "system": {
+        "cpu_total_ticks": 2488781,
+        "cpu_busy_ticks": 1308923,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984712,
+        "ram_used_kib": 773304
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 356576,
+          "rss_kib": 125412,
+          "pss_kib": 115008,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9084,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6298,
+          "hand_calls": 3540,
+          "palm_calls": 3392,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2026.2,
+        "age_s": 0.453,
+        "inference_ms": 290.9,
+        "faces": 2,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 29.000127643999804,
+      "system": {
+        "cpu_total_ticks": 2489177,
+        "cpu_busy_ticks": 1309183,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984712,
+        "ram_used_kib": 773304
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 356799,
+          "rss_kib": 125460,
+          "pss_kib": 115056,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9088,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6301,
+          "hand_calls": 3543,
+          "palm_calls": 3395,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2027.2,
+        "age_s": 0.5,
+        "inference_ms": 301.5,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 30.000316560999636,
+      "system": {
+        "cpu_total_ticks": 2489568,
+        "cpu_busy_ticks": 1309447,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984712,
+        "ram_used_kib": 773304
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 357031,
+          "rss_kib": 125460,
+          "pss_kib": 115056,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9091,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6304,
+          "hand_calls": 3546,
+          "palm_calls": 3398,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2028.1,
+        "age_s": 0.545,
+        "inference_ms": 302.6,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 31.0001396990001,
+      "system": {
+        "cpu_total_ticks": 2489965,
+        "cpu_busy_ticks": 1309710,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984712,
+        "ram_used_kib": 773304
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 357254,
+          "rss_kib": 125460,
+          "pss_kib": 115056,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9095,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6307,
+          "hand_calls": 3549,
+          "palm_calls": 3401,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2029.1,
+        "age_s": 0.576,
+        "inference_ms": 309.3,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 32.0004916300004,
+      "system": {
+        "cpu_total_ticks": 2490366,
+        "cpu_busy_ticks": 1309981,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984968,
+        "ram_used_kib": 773048
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 357484,
+          "rss_kib": 123508,
+          "pss_kib": 113104,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9099,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6310,
+          "hand_calls": 3552,
+          "palm_calls": 3404,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2030.1,
+        "age_s": 0.639,
+        "inference_ms": 299.0,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 33.000100735999695,
+      "system": {
+        "cpu_total_ticks": 2490765,
+        "cpu_busy_ticks": 1310246,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983224,
+        "ram_used_kib": 774792
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 357713,
+          "rss_kib": 125324,
+          "pss_kib": 114920,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9102,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6314,
+          "hand_calls": 3556,
+          "palm_calls": 3408,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2031.3,
+        "age_s": 0.404,
+        "inference_ms": 284.3,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 34.00032467999972,
+      "system": {
+        "cpu_total_ticks": 2491158,
+        "cpu_busy_ticks": 1310495,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983636,
+        "ram_used_kib": 774380
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 357930,
+          "rss_kib": 125324,
+          "pss_kib": 114920,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9106,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6317,
+          "hand_calls": 3559,
+          "palm_calls": 3411,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2032.3,
+        "age_s": 0.385,
+        "inference_ms": 298.6,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 35.00011951000033,
+      "system": {
+        "cpu_total_ticks": 2491554,
+        "cpu_busy_ticks": 1310766,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983636,
+        "ram_used_kib": 774380
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 358169,
+          "rss_kib": 125324,
+          "pss_kib": 114920,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9108,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6320,
+          "hand_calls": 3562,
+          "palm_calls": 3414,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2033.2,
+        "age_s": 0.495,
+        "inference_ms": 289.1,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 36.000114161000056,
+      "system": {
+        "cpu_total_ticks": 2491942,
+        "cpu_busy_ticks": 1311018,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983636,
+        "ram_used_kib": 774380
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 358393,
+          "rss_kib": 125324,
+          "pss_kib": 114920,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9110,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6323,
+          "hand_calls": 3565,
+          "palm_calls": 3417,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2034.2,
+        "age_s": 0.542,
+        "inference_ms": 311.7,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 37.000360510000064,
+      "system": {
+        "cpu_total_ticks": 2492338,
+        "cpu_busy_ticks": 1311290,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2984216,
+        "ram_used_kib": 773800
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 358625,
+          "rss_kib": 125432,
+          "pss_kib": 115028,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9114,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6326,
+          "hand_calls": 3568,
+          "palm_calls": 3420,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2035.1,
+        "age_s": 0.522,
+        "inference_ms": 303.4,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 38.00014040099995,
+      "system": {
+        "cpu_total_ticks": 2492723,
+        "cpu_busy_ticks": 1311555,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983804,
+        "ram_used_kib": 774212
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 358865,
+          "rss_kib": 125424,
+          "pss_kib": 115020,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9118,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6329,
+          "hand_calls": 3571,
+          "palm_calls": 3423,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2036.1,
+        "age_s": 0.636,
+        "inference_ms": 284.7,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 39.000108236000415,
+      "system": {
+        "cpu_total_ticks": 2493114,
+        "cpu_busy_ticks": 1311818,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983576,
+        "ram_used_kib": 774440
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 359092,
+          "rss_kib": 125424,
+          "pss_kib": 115020,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9122,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6333,
+          "hand_calls": 3575,
+          "palm_calls": 3427,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2037.4,
+        "age_s": 0.341,
+        "inference_ms": 288.1,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 40.000120939000226,
+      "system": {
+        "cpu_total_ticks": 2493511,
+        "cpu_busy_ticks": 1312075,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983100,
+        "ram_used_kib": 774916
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 359311,
+          "rss_kib": 125568,
+          "pss_kib": 115164,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9125,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6336,
+          "hand_calls": 3578,
+          "palm_calls": 3430,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2038.3,
+        "age_s": 0.386,
+        "inference_ms": 276.5,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 41.00012194299961,
+      "system": {
+        "cpu_total_ticks": 2493904,
+        "cpu_busy_ticks": 1312345,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2983100,
+        "ram_used_kib": 774916
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 359548,
+          "rss_kib": 125572,
+          "pss_kib": 115168,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9129,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6339,
+          "hand_calls": 3581,
+          "palm_calls": 3433,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2039.2,
+        "age_s": 0.503,
+        "inference_ms": 281.5,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 42.00018536599964,
+      "system": {
+        "cpu_total_ticks": 2494295,
+        "cpu_busy_ticks": 1312630,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975776,
+        "ram_used_kib": 782240
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 359743,
+          "rss_kib": 125572,
+          "pss_kib": 115117,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9132,
+          "rss_kib": 34404,
+          "pss_kib": 24502,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6342,
+          "hand_calls": 3584,
+          "palm_calls": 3436,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2040.2,
+        "age_s": 0.54,
+        "inference_ms": 406.3,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 43.000119065000035,
+      "system": {
+        "cpu_total_ticks": 2494692,
+        "cpu_busy_ticks": 1312911,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975480,
+        "ram_used_kib": 782536
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 359971,
+          "rss_kib": 125416,
+          "pss_kib": 115012,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9135,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6345,
+          "hand_calls": 3587,
+          "palm_calls": 3439,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2041.3,
+        "age_s": 0.455,
+        "inference_ms": 281.4,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 44.000172791000296,
+      "system": {
+        "cpu_total_ticks": 2495084,
+        "cpu_busy_ticks": 1313174,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2978656,
+        "ram_used_kib": 779360
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 360204,
+          "rss_kib": 125416,
+          "pss_kib": 115012,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9138,
+          "rss_kib": 34408,
+          "pss_kib": 24561,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6348,
+          "hand_calls": 3590,
+          "palm_calls": 3442,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2042.2,
+        "age_s": 0.501,
+        "inference_ms": 307.0,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 45.00012668999989,
+      "system": {
+        "cpu_total_ticks": 2495475,
+        "cpu_busy_ticks": 1313431,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2978152,
+        "ram_used_kib": 779864
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 360432,
+          "rss_kib": 125468,
+          "pss_kib": 115064,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9142,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6351,
+          "hand_calls": 3593,
+          "palm_calls": 3445,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2043.2,
+        "age_s": 0.547,
+        "inference_ms": 314.8,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 46.00054557899966,
+      "system": {
+        "cpu_total_ticks": 2495869,
+        "cpu_busy_ticks": 1313694,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2977928,
+        "ram_used_kib": 780088
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 360661,
+          "rss_kib": 125468,
+          "pss_kib": 115064,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9146,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6354,
+          "hand_calls": 3596,
+          "palm_calls": 3448,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2044.1,
+        "age_s": 0.598,
+        "inference_ms": 316.8,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 47.00091781999981,
+      "system": {
+        "cpu_total_ticks": 2496266,
+        "cpu_busy_ticks": 1313956,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2977928,
+        "ram_used_kib": 780088
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 360888,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9149,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6357,
+          "hand_calls": 3599,
+          "palm_calls": 3451,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2045.1,
+        "age_s": 0.573,
+        "inference_ms": 311.6,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 48.001554469999974,
+      "system": {
+        "cpu_total_ticks": 2496659,
+        "cpu_busy_ticks": 1314219,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2977456,
+        "ram_used_kib": 780560
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 361124,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9152,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6360,
+          "hand_calls": 3602,
+          "palm_calls": 3454,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2046.1,
+        "age_s": 0.62,
+        "inference_ms": 292.1,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 49.00012954500016,
+      "system": {
+        "cpu_total_ticks": 2497053,
+        "cpu_busy_ticks": 1314470,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2976788,
+        "ram_used_kib": 781228
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 361344,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9155,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6364,
+          "hand_calls": 3606,
+          "palm_calls": 3458,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2047.3,
+        "age_s": 0.374,
+        "inference_ms": 299.7,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 50.000129076999656,
+      "system": {
+        "cpu_total_ticks": 2497450,
+        "cpu_busy_ticks": 1314737,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2976212,
+        "ram_used_kib": 781804
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 361567,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9159,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6367,
+          "hand_calls": 3609,
+          "palm_calls": 3461,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2048.3,
+        "age_s": 0.426,
+        "inference_ms": 280.9,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 51.00013435999972,
+      "system": {
+        "cpu_total_ticks": 2497837,
+        "cpu_busy_ticks": 1314997,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975220,
+        "ram_used_kib": 782796
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 361800,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9163,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6370,
+          "hand_calls": 3612,
+          "palm_calls": 3464,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2049.2,
+        "age_s": 0.482,
+        "inference_ms": 311.7,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 52.00012852100008,
+      "system": {
+        "cpu_total_ticks": 2498233,
+        "cpu_busy_ticks": 1315259,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975232,
+        "ram_used_kib": 782784
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 362025,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9168,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6373,
+          "hand_calls": 3615,
+          "palm_calls": 3467,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2050.2,
+        "age_s": 0.528,
+        "inference_ms": 308.0,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 53.00012468299974,
+      "system": {
+        "cpu_total_ticks": 2498629,
+        "cpu_busy_ticks": 1315526,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975236,
+        "ram_used_kib": 782780
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 362254,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9170,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6376,
+          "hand_calls": 3618,
+          "palm_calls": 3470,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2051.1,
+        "age_s": 0.578,
+        "inference_ms": 313.5,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 54.0001390970001,
+      "system": {
+        "cpu_total_ticks": 2499017,
+        "cpu_busy_ticks": 1315789,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975240,
+        "ram_used_kib": 782776
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 362491,
+          "rss_kib": 125524,
+          "pss_kib": 115124,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9174,
+          "rss_kib": 34412,
+          "pss_kib": 24565,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6379,
+          "hand_calls": 3621,
+          "palm_calls": 3473,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2052.1,
+        "age_s": 0.62,
+        "inference_ms": 301.8,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 55.00049516400031,
+      "system": {
+        "cpu_total_ticks": 2499413,
+        "cpu_busy_ticks": 1316052,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975240,
+        "ram_used_kib": 782776
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 362720,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9177,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6383,
+          "hand_calls": 3625,
+          "palm_calls": 3477,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2053.3,
+        "age_s": 0.391,
+        "inference_ms": 282.9,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 56.00164337000024,
+      "system": {
+        "cpu_total_ticks": 2499806,
+        "cpu_busy_ticks": 1316306,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2975240,
+        "ram_used_kib": 782776
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 362938,
+          "rss_kib": 125524,
+          "pss_kib": 115120,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9180,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6386,
+          "hand_calls": 3628,
+          "palm_calls": 3480,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2054.3,
+        "age_s": 0.443,
+        "inference_ms": 292.2,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 57.00016159500046,
+      "system": {
+        "cpu_total_ticks": 2500199,
+        "cpu_busy_ticks": 1316576,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2977912,
+        "ram_used_kib": 780104
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 363173,
+          "rss_kib": 125528,
+          "pss_kib": 115124,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9184,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6389,
+          "hand_calls": 3631,
+          "palm_calls": 3483,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2055.2,
+        "age_s": 0.482,
+        "inference_ms": 299.4,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 58.00016151900036,
+      "system": {
+        "cpu_total_ticks": 2500587,
+        "cpu_busy_ticks": 1316831,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2977608,
+        "ram_used_kib": 780408
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 363403,
+          "rss_kib": 125528,
+          "pss_kib": 115124,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9187,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6392,
+          "hand_calls": 3634,
+          "palm_calls": 3486,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2056.2,
+        "age_s": 0.543,
+        "inference_ms": 303.0,
+        "faces": 1,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 59.00047512600031,
+      "system": {
+        "cpu_total_ticks": 2500972,
+        "cpu_busy_ticks": 1317082,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2978604,
+        "ram_used_kib": 779412
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 363634,
+          "rss_kib": 124092,
+          "pss_kib": 113688,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9190,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6395,
+          "hand_calls": 3637,
+          "palm_calls": 3489,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2057.1,
+        "age_s": 0.573,
+        "inference_ms": 303.2,
+        "faces": 0,
+        "hands": 0
+      }
+    },
+    {
+      "t_s": 60.00017097100044,
+      "system": {
+        "cpu_total_ticks": 2501370,
+        "cpu_busy_ticks": 1317351,
+        "ram_total_kib": 3758016,
+        "ram_available_kib": 2978604,
+        "ram_used_kib": 779412
+      },
+      "processes": {
+        "observer": {
+          "pid": 33368,
+          "start_ticks": 427313,
+          "cpu_ticks": 363865,
+          "rss_kib": 124092,
+          "pss_kib": 113688,
+          "lifetime_peak_rss_kib": 125640
+        },
+        "web": {
+          "pid": 33369,
+          "start_ticks": 427314,
+          "cpu_ticks": 9193,
+          "rss_kib": 34404,
+          "pss_kib": 24557,
+          "lifetime_peak_rss_kib": 34492
+        }
+      },
+      "spatial": {
+        "counters": {
+          "face_calls": 6399,
+          "hand_calls": 3641,
+          "palm_calls": 3493,
+          "gated_frames": 2758
+        },
+        "mode": "face + palm detection",
+        "uptime_s": 2058.4,
+        "age_s": 0.349,
+        "inference_ms": 280.6,
+        "faces": 0,
+        "hands": 0
+      }
+    }
+  ],
+  "provenance": {
+    "git_commit": "6d277aae300a75d19d9f7ee4900b934dcb3340ad",
+    "online_cpus": "0-3",
+    "sha256": {
+      "tools/spatial/observe.py": "b6f32b3729955aa59ada5811af7a56b01cdca47c7b3682513c02ad115568a3d1",
+      "apps/luxoiii/luxoiii/perception/hands.py": "166ec9b797a6c9ee318e5b7b8540846b0c1243ad932d6129d844cce7a5c64161",
+      "apps/luxoiii/luxoiii/perception/face_detector.py": "ce45e877e4aede7524ff4089c6e047ea17fd88a8c303ed2132fe72499d42dad2",
+      "apps/luxoiii/models/gesture_landmarks_v1.npz": "e15bfec6814e1127431304881eed29c7ffa1160232339eedbdd295876d8d787f"
+    },
+    "commands": {
+      "observer": "/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/luxoiii/.venv/bin/python -u tools/spatial/observe.py --repo /home/arduino/IEEE-Minimalist-AI-Challenge-2026 --hybrid ",
+      "web": "/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/luxoiii/.venv/bin/python -u -m luxoiii --host 0.0.0.0 --port 8082 --observer-url http://127.0.0.1:8083 "
+    },
+    "note": "Board checkout HEAD alone does not identify running files: local runtime changes exist; source hashes identify sampled files. Hashes read during the measurement."
+  },
+  "measurement_note": "Second 60-second sample, after the initial sample had invalid observer snapshots. No runtime configuration or controls were changed between samples. All 61 snapshots were fresh. Both runs are retained; their uncontrolled scenes differ."
+}
