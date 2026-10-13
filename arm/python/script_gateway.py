@@ -35,6 +35,13 @@ def stale_axes(status):
             or a.get('sensor_error') or (a.get('magnet', 0) & 0x28) != 0x20]
 
 
+def link_failure(exc):
+    """The router socket or MCU stopped answering (RPC timeout, closed socket, lost ownership).
+    The router bridge's own exception types aren't importable on the Mac, so match by name too."""
+    return (isinstance(exc, (ConnectionError, TimeoutError, BrokenPipeError, EOFError))
+            or any(word in type(exc).__name__ for word in ('Timeout', 'Connection', 'Closed')))
+
+
 def rejection(status):
     """A firmware rejection; stale encoders (e.g. STREAM -EINVAL on a NaN angle) say so."""
     message = 'Firmware rejected command: %s' % status['error']
@@ -132,8 +139,9 @@ def serve(gateway, source=None, destination=None):
                 except Exception:
                     pass
                 failed = {'id': request_id, 'ok': False, 'error': str(exc)}
-                if getattr(exc, 'kind', None):
-                    failed['kind'] = exc.kind
+                kind = getattr(exc, 'kind', None) or ('link_lost' if link_failure(exc) else None)
+                if kind:
+                    failed['kind'] = kind
                 reply(failed)
                 return 1
     finally:

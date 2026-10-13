@@ -31,7 +31,7 @@ from .. import config as C
 from .. import events as E
 from .. import paths  # noqa: F401  (puts arm/python on sys.path)
 import arm_config as A                     # arm/python/arm_config.py (roll servo settings)
-from arm_client import ArmError, SensorStale  # arm/python/arm_client.py (no hardware imports)
+from arm_client import ArmError, LinkLost, SensorStale  # arm/python/arm_client.py (no hardware imports)
 from trajectory import trajectory_with_roll  # arm/python/trajectory.py (shared with emote.py)
 
 DT = 1.0 / C.STREAM_HZ
@@ -44,6 +44,7 @@ EASE_SPEED = 20.0                         # deg/s when easing onto a clip's firs
 OFFSET_SLEW = 25.0                        # deg/s: look-at offset changes are smoothed to this
 ROLL_RETURN_SPEED = 60.0                  # deg/s the head tilt eases back to ROLL_HOME after a clip
 ROLL_DEADBAND = 0.3                       # deg: smaller roll changes aren't sent (saves an RPC per tick)
+KEEPALIVE_S = 0.5                         # relaxed: STATUS this often (the MCU drops a silent owner after 2 s)
 
 
 class Stalled(Exception):
@@ -60,6 +61,8 @@ def fault_reason(e, context=""):
     fault (limit, timing), ERROR = a bug."""
     if isinstance(e, SensorStale):
         code = "SENSOR_STALE"           # encoder age > 100 ms / I2C error / magnet: the MCU stopped
+    elif isinstance(e, (LinkLost, ConnectionError, TimeoutError, BrokenPipeError)):
+        code = "LINK_LOST"              # gateway/router/SSH silent or gone (bounded request deadline)
     elif isinstance(e, Jammed):
         code = "STALL"
     elif isinstance(e, ArmError):
@@ -90,6 +93,7 @@ class MotionWorker(threading.Thread):
         self.arm = None
         self.give_ups = []                  # times commands were abandoned after failed retries
         self._stop = threading.Event()
+        self._last_status = 0.0             # last keepalive STATUS while relaxed
 
     # -- commands (call from the main thread) ------------------------------------
     def play(self, ref, amplitude, time_scale, token):
@@ -192,6 +196,7 @@ class MotionWorker(threading.Thread):
             try:
                 cmd = self.cmds.get(timeout=DT)
             except queue.Empty:
+                self._watch()
                 self._guard(self._hold_tick)
                 continue
             kind = cmd[0]
@@ -218,6 +223,14 @@ class MotionWorker(threading.Thread):
                 _, poses, dwell, token = cmd
                 if self._guard(self._sweep, poses, dwell, token) is None:
                     self.events.put((E.SWEEP_DONE, token, None))
+
+    def _watch(self):
+        """Between commands. Relaxed, nothing streams: a STATUS every KEEPALIVE_S keeps ownership
+        and turns a dead link into LINK_LOST now, not at the next move. Raises to FAULT."""
+        now = time.monotonic()
+        if self.relaxed and self.arm and now - self._last_status >= KEEPALIVE_S:
+            self._last_status = now
+            self.arm.status()
 
     def _guard(self, fn, *args):
         """Run a motion primitive. If a stall can't be pushed through it ends early (returns None)."""

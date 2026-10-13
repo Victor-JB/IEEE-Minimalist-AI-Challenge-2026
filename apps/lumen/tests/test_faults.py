@@ -92,5 +92,36 @@ class SensorStale(unittest.TestCase):
                          "SENSOR_STALE: connect failed: x")
 
 
+class FailingStatusArm(FakeArm):
+    def status(self):
+        super().status()
+        if self.statuses >= 3:
+            raise arm_client.LinkLost("No reply from the arm gateway in 0.25 s")
+        return {}
+
+
+class LinkLost(unittest.TestCase):
+    def test_dead_gateway_while_streaming_is_link_lost_fast(self):
+        arm = FakeArm(fail_at=10, error=arm_client.LinkLost("Arm transport closed: router socket gone"))
+        reason, took = first_fault(worker(arm))
+        self.assertTrue(reason.startswith("LINK_LOST: "), reason)
+        self.assertLess(took, 1.5)                   # 10 points at 25 Hz + the raise
+        self.assertTrue(arm.closed)
+
+    def test_lost_ownership_and_rpc_timeouts_are_link_lost(self):
+        for e in (ConnectionError("Arm ownership lost; reconnect"), TimeoutError("rpc"), BrokenPipeError()):
+            self.assertTrue(W.fault_reason(e).startswith("LINK_LOST: "), e)
+
+    def test_relaxed_worker_keeps_the_link_alive_and_notices_it_dying(self):
+        arm = FailingStatusArm()
+        w = worker(arm)
+        w.relaxed = True                             # FAULT/relax: nothing streams
+        reason, took = first_fault(w)
+        self.assertGreaterEqual(arm.statuses, 3)     # STATUS every KEEPALIVE_S keeps MCU ownership
+        self.assertEqual(arm.points, 0)
+        self.assertTrue(reason.startswith("LINK_LOST: "), reason)
+        self.assertLess(took, 3 * W.KEEPALIVE_S + 1.0)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -22,6 +22,8 @@ LIMITS = ((-45,38),(-72,79),(-80,87))
 ROUTER_SOCKET='/var/run/arduino-router.sock'
 
 class ArmError(RuntimeError): pass
+class LinkLost(ArmError):
+    """The gateway, router socket or SSH link stopped answering (timeout, EOF, broken pipe)."""
 class SensorStale(ArmError):
     """Encoder feedback is stale or invalid (age > 100 ms, I2C error, magnet); the MCU stops itself."""
 
@@ -59,11 +61,13 @@ def gateway_python():
 
 class Transport:
     """Correlated JSON over one SSH process. Closing stdin releases ownership."""
-    def __init__(self, axis=None):
+    def __init__(self, axis=None, command=None, timeout=.25):
+        """command (with its per-request timeout) replaces the gateway process; for tests."""
         if axis is not None and axis not in (0,1,2): raise ValueError('Invalid motor')
-        target,self.timeout=ssh_target()
+        target,self.timeout=(None,timeout) if command else ssh_target()
         mode=['--group'] if axis is None else ['--axis',str(axis)]
-        if target is None:
+        if command:pass
+        elif target is None:
             command=[gateway_python(),'-u',str(ROOT/'python/script_gateway.py'),*mode]
         else:
             remote=' '.join(['/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/.venv/bin/python -u /home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/python/script_gateway.py',*mode])
@@ -80,25 +84,29 @@ class Transport:
         self.serial+=1
         wire=(json.dumps({'id':self.serial,'command':command},separators=(',',':'))+'\n').encode()
         if len(wire)>2048: raise ValueError('Command too long')
-        deadline=time.monotonic()+(8 if self.first else self.timeout)
+        # Bounded: the first reply includes gateway start-up, then every request gets self.timeout.
+        # Silence, EOF or a dead pipe is LinkLost (the MCU's 300 ms lease already halts the arm).
+        wait=8 if self.first else self.timeout
+        deadline=time.monotonic()+wait
         try:
-            self.process.stdin.write(wire)
+            try:self.process.stdin.write(wire)
+            except OSError as e:raise LinkLost(f'Arm gateway is gone ({e}) '+self.errors.decode(errors='replace')[-500:]) from e
             while True:
                 if b'\n' in self.buffer:
                     line,self.buffer=self.buffer.split(b'\n',1);result=json.loads(line)
                     if result.get('id')!=self.serial: raise ArmError('Mismatched response ID')
                     self.first=False
                     if result.get('ok') is not True:
-                        kind=SensorStale if result.get('kind')=='sensor_stale' else ArmError
+                        kind={'link_lost':LinkLost,'sensor_stale':SensorStale}.get(result.get('kind'),ArmError)
                         raise kind(result.get('error','Scripting request failed'))
                     return result.get('status')
                 left=deadline-time.monotonic()
-                if left<=0: raise TimeoutError('Arm response timed out; MCU watchdog will stop motion')
+                if left<=0: raise LinkLost(f'No reply from the arm gateway in {wait:g} s; MCU watchdog will stop motion')
                 for key,_ in self.selector.select(left):
                     chunk=os.read(key.fileobj.fileno(),8192)
                     if not chunk:
                         self.selector.unregister(key.fileobj)
-                        if key.data=='out': raise ArmError('Arm transport closed: '+self.errors.decode(errors='replace')[-500:])
+                        if key.data=='out': raise LinkLost('Arm transport closed: '+self.errors.decode(errors='replace')[-500:])
                     elif key.data=='out':self.buffer+=chunk
                     else:self.errors=(self.errors+chunk)[-4096:]
                 if len(self.buffer)>65536:raise ArmError('Oversized response')

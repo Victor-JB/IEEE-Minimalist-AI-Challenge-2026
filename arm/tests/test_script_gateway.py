@@ -200,6 +200,7 @@ class ScriptGatewayTests(unittest.TestCase):
         self.bridge.fail_op = 4
         code, replies = self.run_server(request(1, 'HELLO') + request(2, 'STATUS'))
         self.assertEqual(code, 1)
+        self.assertEqual(replies[-1]['kind'], 'link_lost')          # RPC timeout = router/MCU silent
         self.assertEqual(self.ops(), [0, 4, 6, 7])
 
     def test_cleanup_failure_attempts_release_without_second_stop(self):

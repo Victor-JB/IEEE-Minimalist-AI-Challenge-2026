@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import time
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'python'))
 import arm_client as client
@@ -317,6 +318,48 @@ class ArmClientTests(unittest.TestCase):
             with self.session: raise RuntimeError('application error')
         self.assertEqual(self.transport.names()[-1], 'SHUTDOWN')
         self.assertTrue(self.transport.closed)
+
+
+class TransportLinkTests(unittest.TestCase):
+    """A real child process stands in for the gateway: silence, exit and error kinds are LinkLost /
+    SensorStale quickly, and the transport is closed (EOF makes the MCU release the arm)."""
+    def transport(self, code):
+        t = client.Transport(command=[sys.executable, '-c', code], timeout=.25)
+        t.first = False                       # past start-up: the per-request deadline applies
+        self.addCleanup(t.close)
+        return t
+
+    def test_silent_gateway_is_link_lost_within_the_deadline(self):
+        t = self.transport('import time; time.sleep(30)')
+        began = time.monotonic()
+        with self.assertRaisesRegex(client.LinkLost, r'No reply .* 0.25 s'):
+            t.request('STATUS')
+        self.assertLess(time.monotonic() - began, 2.0)     # 0.25 s deadline + bounded close
+        self.assertTrue(t.closed)
+
+    def test_gateway_exit_is_link_lost(self):
+        t = self.transport('import sys; sys.stderr.write("Arduino router is unavailable"); sys.stdin.readline()')
+        with self.assertRaises(client.LinkLost):
+            t.request('STATUS')               # replies nothing, exits after reading the request
+
+    def test_dead_gateway_pipe_is_link_lost(self):
+        t = self.transport('pass')
+        t.process.wait(timeout=5)
+        began = time.monotonic()
+        with self.assertRaises(client.LinkLost):
+            t.request('STATUS')
+        self.assertLess(time.monotonic() - began, 2.0)
+
+    def test_error_kinds_map_to_exceptions(self):
+        for kind, error in (('link_lost', client.LinkLost), ('sensor_stale', client.SensorStale)):
+            reply = json.dumps({'id': 1, 'ok': False, 'error': 'x', 'kind': kind})
+            t = self.transport(f'import sys; sys.stdin.readline(); print({reply!r}, flush=True)')
+            with self.subTest(kind=kind), self.assertRaises(error):
+                t.request('STATUS')
+        t = self.transport('import sys; sys.stdin.readline(); print(\'{"id":1,"ok":false,"error":"x"}\', flush=True)')
+        with self.assertRaises(client.ArmError) as caught:
+            t.request('STATUS')
+        self.assertNotIsInstance(caught.exception, (client.LinkLost, client.SensorStale))
 
 
 if __name__ == '__main__': unittest.main()
