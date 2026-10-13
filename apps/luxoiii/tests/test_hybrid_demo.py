@@ -41,17 +41,29 @@ class BehaviorTests(unittest.TestCase):
         for i in range(100):d.update(20+i*.25,[],[h])
         self.assertEqual(d.level,.8)
 
-    def test_open_palm_latches_stop_and_requires_resume(self):
-        d=Demo();d.state='ILLUMINATE';h=hand('open_palm')
-        for t in [10,10.4,10.8,11.2]:d.update(t,[],[h])
-        self.assertEqual(d.state,'STOPPED');self.assertFalse(d.snapshot(12)['light_requested'])
-        for t in [12,12.5,13]:d.update(t,[],[hand()],target=dict(point=[.4,0,0],pose=[0,-18,65,70,0]))
-        self.assertEqual(d.state,'STOPPED');d.resume(14);self.assertEqual(d.state,'IDLE')
+    def test_stationary_open_palm_greets_once_and_never_stops(self):
+        for state in ('IDLE','ATTENTIVE','ACK','ILLUMINATE'):
+            d=Demo();d.state=state;d.entered=10;h=hand('open_palm')
+            d.update(10,[],[h]);self.assertFalse(d.event.startswith('Open palm'))
+            d.update(10.5,[],[h]);self.assertEqual(d.event,'Open palm · hello back')
+            serial=d.serial
+            for i in range(1,40):d.update(10.5+i*.25,[],[h])
+            self.assertNotEqual(d.state,'STOPPED');self.assertEqual(d.serial,serial)
 
-    def test_wave_produces_greeting(self):
-        d=Demo()
-        for t,x in [(10,300),(10.4,350),(10.8,300),(11.2,350)]:d.update(t,[],[hand(None,x)])
-        self.assertEqual(d.event,'Wave · hello back')
+    def test_open_palm_rearms_after_release_with_cooldown(self):
+        d=Demo();h=hand('open_palm')
+        d.update(10,[],[h]);d.update(10.5,[],[h]);serial=d.serial
+        d.update(11,[],[]);d.update(11.3,[],[h]);d.update(11.8,[],[h])
+        self.assertEqual(d.serial,serial)
+        for t in (12.2,12.6,13,13.5):d.update(t,[],[h])
+        self.assertEqual(d.serial,serial+1)
+
+    def test_only_explicit_stop_latches_until_resume(self):
+        d=Demo();d.stop(10)
+        for i in range(20):d.update(10.2+i*.3,[],[hand('open_palm')])
+        self.assertEqual(d.state,'STOPPED');self.assertEqual(d.event,'Stopped · lamp off')
+        d.resume(20);d.update(20.2,[],[hand('open_palm')]);d.update(20.7,[],[hand('open_palm')])
+        self.assertEqual(d.event,'Open palm · hello back');self.assertEqual(d.state,'ATTENTIVE')
 
     def test_arrivals_group_greeting_and_quiet_return(self):
         d=Demo();face=SimpleNamespace(x=200,w=80,h=80)
@@ -65,11 +77,6 @@ class BehaviorTests(unittest.TestCase):
         d.state='ILLUMINATE';d.last_seen=23
         self.assertEqual(d.update(34,[],[])['state'],'IDLE')
 
-    def test_moving_open_palm_waves_instead_of_triggering_stop(self):
-        d=Demo()
-        for t,x in [(10,300),(10.4,350),(10.8,300),(11.2,350)]:
-            d.update(t,[],[hand('open_palm',x)])
-        self.assertEqual(d.state,'ATTENTIVE');self.assertEqual(d.event,'Wave · hello back')
 
 
 class Bridge:

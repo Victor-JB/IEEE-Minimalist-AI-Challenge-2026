@@ -74,19 +74,23 @@ scene only. The hardware RPC allowlist contains claim/status/release and pivot c
 no stepper configuration, move, stream, jog or power-enable commands are sent. An owned or awake
 arm is refused. Browser heartbeat expiry (3 s), stale camera/encoders and Stop disable outputs.
 
-The digital arm uses the original authored clips, with gestures taking priority over social loops:
+The digital arm uses the full-model branch’s absolute choreography with blended additive expressions. Gestures take priority over social loops:
 
-- After ten seconds without a face or hand: idle breathing and occasional room-scanning loops.
-- First arrival: perk-up greeting or double-take. Another person joining for at least 0.8 s elicits
-  a curious greeting. Detection counts are not identity tracking.
-- After eight seconds without an accepted gesture: curious tilts, leaning, a playful wave/bounce,
-  and attentive breathing while someone remains visible.
+- After ten seconds without a face or hand: settle into the original sleep pose, breathe and occasionally stretch or look around.
+- First arrival: wake/stretch or a full-body greeting. Another person joining for at least 0.8 s elicits
+  a look-around greeting. The digital arm shares attention across visible face positions every 3.5–5.5 s; proximity matching stabilizes detection ordering, without identity recognition.
+- After eight seconds without an accepted gesture: curious tilts, leaning, happy bounces mixed with
+  dance/sway, then a pause for a response. Unanswered invitations grow farther apart. A hand gesture
+  cancels the invitation immediately; stale events are never queued or replayed.
 - Point downward for 0.4 s: intersect the estimated finger ray with the simulated desk. Reachable
   points 20–65 cm forward and within 30 cm sideways receive a nod, an IK aiming pose, and a visible
-  simulated light cone and target ring. Invalid points produce a shrug.
+  simulated light cone and target ring. Invalid points produce a head shake.
 - Thumbs up/down for 0.4 s: simulated brighter/closer or dimmer/further, at most once per second.
-- A moving palm can wave. A **still** open palm held for one second latches Stop, freezes the
-  digital arm and releases physical tracking. Choose **Resume gestures**, then enable tracking.
+- Show an open palm for 0.4 s (at least two detections): the simulated arm greets back, in any
+  active state. No lateral movement is required. A held palm triggers once; lower and show it again
+  to repeat, with a three-second cooldown. Palm detections never pause gestures or tracking.
+- Gestures stay active by default. Only the on-screen **Stop & lamp off** button latches Stop;
+  **Resume gestures** restores social interaction and the saved tracking preference.
 
 Targeting uses the saved joint calibration and fixed assumptions: 100° HFOV, 8 cm palm width,
 5 cm axial camera mount, no mount rotation, zero base yaw, and zero released pivot. The user
@@ -104,14 +108,26 @@ recognition, replace the regular behavior machine, or establish competition effi
 
 The always-visible angle row shows all three calibrated encoder readings and the head servo’s
 command estimate (there is no swivel encoder). **Follow measured joints** puts the complete CAD
-model at that pose. In **AI-driven simulated arm**, the measured pose anchors the original authored
-motion curves: perk-up on arrival, curious tilts and breathing while attentive, a wave in response,
-a nod for accepted pointing/brightness changes, and a shrug for an unreachable desk point. Accepted
-desk targets use the simulated IK pose with gentle loops. The digital head roll does not copy the
-physical tracker; pitch encoder readings provide its neutral pose. The camera and amber physical skeleton always use telemetry.
-**Show emotions** cycles the authored clips without creating AI events or physical commands. The
-browser samples sparse per-joint curves at display rate; the lamp’s unsupported wrist-yaw channel
-is omitted. **People + robot** fits the wider scene; **3D** returns to a closer arm view.
+model at that pose. **AI-driven simulated arm** uses independent full-body poses from
+`full-model-animations@ef1b0d2057c5e449a0e02638a1ff7d5b58dd3cbd`, not a measured-pose baseline.
+The camera and amber physical skeleton always use telemetry. Physical swivel limits are unchanged.
+
+`arm/clips/full-model.json` contains 11 absolute action timelines extracted from `lamp_demo.py`
+and six additive oscillations from `elegnt_demo.py`: breathe, nod, shake, bounce, dance and sway.
+The original full show retains all source poses, minimum-jerk timing and per-joint stagger.
+Short actions select passages for interaction; the mixer adds breathing, gentle spatial attention,
+and layered responses with smooth entry/return transitions. Browser oscillator amplitudes use
+source expression values without physical stepper caps. This is a kinematic animation adaptation,
+not MuJoCo physics or a collision-validated combination of the original movements.
+Regenerate with `python3 scripts/import_full_model_animations.py`; the importer parses literals
+and numeric expressions without executing branch code, and records source hashes.
+
+Pointing/illumination reserves the desk aiming pose. Brief additive acknowledgments settle back
+onto the exact target pose; breathing, gaze and unsolicited body motions yield to this task.
+**Show emotions** cycles full-body animations. **Try an animation mix** lets you combine any
+source action (including the original full show) with a nod, wag, bounce, or dance + sway.
+These previews are digital only; **AI-driven simulated arm** returns to interaction.
+**People + robot** fits the wider scene; **3D** returns to a closer arm view.
 
 Camera capture now retries after USB disconnection while a viewer remains connected. A capture
 error clears its cached image and FPS; a timeout never retransmits the previous JPEG. The observer

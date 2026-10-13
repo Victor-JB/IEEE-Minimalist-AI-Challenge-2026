@@ -1,80 +1,172 @@
-/* Original authored curves, sampled locally at display rate. Simulation only. */
+/* Full-model choreography + ELEGNT additive layers. Browser animation only. */
 (function(root) {
 'use strict';
-const names=['base_yaw','shoulder_pitch','elbow_pitch','wrist_pitch','head_roll'];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-function curve(frames,name,t) {
- const ks=frames.filter(k=>Number.isFinite(k.joints[name]));
- if(!ks.length)return 0;
- if(t<=ks[0].t)return ks[0].joints[name];
- const i=ks.findIndex(k=>k.t>=t);
- if(i<0)return ks.at(-1).joints[name];
- const a=ks[i-1],b=ks[i],h=b.t-a.t,s=(t-a.t)/h,v=a.joints[name],w=b.joints[name];
- if(b.ease==='cubic') {
-  const tangent=j=>j>0&&j<ks.length-1&&ks[j].ease==='cubic'&&ks[j+1].ease==='cubic'?
-   (ks[j+1].joints[name]-ks[j-1].joints[name])/(ks[j+1].t-ks[j-1].t):0;
-  return (2*s**3-3*s*s+1)*v+(s**3-2*s*s+s)*h*tangent(i-1)+(-2*s**3+3*s*s)*w+(s**3-s*s)*h*tangent(i);
+const smooth=t=>{const s=clamp(t,0,1);return s*s*s*(10+s*(-15+6*s));};
+const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
+const zero=()=>[0,0,0,0,0];
+const labels={wake:'Oh, hello!',greet:'Hello back!',curious:'What are you thinking?',peek:'Can I help?',nod:'Got it',shake:'Try pointing a little lower',joy:'Happy to see you',look_around:'Hello, everyone',sleep:'Getting comfortable',stretch:'A little stretch',full_show:'Original full-model choreography'};
+
+function trajectory(clip,t) {
+ const q=[...clip.start];
+ for(const s of clip.segments) {
+  if(t<s.t)break;
+  for(let j=0;j<5;j++) {
+   const local=t-s.t-j*s.stagger;
+   if(local>0)q[j]=s.start[j]+(s.end[j]-s.start[j])*smooth(local/s.duration);
+  }
  }
- const e=b.ease==='linear'?s:b.ease==='ease_in'?s**3:b.ease==='ease_out'?1-(1-s)**3:s**3*(s*(6*s-15)+10);
- return v+(w-v)*e;
+ return q;
+}
+function oscillation(spec,t,loop=false) {
+ if(!spec || t<0 || !loop&&t>spec.duration)return zero();
+ // Preserve ELEGNT's soft attack/release; looping breath stays continuous.
+ const ramp=loop?1:clamp(Math.min(t/spec.ramp,(spec.duration-t)/spec.ramp),0,1);
+ const env=Math.sin(Math.PI*.5*ramp)**2;
+ return spec.amplitude.map((a,i)=>env*a*Math.sin(2*Math.PI*spec.frequency*t+spec.phase[i]));
 }
 class Emotions {
- constructor(clips={}) {this.clips=clips;this.current=null;this.event=null;this.state=null;this.cycle=0;this.until=0;this.label='Ready';this.demoIndex=0;}
+ constructor(library={},random=Math.random) {
+  this.clips=library;this.random=random;this.current=null;this.layers=[];
+  this.event=null;this.state=null;this.until=0;this.cycle=0;this.invites=0;
+  this.label='Resting';this.detail='Gentle breathing';this.lastPose=null;
+  this.lastTime=null;this.attention=zero();this.energy=.35;this.showcase=false;
+  this.attentionIndex=0;this.attentionUntil=0;this.attentionPoint=null;
+ }
  play(ref,now) {
-  const clip=this.clips[ref];if(!clip)return;
-  this.current=clip;this.started=now;this.scale=1.15;this.duration=Math.max(...clip.keyframes.map(k=>k.t))*this.scale;
-  this.until=now+this.duration+1.3;this.label=ref.split('__')[0].replaceAll('_',' ');
+  const clip=this.clips.clips?.[ref];if(!clip)return;
+  this.current={ref,clip,started:now,from:[...(this.lastPose||clip.start)],entry:.65};
+  this.until=now+.65+clip.duration+2+this.random()*2;
+  this.label=labels[ref]||ref;this.returning=null;
+ }
+ layer(ref,now,weight=1) {
+  const spec=this.clips.overlays?.[ref];if(!spec)return;
+  this.layers.push({ref,spec,started:now,weight});
+ }
+ release(now) {
+  this.current=null;
+  this.returning=this.lastPose?{from:[...this.lastPose],started:now}:null;
+ }
+ reset(now) {
+  this.release(now);this.layers=[];this.state=null;this.event=null;this.until=now;
+ }
+ preview(ref,accents,now) {
+  this.reset(now);this.showcase=true;this.state='SHOWCASE';this.play(ref,now);
+  for(const accent of accents)this.layer(accent,now+.8,accent==='sway'?.45:.7);
+ }
+ lookAt(data,now,dt,enabled) {
+  const people=(data?.people||[]).filter(p=>p.world?.every(Number.isFinite));
+  let goal=zero();
+  if(enabled && people.length) {
+   // Hold attention for several seconds, then include another person in the group.
+   // Proximity matching stabilizes reordered detections; this is not identity tracking.
+   if(now>=this.attentionUntil) {
+    this.attentionIndex=(this.attentionIndex+1)%people.length;
+    this.attentionPoint=people[this.attentionIndex].world;
+    this.attentionUntil=now+3.5+this.random()*2;
+   }
+   const old=this.attentionPoint||people[0].world;
+   const person=people.reduce((best,p)=>Math.hypot(...p.world.map((v,i)=>v-old[i]))<Math.hypot(...best.world.map((v,i)=>v-old[i]))?p:best);
+   this.attentionPoint=person.world;
+   const [x,y]=person.world;
+   goal[0]=clamp(Math.atan2(y,x)*180/Math.PI,-65,65);
+   goal[4]=clamp(goal[0]*.12,-7,7);
+  }
+  // Different response times give overlapping head/body follow-through.
+  this.attention=this.attention.map((v,i)=>v+(goal[i]-v)*(1-Math.exp(-dt*(i===4?5:2))));
+  return this.attention;
  }
  sample(data,now,showcase=false) {
-  const d=data?.demo||{},state=d.state||'IDLE';
-  const measured=data?.camera?[0,...data.camera.joints,0]:[0,-20,65,35,0];
-  const base=!showcase&&state==='ILLUMINATE'&&d.pose?[...d.pose]:measured;
-  if(!showcase && state==='STOPPED'){this.current=null;this.state=state;this.label='Stopped';return null;}
-  let ref=null;
-  if(showcase) {
-   if(now>=this.until)ref=['perk_up__small','curious_head_tilt__single','tail_wag__small','nod_yes__medium','shrug_fail__small','idle_breathe__calm'][this.demoIndex++%6];
-   // Return to live behavior immediately when the showcase ends.
-   this.event=null;this.state=null;
-  } else {
-   if(d.event_id!==this.event) {
-    const e=d.event||'';this.event=d.event_id;
-    // Do not replay an old gesture when opening/reconnecting the page.
-    if(d.event_age_s<3) {
-     if(e.startsWith('Hello'))ref='perk_up__small';
-     else if(e.startsWith('More company'))ref='curious_head_tilt__single';
-     else if(e.startsWith('Wave'))ref='tail_wag__small';
-     else if(e.startsWith('Point accepted'))ref='nod_yes__medium';
-     else if(e.startsWith('Point downward')&&this.current?.name!=='shrug_fail')ref='shrug_fail__small';
-     else if(e.startsWith('Brighter')||e.startsWith('Dimmer'))ref='nod_yes__small_calm';
+  const lib=this.clips;if(!lib.poses)return null;
+  const d=data?.demo||{},state=showcase?'SHOWCASE':(d.state||'IDLE');
+  const dt=this.lastTime===null?0:clamp(now-this.lastTime,0,.1);this.lastTime=now;
+  if(state==='STOPPED') {this.reset(now);this.state=state;this.label='Stopped';this.detail='Resume when ready';return null;}
+  if(this.showcase!==showcase){this.reset(now);this.showcase=showcase;}
+  const task=state==='ILLUMINATE'||state==='ACK';
+  const visible=(data?.people?.length||data?.hands?.length||0)>0;
+  let base=[...(task&&d.pose?d.pose:state==='IDLE'?lib.poses.sleep:lib.poses.look)];
+  const previous=this.state;
+  if(previous!==state) {
+   this.release(now);this.until=now+(state==='IDLE'?12:3);
+   if(state==='IDLE' && previous && previous!=='STOPPED')this.play('sleep',now);
+   this.state=state;
+  }
+  // Gesture events preempt invitations. Never queue stale reactions or replay a reconnect.
+  if(!showcase && d.event_id!==this.event) {
+   this.event=d.event_id;
+   if(d.event_age_s>=0 && d.event_age_s<3) {
+    const event=d.event||'';
+    if(/^(Hello|More company|Open palm|Point |Brighter|Dimmer)/.test(event)) {
+     this.release(now);this.layers=[];this.invites=0;this.until=now+5;
+     this.energy=Math.min(1,this.energy+.3);
+     if(event.startsWith('Hello'))this.play(previous==='IDLE'?'wake':'greet',now);
+     else if(event.startsWith('More company')){this.play('look_around',now);this.layer('nod',now+.8,.5);}
+     else if(event.startsWith('Open palm')) {
+      if(!task)this.play(this.cycle++%2?'joy':'greet',now);
+      this.layer('shake',now+.2,task?.35:1);
+      this.layer('bounce',now+.65,task?.12:.6);
+      this.label='Hello back!';
+     } else if(event.startsWith('Point accepted')) {
+      this.layer('nod',now,.6);this.label='That spot? Got it';
+     } else if(event.startsWith('Point downward')) {
+      if(!task)this.play('shake',now);
+      this.layer('shake',now,.5);this.label='Try pointing a little lower';
+     } else {this.layer('nod',now,.3);this.label=event.startsWith('Brighter')?'A little brighter':'A little softer';}
     }
-   }
-   if(state!==this.state) {
-    if(!ref&&state==='ATTENTIVE')ref='double_take__subtle';
-    if(state==='ILLUMINATE'){this.current=null;this.until=now+2;}
-    if(state==='IDLE'){this.current=null;this.until=now;}
-    this.state=state;
-   }
-   if(!ref&&now>=this.until&&state!=='ACK') {
-    const pool=state==='ATTENTIVE'?(d.interaction_idle_s>8?['curious_head_tilt__single','lean_in_interest__subtle','tail_wag__small','excited_bounce__medium','idle_breathe__alert']:['idle_breathe__alert','curious_head_tilt__single','lean_in_interest__subtle']):
-     state==='ILLUMINATE'?['idle_breathe__calm','nod_yes__small_calm']:['idle_breathe__calm','idle_breathe__calm','scan_room__calm'];
-    if(pool.length)ref=pool[this.cycle++%pool.length];
    }
   }
-  if(ref)this.play(ref,now);
+  if(showcase && now>=this.until) {
+   const choices=['wake','curious','peek','nod','shake','joy','look_around','sleep'];
+   const ref=choices[this.cycle++%choices.length];this.play(ref,now);
+   if(ref==='joy'){this.layer('dance',now+.7,.7);this.layer('sway',now+.7,.45);}
+   else if(ref==='curious')this.layer('nod',now+1,.4);
+  } else if(!showcase && now>=this.until && !this.current && !task) {
+   if(state==='IDLE') {
+    this.play(this.cycle++%3===2?'look_around':'stretch',now);
+    this.until+=12+this.random()*8;
+   } else if(visible && d.interaction_idle_s>8) {
+    const choices=['curious','peek','joy','look_around'];
+    const ref=choices[this.cycle++%choices.length];this.play(ref,now);
+    if(ref==='joy'){this.layer('dance',now+.7,.65);this.layer('sway',now+.7,.4);}
+    else if(ref==='curious')this.layer('nod',now+1,.35);
+    // Invite, then wait for an answer. Back off when invitations go unanswered.
+    this.invites++;this.until+=Math.min(20,this.invites*4);
+   }
+  }
   if(this.current) {
-   const c=this.current,t=Math.max(0,(now-this.started)/this.scale);
-   // Use source curves with sparse per-joint timing and their original easing.
-   names.forEach((name,i)=>{
-    if(c.joint_mask.includes(name)) {
-     const offset=curve(c.keyframes,name,t);
-     base[i]=c.mode==='additive'?base[i]+offset*.8:offset;
-    }
-   });
-   if(now-this.started>this.duration){this.current=null;this.label=state==='ILLUMINATE'?'Holding the selected spot':'Listening';}
-  } else if(state==='ILLUMINATE')this.label='Holding the selected spot';
-  return base.map((v,i)=>clamp(v,...[[-60,60],[-35,20],[-10,90],[-60,110],[-35,35]][i]));
+   const action=this.current,elapsed=now-action.started;
+   const target=trajectory(action.clip,Math.max(0,elapsed-action.entry));
+   base=mix(action.from,target,smooth(elapsed/action.entry));
+   if(elapsed>=action.clip.duration+action.entry)this.release(now);
+  } else if(this.returning) {
+   const amount=smooth((now-this.returning.started)/.75);
+   base=mix(this.returning.from,base,amount);
+   if(amount>=1)this.returning=null;
+  }
+  this.layers=this.layers.filter(l=>now-l.started<=l.spec.duration);
+  const targetEnergy=state==='IDLE'?.2:task?.25:(d.interaction_idle_s>15?.4:.7);
+  this.energy+=(targetEnergy-this.energy)*(1-Math.exp(-dt*.35));
+  const breath=oscillation(lib.overlays.breathe,now,true);
+  // Breathing can mix with a body action; a selected desk pose stays steady.
+  if(!task)base=base.map((v,i)=>v+breath[i]*(state==='IDLE'?.5:.3));
+  const attention=this.lookAt(data,now,dt,!task&&!showcase&&state==='ATTENTIVE');
+  const attentionWeight=task||showcase||state==='IDLE'?0:this.current?.ref==='look_around'?.15:.7;
+  base=base.map((v,i)=>v+attention[i]*attentionWeight);
+  for(const layer of this.layers) {
+   const offset=oscillation(layer.spec,now-layer.started);
+   base=base.map((v,i)=>v+offset[i]*layer.weight*(.65+.35*this.energy));
+  }
+  if(!this.current&&!this.layers.length) {
+   this.label=task?'Holding your spot':state==='IDLE'?'Resting':visible?'Listening to you':'Where did you go?';
+  }
+  const activeLayers=this.layers.filter(l=>now>=l.started).map(l=>({shake:'head wag',bounce:'happy bounce',nod:'a small nod',dance:'dance',sway:'sway'})[l.ref]||l.ref);
+  this.detail=[this.current?'Full-body expression':task?'Steady desk light':'A quiet pause',
+   ...activeLayers,!task?'gentle breathing':null,attentionWeight&&visible?'attention toward you':null].filter(Boolean).join(' · ');
+  // CAD joint ranges, independent of the failed steppers and ±45° physical swivel.
+  this.lastPose=base.map((v,i)=>clamp(v,i===4?-135:-180,i===4?135:180));
+  return [...this.lastPose];
  }
 }
 root.LuxoiiiEmotions=Emotions;
-if(typeof module!=='undefined')module.exports={Emotions,curve};
+if(typeof module!=='undefined')module.exports={Emotions,trajectory,oscillation,smooth};
 })(globalThis);
