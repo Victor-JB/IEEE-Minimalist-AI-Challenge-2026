@@ -70,6 +70,17 @@ details { border-bottom:1px solid var(--rule); padding:18px 0; } details details
 .lux-performance .perf-method summary{cursor:pointer;color:var(--perf-ink);padding:5px 0;margin-bottom:12px}
 .lux-performance .perf-method p{margin-bottom:12px}
 .lux-performance .perf-links{display:flex;flex-wrap:wrap;gap:10px 24px;font-size:.85rem;margin:20px 0 0}
+.lux-performance .training-story{padding:32px 0;margin-bottom:24px;border-bottom:1px solid var(--perf-line)}
+.lux-performance .training-intro{max-width:900px;font-size:.95rem}
+.lux-performance .training-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;list-style:none;padding:0;margin:26px 0 30px}
+.lux-performance .training-flow li{border-top:1px solid var(--perf-line);padding-top:12px}
+.lux-performance .training-flow strong{display:block;font:27px/1.2 var(--serif);font-weight:400;margin-bottom:7px}
+.lux-performance .training-flow span{font-size:.85rem;color:var(--perf-muted)}
+.lux-performance .training-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 40px}
+.lux-performance .training-grid h4{font:23px/1.2 var(--serif);font-weight:400;margin:0 0 12px}
+.lux-performance .training-grid p{font-size:.95rem;max-width:650px}
+.lux-performance .training-story .perf-method{margin-top:12px}
+@media(max-width:700px){.lux-performance .training-grid{grid-template-columns:1fr;gap:12px}.lux-performance .training-flow{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}}
 @media(max-width:980px){.lux-performance .perf-grid{grid-template-columns:1fr;gap:28px}.lux-performance figcaption{min-height:0;margin-bottom:20px}.lux-performance .perf-row{grid-template-columns:90px minmax(0,1fr) 100px}.lux-performance .perf-axis{margin-left:100px;margin-right:110px}.lux-performance .perf-accuracy{grid-template-columns:1fr;gap:15px}}
 @media(max-width:480px){.lux-performance{padding:32px 0}.lux-performance .perf-row{grid-template-columns:62px minmax(0,1fr) 82px;gap:8px}.lux-performance .perf-axis{margin-left:70px;margin-right:90px}.lux-performance .perf-value{font-size:1.2rem}.lux-performance th,.lux-performance td{padding:12px 7px}.lux-performance .perf-table-wrap{font-size:.82rem}}
 @media(prefers-contrast:more){.lux-performance{--perf-muted:#514a3d;--perf-line:#807665;--perf-before:#514a3d;--perf-after:#a5640b}}
@@ -180,6 +191,47 @@ details { border-bottom:1px solid var(--rule); padding:18px 0; } details details
       </table>
     </div>
   </div>
+
+  <section class="training-story" aria-labelledby="training-title">
+    <h3 id="training-title">How we trained the gesture model</h3>
+    <p class="training-intro">We kept the pretrained face, palm and hand-landmark image models. We trained the small network that reads the hand’s shape and chooses a gesture. Our old rules compared fingertip distances to the wrist; pointing toward the camera can shorten those distances in the image. Learning from examples lets us use the whole hand shape while reusing the landmarks we already compute.</p>
+    <ol class="training-flow" aria-label="Gesture classifier architecture">
+      <li><strong>21 landmarks</strong><span>We take each hand joint’s 2D position.</span></li>
+      <li><strong>106 features</strong><span>We describe hand shape and finger direction.</span></li>
+      <li><strong>48 hidden units</strong><span>We learn combinations of those features.</span></li>
+      <li><strong>5 outcomes</strong><span>Point, open palm, thumb up, thumb down, or no command.</span></li>
+    </ol>
+    <div class="training-grid">
+      <div>
+        <h4>We started with labeled examples.</h4>
+        <p>We used the public HaGRIDv2 dataset: human gesture labels paired with automatically generated MediaPipe landmarks. Our training set contains 28,819 hands from 13,428 people, including secondary hands. We mapped “one” and “point” to pointing, “palm” to open palm, and “like” / “dislike” to thumb up / down. Fist, peace, OK and other non-command hands teach the model when to do nothing.</p>
+      </div>
+      <div>
+        <h4>We gave the network useful geometry.</h4>
+        <p>We center and scale the landmark coordinates, then add positions relative to the palm, finger bends, straightness, fingertip-to-wrist distance ratios and thumb direction. This reduces dependence on where the hand appears and how large it is. We retain image orientation so thumb up and thumb down remain different. The network has 5,381 float32 parameters; its saved weights occupy 21,168 bytes.</p>
+      </div>
+      <div>
+        <h4>We balanced and varied the training data.</h4>
+        <p>We trained for 100 epochs with equal sampling across the five outcomes, so common non-command poses did not overwhelm smaller gesture classes. We augmented about half the sampled hands with rotations, horizontal flips, aspect changes and small coordinate noise. We limited thumb rotations to about ±20° to preserve up/down meaning. This varies the training landmarks; it does not simulate camera motion blur.</p>
+      </div>
+      <div>
+        <h4>We tested on people the model had not seen.</h4>
+        <p>We selected the checkpoint using 4,447 validation hands from 1,551 different people, maximizing average recall across the five classes. Epoch 100 was selected. We then froze the model and thresholds before testing 210 fresh photos from 189 further people, with no training or validation subject overlap. We ran those photos through the actual UNO Q image models, so the results above include missed or poorly localized hands.</p>
+      </div>
+    </div>
+    <p class="perf-scope">We achieved 98.0% classification accuracy on the supplied validation landmarks. That assumes usable landmarks: our complete image-to-gesture test on public photographs reached 67.2% recall, including missed hands. We still cannot classify a hand that the image models fail to locate. Recognizing “point” and estimating its desk location are separate steps; this network was not trained to predict desk coordinates.</p>
+    <details class="perf-method">
+      <summary>Training recipe &amp; deployment</summary>
+      <p>We implemented training in NumPy with seed 103, batches of 256, softmax cross-entropy and Adam. Each epoch samples 5,000 hands per output class with replacement. We start the learning rate at 0.0015 and reduce it each epoch, with an L2 weight penalty of 0.0001. The hidden layer uses ReLU and the output layer produces five softmax scores.</p>
+      <p>We select checkpoints by validation macro recall: the mean of the five class recalls, giving each outcome equal weight. We keep training, validation and final test subjects separate and record input hashes, training history and the frozen model hash. We do not tune on the final test results.</p>
+      <p>We load the weights once on the UNO Q and classify each detected hand with two small matrix multiplications. If the highest score is below 0.5, we return no command. Gesture holds and animation choices remain in our interaction logic. This adds about 1.2 ms per hand without another image-model pass.</p>
+    </details>
+    <nav class="perf-links" aria-label="Gesture training evidence">
+      <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/apps/luxoiii/models/gesture_landmarks_v1.md" target="_blank" rel="noopener noreferrer">Model card &amp; dataset attribution</a>
+      <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/tools/efficiency/train_gesture_classifier.py" target="_blank" rel="noopener noreferrer">Training code</a>
+      <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/reports/gestures/training-report.json" target="_blank" rel="noopener noreferrer">Training history &amp; validation results</a>
+    </nav>
+  </section>
 
   <p class="perf-scope">We use the supplied 8-bit image models on the UNO Q CPU. We have not measured power savings or memory reduction. The live observation loop is capped at four updates per second.</p>
   <p class="perf-scope">Next, we would improve hand localization, test motion blur and overlapping hands in real video, and repair the stepper joints to bring the full expressions into the physical lamp.</p>
