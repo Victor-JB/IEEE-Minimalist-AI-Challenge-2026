@@ -23,25 +23,43 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
 .small { font-size:13px; } .state { color:#75dfd0; }
 </style>
 <main>
-<header><h1>luxoiii</h1><span class="badge">LIVE PERCEPTION · READ-ONLY VIEW</span></header>
-<p>People in the robot’s camera space. <span style="color:#80f9d8">Mint: estimated face positions.</span> <span style="color:#ffbc65">Amber: physical head and camera.</span><br>Complete arm and base, with an X-ray case to reveal the internal cams.</p>
+<header><h1>luxoiii</h1><span class="badge">EDGE AI · HYBRID DEMO</span></header>
+<p>People in the robot’s camera space. <span style="color:#80f9d8">Mint: faces.</span> <span style="color:#c5a5ff">Violet: estimated hand skeletons.</span> <span style="color:#ffbc65">Amber: physical head and camera.</span><br>Complete arm and base, with an X-ray case to reveal the internal cams.</p>
+<section class="live" style="display:block">
+<h2>Gesture-controlled desk light</h2>
+<p id="demoStatus">Waiting for the on-board AI…</p>
+<p class="small">☝ Point down at a desk spot · 👍 Brighter / closer · 👎 Dimmer / further · ✋ Hold an open palm for 1 second to stop · 👋 Slow wave to say hello</p>
+<progress id="gestureProgress" max="1" value="0" aria-label="Gesture hold progress"></progress>
+<div class="toolbar"><button id="aiMode" aria-pressed="true">AI-driven simulated arm</button><button id="hardware" aria-pressed="false">Enable real lamp + pivot</button><button id="stopDemo" style="border-color:#ed8585">Stop & lamp off</button><button id="resumeDemo">Resume gestures</button></div>
+<p class="small" id="outputStatus">Real outputs disabled. Broken stepper joints move only in the model.</p>
+<div class="toolbar" aria-label="Physical swivel controls"><button data-swivel="-8">Swivel −8°</button><button data-swivel="0">Center swivel</button><button data-swivel="8">Swivel +8°</button><button id="autoSwivel">Automatic swivel</button></div>
+<p class="small">Real swivel: limited to ±10°. Manual swivel keeps the lamp off. Automatic mode gives small head reactions to people and waves.</p>
+</section>
+<section class="sliders" aria-label="Live physical joint angles" style="border:1px solid #775f3c;margin-bottom:16px">
+<label>Real shoulder <output id="realShoulder">Waiting…</output></label>
+<label>Real elbow <output id="realElbow">Waiting…</output></label>
+<label>Real head pitch <output id="realHead">Waiting…</output></label>
+<label>Real head swivel <output id="realPivot">Waiting…</output></label>
+</section>
+<p class="small">Pitch angles are encoder measurements. Swivel is the servo’s command estimate, without position feedback. The amber skeleton shows the physical arm; expressive animation starts from its measured pose.</p>
 <div class="toolbar">
  <button data-shell="xray" aria-pressed="true">X-ray case</button><button data-shell="solid" aria-pressed="false">Solid case</button><button data-shell="hidden" aria-pressed="false">Hide case</button>
  <button data-cam="3d">3D</button><button data-cam="side">Side</button><button data-cam="front">Front</button>
- <button id="peopleView">People + robot</button><button id="example" aria-pressed="false">Example person</button><button id="follow" aria-pressed="true">Follow measured joints</button><button id="play" aria-pressed="false">Play animation</button><button id="reset">Reset pose</button>
+ <button id="peopleView">People + robot</button><button id="example" aria-pressed="false">Example person</button><button id="follow" aria-pressed="false">Follow measured joints</button><button id="play" aria-pressed="false">Show emotions</button><button id="reset">Reset pose</button>
 </div>
 <div class="stage"><canvas id="cad" aria-label="Full luxoiii arm and base with transparent shells and animated internal cams"></canvas><canvas id="labels" aria-hidden="true"></canvas></div>
 <p id="exampleNote" style="color:#ffbc65" hidden>EXAMPLE PERSON · illustrative marker at 1 m forward and 0.2 m right of the live camera. This is not a detection.</p>
 <div id="cadmsg">Loading full assembly…</div>
-<p class="small">Arm model: <span class="state" id="state">Waiting for measured joints</span> · Drag to orbit, scroll to zoom. Lamp stays off in this mechanical preview.</p>
+<p class="small">Arm model: <span class="state" id="state">Waiting for measured joints</span> · Drag to orbit, scroll to zoom. The amber camera follows physical readings; the full model can move independently.</p>
 <section class="live">
- <div><div class="videoFrame"><img id="video" alt="Latest image from the robot camera, used for face detection"><div id="faceBoxes"></div></div><div class="small" id="frameInfo">Waiting for camera…</div></div>
- <div><h2>Where the camera sees people</h2><p id="health" role="status">Connecting to the UNO Q…</p><p id="people">Waiting for detections…</p><p class="small">Depth uses apparent face width, so distance is approximate. Symbols mark faces, not tracked body joints. Sideways and vertical positions are relative to the camera.</p></div>
+ <div><div class="videoFrame"><img id="video" alt="Latest image from the robot camera, used for face detection"><div id="faceBoxes"></div><svg id="handOverlay" viewBox="0 0 640 480" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></svg></div><div class="small" id="frameInfo">Waiting for camera…</div></div>
+ <div><h2>Where the camera sees people</h2><p id="health" role="status">Connecting to the UNO Q…</p><p id="people">Waiting for detections…</p><p id="handsText" style="color:#c5a5ff">Waiting for hand detection…</p><p id="pipeline" class="small"></p><p class="small">Depth uses assumed face and palm width, so distance and finger direction are approximate. Symbols mark faces, not tracked body joints. Sideways and vertical positions are relative to the camera.</p></div>
 </section>
 <details><summary>Camera calibration & assumptions</summary>
-<p class="small">The camera moves with the head pivot. Starting assumptions: 60° horizontal view, 16 cm face width, camera 5 cm along the shade axis, base yaw fixed at zero. Adjust these to match the actual camera. A turned face can make the estimated distance too large.</p>
+<p class="small">The camera moves with the head pivot. Starting assumptions: 60° horizontal view, 16 cm face width, camera 5 cm along the shade axis, base yaw fixed at zero. Adjust these to match the actual camera. A turned face or palm can make distance too large. Board gesture targeting currently uses the default 60° / 8 cm / 5 cm mount calibration; these controls adjust visualization only.</p>
 <div class="sliders">
 <label>Horizontal field of view (°)<input id="hfov" type="number" min="20" max="150" value="60"></label>
+<label>Assumed palm width (cm)<input id="palmWidth" type="number" min="4" max="14" value="8"></label>
 <label>Assumed face width (cm)<input id="faceWidth" type="number" min="8" max="30" value="16"></label>
 <label>Released pivot estimate (°)<input id="pivotFallback" type="number" min="-90" max="90" value="0"></label>
 <label>Camera along shade (cm)<input id="cameraOffset" type="number" min="-20" max="30" value="5"></label>
@@ -56,34 +74,61 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
  <label>Head pitch <output id="headValue">55°</output><input id="head" aria-label="Head pitch" type="range" min="-30" max="85" value="55" step="0.1"></label>
  <label>Head pivot <output id="rollValue">0°</output><input id="roll" aria-label="Head pivot" type="range" min="-30" max="30" value="0" step="0.1"></label>
 </div>
-</details><p class="small">Model source: full-model-animations · ef1b0d2. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; this view never commands the lamp or motors.</p>
+</details><p class="small">Model source: full-model-animations · ef1b0d2. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; real outputs use only the pivot and D7 lamp after activation. No stepper movement commands are sent. Gesture targets are estimates, not book detection.</p>
 </main>
 <script src="/cad-view.js"></script>
+<script src="/emotion-view.js"></script>
 <script>
 const cad = createLuxoiiiCAD({canvas:document.getElementById('cad'),status:document.getElementById('cadmsg'),labels:document.getElementById('labels')});
 const keys=['yaw','shoulder','elbow','head','roll'];
 const home=[0,-20,65,55,0];
-let playing=false, following=true, elapsed=0, last=null, live=null, example=false, receivedAt=0;
+const emotions=new LuxoiiiEmotions();
+fetch('/emotions.json').then(r=>{if(!r.ok)throw Error('Clips unavailable');return r.json();}).then(c=>emotions.clips=c).catch(()=>{document.getElementById('state').textContent='Motion library unavailable';});
+let playing=false, following=false, aiReact=true, elapsed=0, last=null, live=null, example=false, receivedAt=0;
+let displayPose=[...home], wantHardware=false, enabledAt=0;
 function show(v) {
+ displayPose=[...v];
  keys.forEach((k,i)=>{ document.getElementById(k).value=v[i]; document.getElementById(k+'Value').textContent=v[i].toFixed(1)+'°'; });
  cad.pose(v.slice(1,4),v[4],v[0]);
 }
-function setPlaying(value) { playing=value; const b=document.getElementById('play'); b.textContent=value?'Pause animation':'Play animation'; b.setAttribute('aria-pressed',String(value)); }
-keys.forEach(k=>document.getElementById(k).addEventListener('input',()=>{following=false; updateFollow(); setPlaying(false); document.getElementById('state').textContent='Manual preview';show(keys.map(k=>Number(document.getElementById(k).value)));}));
-document.getElementById('play').onclick=()=>{following=false;updateFollow();setPlaying(!playing);};
-document.getElementById('reset').onclick=()=>{following=false;updateFollow();setPlaying(false);elapsed=0;show(home);document.getElementById('state').textContent='Desk pose';};
+function setPlaying(value) { if(value){emotions.until=0;emotions.current=null;cad.fitRobot();} playing=value; const b=document.getElementById('play'); b.textContent=value?'Pause emotions':'Show emotions'; b.setAttribute('aria-pressed',String(value)); }
+keys.forEach(k=>document.getElementById(k).addEventListener('input',()=>{aiReact=false;following=false; updateFollow(); setPlaying(false); document.getElementById('state').textContent='Manual preview';show(keys.map(k=>Number(document.getElementById(k).value)));}));
+document.getElementById('play').onclick=()=>{aiReact=false;following=false;updateFollow();setPlaying(!playing);};
+document.getElementById('reset').onclick=()=>{aiReact=false;following=false;updateFollow();setPlaying(false);elapsed=0;show(home);document.getElementById('state').textContent='Desk pose';};
 function tick(t) {
+ const dt=last===null?0:Math.min((t-last)/1000,.1);
  if(last!==null && playing) elapsed+=Math.min((t-last)/1000,0.1); last=t;
- if(playing) {
-  // Slow inspection sweep; shade remains desk-directed and the lamp is off.
-  const a=elapsed*0.35;
-  show([25*Math.sin(a),-20+6*Math.sin(a*0.7),65+8*Math.sin(a*0.7),55-8*Math.sin(a*0.7),12*Math.sin(a*1.1)]);
-  document.getElementById('state').textContent='Slow mechanism inspection';
+ if(aiReact && live?.fresh && live.demo) {
+  const target=emotions.sample(live,t/1000), alpha=1-Math.exp(-dt*9);
+  if(target && live.demo.state!=='STOPPED')show(displayPose.map((v,i)=>v+(target[i]-v)*alpha));
+  document.getElementById('state').textContent='AI simulation · '+emotions.label;
+ } else if(playing) {
+  const target=emotions.sample(live,t/1000,true),alpha=1-Math.exp(-dt*9);
+  if(target)show(displayPose.map((v,i)=>v+(target[i]-v)*alpha));
+  document.getElementById('state').textContent='Simulation showcase · '+emotions.label;
  }
  requestAnimationFrame(tick);
 }
-function updateFollow() { document.getElementById('follow').setAttribute('aria-pressed',String(following)); }
-document.getElementById('follow').onclick=()=>{following=true;setPlaying(false);updateFollow();applyLive();};
+function updateFollow() { document.getElementById('follow').setAttribute('aria-pressed',String(following));document.getElementById('aiMode').setAttribute('aria-pressed',String(aiReact)); }
+document.getElementById('follow').onclick=()=>{aiReact=false;following=true;setPlaying(false);updateFollow();applyLive();};
+document.getElementById('aiMode').onclick=()=>{aiReact=true;following=false;setPlaying(false);updateFollow();};
+async function control(action,extra={}) {
+ const r=await fetch('/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...extra}),signal:AbortSignal.timeout(2500)});
+ const d=await r.json();if(!r.ok || !d.ok)throw new Error(d.error||'Control failed');return d;
+}
+document.querySelectorAll('[data-swivel]').forEach(b=>b.onclick=async()=>{
+ try {await control('swivel',{angle:Number(b.dataset.swivel)});}catch(e){document.getElementById('outputStatus').textContent=e.message;}
+});
+document.getElementById('autoSwivel').onclick=async()=>{
+ try {await control('swivel',{angle:null});}catch(e){document.getElementById('outputStatus').textContent=e.message;}
+};
+document.getElementById('hardware').onclick=async()=>{
+ try {const action=live?.outputs?.enabled?'disable':'enable';await control(action);wantHardware=action==='enable';enabledAt=performance.now();}
+ catch(e){wantHardware=false;document.getElementById('outputStatus').textContent=e.message;}
+};
+document.getElementById('stopDemo').onclick=async()=>{wantHardware=false;aiReact=true;following=false;setPlaying(false);updateFollow();try{await control('stop');}catch(e){document.getElementById('outputStatus').textContent='Stop connection failed; output lease will expire.';}};
+document.getElementById('resumeDemo').onclick=async()=>{try{await control('resume');aiReact=true;following=false;setPlaying(false);updateFollow();}catch(e){document.getElementById('demoStatus').textContent=e.message;}};
+setInterval(()=>{if(wantHardware)control('heartbeat').catch(()=>{wantHardware=false;});},700);
 document.getElementById('peopleView').onclick=()=>cad.fitPeople();
 function renderSpatial() {
  if(example && live?.camera && live.fresh) {
@@ -94,6 +139,13 @@ function renderSpatial() {
 }
 document.getElementById('example').onclick=()=>{example=!example;document.getElementById('example').setAttribute('aria-pressed',String(example));renderSpatial();cad.fitPeople();document.getElementById('exampleNote').hidden=!example;};
 function applyLive() {
+ ['realShoulder','realElbow','realHead'].forEach((id,i)=>{
+  const j=live?.joints?.[i];document.getElementById(id).textContent=live?.fresh&&j?.healthy&&Number.isFinite(j.angle)?j.angle.toFixed(1)+'° · measured':'Unavailable';
+ });
+ const p=live?.pivot;
+ document.getElementById('realPivot').textContent=live?.fresh&&p?.enabled&&!p.fault?`${p.current.toFixed(1)}° · commanded`:'Released · angle unknown';
+ document.querySelectorAll('[data-swivel],#autoSwivel').forEach(b=>b.disabled=!live?.outputs?.enabled);
+
  if(following) {
   if(live?.fresh && live.camera) {show([0,...live.camera.joints,live.camera.roll]);document.getElementById('state').textContent='Measured pitch joints · '+live.pivot_source;}
   else document.getElementById('state').textContent='No fresh joint readings · model held';
@@ -102,9 +154,26 @@ function applyLive() {
 async function poll() {
  try {
   const val=id=>Number(document.getElementById(id).value);
-  const qs=new URLSearchParams({hfov:val('hfov'),face_width:val('faceWidth')/100,pivot_fallback:val('pivotFallback'),camera_offset:val('cameraOffset')/100,camera_pitch:val('cameraPitch'),camera_yaw:val('cameraYaw')});
+  const qs=new URLSearchParams({hfov:val('hfov'),face_width:val('faceWidth')/100,palm_width:val('palmWidth')/100,pivot_fallback:val('pivotFallback'),camera_offset:val('cameraOffset')/100,camera_pitch:val('cameraPitch'),camera_yaw:val('cameraYaw')});
   const response=await fetch('/spatial?'+qs,{signal:AbortSignal.timeout(3500)});live=await response.json();receivedAt=performance.now();
   renderSpatial();applyLive();
+  const d=live.demo;
+  document.getElementById('demoStatus').textContent=live.fresh && d ? `${d.state.toLowerCase()} · ${d.event} · brightness ${Math.round(d.brightness*100)}%` : 'Waiting for fresh AI observations';
+  document.getElementById('gestureProgress').value=live.fresh && d ? d.hold_progress : 0;
+  const o=live.outputs;
+  if(o && !o.enabled && performance.now()-enabledAt>2000)wantHardware=false;
+  const hb=document.getElementById('hardware');hb.setAttribute('aria-pressed',String(!!o?.enabled));hb.textContent=o?.enabled?'Disable real lamp + pivot':'Enable real lamp + pivot';
+  document.getElementById('outputStatus').textContent=o ? `${o.reason} · Swivel ${o.swivel_mode||'auto'} ${Number.isFinite(o.swivel_target)?o.swivel_target.toFixed(1)+'°':''} · Real lamp ${Math.round((o.brightness||0)*100)}% · Steppers disabled` : 'Physical output status unavailable';
+  const hs=live.hands||[];
+  document.getElementById('handsText').textContent=!live.fresh?'Hand data unavailable':!live.hands_available?'Hand model unavailable':hs.length?hs.map((h,i)=>`Hand ${i+1}: ${(h.gesture||'tracking').replaceAll('_',' ')} · ${Math.round(h.score*100)}% detection score`).join(' | '):'No hands detected. Keep the whole hand in the camera view.';
+  const pm=live.pipeline;
+  document.getElementById('pipeline').textContent=pm?`${pm.mode} · ${pm.model_ms} ms models · face calls ${pm.face_calls} · hand calls ${pm.hand_calls} · gated frames ${pm.gated_frames}`:'';
+  const svg=document.getElementById('handOverlay');svg.replaceChildren();
+  if(live.fresh) {
+   svg.setAttribute('viewBox',`0 0 ${live.size[0]} ${live.size[1]}`);
+   const links=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[0,17],[17,18],[18,19],[19,20]];
+   hs.forEach(h=>{links.forEach(([a,b])=>{const l=document.createElementNS('http://www.w3.org/2000/svg','line');[['x1',h.points[a][0]],['y1',h.points[a][1]],['x2',h.points[b][0]],['y2',h.points[b][1]],['stroke','#c5a5ff'],['stroke-width',3]].forEach(([k,v])=>l.setAttribute(k,v));svg.append(l);});h.points.forEach(p=>{const c=document.createElementNS('http://www.w3.org/2000/svg','circle');[['cx',p[0]],['cy',p[1]],['r',3],['fill','#fff']].forEach(([k,v])=>c.setAttribute(k,v));svg.append(c);});});
+  }
   document.getElementById('health').textContent=live.fresh ? (live.camera?'Live encoders · ':'Camera-relative only · encoders unavailable · ')+live.pivot_source : (live.error || 'Live data unavailable');
   document.getElementById('people').textContent=live.fresh ? (live.people.length ? live.people.map((p,i)=>`Face ${i+1}: ~${p.range_m.toFixed(2)} m away · ${Math.abs(p.camera[0]).toFixed(2)} m ${p.camera[0]>=0?'right':'left'} · ${Math.abs(p.camera[1]).toFixed(2)} m ${p.camera[1]>=0?'above':'below'} camera`).join(' | ') : 'No complete faces detected in this frame.') : 'Waiting for fresh camera data. Old face markers are hidden.';
   const boxes=document.getElementById('faceBoxes');boxes.replaceChildren();
@@ -113,7 +182,7 @@ async function poll() {
   if(live.fresh && live.frame_jpeg) {img.src='data:image/jpeg;base64,'+live.frame_jpeg;img.style.opacity=1;} else {img.removeAttribute('src');}
   document.getElementById('frameInfo').textContent=live.fresh ? `${live.source} · ${Math.round(live.inference_ms)} ms read + inference · frame age ${live.age_s.toFixed(1)} s` : 'Camera unavailable';
  } catch(e) {
-  live=null;cad.spatial(null);applyLive();document.getElementById('health').textContent='Live connection unavailable';document.getElementById('people').textContent='Old face markers are hidden.';document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();
+  live=null;cad.spatial(null);applyLive();document.getElementById('health').textContent='Live connection unavailable';document.getElementById('people').textContent='Old face markers are hidden.';document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
  }
  setTimeout(poll,500);
 }
@@ -123,10 +192,10 @@ setInterval(()=>{
   live={...live,fresh:false,people:[],camera:null};cad.spatial(null);applyLive();
   document.getElementById('health').textContent='Camera data is stale';
   document.getElementById('people').textContent='Waiting for fresh camera data. Old face markers are hidden.';
-  document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();
-  document.getElementById('frameInfo').textContent='Camera unavailable';
+  document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();document.getElementById('handOverlay').replaceChildren();
+  document.getElementById('frameInfo').textContent='Camera unavailable';document.getElementById('handsText').textContent='Hand data unavailable';document.getElementById('demoStatus').textContent='AI paused · stale camera';document.getElementById('gestureProgress').value=0;
  }
 },250);
-show(home);cad.fitPeople();requestAnimationFrame(tick);poll();
+show(home);requestAnimationFrame(tick);poll();
 </script>
 </html>

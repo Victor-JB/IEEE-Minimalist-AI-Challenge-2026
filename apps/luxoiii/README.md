@@ -11,8 +11,8 @@ From the repository root:
 python3 sim/lamp_show.py
 ```
 
-Open `http://127.0.0.1:8082/`. This read-only preview includes the complete ARM v29 base and internal cams,
-with X-ray, solid, and hidden-case views. It uses no camera, board connection, or inference runtime.
+Open `http://127.0.0.1:8082/`. This preview includes the complete ARM v29 base and internal cams,
+with X-ray, solid, and hidden-case views. Without `--observer-url` it uses no camera, board connection or inference runtime.
 
 ## Run the app
 
@@ -47,8 +47,9 @@ Implemented: quantized face detection, palm/hand landmarks and tracking, gesture
 state-dependent inference scheduling, expressive behavior, light ramps, firmware light control,
 performance logging, a shared manual desk, and the complete browser CAD renderer.
 
-Not yet complete: book detection, and the hybrid mode that sends failed-joint poses to simulation while
-keeping physical pivot/light outputs live. The regular arm mode still expects working joints;
+The separate hybrid demo in `tools/spatial` now connects hand/face inference to the full simulated
+arm and optionally to real pivot/light outputs. It selects desk spots using an estimated finger ray.
+Book detection remains unimplemented. The regular arm mode still expects working joints;
 `--fake-arm` skips all physical arm outputs. The supplied board source and simulated tests do not by
 themselves establish live demo reliability.
 
@@ -75,4 +76,6 @@ for testing the tooling, not competition efficiency claims.
 
 See [the spatial observer guide](../../tools/spatial/README.md) to show estimated face locations
 relative to the physical head camera beside the full X-ray arm. Inference runs on the UNO Q;
-the Mac receives read-only snapshots. Camera calibration assumptions are adjustable in the view.
+the Mac receives camera/encoder/hand snapshots. The dedicated hybrid controls optionally activate
+only the pivot and D7 lamp. View calibration assumptions are adjustable; board targeting uses the
+documented default calibration. Read the guide before changing calibration.

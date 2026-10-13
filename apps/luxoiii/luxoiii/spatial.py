@@ -10,8 +10,8 @@ from kinematics import fk
 
 
 def estimate(snapshot, hfov=60.0, face_width=.16, pivot_fallback=0.0,
-             camera_offset=.05, camera_pitch=0.0, camera_yaw=0.0):
-    if not (20 <= hfov <= 150 and .08 <= face_width <= .30 and
+             camera_offset=.05, camera_pitch=0.0, camera_yaw=0.0, palm_width=.08):
+    if not (.04 <= palm_width <= .14 and 20 <= hfov <= 150 and .08 <= face_width <= .30 and
             -.2 <= camera_offset <= .3 and -90 <= camera_pitch <= 90 and
             -180 <= camera_yaw <= 180 and -90 <= pivot_fallback <= 90):
         raise ValueError('Camera settings outside supported range')
@@ -20,7 +20,7 @@ def estimate(snapshot, hfov=60.0, face_width=.16, pivot_fallback=0.0,
         raise ValueError('Invalid image size')
     fresh = 0 <= snapshot.get('age_s', math.inf) < 2
     f = width / (2 * math.tan(math.radians(hfov) / 2))
-    result = {**snapshot, 'people': [], 'camera': None, 'fresh': fresh,
+    result = {**snapshot, 'people': [], 'hands_3d': [], 'camera': None, 'fresh': fresh,
               'hfov': hfov, 'vfov': math.degrees(2 * math.atan(height / (2*f))),
               'assumed_face_width_m': face_width, 'base_yaw_source': 'fixed zero reference'}
     if not fresh:
@@ -65,6 +65,30 @@ def estimate(snapshot, hfov=60.0, face_width=.16, pivot_fallback=0.0,
             person['world'] = [c['position'][i] + point[0]*c['right'][i] +
                                point[1]*c['up'][i] + point[2]*c['forward'][i] for i in range(3)]
         result['people'].append(person)
+    # Relative landmark Z has no global translation. Anchor it with apparent palm width,
+    # then project each image landmark at its estimated depth. Never treat model world
+    # landmarks (origin near palm) as coordinates in the robot room.
+    for hand in snapshot.get('hands', []):
+        pts = hand.get('points', [])
+        if len(pts)!=21 or any(len(p)!=3 or not all(math.isfinite(v) for v in p) for p in pts):
+            continue
+        if any(not (0 < p[0] < width and 0 < p[1] < height) for p in pts):
+            continue
+        span = math.dist(pts[5][:2],pts[17][:2])
+        if span < 12: continue
+        z = f*palm_width/span
+        if not .15 <= z <= 3: continue
+        center = [(pts[5][i]+pts[17][i])/2 for i in range(3)]
+        camera_points=[]
+        for x,y,relative_z in pts:
+            depth=max(.1,z+(relative_z-center[2])*palm_width/span)
+            camera_points.append([(x-width/2)*depth/f, -(y-height/2)*depth/f, depth])
+        item=dict(gesture=hand.get('gesture'),score=hand['score'],camera_points=camera_points,
+                  depth_m=z,source='estimated from assumed palm width + relative landmark depth')
+        c=result['camera']
+        if c:
+            item['world_points']=[[c['position'][i]+p[0]*c['right'][i]+p[1]*c['up'][i]+p[2]*c['forward'][i] for i in range(3)] for p in camera_points]
+        result['hands_3d'].append(item)
     return result
 
 
@@ -77,7 +101,7 @@ def read_observer(url, query):
         if not url:
             raise ConnectionError('Live observer is not connected')
         settings = {k: float(query[k][0]) for k in
-            ('hfov','face_width','pivot_fallback','camera_offset','camera_pitch','camera_yaw') if k in query}
+            ('hfov','face_width','pivot_fallback','camera_offset','camera_pitch','camera_yaw','palm_width') if k in query}
         started = time.monotonic()
         with urlopen(url.rstrip('/') + '/spatial', timeout=2) as response:
             snapshot = json.loads(response.read(2_000_000))

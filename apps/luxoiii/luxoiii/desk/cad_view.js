@@ -19,7 +19,7 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
         2 * (x * z + w * y), 2 * (y * z - w * x), 1 - 2 * (x * x + y * y), 0, 0, 0, 0, 1]; },
     S: (k) => [k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, 0, 0, 0, 1],
   };
-  if (!gl) { $("cadmsg").textContent = "WebGL unavailable in this browser: see the schematic below."; return { pose() {}, spatial() {}, fitPeople() {} }; }
+  if (!gl) { $("cadmsg").textContent = "WebGL unavailable in this browser: see the schematic below."; return { pose() {}, spatial() {}, fitPeople() {}, fitRobot() {} }; }
   const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
   const prog = gl.createProgram();
   gl.attachShader(prog, sh(gl.VERTEX_SHADER, `attribute vec3 p; attribute vec3 n; uniform mat4 VP, Mo; uniform mat3 N; varying vec3 vn;
@@ -73,7 +73,9 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
     const m = bg.match(/\w\w/g) || ["1e", "23", "2b"]; gl.clearColor(...m.slice(0, 3).map((h) => parseInt(h, 16) / 255), 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     // orthographic camera orbiting (0, 22, 0); zoom = half the visible height (cm), like SceneKit's orthographicScale
     const scenePoints = spatial && spatial.camera ? [worldPoint(spatial.camera.position),
-      ...spatial.people.filter(p=>p.world).map(p=>worldPoint(p.world))] : [];
+      ...spatial.people.filter(p=>p.world).map(p=>worldPoint(p.world)),
+      ...(spatial.hands_3d||[]).flatMap(h=>(h.world_points||[]).map(worldPoint)),
+      ...(spatial.demo?.desk_target ? [worldPoint(spatial.demo.desk_target)] : [])] : [];
     if(spatial?.camera) {
       const c=spatial.camera, depth=Math.min(1.5,Math.max(.5,...spatial.people.map(p=>p.depth_m)));
       const fw=depth*Math.tan(spatial.hfov*Math.PI/360),fh=depth*Math.tan(spatial.vfov*Math.PI/360);
@@ -135,6 +137,7 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
     gl.depthMask(true); gl.disable(gl.BLEND);
     drawSpatial(VP, W, H);
     cv.dataset.shellMode = shellMode;
+    cv.dataset.hands = String(spatial?.hands_3d?.length || 0);
     cv.dataset.people = String(spatial?.people?.length || 0);
   }
 
@@ -178,6 +181,17 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
       add(center.map((v,j)=>v-right[j]),center.map((v,j)=>v+right[j]),teal);
       text(point,`${spatial.example ? "EXAMPLE" : "Face "+(i+1)} · ~${p.range_m.toFixed(2)} m`,'#80f9d8');
     });
+    const fingers=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[0,17],[17,18],[18,19],[19,20]];
+    (spatial.hands_3d||[]).forEach((h,i)=>{
+      if(!h.world_points)return;const p=h.world_points.map(worldPoint),color=[.7,.55,1];
+      fingers.forEach(([a,b])=>add(p[a],p[b],color));
+      text(p[0],`Hand ${i+1} · ${(h.gesture||'tracking').replaceAll('_',' ')} · ~${h.depth_m.toFixed(2)} m`,'#c5a5ff');
+    });
+    if(spatial.demo?.desk_target) {
+      const target=worldPoint(spatial.demo.desk_target);
+      for(let j=0;j<32;j++){const p=t=>[target[0]+6*Math.cos(t),.3,target[2]+6*Math.sin(t)];add(p(j*Math.PI/16),p((j+1)*Math.PI/16),amber);}
+      text(target,'Estimated desk target','#ffbc65');
+    }
     const values=new Float32Array(lines.flatMap(l=>[...l.a,0,1,0,...l.b,0,1,0]));
     gl.bindBuffer(gl.ARRAY_BUFFER,lineBuffer);gl.bufferData(gl.ARRAY_BUFFER,values,gl.DYNAMIC_DRAW);
     gl.vertexAttribPointer(aP,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(aN,3,gl.FLOAT,false,24,12);
@@ -204,6 +218,7 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
   });
   return { spatial(data) { spatial=data; dirty=true; },
     fitPeople() { sceneFit=true; dirty=true; },
+    fitRobot() { sceneFit=false; zoom=37; dirty=true; },
     pose(a, r, baseYaw = 0) {
     const same = a && angles && a.every((v, i) => v === angles[i]) && r === roll && baseYaw === yaw;
     if (!same) { angles = a ? [...a] : [null, null, null]; roll = r; yaw = baseYaw; dirty = true; }

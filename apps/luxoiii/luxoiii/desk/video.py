@@ -39,20 +39,29 @@ class VideoFeed:
     def next_frame(self, last_seq, timeout=2.0):
         with self.cond:
             self.cond.wait_for(lambda: self.seq != last_seq or self.error, timeout=timeout)
-            return self.seq, self.jpeg
+            return self.seq, self.jpeg if self.seq != last_seq and not self.error else None
 
     def _run(self):
+        # Keep the existing viewers attached across a USB replug. A dead capture
+        # thread must not leave them subscribed to one stale JPEG forever.
+        while True:
+            self._capture()
+            with self.cond:
+                if self.clients == 0:
+                    self._thread = None
+                    return
+            time.sleep(1)
+
+    def _capture(self):
         try:
             import cv2
             from ..io.camera import Camera
             cam = Camera(self.source)
         except Exception as e:
             with self.cond:
+                self.jpeg, self.fps = None, 0.0
                 self.error = f"Camera unavailable ({e}). Is luxoiii running?"
                 self.cond.notify_all()
-            time.sleep(3)                             # don't retry in a tight loop
-            with self.cond:
-                self.error = None
             return
         with self.cond:
             self.error = None
@@ -83,6 +92,7 @@ class VideoFeed:
                 time.sleep(max(0.0, 1.0 / FPS - (time.monotonic() - now)))
         except Exception as e:
             with self.cond:
+                self.jpeg, self.fps = None, 0.0
                 self.error = f"Camera error: {e}"
                 self.cond.notify_all()
         finally:

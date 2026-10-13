@@ -96,6 +96,11 @@ def make_handler(desk, video, poses_lock=threading.Lock()):
                 return self._send(200, PAGE.read_bytes(), "text/html; charset=utf-8")
             if p == "/preview":
                 return self._send(200, PAGE.with_name("preview.html").read_bytes(), "text/html; charset=utf-8")
+            if p == '/emotions.json':
+                from ..emotions import bundle
+                return self._send(200,bundle())
+            if p == '/emotion-view.js':
+                return self._send(200,PAGE.with_name('emotion_view.js').read_bytes(),'text/javascript')
             if p == "/cad-view.js":
                 return self._send(200, PAGE.with_name("cad_view.js").read_bytes(), "text/javascript")
             if p == "/spatial":
