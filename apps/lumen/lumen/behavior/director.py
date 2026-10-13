@@ -20,6 +20,7 @@ ADJUST_STEP = (3.0, -4.0, 1.0)   # (shoulder, elbow, head) deg per CLOSER; TODO:
 SLEEP_ENTRY = "go_to_sleep/drowsy"     # once on entering SLEEP; the lamp stays slumped after it
 SLEEP_BREATHE = (0.3, 2.0)             # (amplitude, time_scale) of the slow breathe while asleep
 SLEEP_BREATHE_S = 16.0                 # breathing per loop (whole 8 s breaths)
+FALSE_ALARM_CLIP = "hesitate/subtle"   # NOTICE -> IDLE on TIMEOUT: sheepish "oh, nobody"
 WAKE_CLIP = "wake_up/slow_groggy"      # NOTICE right after SLEEP -> IDLE, instead of the notice pool
 WAKE_AMPLITUDE = 0.7                   # ~18 s on the real arm (the elbow-lift cap slows it ~4x)
 WAKE_WINDOW_S = 5.0                    # NOTICE this soon after waking counts as "from SLEEP"; also how
@@ -202,6 +203,10 @@ class Director:
             self.busy = False
             self.next_clip_at = m.entered_at + WAKE_WINDOW_S
             return True
+        if prev and prev[0] == "NOTICE" and prev[3] == E.TIMEOUT:
+            self.w.set_base(C.HOME)
+            self._play_ref(FALSE_ALARM_CLIP, tok)    # then the bored loop, after its gap
+            return True
         return False
 
     def _wake_up(self, tok):
@@ -231,6 +236,12 @@ class Director:
         plan = M.expressive_move(self._arm_pose(), pose, duration, self.rng,
                                  M.gamma_for(self.x.energy), style)
         self.w.seq(plan, tok, done=done)
+
+    def _play_ref(self, ref, tok):
+        """One named clip with the usual amplitude / speed noise (not drawn from a pool)."""
+        amp = self.rng.uniform(*C.AMPLITUDE_RANGE)
+        ts = self.rng.uniform(*C.TIME_SCALE_RANGE)
+        self.w.play(ref, amp, ts, tok)
 
     def _sweep_poses(self):
         """3-5 pauses across the desk. TODO: needs the 4th (yaw) joint for a real left-right sweep;

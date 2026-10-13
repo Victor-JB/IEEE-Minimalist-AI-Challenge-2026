@@ -232,5 +232,24 @@ class WakeUp(unittest.TestCase):
         self.assertNotIn("wake_up", str(r.w.cmds[n:]))
 
 
+class FalseAlarm(unittest.TestCase):
+    def test_notice_timeout_hesitates(self):
+        r = Rig()
+        r.to(E.READY, E.FACE_SEEN)
+        r.tick(dt=2.0)                                     # NOTICE timer (1.5 s)
+        self.assertEqual(r.m.state, "IDLE")
+        name, (ref, amp, ts, tok), kw = r.w.last()
+        self.assertEqual((name, ref), ("play", "hesitate/subtle"))
+        self.assertEqual(tok, r.d.token)
+        r.finish()
+        self.assertEqual(r.m.state, "IDLE")                # then the bored loop resumes
+
+    def test_ordinary_idle_is_bored(self):
+        r = Rig()
+        r.ev(E.READY)
+        name, (ref, *_), kw = r.w.last("play")
+        self.assertNotEqual(ref, "hesitate/subtle")
+
+
 if __name__ == "__main__":
     unittest.main()
