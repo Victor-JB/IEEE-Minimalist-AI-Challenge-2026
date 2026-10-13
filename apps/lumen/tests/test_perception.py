@@ -1,4 +1,5 @@
 """Perception's event logic with fake detectors: crops, the book-lost confirm, the RESET palm."""
+import random
 import sys
 import unittest
 from pathlib import Path
@@ -117,6 +118,81 @@ class Reset(unittest.TestCase):
         p, ctx = Perception(), {"face_visible": True}
         p.on_state_change(ctx)
         self.assertFalse(ctx["face_visible"])
+
+
+class Scripted:
+    """A detector whose output is a function of the fake clock."""
+    def __init__(self, fn):
+        self.fn, self.t = fn, 0.0
+
+    def detect(self, frame, *a):
+        return self.fn(self.t)
+
+    def update(self, frame):          # as a motion gate
+        return self.fn(self.t)
+
+
+class NoFace:
+    target = None
+
+    def detect(self, frame, now):
+        return []
+
+
+def illuminate(hand_at, motion_at, seconds, fps=10, seed=0):
+    """Run Perception + Machine through ILLUMINATE (HOLD with its check-ins, which end after 2 s)
+    with no face ever visible. Returns (machine, times NOBODY fired)."""
+    hands, gate, book = Scripted(lambda t: [[(320, 300, 0)] * 21] if hand_at(t) else []), \
+        Scripted(motion_at), Scripted(lambda t: [(300, 200, 100, 80, 0.9)])
+    p = Perception(face=NoFace(), hands=hands, book=book, gate=gate)
+    m = Machine(start="HOLD", on_enter=lambda s, m: p.on_state_change(m.ctx), rng=random.Random(seed))
+    nobody, t = [], 0.0
+    while t < seconds and m.state not in ("GOODBYE",):
+        t += 1 / fps
+        hands.t = gate.t = book.t = t
+        events = p.step(FRAME, t, m.models, m.ctx)
+        nobody += [t for e in events if e == E.NOBODY]
+        if m.state == "CHECKIN" and t - m.entered_at > 2.0:
+            events.append(E.CLIP_DONE)                     # the look-up plan is done
+        for e in events:
+            m.handle(e, t)
+        m.tick(t)
+    return m, nobody
+
+
+class Nobody(unittest.TestCase):
+    """A reader has their head down: no face, ever. Only no face, no hand and no motion for
+    NOBODY_S ends ILLUMINATE."""
+    SPAN = C.NOBODY_S + 20
+
+    def test_reader_with_a_hand_on_the_book_never_triggers_nobody(self):
+        m, nobody = illuminate(lambda t: True, lambda t: False, self.SPAN)
+        self.assertEqual(nobody, [])
+        self.assertGreater(sum(tr.dst == "CHECKIN" for tr in m.history), 8)   # through many check-ins
+        self.assertEqual(m.spec.parent, "ILLUMINATE")
+
+    def test_reader_turning_pages_never_triggers_nobody(self):
+        page_turn = lambda t: int(t) % 40 == 0 and t % 1 < 0.3      # a little motion every 40 s
+        m, nobody = illuminate(lambda t: False, page_turn, self.SPAN)
+        self.assertEqual(nobody, [])
+        self.assertEqual(m.spec.parent, "ILLUMINATE")
+
+    def test_hand_now_and_then_is_enough(self):
+        m, nobody = illuminate(lambda t: int(t) % 60 < 2, lambda t: False, self.SPAN)
+        self.assertEqual(nobody, [])
+
+    def test_truly_empty_desk_ends_it_after_three_minutes(self):
+        m, nobody = illuminate(lambda t: False, lambda t: False, self.SPAN)
+        self.assertEqual(len(nobody), 1)
+        self.assertAlmostEqual(nobody[0], C.NOBODY_S, delta=1.0)
+        self.assertEqual(m.state, "GOODBYE")
+
+    def test_reader_leaves_then_it_ends_three_minutes_later(self):
+        for seed in range(5):
+            m, nobody = illuminate(lambda t: t < 30, lambda t: False, C.NOBODY_S + 40, seed=seed)
+            self.assertEqual(len(nobody), 1)
+            # counted from the last hand seen: up to one check-in (~2 s, no hand model) before 30 s
+            self.assertTrue(C.NOBODY_S - 2.5 <= nobody[0] - 30 <= C.NOBODY_S + 1.0, (seed, nobody))
 
 
 if __name__ == "__main__":
