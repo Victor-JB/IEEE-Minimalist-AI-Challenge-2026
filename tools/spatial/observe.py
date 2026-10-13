@@ -128,11 +128,18 @@ def main():
                 target=target_from_hand(candidate,joints,pivot,frame.shape[1],frame.shape[0]) if candidate else None
                 with demo_lock: demo_state=demo.update(started,faces,hand_data,frame.shape[1],target)
                 model_ms=round((time.monotonic()-model_start)*1000,1)
+                # Tracking uses a fresh command estimate after inference, compensating
+                # for swivel travel since the camera frame. Projection keeps frame-time pose.
+                control_pivot=pivot
+                if pivot.get('enabled'):
+                    r=bridge.call('arm_roll_status',timeout=.25)
+                    if len(r)!=6 or r[0]!=3:raise ValueError('Unsupported head pivot status')
+                    control_pivot=dict(enabled=bool(r[1]),current=r[3]/1000,fault=r[5])
                 data=dict(size=[frame.shape[1],frame.shape[0]],
                     detections=[dict(x=d.x,y=d.y,w=d.w,h=d.h,score=d.score) for d in faces],
                     frame_jpeg=base64.b64encode(jpeg).decode(),joints=joints,pivot=pivot,
                     hands=hand_data,hands_available=hands.available,demo=demo_state,
-                    tracking=tracker.update(started,faces,hand_data,pivot,frame.shape[1]),
+                    tracking=tracker.update(time.monotonic(),faces,hand_data,control_pivot,frame.shape[1],observed_pivot=pivot),
                     pipeline=dict(**metrics,mode='hand ROI tracking' if hand_data and hand_data[0]['tracked'] else 'face + palm detection' if run_models else 'motion gate · models sleeping',model_ms=model_ms,uptime_s=round(started-started_at,1)),
                     inference_ms=round((time.monotonic()-started)*1000,1),
                     telemetry_error=telemetry_error,source='UNO Q · face + hand w8a8',error=None)

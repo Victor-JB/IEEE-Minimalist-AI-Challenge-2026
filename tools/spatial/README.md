@@ -65,7 +65,13 @@ The real swivel is exclusively an image-based subject tracker. The preview grant
 it a quiet-arm session by default once observations are fresh. Faces take priority over hands; among multiple faces it follows the nearest
 previous image-space subject. After a one-second face-loss grace period, a visible palm can become
 the target. It corrects horizontal camera error using current servo command telemetry and a 100°
-HFOV assumption. The middle 20% of the image is a hold zone. Tracking resumes outside the middle 28%, so small boundary movements do not cause chatter. Corrections and firmware slews are capped at 60°/s. Travel is ±45°;
+HFOV assumption. The middle 40% of the image is a hold zone; tracking resumes outside the
+middle 52% after two consistent observations. PD velocity control (Kp 1.8, Kd 0.35) brakes
+closing error, filters its derivative and never integrates error. Corrections are capped at 6°
+per observation and 45% of the remaining error outside the hold zone. A fresh servo command
+estimate after inference compensates for travel since frame capture, avoiding corrections
+based on an old camera heading. Reversals need confirmation. Firmware slew remains capped
+at 60°/s, with smaller steps near the zone. Travel is ±45°;
 vertical centering is unavailable with the broken pitch joints. Losing a subject holds the last
 angle; the tracker does not scan or play emotional motions. This is not identity recognition.
 
@@ -130,6 +136,14 @@ source expression values without physical stepper caps. This is a kinematic anim
 not MuJoCo physics or a collision-validated combination of the original movements.
 Regenerate with `python3 scripts/import_full_model_animations.py`; the importer parses literals
 and numeric expressions without executing branch code, and records source hashes.
+
+The scene includes a solid wood desktop lit by a per-fragment spotlight, with soft cone edges,
+angle/distance falloff and an emissive shade diffuser. Its origin and direction follow the
+animated model’s actual five-joint FK, rather than drawing a cone to the selected marker.
+Thumb gestures control its intensity. No wireframe light cone is drawn; the target marker
+and pointing cursor remain visible. This is direct diffuse lighting, without shadow maps.
+**Preview desk light** is an explicitly labeled, digital-only lighting preview; it does not
+create a detection or turn on D7. AI mode restores live gesture lighting.
 
 Pointing/illumination reserves the desk aiming pose. Brief additive acknowledgments settle back
 onto the exact target pose; breathing, gaze and unsolicited body motions yield to this task.

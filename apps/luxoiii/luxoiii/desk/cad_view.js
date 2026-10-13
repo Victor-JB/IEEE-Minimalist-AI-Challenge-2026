@@ -4,10 +4,10 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
   const cv = canvas, gl = cv.getContext("webgl", { antialias: true });
   const $ = () => status;
   const REF = [-20, 75, -40];
-  let spatial = null, sceneFit = false;
+  let spatial = null, sceneFit = false, lightPreview = false;
   let manifest, bodies = [], yaw = 0, shellMode = "xray";
   let parts = [], ready = false, angles = [null, null, null], roll = null, dirty = true;
-  let az = 0.6, el = 0.22, zoom = 37;          // the Mac app's 3D camera: (48, 30, 85) looking at (0, 22, 0)
+  let az = 0.6, el = 0.42, zoom = 44;          // the Mac app's 3D camera: (48, 30, 85) looking at (0, 22, 0)
   const M = {
     I: () => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
     mul(a, b) { const o = new Array(16); for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) { let v = 0; for (let k = 0; k < 4; k++) v += a[k * 4 + r] * b[c * 4 + k]; o[c * 4 + r] = v; } return o; },
@@ -19,15 +19,33 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
         2 * (x * z + w * y), 2 * (y * z - w * x), 1 - 2 * (x * x + y * y), 0, 0, 0, 0, 1]; },
     S: (k) => [k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, 0, 0, 0, 1],
   };
-  if (!gl) { $("cadmsg").textContent = "WebGL unavailable in this browser: see the schematic below."; return { pose() {}, spatial() {}, fitPeople() {}, fitRobot() {} }; }
-  const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+  if (!gl) { $("cadmsg").textContent = "WebGL unavailable in this browser: see the schematic below."; return { pose() {}, spatial() {}, fitPeople() {}, fitRobot() {}, previewLight() {} }; }
+  const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(o)); return o; };
   const prog = gl.createProgram();
-  gl.attachShader(prog, sh(gl.VERTEX_SHADER, `attribute vec3 p; attribute vec3 n; uniform mat4 VP, Mo; uniform mat3 N; varying vec3 vn;
-    void main() { vn = N * n; gl_Position = VP * Mo * vec4(p, 1.0); }`));
-  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, `precision mediump float; varying vec3 vn; uniform vec3 col; uniform float a;
-    void main() { vec3 q = normalize(vn); float l = 0.32 + 0.55 * abs(dot(q, normalize(vec3(0.45, 0.8, 0.55)))) + 0.22 * abs(dot(q, normalize(vec3(-0.5, 0.25, -0.6))));
-      gl_FragColor = vec4(col * l, a); }`));
-  gl.linkProgram(prog); gl.useProgram(prog);
+  gl.attachShader(prog, sh(gl.VERTEX_SHADER, `attribute vec3 p; attribute vec3 n; uniform mat4 VP, Mo; uniform mat3 N; varying vec3 vn; varying vec3 wp;
+    void main() { vn = N * n; wp = (Mo * vec4(p, 1.0)).xyz; gl_Position = VP * vec4(wp, 1.0); }`));
+  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, `precision mediump float; varying vec3 vn; varying vec3 wp;
+    uniform vec3 col, lampPosition, lampDirection; uniform float a, surface, lampPower;
+    void main() {
+      vec3 q = normalize(vn);
+      float l = 0.32 + 0.55 * abs(dot(q, normalize(vec3(0.45, 0.8, 0.55)))) + 0.22 * abs(dot(q, normalize(vec3(-0.5, 0.25, -0.6))));
+      vec3 color = col * l;
+      if(surface > 0.5 && surface < 1.5) {
+        // A diffuse wood surface lit per fragment by the animated shade's cone.
+        float grain = 0.018 * sin(wp.x * 1.9 + 1.8 * sin(wp.z * 0.075)) + 0.009 * sin(wp.x * 8.0 + wp.z * 0.12);
+        vec3 wood = col + vec3(grain,grain * 0.7,grain * 0.45);
+        vec3 ray = wp - lampPosition; float distanceToLamp = max(length(ray),0.01);
+        vec3 direction = ray / distanceToLamp;
+        float cone = smoothstep(0.882948,0.956305,dot(direction,lampDirection));
+        float diffuse = max(0.0,dot(q,-direction));
+        float light = lampPower * cone * diffuse * 6500.0 / (350.0 + distanceToLamp * distanceToLamp);
+        float contact = 1.0 - 0.45 * exp(-dot(wp.xz,wp.xz) / 95.0);
+        color = wood * (0.62 * contact + vec3(1.0,0.84,0.58) * light);
+        color = color / (vec3(1.0) + color * 0.4);
+      } else if(surface > 1.5) color=col;
+      gl_FragColor = vec4(color,a);
+    }`));
+  gl.linkProgram(prog); if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(prog)); gl.useProgram(prog);
   const U = (k) => gl.getUniformLocation(prog, k), aP = gl.getAttribLocation(prog, "p"), aN = gl.getAttribLocation(prog, "n");
   function mesh(buf) {                            // binary STL -> interleaved buffer (cm)
     const dv = new DataView(buf), n = dv.getUint32(80, true), f = new Float32Array(n * 18);
@@ -36,6 +54,32 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
         f[b] = dv.getFloat32(q, true) * 0.1; f[b + 1] = dv.getFloat32(q + 4, true) * 0.1; f[b + 2] = dv.getFloat32(q + 8, true) * 0.1; f[b + 3] = nx; f[b + 4] = ny; f[b + 5] = nz; } }
     const g = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, g); gl.bufferData(gl.ARRAY_BUFFER, f, gl.STATIC_DRAW);
     return { g, count: n * 3 };
+  }
+  function geometry(points) {
+    const g=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,g);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(points),gl.STATIC_DRAW);
+    return {g,count:points.length/6};
+  }
+  function quad(a,b,c,d,n) {return [a,b,c,a,c,d].flatMap(p=>[...p,...n]);}
+  const deskTop=geometry(quad([-22,-.1,-50],[90,-.1,-50],[90,-.1,50],[-22,-.1,50],[0,1,0]));
+  const deskEdges=geometry([
+    ...quad([-22,-.1,50],[90,-.1,50],[90,-3,50],[-22,-3,50],[0,0,1]),
+    ...quad([90,-.1,50],[90,-.1,-50],[90,-3,-50],[90,-3,50],[1,0,0]),
+    ...quad([90,-.1,-50],[-22,-.1,-50],[-22,-3,-50],[90,-3,-50],[0,0,-1]),
+    ...quad([-22,-.1,-50],[-22,-.1,50],[-22,-3,50],[-22,-3,-50],[-1,0,0])]);
+  const discPoints=[];
+  for(let j=0;j<48;j++) {
+    discPoints.push(0,0,0,0,0,1);
+    for(const t of [j,j+1])discPoints.push(7.7*Math.cos(t*Math.PI/24),7.7*Math.sin(t*Math.PI/24),0,0,0,1);
+  }
+  const diffuser=geometry(discPoints);
+  let lamp=null;
+  function drawGeometry(m,color,surface,transform=M.I()) {
+    gl.uniformMatrix4fv(U('Mo'),false,transform);gl.uniformMatrix3fv(U('N'),false,[1,0,0,0,1,0,0,0,1]);
+    gl.uniform3fv(U('col'),color);gl.uniform1f(U('a'),1);gl.uniform1f(U('surface'),surface);
+    gl.bindBuffer(gl.ARRAY_BUFFER,m.g);gl.enableVertexAttribArray(aP);gl.enableVertexAttribArray(aN);
+    gl.vertexAttribPointer(aP,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(aN,3,gl.FLOAT,false,24,12);
+    gl.drawArrays(gl.TRIANGLES,0,m.count);gl.uniform1f(U('surface'),0);
   }
   (async () => {
     try {
@@ -96,6 +140,13 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
     const P = [1 / hx, 0, 0, 0, 0, 1 / hy, 0, 0, 0, 0, -2 / (f - n), 0, 0, 0, -(f + n) / (f - n), 1];
     const VP=M.mul(P,V);
     gl.uniformMatrix4fv(U("VP"), false, VP);
+    lamp=luxoiiiLight(angles,roll||0,yaw);
+    const power=lightPreview?.55:spatial?.fresh&&spatial.demo?.state==='ILLUMINATE'&&spatial.demo.light_requested?spatial.demo.brightness||0:0;
+    gl.uniform3fv(U('lampPosition'),lamp.position);gl.uniform3fv(U('lampDirection'),lamp.direction);
+    gl.uniform1f(U('lampPower'),power);gl.disable(gl.BLEND);gl.depthMask(true);
+    drawGeometry(deskTop,[.25,.19,.13],1);drawGeometry(deskEdges,[.15,.10,.065],0);
+    cv.dataset.lightPower=String(power);cv.dataset.lightMode=lightPreview?'preview':'live';
+
     // Preserve the branch's complete hierarchy, then map MuJoCo Z-up into browser Y-up.
     const values = { yaw: yaw * Math.PI / 180, head_tilt: (roll || 0) * Math.PI / 180 };
     ["shoulder", "elbow", "wrist"].forEach((name, j) => {
@@ -132,6 +183,12 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
     };
     gl.disable(gl.BLEND); gl.depthMask(true);
     draws.filter((d) => d.a >= 1).forEach(draw);
+    if(power>0) {
+      const center=lamp.position.map((v,i)=>v+8.5*lamp.direction[i]);
+      const transform=[...lamp.right,0,...lamp.up,0,...lamp.direction,0,...center,1];
+      drawGeometry(diffuser,[.65+power*.35,.48+power*.37,.24+power*.31],2,transform);
+    }
+
     gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
     draws.filter((d) => d.a < 1).sort((a, b) => a.depth - b.depth).forEach(draw);
     gl.depthMask(true); gl.disable(gl.BLEND);
@@ -187,8 +244,8 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
       fingers.forEach(([a,b])=>add(p[a],p[b],color));
       text(p[0],`Hand ${i+1} · ${(h.gesture||'tracking').replaceAll('_',' ')} · ~${h.depth_m.toFixed(2)} m`,'#c5a5ff');
     });
-    const preview=spatial.demo?.point_preview;
-    if(preview || spatial.demo?.desk_target) {
+    const preview=lightPreview?null:spatial.demo?.point_preview;
+    if(!lightPreview && (preview || spatial.demo?.desk_target)) {
       const desk=[[.20,-.30,0],[.65,-.30,0],[.65,.30,0],[.20,.30,0]].map(worldPoint);
       desk.forEach((p,i)=>add(p,desk[(i+1)%4],muted));
       if(preview) {
@@ -197,23 +254,15 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
         text(p,preview.mode==='virtual_pointer'?'Virtual desk cursor · hold to select':'Finger-ray preview · hold to select','#8ad9ff');
       }
     }
-    if(spatial.demo?.desk_target) {
+    if(!lightPreview && spatial.demo?.desk_target) {
       const target=worldPoint(spatial.demo.desk_target);
       for(let j=0;j<32;j++){const p=t=>[target[0]+6*Math.cos(t),.3,target[2]+6*Math.sin(t)];add(p(j*Math.PI/16),p((j+1)*Math.PI/16),amber);}
       text(target,spatial.demo.target_mode==='virtual_pointer'?'Selected virtual desk spot':'Estimated desk target','#ffbc65');
-      if(spatial.demo.state==='ILLUMINATE' && angles.every(Number.isFinite)) {
-        // Same link lengths/frame as kinematics.py; the digital emitter moves
-        // with the animated model, while the amber camera remains physical.
-        const [a,b,h]=angles.map(v=>v*Math.PI/180),phi=a+b+h,r=(roll||0)*Math.PI/180,y=yaw*Math.PI/180;
-        const x=.185*Math.sin(a)+.185*Math.sin(a+b)+.045*Math.sin(phi)+.05*Math.cos(r)*Math.sin(phi);
-        const side=-.05*Math.sin(r),z=.049+.185*Math.cos(a)+.185*Math.cos(a+b)+.045*Math.cos(phi)+.05*Math.cos(r)*Math.cos(phi);
-        const emitter=worldPoint([x*Math.cos(y)-side*Math.sin(y),x*Math.sin(y)+side*Math.cos(y),z]);
-        const level=spatial.demo.brightness||.4,color=[1,.65+level*.3,.2+level*.6];
-        add(emitter,target,color);
-        for(let j=0;j<8;j++)add(emitter,[target[0]+6*Math.cos(j*Math.PI/4),.3,target[2]+6*Math.sin(j*Math.PI/4)],color);
-        text(emitter,`Simulated light · ${Math.round(level*100)}%`,'#fff0ac');
+      if(spatial.demo.state==='ILLUMINATE' && lamp) {
+        text(lamp.position,`Desk light · ${Math.round((spatial.demo.brightness||0)*100)}%`,'#fff0ac');
       }
     }
+    if(lightPreview && lamp)text(lamp.position,'Desk light preview · digital only','#fff0ac');
     const values=new Float32Array(lines.flatMap(l=>[...l.a,0,1,0,...l.b,0,1,0]));
     gl.bindBuffer(gl.ARRAY_BUFFER,lineBuffer);gl.bufferData(gl.ARRAY_BUFFER,values,gl.DYNAMIC_DRAW);
     gl.vertexAttribPointer(aP,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(aN,3,gl.FLOAT,false,24,12);
@@ -229,8 +278,8 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
   cv.addEventListener("pointerup", () => (drag = null));
   cv.addEventListener("wheel", (e) => { e.preventDefault(); sceneFit=false; zoom = Math.max(8, Math.min(500, zoom * Math.exp(e.deltaY * 0.001))); dirty = true; }, { passive: false });
   addEventListener("resize", () => (dirty = true));
-  const CAMS = { "3d": [0.51, 0.08], side: [0, 0], front: [Math.PI / 2, 0] };
-  controls.querySelectorAll("[data-cam]").forEach((b) => (b.onclick = () => { [az, el] = CAMS[b.dataset.cam]; sceneFit=false; zoom = 37; dirty = true; }));
+  const CAMS = { "3d": [0.51, 0.42], side: [0, 0], front: [Math.PI / 2, 0] };
+  controls.querySelectorAll("[data-cam]").forEach((b) => (b.onclick = () => { [az, el] = CAMS[b.dataset.cam]; sceneFit=false; zoom = 44; dirty = true; }));
   controls.querySelectorAll("[data-shell]").forEach((button) => {
     button.onclick = () => {
       shellMode = button.dataset.shell;
@@ -240,9 +289,26 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
   });
   return { spatial(data) { spatial=data; dirty=true; },
     fitPeople() { sceneFit=true; dirty=true; },
-    fitRobot() { sceneFit=false; zoom=37; dirty=true; },
+    fitRobot() { sceneFit=false; zoom=44; dirty=true; },
+    previewLight(value) { lightPreview=value;dirty=true; },
     pose(a, r, baseYaw = 0) {
     const same = a && angles && a.every((v, i) => v === angles[i]) && r === roll && baseYaw === yaw;
     if (!same) { angles = a ? [...a] : [null, null, null]; roll = r; yaw = baseYaw; dirty = true; }
   } };
 }
+
+
+// Same frame/link lengths as kinematics.py, transformed from metres to renderer centimetres.
+function luxoiiiLight(angles,roll=0,yaw=0) {
+  const [a,b,h]=(angles.every(Number.isFinite)?angles:[20,55,60]).map(v=>v*Math.PI/180);
+  const phi=a+b+h,r=roll*Math.PI/180,y=yaw*Math.PI/180;
+  const rotate=p=>[p[0]*Math.cos(y)-p[1]*Math.sin(y),p[1]*Math.cos(y)+p[0]*Math.sin(y),p[2]];
+  const render=p=>[p[0],p[2],-p[1]];
+  const axis=[Math.cos(r)*Math.sin(phi),-Math.sin(r),Math.cos(r)*Math.cos(phi)];
+  const up=[-Math.cos(phi),0,Math.sin(phi)];
+  const right=[-Math.sin(r)*Math.sin(phi),-Math.cos(r),-Math.sin(r)*Math.cos(phi)];
+  const pivot=[.185*Math.sin(a)+.185*Math.sin(a+b)+.045*Math.sin(phi),0,.049+.185*Math.cos(a)+.185*Math.cos(a+b)+.045*Math.cos(phi)];
+  return {position:render(rotate(pivot.map((v,i)=>(v+.05*axis[i])*100))),
+    direction:render(rotate(axis)),up:render(rotate(up)),right:render(rotate(right))};
+}
+if(typeof module!=='undefined')module.exports={luxoiiiLight};
