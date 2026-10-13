@@ -40,8 +40,8 @@ STATES = {
     "CHECKIN":   State({"face": 10}, "checkin", parent="ILLUMINATE"),
     "REACQUIRE": State({"book": 3}, "peek", parent="ILLUMINATE",
                        timer=(C.REACQUIRE_TIMEOUT_S, E.TIMEOUT)),
-    "GOODBYE":   State({}, "done", light=0.0),
-    "FAULT":     State({}, "fault", light=0.2),
+    "GOODBYE":   State({"face": 5}, "done", light=0.0),      # face decides STANDBY vs IDLE after
+    "FAULT":     State({"hand": 2}, "fault", light=0.2),     # hand only for the RESET palm
 }
 INITIAL_CHILD = {"ILLUMINATE": "HOLD"}
 
@@ -83,6 +83,7 @@ TRANSITIONS = {
     ("GOODBYE", E.CLIP_DONE): _face_or_idle,
     ("*", E.FAULT): "FAULT",
     ("FAULT", E.RECOVERED): "BOOT",
+    ("FAULT", E.RESET): "BOOT",
 }
 
 

@@ -16,6 +16,9 @@ GESTURE_REPEAT_S = 1.0                   # CLOSER / FURTHER repeat while held
 PALM_HOLD_S = 1.0                        # open palm = STOP / EXIT
 BOOK_FOUND_CONSECUTIVE = 2
 BOOK_LOST_S = 2.0
+BOOK_CONFIRM_HZ = 3.0                    # after a missed book check, re-check this fast...
+BOOK_LOST_MISSES = 3                     # ...and only call it lost after this many misses in a row
+RESET_HOLD_S = 3.0                       # open palm this long in FAULT clears a latched fault
 MOTION_THRESHOLD = 6.0                   # mean abs diff (0-255) on the 80x60 gray frame
 NO_MOTION_SLEEP_S = 300.0                # IDLE -> SLEEP
 NOBODY_S = 180.0                         # ILLUMINATE -> GOODBYE: no face, hand or motion
