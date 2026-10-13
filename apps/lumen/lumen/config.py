@@ -26,7 +26,10 @@ NOBODY_S = 180.0                         # ILLUMINATE -> GOODBYE: no face, hand 
 # --- State timers -----------------------------------------------------------
 BOOT_TIMEOUT_S = 20.0                    # not homed by then -> FAULT (connect retries + a 3 s home move)
 FAULT_COOLDOWN_S = 10.0                  # FAULT -> BOOT after this long (one auto retry)
-FAULT_FORGET_S = 120.0                   # a fault this long after the last one counts as the first again
+OVERTEMP_C = 85.0                        # hottest thermal zone / hwmon sensor at or above -> FAULT
+OVERTEMP_CLEAR_C = 75.0                  # ...and FAULT -> BOOT only once every sensor is below this
+OVERTEMP_CHECK_S = 1.0                   # temperature sampled this often (perfstats logs it with PERF=1)
+FAULT_FORGET_S = 120.0                  # a fault this long after the last one counts as the first again
 NOTICE_TIMEOUT_S = 1.5                   # false alarm -> IDLE
 LOST_TIMEOUT_S = 6.0                     # LOST USER -> IDLE (4 s + 6 s = 10 s total)
 CHECKIN_EVERY_S = (8.0, 15.0)            # HOLD -> CHECK-IN, random in this range
