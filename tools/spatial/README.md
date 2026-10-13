@@ -82,9 +82,14 @@ The digital arm uses the full-model branch’s absolute choreography with blende
 - After eight seconds without an accepted gesture: curious tilts, leaning, happy bounces mixed with
   dance/sway, then a pause for a response. Unanswered invitations grow farther apart. A hand gesture
   cancels the invitation immediately; stale events are never queued or replayed.
-- Point downward for 0.4 s: intersect the estimated finger ray with the simulated desk. Reachable
-  points 20–65 cm forward and within 30 cm sideways receive a nod, an IK aiming pose, and a visible
-  simulated light cone and target ring. Invalid points produce a head shake.
+- Extend only the index finger for 0.4 s: preview a desk target, then acknowledge and light it.
+  A valid estimated 3D finger ray selects a spot 20–65 cm forward and within 30 cm sideways.
+  If the ray misses (common with monocular depth and the side-facing camera), a **Virtual desk
+  pointer** maps fingertip image position to 25–65 cm forward and ±30 cm sideways. Image top/bottom
+  controls far/near; image right maps to robot right. This fallback selects a simulated spot, not
+  a measured real-world point. A blue ring previews selection in the scene and at the fingertip.
+  Keep pointing and move the fingertip to choose another spot: changes over 3 cm are accepted at
+  most once a second; a held stationary point does not repeatedly nod.
 - Thumbs up/down for 0.4 s: simulated brighter/closer or dimmer/further, at most once per second.
 - Show an open palm for 0.4 s (at least two detections): the simulated arm greets back, in any
   active state. No lateral movement is required. A held palm triggers once; lower and show it again
@@ -95,7 +100,11 @@ The digital arm uses the full-model branch’s absolute choreography with blende
 Targeting uses the saved joint calibration and fixed assumptions: 100° HFOV, 8 cm palm width,
 5 cm axial camera mount, no mount rotation, zero base yaw, and zero released pivot. The user
 confirmed the camera moves with the head pivot. `pointing.py` converts relative landmark depth
-into estimated camera coordinates before intersecting the finger ray with the desk. Hand-world
+into estimated camera coordinates before intersecting the finger ray with the desk. A failed ray
+falls back to an explicitly labeled 2D virtual cursor; it is not silently clamped or called a
+physical hit. The digital base yaws toward the chosen target, and a raised wrist plus head pitch
+puts the actual simulated beam axis through it without the real arm’s SAFE_RANGES. Brightness
+adjustments preserve that yaw and target while moving along the simulated beam. Hand-world
 landmarks are not treated as absolute room coordinates. Oblique palms, occlusion, calibration
 error and monocular depth uncertainty can shift the target. View calibration controls currently
 adjust visualization only; change the board defaults in `pointing.py` too when calibrating.

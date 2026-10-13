@@ -29,8 +29,9 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
 <section class="live" style="display:block">
 <h2>Real tracking · digital personality</h2>
 <p id="demoStatus">Waiting for the on-board AI…</p>
-<p class="small">☝ Point to light a simulated desk spot · 👍 Brighter / closer · 👎 Dimmer / further · ✋ Show an open palm briefly to say hello — no waving needed</p>
+<p class="small">☝ Extend only your index finger and hold briefly to light a simulated desk spot · 👍 Brighter / closer · 👎 Dimmer / further · ✋ Show an open palm briefly to say hello — no waving needed</p>
 <p class="small">Alone: settle down, breathe, and occasionally stretch. On arrival: wake up and greet you. While you linger: curious looks and playful invitations, with pauses for your response. Open palm says hello; gestures always take priority. Only Stop pauses the demo.</p>
+<p class="small" id="pointStatus" role="status">Pointing: a blue cursor previews the spot. If the 3D ray misses the desk, fingertip position controls the virtual desk cursor.</p>
 <progress id="gestureProgress" max="1" value="0" aria-label="Gesture hold progress"></progress>
 <div class="toolbar"><button id="aiMode" aria-pressed="true">AI-driven simulated arm</button><button id="hardware" aria-pressed="false">Enable subject tracking</button><button id="stopDemo" style="border-color:#ed8585">Stop & lamp off</button><button id="resumeDemo">Resume gestures</button></div>
 <p class="small" id="outputStatus">Automatic tracking starts with fresh camera data. Digital animation runs independently.</p>
@@ -82,7 +83,7 @@ label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } out
  <label>Head pitch <output id="headValue">55°</output><input id="head" aria-label="Head pitch" type="range" min="-180" max="180" value="55" step="0.1"></label>
  <label>Head pivot <output id="rollValue">0°</output><input id="roll" aria-label="Head pivot" type="range" min="-135" max="135" value="0" step="0.1"></label>
 </div>
-</details><p class="small">Model and choreography: full-model-animations · ef1b0d2. Full-body poses from lamp_demo; additive expressions from ELEGNT. Browser animation blends these kinematically; it is not a physics simulation. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; the real swivel tracks the subject after activation; the real lamp stays off. No stepper movement commands are sent. Gesture targets are estimates, not book detection.</p>
+</details><p class="small">Model and choreography: full-model-animations · ef1b0d2. Full-body poses from lamp_demo; additive expressions from ELEGNT. Browser animation blends these kinematically; it is not a physics simulation. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; the real swivel tracks the subject after activation; the real lamp stays off. No stepper movement commands are sent. Finger-ray targets are approximate. The virtual cursor maps fingertip image position onto the simulated desk; it does not locate a real object.</p>
 </main>
 <script src="/cad-view.js"></script>
 <script src="/emotion-view.js"></script>
@@ -182,6 +183,12 @@ async function poll() {
   const d=live.demo;
   document.getElementById('demoStatus').textContent=live.fresh && d ? `${d.state.toLowerCase()} · ${d.event} · simulated brightness ${Math.round(d.brightness*100)}%` : 'Waiting for fresh AI observations';
   document.getElementById('gestureProgress').value=live.fresh && d ? d.hold_progress : 0;
+  const point=d?.point_preview;
+  document.getElementById('pointStatus').textContent=!live.fresh?'Pointing: waiting for a fresh camera frame':point?
+   `${point.mode==='virtual_pointer'?'Virtual desk pointer':'Estimated finger ray'} · ${d.state==='ILLUMINATE'?'Move your fingertip to select another spot':'Hold briefly to select the blue cursor'}${point.mode==='virtual_pointer'?' · Move left/right for sideways, up/down for far/near. This is a simulated selection.':''}`:
+   d?.desk_target?`${d.target_source||'Desk target'} · spot selected. Point again to move it.`:
+   d?.gesture==='point'?'Point detected · keep your fingertip and palm inside the camera view':'Extend your index finger with the others curled. A blue cursor will preview the desk spot.';
+
   await startDefaultTracking();
   const o=live.outputs;
   if(o && !o.enabled && performance.now()-enabledAt>2000)wantHardware=false;
@@ -195,6 +202,10 @@ async function poll() {
   if(live.fresh) {
    svg.setAttribute('viewBox',`0 0 ${live.size[0]} ${live.size[1]}`);
    const links=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[0,17],[17,18],[18,19],[19,20]];
+   if(point?.image_tip) {
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    [['cx',point.image_tip[0]*live.size[0]],['cy',point.image_tip[1]*live.size[1]],['r',10],['fill','none'],['stroke','#8ad9ff'],['stroke-width',3]].forEach(([k,v])=>c.setAttribute(k,v));svg.append(c);
+   }
    hs.forEach(h=>{links.forEach(([a,b])=>{const l=document.createElementNS('http://www.w3.org/2000/svg','line');[['x1',h.points[a][0]],['y1',h.points[a][1]],['x2',h.points[b][0]],['y2',h.points[b][1]],['stroke','#c5a5ff'],['stroke-width',3]].forEach(([k,v])=>l.setAttribute(k,v));svg.append(l);});h.points.forEach(p=>{const c=document.createElementNS('http://www.w3.org/2000/svg','circle');[['cx',p[0]],['cy',p[1]],['r',3],['fill','#fff']].forEach(([k,v])=>c.setAttribute(k,v));svg.append(c);});});
   }
   document.getElementById('health').textContent=live.fresh ? (live.camera?'Live encoders · ':'Camera-relative only · encoders unavailable · ')+live.pivot_source : (live.error || 'Live data unavailable');

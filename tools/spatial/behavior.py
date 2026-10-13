@@ -14,6 +14,7 @@ class Demo:
         self.wave_at=-1e9
         self.last_interaction=0.;self.group_count=0;self.count_candidate=0;self.count_since=0.
         self.adjust=None; self.point_x=.5; self.wrist=None; self.target=None; self.aim_pose=None
+        self.point_preview=None;self.target_source=None;self.target_mode=None
 
     def emit(self,event,now):
         self.event=event; self.serial+=1; self.event_at=now
@@ -24,6 +25,7 @@ class Demo:
     def stop(self,now):
         self.transition('STOPPED',now);self.emit('Stopped · lamp off',now)
         self.gesture=None;self.frames=0
+        self.point_preview=None
 
     def resume(self,now):
         self.transition('IDLE',now);self.emit('Ready for gestures',now)
@@ -32,6 +34,7 @@ class Demo:
     def update(self,now,faces,hands,width=640,target=None):
         hand=next((h for h in hands if h.get('gesture')=='open_palm'),hands[0] if hands else None)
         gesture=hand.get('gesture') if hand else None
+        self.point_preview=target if gesture=='point' and self.state!='STOPPED' else None
         wrist=hand['points'][0][:2] if hand else None
         size=math.dist(hand['points'][0][:2],hand['points'][9][:2]) if hand else 0
         changed_hand=wrist is not None and self.wrist is not None and math.dist(wrist,self.wrist)>max(80,2*size)
@@ -55,7 +58,7 @@ class Demo:
                     self.emit('More company · hello everyone',now);self.last_interaction=now
                 self.group_count=count
         hold=.4
-        repeat=gesture in ('thumbs_up','thumbs_down') or gesture=='point' and self.state in ('IDLE','ATTENTIVE')
+        repeat=gesture in ('thumbs_up','thumbs_down','point')
         greeting_ready=gesture!='open_palm' or now-self.wave_at>=3
         if self.state!='STOPPED' and greeting_ready and gesture and self.frames>=2 and now-self.since>=hold and (self.fired<self.since or repeat and now-self.fired>=1):
             self.fired=now;self.last_interaction=now
@@ -64,9 +67,14 @@ class Demo:
             elif self.state!='STOPPED' and gesture=='point':
                 self.point_x=max(0,min(1,hand['points'][8][0]/width))
                 if target:
-                    self.target=target['point'];self.aim_pose=target['pose']
-                    self.transition('ACK',now);self.emit('Point accepted · estimated desk spot selected',now)
-                else:self.emit('Point downward at a reachable desk spot',now)
+                    changed=self.target is None or math.dist(self.target,target['point'])>.03 or self.state not in ('ACK','ILLUMINATE')
+                    if changed:
+                        self.target=target['point'];self.aim_pose=target['pose']
+                        self.target_source=target.get('source','Estimated desk target');self.target_mode=target.get('mode','finger_ray')
+                        if self.state!='ILLUMINATE':self.transition('ACK',now)
+                        kind='virtual desk spot' if self.target_mode=='virtual_pointer' else 'estimated desk spot'
+                        self.emit('Point accepted · '+kind+' selected',now)
+                else:self.emit('Point unavailable · keep fingertip and palm in view',now)
             elif self.state=='ILLUMINATE' and repeat:
                 self.level=max(.1,min(.8,self.level+(.1 if gesture=='thumbs_up' else -.1)))
                 if self.adjust and self.aim_pose and self.target:
@@ -84,7 +92,7 @@ class Demo:
         elif self.state=='ATTENTIVE':
             pose[3]+=2*math.sin(t)
             if wave<2.5:pose[4]=12*math.sin(wave*6)
-        elif self.state=='ACK':pose[3]+=12*math.sin(min(t/.8,1)*math.pi)
+        elif self.state=='ACK':pose=list(self.aim_pose or pose)
         elif self.state=='ILLUMINATE':
             amount=(self.level-.4)*15
             pose=list(self.aim_pose or [yaw,-18,65,70,0])
@@ -93,4 +101,4 @@ class Demo:
             gesture=self.gesture,hold_progress=min(1,max(0,(now-self.since)/.4)) if self.gesture else 0,
             brightness=self.level,light_requested=self.state=='ILLUMINATE',
             pose=pose,desk_target=target if self.state in ('ACK','ILLUMINATE') else None,
-            target_source='estimated finger ray on desk · 100° FOV / 8 cm palm; not a detected book')
+            point_preview=self.point_preview,target_mode=self.target_mode,target_source=self.target_source)

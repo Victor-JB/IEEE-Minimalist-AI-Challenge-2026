@@ -9,8 +9,8 @@ ROOT=Path(__file__).resolve().parents[3]
 sys.path[:0]=[str(ROOT/'tools/spatial'),str(ROOT/'arm/python'),str(ROOT/'apps/luxoiii')]
 from behavior import Demo
 from hybrid import Outputs
-from pointing import target_from_hand,physical_aim
-from kinematics import beam_hit, fk
+from pointing import target_from_hand,physical_aim,simulated_aim,adjust_pose
+from kinematics import beam_hit, fk, ray_plane
 from luxoiii.spatial import estimate
 
 
@@ -34,6 +34,21 @@ class BehaviorTests(unittest.TestCase):
     def test_missing_frames_do_not_accumulate_hold_time(self):
         d=Demo();d.update(10,[],[hand()]);d.update(12,[],[hand()],target=dict(point=[.4,0,0],pose=[0,-18,65,70,0]))
         self.assertEqual(d.state,'ATTENTIVE')
+
+    def test_pointing_can_reselect_without_repeatedly_acknowledging_same_spot(self):
+        d=Demo();h=hand();first=dict(point=[.4,0,0],pose=simulated_aim([.4,0,0]),mode='virtual_pointer',source='Virtual desk pointer')
+        d.update(10,[],[h],target=first);d.update(10.5,[],[h],target=first)
+        serial=d.serial
+        self.assertEqual(d.snapshot(10.6)['pose'],first['pose'])
+        self.assertEqual(d.snapshot(10.6)['target_mode'],'virtual_pointer')
+        for t in (11,11.5,12):d.update(t,[],[h],target=first)
+        self.assertEqual(d.serial,serial);self.assertEqual(d.state,'ILLUMINATE')
+        second=dict(first,point=[.55,.12,0],pose=simulated_aim([.55,.12,0]))
+        d.update(12.6,[],[h],target=second)
+        self.assertEqual(d.target,second['point']);self.assertEqual(d.serial,serial+1)
+        self.assertEqual(d.state,'ILLUMINATE')
+        d.update(13,[],[])
+        self.assertIsNone(d.point_preview);self.assertEqual(d.target,second['point'])
 
     def test_brightness_repeats_only_when_illuminating(self):
         d=Demo();h=hand('thumbs_up');d.update(10,[],[h]);d.update(10.5,[],[h]);self.assertEqual(d.level,.4)
@@ -172,8 +187,38 @@ class HandProjection(unittest.TestCase):
 
     def test_pointing_requires_downward_reachable_ray(self):
         joints=[dict(angle=v,healthy=True,age_ms=1) for v in (-18,65,70)]
-        self.assertIsNone(target_from_hand(hand(),[],{},640,480))
+        self.assertIsNone(target_from_hand(hand(),[],{},640,480,allow_virtual=False))
         self.assertIsNone(physical_aim(joints,[2,0,0]))
         self.assertAlmostEqual(physical_aim(joints,beam_hit([-18,65,70])),0)
+
+    def test_virtual_cursor_recovers_a_ray_miss_at_current_real_pose(self):
+        joints=[dict(angle=v,healthy=True,age_ms=1) for v in (-8.9,59.9,43.2)]
+        h=hand();h['points'][6]=[310,220,0];h['points'][8]=[310,160,0]
+        pivot=dict(enabled=True,current=45)
+        self.assertIsNone(target_from_hand(h,joints,pivot,allow_virtual=False))
+        selected=target_from_hand(h,joints,pivot)
+        self.assertEqual(selected['mode'],'virtual_pointer')
+        self.assertIn('Virtual',selected['source']);self.assertIsNotNone(selected['ray_note'])
+        self.assertEqual(selected['image_tip'],[310/640,160/480])
+        h['points'][8]=[440,350,0]
+        moved=target_from_hand(h,joints,pivot)
+        self.assertLess(moved['point'][0],selected['point'][0])
+        self.assertLess(moved['point'][1],selected['point'][1])
+
+    def test_virtual_cursor_rejects_invalid_or_cropped_index(self):
+        for value in (-1,641,float('nan')):
+            h=hand();h['points'][8][0]=value
+            self.assertIsNone(target_from_hand(h,[],{}))
+
+    def test_digital_yaw_aim_covers_entire_desk_and_preserves_beam_on_adjust(self):
+        for x in (.2,.25,.3,.4,.5,.6,.65):
+            for y in (-.3,-.15,0,.15,.3):
+                target=[x,y,0];pose=simulated_aim(target)
+                self.assertIsNotNone(pose)
+                for delta in (0,.03,-.03):
+                    p=adjust_pose(pose,target,delta)
+                    h=fk(p[1:4],p[4],p[0]);hit=ray_plane(h.light,h.axis)
+                    self.assertLess(math.dist(hit,target),1e-8)
+                    if delta>0:self.assertLess(math.dist(h.light,target),math.dist(fk(pose[1:4],pose[4],pose[0]).light,target))
 
 if __name__=='__main__':unittest.main()

@@ -108,9 +108,9 @@ class Emotions {
       this.label='Hello back!';
      } else if(event.startsWith('Point accepted')) {
       this.layer('nod',now,.6);this.label='That spot? Got it';
-     } else if(event.startsWith('Point downward')) {
+     } else if(event.startsWith('Point downward')||event.startsWith('Point unavailable')) {
       if(!task)this.play('shake',now);
-      this.layer('shake',now,.5);this.label='Try pointing a little lower';
+      this.layer('shake',now,.5);this.label='Keep your fingertip and palm in view';
      } else {this.layer('nod',now,.3);this.label=event.startsWith('Brighter')?'A little brighter':'A little softer';}
     }
    }

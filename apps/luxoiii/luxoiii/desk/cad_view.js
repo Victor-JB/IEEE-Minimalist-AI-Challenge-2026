@@ -187,10 +187,20 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
       fingers.forEach(([a,b])=>add(p[a],p[b],color));
       text(p[0],`Hand ${i+1} · ${(h.gesture||'tracking').replaceAll('_',' ')} · ~${h.depth_m.toFixed(2)} m`,'#c5a5ff');
     });
+    const preview=spatial.demo?.point_preview;
+    if(preview || spatial.demo?.desk_target) {
+      const desk=[[.20,-.30,0],[.65,-.30,0],[.65,.30,0],[.20,.30,0]].map(worldPoint);
+      desk.forEach((p,i)=>add(p,desk[(i+1)%4],muted));
+      if(preview) {
+        const p=worldPoint(preview.point),color=[.4,.8,1];
+        for(let j=0;j<24;j+=2){const a=t=>[p[0]+3*Math.cos(t),.5,p[2]+3*Math.sin(t)];add(a(j*Math.PI/12),a((j+1)*Math.PI/12),color);}
+        text(p,preview.mode==='virtual_pointer'?'Virtual desk cursor · hold to select':'Finger-ray preview · hold to select','#8ad9ff');
+      }
+    }
     if(spatial.demo?.desk_target) {
       const target=worldPoint(spatial.demo.desk_target);
       for(let j=0;j<32;j++){const p=t=>[target[0]+6*Math.cos(t),.3,target[2]+6*Math.sin(t)];add(p(j*Math.PI/16),p((j+1)*Math.PI/16),amber);}
-      text(target,'Estimated desk target','#ffbc65');
+      text(target,spatial.demo.target_mode==='virtual_pointer'?'Selected virtual desk spot':'Estimated desk target','#ffbc65');
       if(spatial.demo.state==='ILLUMINATE' && angles.every(Number.isFinite)) {
         // Same link lengths/frame as kinematics.py; the digital emitter moves
         // with the animated model, while the amber camera remains physical.
