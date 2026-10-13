@@ -6,40 +6,40 @@
 """
 import time
 
-from . import config as C
-from .behavior.director import Director
-from .behavior.expressive import Expressive
-from .io.light import Light, make_backend
+from .light import config as light_cfg
+from .state.director import Director
+from .movement.expressive import Expressive
+from .light.light import Light, make_backend
 from .io.power import Power
-from .motion.worker import MotionWorker
-from .machine import Machine
-from .perception import Perception
-from .perception.book import BookDetector
-from .perception.hands import HandLandmarker
-from .perception.motion_gate import MotionGate
+from .movement.worker import MotionWorker
+from .state.machine import Machine
+from .ai import Perception
+from .ai.book.detector import BookDetector
+from .ai.hands.landmarker import HandLandmarker
+from .ai.motion_gate.gate import MotionGate
 from .translog import TransitionLog
 
 
 def run(args):
-    from . import hud
+    from .ui import hud
     from .io.camera import Camera, FpsCounter
-    from .perfstats import count, timed              # no-op unless PERF=1
+    from .perfstats import count, timed  # no-op unless PERF=1
 
     expressive = Expressive()
     worker = MotionWorker(expressive, fake=args.fake_arm)
-    light = Light(make_backend(C.LIGHT_BACKEND, worker))   # env LUMEN_LIGHT; sim by default
+    light = Light(make_backend(light_cfg.LIGHT_BACKEND, worker))   # env LUMEN_LIGHT; sim by default
     power = Power()
     director = Director(worker, light, expressive, power=power)
     face = None
     if not args.no_face:
-        from .perception.face import FaceTracker
+        from .ai.face.tracker import FaceTracker
         face = FaceTracker()
     perception = Perception(face=face, hands=HandLandmarker(), book=BookDetector(),
-                            gate=MotionGate(C.MOTION_THRESHOLD))
+                            gate=MotionGate())
     log = TransitionLog()
     streamer = None
     if args.stream:
-        from .io.stream import FrameStreamer
+        from .ui.stream import FrameStreamer
         streamer = FrameStreamer(args.stream)
 
     def entered(state, m):
@@ -72,7 +72,7 @@ def run(args):
             for tr in [machine.handle(ev, now) for ev in events] + [machine.tick(now)]:
                 if tr:
                     why = None
-                    if tr.dst == "FAULT":               # reason: 'CODE: detail' (motion/worker.py)
+                    if tr.dst == "FAULT":               # reason: 'CODE: detail' (movement/worker.py)
                         why = director.fault_reason if tr.event == "FAULT" else f"{tr.src} {tr.event}"
                         director.fault_reason = why    # the HUD shows it while in FAULT
                     log.write(tr, machine.models, expressive.energy, perception.sched.counts, why)

@@ -10,7 +10,7 @@ sys.path.insert(0, str(APP))
 sys.path.insert(0, str(APP / "tools"))
 import scorecard as SC                        # noqa: E402
 import simulate as S                          # noqa: E402
-from lumen.translog import HEADER             # noqa: E402
+from lumen.translog import HEADER  # noqa: E402
 
 ROWS = [  # wall_time, t, from, to, event, models, energy, inferences_so_far
     ["10:00:00", "100.000", "BOOT", "IDLE", "READY", "gate@10 face@1", "0.30", ""],

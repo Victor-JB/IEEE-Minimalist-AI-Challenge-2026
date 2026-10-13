@@ -9,13 +9,13 @@ from pathlib import Path
 from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen import config as C                      # noqa: E402
-from lumen import events as E                      # noqa: E402
-from lumen import thermal                          # noqa: E402
-from lumen.thermal import ThermalMonitor           # noqa: E402
-from lumen.behavior.director import Director       # noqa: E402
-from lumen.behavior.expressive import Expressive   # noqa: E402
-from lumen.motion import worker as W               # noqa: E402
+from lumen.state import config as state_cfg
+from lumen import events as E  # noqa: E402
+from lumen.io import thermal  # noqa: E402
+from lumen.io.thermal import ThermalMonitor  # noqa: E402
+from lumen.state.director import Director  # noqa: E402
+from lumen.movement.expressive import Expressive  # noqa: E402
+from lumen.movement import worker as W  # noqa: E402
 import arm_client                                  # noqa: E402  (arm/python, on the path via lumen.paths)
 
 
@@ -209,7 +209,7 @@ class Overtemp(unittest.TestCase):
             # FAULT's cooldown: no RECOVERED while hot, even long after the 10 s cooldown.
             d = Director(w, FakeLight(), Expressive(random.Random(1)))
             d.faults, fault = 1, SimpleNamespace(state="FAULT", entered_at=0.0)
-            self.assertNotIn(E.RECOVERED, d.poll_events(C.FAULT_COOLDOWN_S + 60, fault))
+            self.assertNotIn(E.RECOVERED, d.poll_events(state_cfg.FAULT_COOLDOWN_S + 60, fault))
             # A RESET reboots early: BOOT's connect is refused while still hot.
             arm.closed = False
             self.sensors[0].t = 80.0
@@ -224,7 +224,7 @@ class Overtemp(unittest.TestCase):
             while w.hot and time.monotonic() < deadline:
                 time.sleep(0.05)
             self.assertFalse(w.hot)
-            self.assertIn(E.RECOVERED, d.poll_events(C.FAULT_COOLDOWN_S + 60, fault))
+            self.assertIn(E.RECOVERED, d.poll_events(state_cfg.FAULT_COOLDOWN_S + 60, fault))
         finally:
             w.stop()
             w.join(1)
@@ -242,7 +242,7 @@ class Overtemp(unittest.TestCase):
 class ReasonSurfaced(unittest.TestCase):
     def test_transitions_log_has_the_fault_reason(self):
         import csv
-        from lumen.machine import Transition
+        from lumen.state.machine import Transition
         from lumen.translog import TransitionLog
         with tempfile.TemporaryDirectory() as d:
             log = TransitionLog(Path(d))

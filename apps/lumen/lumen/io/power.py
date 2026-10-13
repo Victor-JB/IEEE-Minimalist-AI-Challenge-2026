@@ -14,7 +14,7 @@ import glob
 import os
 import time
 
-from .. import config as C
+from . import config as io_cfg
 
 
 class FrameThrottle:
@@ -74,18 +74,18 @@ class Power:
     """SLEEP enter/exit hooks for the director. The camera is attached once it is open."""
 
     def __init__(self, camera=None, governor=None):
-        self.camera, self.governor = camera, governor or CpuGovernor(C.SLEEP_CPU_GOVERNOR)
+        self.camera, self.governor = camera, governor or CpuGovernor(io_cfg.SLEEP_CPU_GOVERNOR)
         self.asleep = False
 
     def attach(self, camera):
         self.camera = camera
         if self.asleep:
-            camera.set_fps(C.SLEEP_CAMERA_FPS)
+            camera.set_fps(io_cfg.SLEEP_CAMERA_FPS)
 
     def sleep(self):
         self.asleep = True
         if self.camera:
-            self.camera.set_fps(C.SLEEP_CAMERA_FPS)
+            self.camera.set_fps(io_cfg.SLEEP_CAMERA_FPS)
         self.governor.lower()
 
     def wake(self):

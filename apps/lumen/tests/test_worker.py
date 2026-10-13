@@ -7,9 +7,9 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen import events as E                      # noqa: E402
-from lumen.behavior.expressive import Expressive   # noqa: E402
-from lumen.motion import worker as W               # noqa: E402
+from lumen import events as E  # noqa: E402
+from lumen.movement.expressive import Expressive  # noqa: E402
+from lumen.movement import worker as W  # noqa: E402
 
 
 class FakeArm:

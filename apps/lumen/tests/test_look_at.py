@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen.behavior.look_at import DEADBAND, LookAt   # noqa: E402
+from lumen.movement.look_at import DEADBAND, LookAt  # noqa: E402
 
 HALF_FOV_DEG = 22.0     # a face at the frame edge is this far off the camera axis
 

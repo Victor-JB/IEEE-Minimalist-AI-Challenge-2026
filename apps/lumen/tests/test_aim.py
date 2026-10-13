@@ -8,24 +8,24 @@ from pathlib import Path
 from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen import config as C                      # noqa: E402
-from lumen import events as E                      # noqa: E402
-from lumen.behavior import aim as G                # noqa: E402
-from lumen.behavior.director import Director       # noqa: E402
-from lumen.behavior.expressive import Expressive   # noqa: E402
-from lumen.motion import worker as W               # noqa: E402
+from lumen.movement import config as move_cfg
+from lumen import events as E  # noqa: E402
+from lumen.movement import aim as G  # noqa: E402
+from lumen.state.director import Director  # noqa: E402
+from lumen.movement.expressive import Expressive  # noqa: E402
+from lumen.movement import worker as W  # noqa: E402
 import kinematics as K                             # noqa: E402  (arm/python, via lumen.paths)
 
 FRAME = (640, 480)
 
 
 def inside(q):
-    return all(lo <= v <= hi for v, (lo, hi) in zip(q, C.SAFE_RANGES))
+    return all(lo <= v <= hi for v, (lo, hi) in zip(q, move_cfg.SAFE_RANGES))
 
 
 class Camera(unittest.TestCase):
     def setUp(self):
-        self.view = K.aim((0.40, 0.0, 0.0), ref=C.HOME)       # a pose looking down at the desk
+        self.view = K.aim((0.40, 0.0, 0.0), ref=move_cfg.HOME)       # a pose looking down at the desk
 
     def test_image_centre_is_where_the_beam_lands(self):
         q, r = self.view.q, self.view.roll
@@ -52,10 +52,10 @@ class Camera(unittest.TestCase):
         h = K.fk((0.0, 0.0, 180.0))                    # straight up, then the head straight down
         d = G.desk_point((0.0, 0.0, 180.0), 0, 639.999, 240, *FRAME, plane_z=0.0)
         self.assertAlmostEqual(math.degrees(math.atan2(-d[1] - h.camera[1], h.camera[2])),
-                               C.CAMERA_HFOV_DEG / 2, places=3)
+                               move_cfg.CAMERA_HFOV_DEG / 2, places=3)
 
     def test_horizon_returns_none(self):
-        self.assertIsNone(G.desk_point(C.HOME, 0, 320, 240, *FRAME))   # HOME looks at the user
+        self.assertIsNone(G.desk_point(move_cfg.HOME, 0, 320, 240, *FRAME))   # HOME looks at the user
 
     def test_book_box_to_aim(self):
         q, r = self.view.q, self.view.roll
@@ -65,13 +65,13 @@ class Camera(unittest.TestCase):
         self.assertLess(p[1], 0.0)
         a = G.aim_at_book(q, r, book, FRAME, ref=q)
         self.assertTrue(inside(a.q))
-        hit = K.beam_hit(a.q, a.roll, C.BOOK_TOP_Z)
+        hit = K.beam_hit(a.q, a.roll, move_cfg.BOOK_TOP_Z)
         self.assertTrue(all(abs(x - y) < 1e-6 for x, y in zip(hit, p)))
 
     def test_move_time_respects_caps(self):
         a, b = (0, 60, 0), (10, 40, 40)
         t = G.move_time(a, b)
-        for j, cap in enumerate((C.SPEED_CAPS[0], C.ELBOW_LIFT_CAP, C.SPEED_CAPS[2])):
+        for j, cap in enumerate((move_cfg.SPEED_CAPS[0], move_cfg.ELBOW_LIFT_CAP, move_cfg.SPEED_CAPS[2])):
             self.assertLessEqual(1.875 * abs(b[j] - a[j]) / t, cap + 1e-9)
 
 
@@ -96,7 +96,7 @@ class Sweep(unittest.TestCase):
 
 class FakeWorker:
     def __init__(self):
-        self.calls, self.current, self.base_roll, self.base = [], list(C.HOME), 0.0, list(C.HOME)
+        self.calls, self.current, self.base_roll, self.base = [], list(move_cfg.HOME), 0.0, list(move_cfg.HOME)
         self.offset, self.queued = None, []
 
     def __getattr__(self, name):          # connect, relax, play...
@@ -181,7 +181,7 @@ class DirectorGeometry(unittest.TestCase):
         self.assertEqual((name, done), ("goto", E.AT_POSE))
         self.assertTrue(inside(pose[:3]))
         book = G.book_target(view_q, view_r, box, FRAME)
-        hit = K.beam_hit(pose[:3], pose[3], C.BOOK_TOP_Z)
+        hit = K.beam_hit(pose[:3], pose[3], move_cfg.BOOK_TOP_Z)
         self.assertTrue(all(abs(a - b) < 1e-6 for a, b in zip(hit, book)), (hit, book))
         self.assertGreaterEqual(dur, G.move_time(self.w.current, pose))
         self.enter("HOLD")
@@ -205,7 +205,7 @@ class DirectorGeometry(unittest.TestCase):
         self.assertEqual(len(segments), 2)
         wind, move = segments[0][0], segments[1][0]
         self.assertGreater(K.standoff_of(wind[:3], wind[3], target), s0)          # back a little first
-        self.assertAlmostEqual(K.standoff_of(move[:3], move[3], target), s0 - C.ADJUST_STEP_M, places=6)
+        self.assertAlmostEqual(K.standoff_of(move[:3], move[3], target), s0 - move_cfg.ADJUST_STEP_M, places=6)
         hit = K.beam_hit(move[:3], move[3], target[2])
         self.assertTrue(all(abs(a - b) < 1e-6 for a, b in zip(hit, target)))     # still on the book
         self.m.ctx["adjust"] = E.FURTHER
@@ -250,17 +250,17 @@ class WorkerSettle(unittest.TestCase):
         self.assertEqual(events[0], (E.AT_POSE, 1, 0))
         self.assertGreaterEqual(time.monotonic() - t0, W.SWEEP_MIN_MOVE_S + 0.45)
         self.assertEqual(w.roll, 15.0)                             # the pause's J5 look
-        self.assertEqual(w.base, list(C.HOME))                      # restored after the sweep
+        self.assertEqual(w.base, list(move_cfg.HOME))                      # restored after the sweep
 
     def test_settled_rules(self):
         w = W.MotionWorker(Expressive(random.Random(1)), fake=True)
         w.measured = [0.0, 60.0, 5.0]
         self.assertFalse(w.settled([0.0, 60.0, 5.0], 0.0))                   # too soon
-        self.assertTrue(w.settled([0.0, 60.0, 5.0], C.SETTLE_MIN_S))
-        self.assertFalse(w.settled([0.0, 60.0, 9.0], C.SETTLE_MIN_S))        # still 4 deg away
-        self.assertTrue(w.settled([0.0, 60.0, 9.0], C.SETTLE_MAX_S))         # backlash: give up waiting
+        self.assertTrue(w.settled([0.0, 60.0, 5.0], move_cfg.SETTLE_MIN_S))
+        self.assertFalse(w.settled([0.0, 60.0, 9.0], move_cfg.SETTLE_MIN_S))        # still 4 deg away
+        self.assertTrue(w.settled([0.0, 60.0, 9.0], move_cfg.SETTLE_MAX_S))         # backlash: give up waiting
         w.measured = None
-        self.assertTrue(w.settled([0.0, 60.0, 9.0], C.SETTLE_MIN_S))         # fake arm: time only
+        self.assertTrue(w.settled([0.0, 60.0, 9.0], move_cfg.SETTLE_MIN_S))         # fake arm: time only
 
     def test_path_runs_segments_then_reports_once(self):
         w = W.MotionWorker(Expressive(random.Random(1)), fake=True)

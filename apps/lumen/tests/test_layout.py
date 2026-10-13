@@ -20,10 +20,23 @@ class Layout(unittest.TestCase):
         for f in (APP / "lumen").rglob("*.py"):
             for name in ARM_PARAMS:
                 self.assertIsNone(re.search(rf"^{name}\s*=", f.read_text(), re.M), f"{f} defines {name}")
-        from lumen import config
+        from lumen.movement import config as move_cfg
         import arm_config
         for name in ARM_PARAMS:
-            self.assertIs(getattr(config, name), getattr(arm_config, name))
+            self.assertIs(getattr(move_cfg, name), getattr(arm_config, name))
+
+    def test_one_config_per_folder_and_no_value_in_two(self):
+        """Tunables live in their folder's config.py (README "Layout"); a name in two would drift."""
+        configs = ["movement", "ai", "ai/face", "ai/hands", "ai/book", "ai/motion_gate", "state", "light", "io"]
+        self.assertFalse((APP / "lumen/config.py").exists(), "use the folder configs, not one global config")
+        seen = {}
+        for folder in configs:
+            f = APP / "lumen" / folder / "config.py"
+            self.assertTrue(f.exists(), f)
+            for m in re.finditer(r"^([A-Z][A-Z0-9_]*(?:\s*,\s*[A-Z][A-Z0-9_]*)*)\s*=", f.read_text(), re.M):
+                for name in re.split(r"\s*,\s*", m.group(1)):
+                    self.assertNotIn(name, seen, f"{name} is in both {seen.get(name)} and {folder}/config.py")
+                    seen[name] = f"{folder}/config.py"
 
     def test_models_present(self):
         self.assertTrue((APP / "models/face_det_lite-tflite-w8a8/face_det_lite.tflite").exists())
@@ -40,12 +53,12 @@ except ImportError:
 @unittest.skipUnless(HAVE_NUMPY, "numpy not installed")
 class Clips(unittest.TestCase):
     def test_every_pool_clip_plays_on_the_arm(self):
-        from lumen import config as C
-        from lumen.behavior.pools import POOLS
+        from lumen.movement import config as move_cfg
+        from lumen.movement.pools import POOLS
         from trajectory import trajectory
         for pool, entries in POOLS.items():
             for ref, _ in entries:
-                t, q, vel, scale = trajectory(ref, C.HOME)
+                t, q, vel, scale = trajectory(ref, move_cfg.HOME)
                 self.assertGreater(len(t), 1, (pool, ref))
 
 

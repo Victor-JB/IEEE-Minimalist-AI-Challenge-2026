@@ -27,7 +27,7 @@ else:
     BACKEND = cv2.CAP_ANY
 
 # Some cameras send black or failed frames while auto-exposure settles.
-WARMUP_FRAMES = 5
+from .config import WARMUP_FRAMES   # edit in io/config.py
 
 
 def parse_source(source):

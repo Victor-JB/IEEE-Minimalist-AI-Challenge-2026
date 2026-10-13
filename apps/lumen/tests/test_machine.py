@@ -4,8 +4,8 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen import events as E          # noqa: E402
-from lumen.machine import Machine, STATES, TRANSITIONS   # noqa: E402
+from lumen import events as E  # noqa: E402
+from lumen.state.machine import Machine, STATES, TRANSITIONS  # noqa: E402
 
 
 class HappyPath(unittest.TestCase):

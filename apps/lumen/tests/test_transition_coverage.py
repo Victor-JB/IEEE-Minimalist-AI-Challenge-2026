@@ -13,7 +13,7 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lumen import machine as M        # noqa: E402
+from lumen.state import machine as M  # noqa: E402
 
 MODULES = ["test_machine", "test_machine_edges", "test_simulate"]   # missing ones are skipped
 _hits = None

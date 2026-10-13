@@ -44,51 +44,64 @@ then the detail), which the HUD shows while in FAULT.
 
 ## Layout
 
+Every folder has one `config.py` with all of its tunable numbers. To change how something
+behaves, edit that file and restart Lumen; nothing else needs touching.
+
 ```
 apps/lumen/
 ├── README.md · requirements.txt · lumen.service
 ├── scripts/      deploy.sh (Mac → board: apps/lumen + arm/) · run.sh (on the board, foreground)
-├── tests/        test_machine.py · test_expressive.py · test_layout.py
-├── models/       face_det_lite-tflite-w8a8/ · mediapipe_hand_gesture-tflite-w8a8/
-├── bench/        (dev branch) bench_detector.py · what to measure · RESULTS.md
+├── tests/        python3 -m unittest discover -s apps/lumen/tests
+├── tools/        simulate.py (whole demo on a fake clock) · scorecard.py (logs → RESULTS rows)
+├── models/       the .tflite files (paths are set in each model's config)
 └── lumen/
-    ├── __main__.py · app.py        entry point · main loop
-    ├── config.py                   behavior numbers (rates, debounce, timers); arm numbers come from arm_config
-    ├── machine.py                  ★ STATES and TRANSITIONS, as data
-    ├── events.py                   event names + debouncers
-    ├── paths.py                    models/logs paths; puts arm/python on sys.path (the only place)
-    ├── perfstats.py                timers + system stats (no-op unless PERF=1)
-    ├── translog.py · hud.py        transitions CSV · demo overlay
-    ├── perception/                 Perception.step, scheduler, motion_gate, face_detector + face,
-    │                               hands (TODO), gestures, book (TODO)
-    ├── behavior/                   pools, expressive (noise + energy), director, look_at
-    ├── motion/worker.py            thread streaming to the arm at 25 Hz (or fake), via arm/python
+    ├── __main__.py · app.py        entry point · main loop (camera → AI → state → movement + light)
+    ├── movement/                   ★ everything that moves the arm
+    │   ├── config.py               stall handling, face centering, AIM / SEARCH / ADJUST, per-state
+    │   │                           moves (sleep, wake, check-in, reacquire, mirror), noise + energy
+    │   ├── worker.py               the thread streaming to the arm at 25 Hz (or fake)
+    │   ├── aim.py · look_at.py     book → arm pose, sweep · face centering
+    │   ├── modifiers.py            glance / windup / breathe / hesitate plans
+    │   ├── expressive.py · pools.py  clip choice + noise · which clips each state plays
+    ├── ai/                         ★ perception: frames in, events out
+    │   ├── config.py               event rules (face seen/confirmed/lost, presence, crops)
+    │   ├── face/       config.py · detector.py · tracker.py    model path, thresholds, which face
+    │   ├── hands/      config.py · landmarker.py · gestures.py model, thresholds, tracking, gesture
+    │   │                                                       rules, hold times, wave
+    │   ├── book/       config.py · detector.py                 found/lost rules (model: in progress)
+    │   └── motion_gate/ config.py · gate.py                    the free frame-difference gate
+    ├── state/                      ★ the behavior state machine
+    │   ├── config.py               state timers (boot, fault cooldown, notice, lost, check-in, reacquire)
+    │   ├── machine.py              STATES (models + rates + pool per state) and TRANSITIONS, as data
+    │   └── director.py             turns states into movement and light
+    ├── light/      config.py · light.py      brightness ramps, gamma, coupling, LED backend
+    ├── io/         config.py · camera.py · power.py · thermal.py   camera, SLEEP power, overtemp
+    ├── ui/         hud.py · thinking.py · stream.py   the :8080 web view (state, next, arm, AI boxes)
     ├── desk/                       Lumen Desk: browser control page (python -m lumen.desk, :8081)
-    └── io/                         camera, stream (MJPEG), light (ramps + gamma; sim/firmware/linux-pwm/gpio)
+    └── events.py · paths.py · translog.py · perfstats.py
 ```
 
-From `arm/` Lumen uses `arm_config` (home, caps, safe ranges), `arm_motion.ArmMotion`,
-`trajectory` (clip → real-arm trajectory) and the clips. `tests/test_layout.py` fails if Lumen
-ever defines its own copy of an arm parameter.
+The arm's hardware limits (HOME, speed/accel caps, joint safe ranges) live in
+`arm/python/arm_config.py`, shared with the firmware tools; `movement/config.py` re-exports them.
+`tests/test_layout.py` fails if Lumen ever defines its own copy of an arm parameter.
 
-## Where to start writing
+## Debugging: what to edit
 
-Working today: the state machine (tested), the expressive layer, the face path, the motion gate,
-gesture rules, the director, and the fake-arm loop (the full happy path runs end to end).
-In order of what unblocks the demo:
+| Symptom | Edit |
+|---|---|
+| Face not detected / false faces | `ai/face/config.py` `SCORE_THRESHOLD` |
+| NOTICE → STANDBY too slow / too eager | `ai/config.py` `FACE_CONFIRM_K/N`, `FACE_LOST_S` |
+| Head overshoots or crawls when centering a face | `movement/config.py` `RATE_DEG_S`, `DEADBAND` |
+| Gesture not recognized | `ai/hands/config.py` gesture rules + `GESTURE_HOLD_S` / `PALM_HOLD_S`; check with `python -m lumen.ai.hands.compare_gestures DIR` |
+| Hands not found | `ai/hands/config.py` `PALM_THRESHOLD`, `LANDMARK_THRESHOLD`, `TRACKING` |
+| Book found/lost flicker | `ai/book/config.py` |
+| Arm stalls / gives up / FAULTs | `movement/config.py` stall section; caps in `arm/python/arm_config.py` |
+| Aims at the wrong spot | `movement/config.py` camera + desk geometry (`CAMERA_HFOV_DEG`, `DESK_AREA`) |
+| CHECK-IN too long | `movement/config.py` `CHECKIN_MAX_UP` |
+| A state times out too soon / late | `state/config.py` |
+| Which models run in a state, which clips it plays | `state/machine.py` `STATES` · `movement/pools.py` |
+| Light too bright / ramps | `light/config.py` |
+| Idle never sleeps, or wakes too easily | `ai/config.py` `NO_MOTION_SLEEP_S` · `ai/motion_gate/config.py` `MOTION_THRESHOLD` |
 
-1. **Run it on the board with the face only.** `deploy.sh`, then walk up: IDLE → NOTICE → STANDBY.
-   Tune `config.py` and the look-at gain in `behavior/look_at.py`.
-2. **`perception/hands.py`.** Load the MediaPipe Hand models from `models/mediapipe_hand_gesture-tflite-w8a8/`;
-   return 21 landmarks per hand. That folder also has a canned gesture classifier: compare it with
-   the rules in `gestures.py` on real hands (print `perception.gesture` on the HUD).
-3. **`perception/book.py`.** Load the book detector; return boxes.
-4. **`behavior/director.py`:** `_sweep_poses()` and the AIM pose (book position → arm pose).
-   Both are marked TODO. A real left-right sweep needs the 4th (yaw) joint.
-5. **Wire the LED** (arm/README.md "Lamp LED": MOSFET on D7, head DIR to D12, `LIGHT_ENABLED 1`),
-   then run with `LUMEN_LIGHT=firmware`. Default `LUMEN_LIGHT=sim` only logs; `linux-pwm` / `gpio`
-   drive a QRB2210 pin instead (see the docstring in `io/light.py`).
-6. Mirror mode in STANDBY (TODO in `director.tick`), then the optimization rungs.
-
-To change behavior, edit `machine.py`'s two tables and keep `docs/STATE_MACHINE.md` in sync.
-Add a test in `tests/test_machine.py` for any new transition.
+To change behavior, edit `state/machine.py`'s two tables and keep `docs/STATE_MACHINE.md` in sync
+(`tests/test_state_diagram.py` checks it). Add a test for any new transition.

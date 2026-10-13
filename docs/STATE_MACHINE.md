@@ -2,7 +2,7 @@
 
 Owner: Victor (software). Status: v0 = the agreed happy path; v1 = the version to build for the demo.
 
-Implemented in [apps/lumen](../apps/lumen/README.md): the tables below live in `apps/lumen/lumen/machine.py` (states, transitions) and `apps/lumen/lumen/behavior/pools.py` (animation pools).
+Implemented in [apps/lumen](../apps/lumen/README.md): the tables below live in `apps/lumen/lumen/state/machine.py` (states, transitions) and `apps/lumen/lumen/movement/pools.py` (animation pools). Every tunable number is in the `config.py` of its folder (`movement/`, `ai/` and each model, `state/`, `light/`, `io/`).
 
 Every state answers three questions:
 
@@ -192,10 +192,10 @@ When several faces are visible, pick the largest (closest) one. Switch targets o
 - High energy biases pools toward the bigger variants (`__big`, `excited_bounce`, `celebrate__big`) and slightly faster time scales. Low energy biases toward `__calm`, `__subtle` and slower ones.
 - This is one number, cheap to implement, and it makes the lamp feel like it remembers the last minute.
 
-**Reuse the existing modifier rules** in `tools/motion_lib/modifiers/rules.py` (dev branch). Ported to the 3-joint arm as small plan-building functions in `apps/lumen/lumen/behavior/modifiers.py`; a plan is a list of worker steps (goto / wait / play / mark / rebase) played as one `MotionWorker.seq` command, and every plan goes through `respect_caps()` (min-jerk peaks inside `SPEED_CAPS`, the elbow-lift cap and `ACCEL_CAP`):
+**Reuse the existing modifier rules** in `tools/motion_lib/modifiers/rules.py` (dev branch). Ported to the 3-joint arm as small plan-building functions in `apps/lumen/lumen/movement/modifiers.py`; a plan is a list of worker steps (goto / wait / play / mark / rebase) played as one `MotionWorker.seq` command, and every plan goes through `respect_caps()` (min-jerk peaks inside `SPEED_CAPS`, the elbow-lift cap and `ACCEL_CAP`):
 - `GlanceBeforeMove` (for AIM): the head pitches toward the book first, holds 0.15–0.4 s, then the body follows. On this arm the glance is pitch, not yaw (no yaw joint yet).
 - `AnticipationWindup` (for AIM, ADJUST): a counter-motion of 10–20 % of the move first, at least 2.5° so it isn't swallowed by the gear backlash.
-- AIM / SEARCH / ADJUST motion is owned by `behavior/aim.py` (ADJUST already has its own counter-move along the light axis); `modifiers.expressive_move(..., "aim")` is ready for AIM to adopt, but is not wired in yet.
+- AIM / SEARCH / ADJUST motion is owned by `movement/aim.py` (ADJUST already has its own counter-move along the light axis); `modifiers.expressive_move(..., "aim")` is ready for AIM to adopt, but is not wired in yet.
 - `IdleBreathe` (any hold ≥ 2 s): whole `idle_breathe__calm` breaths that fill the hold (used by SLEEP).
 - `Hesitation` (uncertain moves: the first REACQUIRE peek): pause, micro-retreat, pause, then commit slower. The NOTICE false alarm uses the `hesitate__subtle` clip instead.
 - `LookBackAtUser` is the CHECK-IN plan in the director (it needs the face); `LightCoupling` is the light's job.

@@ -43,7 +43,7 @@ The Mac app (dev branch, `apps/stepper_desk/mac`) keeps its own Swift copy of th
 ## Lamp LED (not wired yet, not flashed)
 
 `arm_light` RPC, gateway `LIGHT <0-1000> [fade ms]` / `LIGHTSTAT`, `ArmMotion.light()`. The level
-is a duty in per mille, already gamma-corrected by Lumen (`apps/lumen/lumen/io/light.py`); the MCU
+is a duty in per mille, already gamma-corrected by Lumen (`apps/lumen/lumen/light/light.py`); the MCU
 fades linearly to it over `fade ms` and drives a 20 kHz PWM. No session owner needed, and the level
 stays when the session ends. Firmware built with `LIGHT_ENABLED 0` (the default) or older
 firmware answers `supported: False` and the light is a no-op, so nothing else breaks.
@@ -66,4 +66,4 @@ head DIR today, so turning the light on means moving that wire:
      constant-current LED driver with a PWM/DIM input is better, wired the same way.
    - Anything over about 0.5 A gets its own supply (or the servo's buck), not the board's 5 V.
 
-The other option is Linux-side PWM/GPIO on the QRB2210: see `apps/lumen/lumen/io/light.py`.
+The other option is Linux-side PWM/GPIO on the QRB2210: see `apps/lumen/lumen/light/light.py`.

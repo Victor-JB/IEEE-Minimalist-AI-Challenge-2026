@@ -9,9 +9,9 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from lumen import config as C          # noqa: E402
-from lumen import events as E          # noqa: E402
-from lumen.machine import INITIAL_CHILD, Machine, STATES, TRANSITIONS   # noqa: E402
+from lumen.state import config as state_cfg
+from lumen import events as E  # noqa: E402
+from lumen.state.machine import INITIAL_CHILD, Machine, STATES, TRANSITIONS  # noqa: E402
 
 # Shortest event path from BOOT to each state (the machine's own vocabulary).
 PATH = {
@@ -204,7 +204,7 @@ class Faults(unittest.TestCase):
         r = Rig().goto("FAULT")
         tr = r.ev(E.RECOVERED)
         self.assertEqual((tr.src, tr.dst), ("FAULT", "BOOT"))
-        self.assertEqual(r.m.timer_at, r.t + C.BOOT_TIMEOUT_S)   # BOOT's homing watchdog is re-armed
+        self.assertEqual(r.m.timer_at, r.t + state_cfg.BOOT_TIMEOUT_S)   # BOOT's homing watchdog is re-armed
 
     def test_second_fault_stays_in_fault(self):
         r = Rig().goto("FAULT")
@@ -241,39 +241,39 @@ class Timers(unittest.TestCase):
 
     def test_boot_timer(self):
         r = Rig()
-        self.assertEqual(r.wait(C.BOOT_TIMEOUT_S - 0.1), [])
+        self.assertEqual(r.wait(state_cfg.BOOT_TIMEOUT_S - 0.1), [])
         fired = r.wait(0.2)
         self.assertEqual([(t.src, t.dst, t.event) for t in fired], [("BOOT", "FAULT", E.TIMEOUT)])
 
     def test_boot_timer_cancelled_by_ready(self):
         r = Rig().goto("IDLE")
-        self.assertEqual(r.wait(C.BOOT_TIMEOUT_S * 2), [])
+        self.assertEqual(r.wait(state_cfg.BOOT_TIMEOUT_S * 2), [])
 
     def test_notice_timer(self):
         r = Rig().goto("NOTICE")
-        self.assertEqual(r.wait(C.NOTICE_TIMEOUT_S - 0.1), [])
+        self.assertEqual(r.wait(state_cfg.NOTICE_TIMEOUT_S - 0.1), [])
         self.assertEqual([t.dst for t in r.wait(0.2)], ["IDLE"])
 
     def test_lost_timer_and_cancel(self):
         r = Rig().goto("LOST")
-        self.assertEqual(r.wait(C.LOST_TIMEOUT_S - 0.1), [])
+        self.assertEqual(r.wait(state_cfg.LOST_TIMEOUT_S - 0.1), [])
         self.assertEqual([(t.dst, t.event) for t in r.wait(0.2)], [("IDLE", E.TIMEOUT)])
         r = Rig().goto("LOST")
-        r.wait(C.LOST_TIMEOUT_S / 2)
+        r.wait(state_cfg.LOST_TIMEOUT_S / 2)
         r.ev(E.FACE_SEEN)
-        self.assertEqual(r.wait(C.LOST_TIMEOUT_S), [])     # STANDBY has no timer
+        self.assertEqual(r.wait(state_cfg.LOST_TIMEOUT_S), [])     # STANDBY has no timer
         self.assertEqual(r.m.state, "STANDBY")
 
     def test_lost_timer_restarts_on_each_visit(self):
         r = Rig().goto("LOST")
-        r.wait(C.LOST_TIMEOUT_S - 1)
+        r.wait(state_cfg.LOST_TIMEOUT_S - 1)
         r.ev(E.FACE_SEEN)
         r.ev(E.FACE_LOST)
-        self.assertEqual(r.wait(C.LOST_TIMEOUT_S - 0.2), [])
+        self.assertEqual(r.wait(state_cfg.LOST_TIMEOUT_S - 0.2), [])
         self.assertEqual(r.m.state, "LOST")
 
     def test_checkin_timer_in_range(self):
-        lo, hi = C.CHECKIN_EVERY_S
+        lo, hi = state_cfg.CHECKIN_EVERY_S
         for seed in range(20):
             r = Rig(seed).goto("HOLD")
             fired = r.wait(hi + 0.1)
@@ -282,7 +282,7 @@ class Timers(unittest.TestCase):
             self.assertTrue(lo - 0.06 <= fired[0].t - r.m.history[-2].t <= hi + 0.06, seed)
 
     def test_checkin_timer_rearms_after_adjust(self):
-        lo, _ = C.CHECKIN_EVERY_S
+        lo, _ = state_cfg.CHECKIN_EVERY_S
         r = Rig().goto("HOLD")
         r.wait(lo - 1)
         r.ev(E.CLOSER)
@@ -295,23 +295,23 @@ class Timers(unittest.TestCase):
 
     def test_reacquire_timer(self):
         r = Rig().goto("REACQUIRE")
-        self.assertEqual(r.wait(C.REACQUIRE_TIMEOUT_S - 0.1), [])
+        self.assertEqual(r.wait(state_cfg.REACQUIRE_TIMEOUT_S - 0.1), [])
         fired = r.wait(0.2)
         self.assertEqual([(t.src, t.dst) for t in fired], [("REACQUIRE", "NOT_FOUND")])
         self.assertEqual(r.m.path, "NOT_FOUND")
 
     def test_reacquire_timer_cancelled_by_book(self):
         r = Rig().goto("REACQUIRE")
-        r.wait(C.REACQUIRE_TIMEOUT_S / 2)
+        r.wait(state_cfg.REACQUIRE_TIMEOUT_S / 2)
         r.ev(E.BOOK_FOUND)
-        lo, _ = C.CHECKIN_EVERY_S
+        lo, _ = state_cfg.CHECKIN_EVERY_S
         self.assertEqual(r.wait(lo - 0.5), [])
         self.assertEqual(r.m.state, "HOLD")
 
     def test_fault_timer_none_in_machine(self):
         """FAULT's cool-down lives in the Director (it emits RECOVERED), not in a machine timer."""
         r = Rig().goto("FAULT")
-        self.assertEqual(r.wait(C.FAULT_COOLDOWN_S * 3), [])
+        self.assertEqual(r.wait(state_cfg.FAULT_COOLDOWN_S * 3), [])
 
 
 if __name__ == "__main__":

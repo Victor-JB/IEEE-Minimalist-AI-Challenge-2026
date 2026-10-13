@@ -9,9 +9,9 @@ APP = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(APP))
 sys.path.insert(0, str(APP / "tools"))
 import simulate as S                                # noqa: E402
-from lumen import events as E                       # noqa: E402
-from lumen.perception import gestures as G          # noqa: E402
-from lumen.translog import HEADER                   # noqa: E402
+from lumen import events as E  # noqa: E402
+from lumen.ai.hands import gestures as G  # noqa: E402
+from lumen.translog import HEADER  # noqa: E402
 
 _cache = {}
 
