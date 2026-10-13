@@ -4722,6 +4722,27 @@ z
   <!-- live-resource-results:start -->
   <section class="training-story" aria-labelledby="resource-title">
     <h3 id="resource-title">CPU, memory &amp; energy</h3>
+    <h4 id="resource-comparison-title">Before and after optimization</h4>
+    <p>We reduced face + hand processing latency by <strong>34.9%</strong> while keeping peak benchmark memory approximately constant, with a <strong>3.3% increase in CPU work</strong>.</p>
+    <div class="perf-table-wrap">
+      <table aria-labelledby="resource-comparison-title">
+        <caption>Our original detector pipeline compared with the optimized detector pipeline, before we added the new gesture classifier.</caption>
+        <thead><tr><th scope="col">Metric</th><th scope="col">Before</th><th scope="col">Optimized</th><th scope="col">Change</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Face + hand processing time<span class="perf-count">Mean, same 210 images</span></th><td>315.9 ms</td><td>205.7 ms</td><td>34.9% lower</td></tr>
+          <tr><th scope="row">CPU work per processed image<span class="perf-count">Mean, same 210 images</span></th><td>583.1 CPU-ms</td><td>602.6 CPU-ms</td><td>3.3% higher</td></tr>
+          <tr><th scope="row">Peak benchmark RAM<span class="perf-count">Evaluator process RSS, full benchmark run</span></th><td>130.11 MiB</td><td>130.28 MiB</td><td>Essentially unchanged</td></tr>
+          <tr><th scope="row">Inferences per joule</th><td>Not measured</td><td>Not measured</td><td>Unknown</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="perf-scope">CPU work adds the processing time across all cores; it is not CPU utilization or electrical energy. We used four model threads instead of two to finish sooner, with slightly more total CPU work. These measurements establish faster responses, but do not establish lower CPU work, RAM use or power consumption.</p>
+    <p class="perf-scope">We have no equivalent historical live-app CPU percentage or shared-memory measurement. The live figures below therefore cannot establish a before/after change. Benchmark RSS and live app PSS measure different scopes and must not be compared directly.</p>
+    <nav class="perf-links" aria-label="Before and after resource evidence">
+      <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/reports/efficiency/baseline-results.json" target="_blank" rel="noopener noreferrer">Before: raw benchmark results</a>
+      <a href="https://github.com/Victor-JB/IEEE-Minimalist-AI-Challenge-2026/blob/recovered-board-work/reports/efficiency/final-results.json" target="_blank" rel="noopener noreferrer">Optimized: raw benchmark results</a>
+    </nav>
+    <h4>Current live app</h4>
     <p>We measured our running UNO Q for 60 seconds, with the camera and controls left running. These are recorded live readings from 13 October 2026, 1:57–1:58 pm Pacific. CPU percentages use the board’s full four-core capacity: one fully busy core is 25%.</p>
     <div class="perf-table-wrap">
       <table>
