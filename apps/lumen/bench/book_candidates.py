@@ -29,7 +29,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))     # apps/lumen
-from lumen.perception.book import BookDetector  # noqa: E402
+from lumen.ai.book.detector import BookDetector  # noqa: E402
 
 BENCH = Path(__file__).resolve().parent
 CANDIDATES = BENCH / "models"
@@ -111,7 +111,7 @@ class EfficientDetBook(BookDetector):
         assert len(self.anchors) == self.box_out["shape"][1], "anchor count mismatch"
 
     def _postprocess(self):
-        from lumen.perception.book import nms
+        from lumen.ai.book.detector import nms
 
         scores = self.interpreter.get_tensor(self.score_out["index"])[0][:, self.book_class]  # probabilities
         keep = scores >= self.score_threshold
