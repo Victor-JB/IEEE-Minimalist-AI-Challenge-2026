@@ -1,0 +1,161 @@
+{
+ "name": "dance_90",
+ "variant": "lamp",
+ "description": "Grooves at 90 bpm: elbow bobs on the beat, shade swings on the off-beat.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": 0.8,
+  "arousal": 0.8,
+  "source": "tools/animation/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.696,
+   "joints": {
+    "wrist_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.846,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 6.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.089,
+   "joints": {
+    "wrist_pitch": 10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.239,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.482,
+   "joints": {
+    "wrist_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.632,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 6.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.875,
+   "joints": {
+    "wrist_pitch": 10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.025,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.268,
+   "joints": {
+    "wrist_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.418,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 6.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 7.661,
+   "joints": {
+    "wrist_pitch": 10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 7.811,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 8.357,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 8.507,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": true,
+ "duration_nominal": 8.507
+}

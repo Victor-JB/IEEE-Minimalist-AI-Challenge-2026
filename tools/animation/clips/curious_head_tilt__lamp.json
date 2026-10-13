@@ -1,0 +1,191 @@
+{
+ "name": "curious_head_tilt",
+ "variant": "lamp",
+ "description": "Lowers in for a closer look, cocks the shade up, holds, cocks again.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": 0.3,
+  "arousal": 0.4,
+  "source": "tools/animation/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.624,
+   "joints": {
+    "wrist_pitch": -4.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.774,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.924,
+   "joints": {
+    "wrist_pitch": -4.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.074,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.76,
+   "joints": {
+    "wrist_pitch": -16.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.91,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.26,
+   "joints": {
+    "wrist_pitch": -16.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.41,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.817,
+   "joints": {
+    "wrist_pitch": -8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.967,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.017,
+   "joints": {
+    "wrist_pitch": -8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.167,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.713,
+   "joints": {
+    "wrist_pitch": -18.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.863,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.313,
+   "joints": {
+    "wrist_pitch": -18.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.463,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.567,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.717,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 5.717
+}

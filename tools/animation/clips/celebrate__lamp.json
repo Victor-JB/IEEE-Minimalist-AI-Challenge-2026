@@ -1,0 +1,176 @@
+{
+ "name": "celebrate",
+ "variant": "lamp",
+ "description": "Crouches, springs the shade up, bobs twice at the top.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": 0.9,
+  "arousal": 0.9,
+  "source": "tools/animation/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.78,
+   "joints": {
+    "wrist_pitch": 10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.93,
+   "joints": {
+    "shoulder_pitch": -2.0,
+    "elbow_pitch": 10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.98,
+   "joints": {
+    "wrist_pitch": 10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.13,
+   "joints": {
+    "shoulder_pitch": -2.0,
+    "elbow_pitch": 10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.766,
+   "joints": {
+    "wrist_pitch": -30.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.916,
+   "joints": {
+    "shoulder_pitch": -3.0,
+    "elbow_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.601,
+   "joints": {
+    "wrist_pitch": -18.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.751,
+   "joints": {
+    "shoulder_pitch": -3.0,
+    "elbow_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.437,
+   "joints": {
+    "wrist_pitch": -30.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.587,
+   "joints": {
+    "shoulder_pitch": -3.0,
+    "elbow_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.134,
+   "joints": {
+    "wrist_pitch": -20.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.284,
+   "joints": {
+    "shoulder_pitch": -3.0,
+    "elbow_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.634,
+   "joints": {
+    "wrist_pitch": -20.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.784,
+   "joints": {
+    "shoulder_pitch": -3.0,
+    "elbow_pitch": -10.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 8.026,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 8.176,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 8.176
+}

@@ -40,7 +40,7 @@ adding_emotion.txt
 infer_out_on_arduino.log
 
 # Raw commissioning data stays local; explicit diagnostic summaries are tracked.
-apps/stepper_desk/recordings/
+tools/animation/recordings/
 
 # macOS
 .DS_Store
@@ -48,10 +48,10 @@ apps/stepper_desk/recordings/
 # Board-side builds (the Arduino Q runs from a clone of this repo)
 arm/build/
 arm/build-*/
-apps/stepper_desk/diagnostics/build-*/
+tools/animation/diagnostics/build-*/
 
-# Lumen runtime logs (transition CSVs, arm session JSONL)
-apps/lumen/logs/
+# luxoiii runtime logs (transition CSVs, arm session JSONL)
+apps/luxoiii/logs/
 
 # Arm session recordings written by arm_client when no output path is given
 arm/recordings/

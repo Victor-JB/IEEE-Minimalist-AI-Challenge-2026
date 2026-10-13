@@ -32,6 +32,7 @@ class FakeServo:
                                      ppd_reverse=142200, direction=0, count=0) for _ in range(3)])
         self.left = 0; self.goal = None
         self.roll_supported = True
+        self.light_supported = True
 
     def request(self, command):
         self.commands.append(command)
@@ -47,6 +48,12 @@ class FakeServo:
                 return {'kind': 'roll', 'supported': False}
             return {'kind': 'roll', 'supported': True, 'v': 3, 'enabled': 1, 'target': 12500,
                     'current': 12000, 'pulse_us': 1589, 'fault': 0}
+        if name in ('LIGHT', 'LIGHTSTAT'):
+            if not self.light_supported:
+                return {'kind': 'light', 'supported': False}
+            target = int(words[1]) if name == 'LIGHT' else 0
+            return {'kind': 'light', 'supported': True, 'v': 4, 'enabled': 1, 'target': target,
+                    'current': 0, 'remaining': 0, 'fault': 0, 'refused': 0}
         if name == 'MOVE':
             self.goal = list(map(int, words[2:5]))
             self.left = self.polls
@@ -60,6 +67,9 @@ class FakeServo:
                 self.servo.update(state=state, reason=reason)
                 if reason == 1:
                     for axis, value in zip(self.s['axes'], self.goal): axis['angle'] = value
+        elif name == 'STREAM' and self.s['state'] == 16:
+            result = copy.deepcopy(self.s); result['error'] = -16      # stalled: refused until HALT
+            return result
         elif name == 'STREAM':
             self.s.update(state=17, run=1, awake=1, id=int(words[1]))
         elif name == 'HALT':
@@ -162,6 +172,25 @@ class ArmMotionTests(unittest.TestCase):
             self.assertFalse(arm.roll_supported)
         self.assertEqual(self.fake.sent('ROLLSTAT'), [])
 
+    def test_light_clamps_formats_and_keeps_the_arm_sample(self):
+        with self.session() as arm:
+            before = arm.sample
+            arm.light(463.6, fade_ms=80)
+            arm.light(2000)
+            arm.light(-3, fade_ms=1e9)
+            self.assertIs(arm.sample, before)       # light replies don't replace the arm status
+        self.assertEqual(self.fake.sent('LIGHTSTAT'), ['LIGHTSTAT'])   # asked once
+        self.assertEqual(self.fake.sent('LIGHT'), ['LIGHT 464 80', 'LIGHT 1000 0', 'LIGHT 0 60000'])
+
+    def test_light_is_a_no_op_on_firmware_without_the_lamp(self):
+        self.fake.light_supported = False
+        with self.session() as arm:
+            self.assertIsNone(arm.light(500))
+            self.assertIsNone(arm.light(600))
+            self.assertFalse(arm.light_supported)
+        self.assertEqual(self.fake.sent('LIGHT'), [])
+        self.assertEqual(len(self.fake.sent('LIGHTSTAT')), 1)
+
     def test_fault_raises(self):
         self.fake.finish = (18, 4)
         with self.session() as arm, self.assertRaisesRegex(client.ArmError, 'sensor'):
@@ -188,6 +217,43 @@ class ArmMotionTests(unittest.TestCase):
             with self.assertRaises(ValueError): arm.stream_point([1, 62, 5], [13, 0, 0])
         words = self.fake.sent('STREAM')[0].split()
         self.assertEqual(words[2:], ['62000', '1000', '5000', '-3000', '2000', '4000', '80', '3'])
+
+    def test_stream_stall_is_returned_then_halt_resumes(self):
+        with self.session() as arm:
+            arm.stream_point([1, 62, 5])
+            self.fake.s.update(state=16)
+            self.assertEqual(arm.stream_point([1, 62, 4])['state'], 'stalled')
+            arm.halt()
+            self.assertEqual(arm.stream_point([1, 62, 4])['state'], 'streaming')
+
+    def stream_head(self, arm, head_measured, head_target):
+        """One stream point with the fake reporting the head (motor axis 2) at head_measured."""
+        self.fake.s['axes'][2]['angle'] = round(head_measured*1000)
+        return arm.stream_point([-12, 63, head_target])
+
+    def test_runaway_joint_is_halted(self):
+        # Measured on 2026-10-13: head DIR not where the firmware drives it; commanded ~-15, it ran off.
+        with self.session() as arm:
+            with self.assertRaisesRegex(client.ArmError, 'head is running away'):
+                for measured in (-16.9, -21.0, -29.3, -34.5, -38.1, -41.1, -46.0, -51.6, -57.5):
+                    self.stream_head(arm, measured, -15.0)
+            self.assertGreater(measured, -60)      # caught well before the -80 hard limit
+            self.assertTrue(self.fake.sent('HALT'))
+
+    def test_past_limit_going_outward_is_halted(self):
+        with self.session() as arm:
+            self.stream_head(arm, -80.5, -78.0)
+            with self.assertRaisesRegex(client.ArmError, 'past its limit'):
+                self.stream_head(arm, -82.0, -78.0)
+
+    def test_stuck_or_returning_joint_is_not_a_runaway(self):
+        with self.session() as arm:
+            for target in range(0, 60, 5):          # setpoint leaves a stuck head behind
+                self.stream_head(arm, 0.0, target)
+        with self.session() as arm:
+            for measured in (-90.0, -88.0, -85.0, -82.0, -79.0):   # past the limit, coming back in
+                self.stream_head(arm, measured, -78.0)
+        self.assertFalse(self.fake.sent('HALT'))
 
     def test_scale_halt_relax(self):
         with self.session() as arm:

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>luxoiii · spatial view</title>
+<style>
+:root { color-scheme: dark; --panel2: #171e29; font: 15px system-ui,sans-serif; background:#0d121a; color:#e9edf4; }
+body { margin:0; padding:24px; } main { max-width:1200px; margin:auto; }
+header { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+h1 { margin:0; font-size:30px; letter-spacing:-1px; } p { color:#aab8cc; line-height:1.5; }
+.badge { font-size:12px; color:#75dfd0; border:1px solid #296f68; border-radius:20px; padding:7px 12px; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; }
+button { font:inherit; background:#202d3e; color:inherit; border:1px solid #3a4c64; border-radius:7px; padding:8px 13px; cursor:pointer; }
+button[aria-pressed=true] { background:#28645e; border-color:#71d5c7; }
+#cad { width:100%; height: clamp(360px,55vw,650px); background:var(--panel2); border-radius:12px; touch-action:none; cursor:grab; }
+.stage { position:relative; } #labels { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+.live { display:grid; grid-template-columns:minmax(220px,1fr) 2fr; gap:20px; padding:18px; background:#171e29; border-radius:12px; margin:16px 0; }
+.videoFrame { position:relative; } #faceBoxes { position:absolute; inset:0; pointer-events:none; } .faceBox { position:absolute; border:2px solid #80f9d8; color:#80f9d8; font-size:11px; box-sizing:border-box; }
+#video { display:block; width:100%; border-radius:8px; } .live h2 { margin:0 0 8px; font-size:18px; } #health { color:#ffbc65; } details { margin:20px 0; } summary { cursor:pointer; }
+@media(max-width:650px) { body { padding:12px; } header { flex-wrap:wrap; } .live { grid-template-columns:1fr; } }
+#cadmsg { margin:10px 0; font-size:13px; color:#aab8cc; }
+.sliders { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:16px; padding:18px; background:#171e29; border-radius:12px; }
+label { display:grid; gap:8px; } input { width:100%; accent-color:#75dfd0; } output { color:#75dfd0; }
+.small { font-size:13px; } .state { color:#75dfd0; }
+</style>
+<main>
+<header><h1>luxoiii</h1><span class="badge">LIVE PERCEPTION · READ-ONLY VIEW</span></header>
+<p>People in the robot’s camera space. <span style="color:#80f9d8">Mint: estimated face positions.</span> <span style="color:#ffbc65">Amber: physical head and camera.</span><br>Complete arm and base, with an X-ray case to reveal the internal cams.</p>
+<div class="toolbar">
+ <button data-shell="xray" aria-pressed="true">X-ray case</button><button data-shell="solid" aria-pressed="false">Solid case</button><button data-shell="hidden" aria-pressed="false">Hide case</button>
+ <button data-cam="3d">3D</button><button data-cam="side">Side</button><button data-cam="front">Front</button>
+ <button id="peopleView">People + robot</button><button id="example" aria-pressed="false">Example person</button><button id="follow" aria-pressed="true">Follow measured joints</button><button id="play" aria-pressed="false">Play animation</button><button id="reset">Reset pose</button>
+</div>
+<div class="stage"><canvas id="cad" aria-label="Full luxoiii arm and base with transparent shells and animated internal cams"></canvas><canvas id="labels" aria-hidden="true"></canvas></div>
+<p id="exampleNote" style="color:#ffbc65" hidden>EXAMPLE PERSON · illustrative marker at 1 m forward and 0.2 m right of the live camera. This is not a detection.</p>
+<div id="cadmsg">Loading full assembly…</div>
+<p class="small">Arm model: <span class="state" id="state">Waiting for measured joints</span> · Drag to orbit, scroll to zoom. Lamp stays off in this mechanical preview.</p>
+<section class="live">
+ <div><div class="videoFrame"><img id="video" alt="Latest image from the robot camera, used for face detection"><div id="faceBoxes"></div></div><div class="small" id="frameInfo">Waiting for camera…</div></div>
+ <div><h2>Where the camera sees people</h2><p id="health" role="status">Connecting to the UNO Q…</p><p id="people">Waiting for detections…</p><p class="small">Depth uses apparent face width, so distance is approximate. Symbols mark faces, not tracked body joints. Sideways and vertical positions are relative to the camera.</p></div>
+</section>
+<details><summary>Camera calibration & assumptions</summary>
+<p class="small">The camera moves with the head pivot. Starting assumptions: 60° horizontal view, 16 cm face width, camera 5 cm along the shade axis, base yaw fixed at zero. Adjust these to match the actual camera. A turned face can make the estimated distance too large.</p>
+<div class="sliders">
+<label>Horizontal field of view (°)<input id="hfov" type="number" min="20" max="150" value="60"></label>
+<label>Assumed face width (cm)<input id="faceWidth" type="number" min="8" max="30" value="16"></label>
+<label>Released pivot estimate (°)<input id="pivotFallback" type="number" min="-90" max="90" value="0"></label>
+<label>Camera along shade (cm)<input id="cameraOffset" type="number" min="-20" max="30" value="5"></label>
+<label>Camera mount pitch (°)<input id="cameraPitch" type="number" min="-90" max="90" value="0"></label>
+<label>Camera mount yaw (°)<input id="cameraYaw" type="number" min="-180" max="180" value="0"></label>
+</div></details>
+<details><summary>Simulated arm controls</summary><p class="small">Animation and sliders move only this model. The amber physical camera and face estimates stay tied to live readings.</p>
+<div class="sliders">
+ <label>Base yaw <output id="yawValue">0°</output><input id="yaw" aria-label="Base yaw" type="range" min="-60" max="60" value="0" step="0.1"></label>
+ <label>Shoulder <output id="shoulderValue">-20°</output><input id="shoulder" aria-label="Shoulder" type="range" min="-30" max="10" value="-20" step="0.1"></label>
+ <label>Elbow <output id="elbowValue">65°</output><input id="elbow" aria-label="Elbow" type="range" min="10" max="77" value="65" step="0.1"></label>
+ <label>Head pitch <output id="headValue">55°</output><input id="head" aria-label="Head pitch" type="range" min="-30" max="85" value="55" step="0.1"></label>
+ <label>Head pivot <output id="rollValue">0°</output><input id="roll" aria-label="Head pivot" type="range" min="-30" max="30" value="0" step="0.1"></label>
+</div>
+</details><p class="small">Model source: full-model-animations · ef1b0d2. Cam rotation and plate orbit use the source model’s gear couplings. The model can follow measured pitch joints or animate independently. Face detection runs on the UNO Q; this view never commands the lamp or motors.</p>
+</main>
+<script src="/cad-view.js"></script>
+<script>
+const cad = createLuxoiiiCAD({canvas:document.getElementById('cad'),status:document.getElementById('cadmsg'),labels:document.getElementById('labels')});
+const keys=['yaw','shoulder','elbow','head','roll'];
+const home=[0,-20,65,55,0];
+let playing=false, following=true, elapsed=0, last=null, live=null, example=false, receivedAt=0;
+function show(v) {
+ keys.forEach((k,i)=>{ document.getElementById(k).value=v[i]; document.getElementById(k+'Value').textContent=v[i].toFixed(1)+'°'; });
+ cad.pose(v.slice(1,4),v[4],v[0]);
+}
+function setPlaying(value) { playing=value; const b=document.getElementById('play'); b.textContent=value?'Pause animation':'Play animation'; b.setAttribute('aria-pressed',String(value)); }
+keys.forEach(k=>document.getElementById(k).addEventListener('input',()=>{following=false; updateFollow(); setPlaying(false); document.getElementById('state').textContent='Manual preview';show(keys.map(k=>Number(document.getElementById(k).value)));}));
+document.getElementById('play').onclick=()=>{following=false;updateFollow();setPlaying(!playing);};
+document.getElementById('reset').onclick=()=>{following=false;updateFollow();setPlaying(false);elapsed=0;show(home);document.getElementById('state').textContent='Desk pose';};
+function tick(t) {
+ if(last!==null && playing) elapsed+=Math.min((t-last)/1000,0.1); last=t;
+ if(playing) {
+  // Slow inspection sweep; shade remains desk-directed and the lamp is off.
+  const a=elapsed*0.35;
+  show([25*Math.sin(a),-20+6*Math.sin(a*0.7),65+8*Math.sin(a*0.7),55-8*Math.sin(a*0.7),12*Math.sin(a*1.1)]);
+  document.getElementById('state').textContent='Slow mechanism inspection';
+ }
+ requestAnimationFrame(tick);
+}
+function updateFollow() { document.getElementById('follow').setAttribute('aria-pressed',String(following)); }
+document.getElementById('follow').onclick=()=>{following=true;setPlaying(false);updateFollow();applyLive();};
+document.getElementById('peopleView').onclick=()=>cad.fitPeople();
+function renderSpatial() {
+ if(example && live?.camera && live.fresh) {
+  const c=live.camera, xyz=[.2,0,1], p={camera:xyz,depth_m:1,range_m:Math.hypot(...xyz),
+   world:c.position.map((v,i)=>v+xyz[0]*c.right[i]+xyz[2]*c.forward[i])};
+  cad.spatial({...live,people:[p],example:true});
+ } else cad.spatial(live);
+}
+document.getElementById('example').onclick=()=>{example=!example;document.getElementById('example').setAttribute('aria-pressed',String(example));renderSpatial();cad.fitPeople();document.getElementById('exampleNote').hidden=!example;};
+function applyLive() {
+ if(following) {
+  if(live?.fresh && live.camera) {show([0,...live.camera.joints,live.camera.roll]);document.getElementById('state').textContent='Measured pitch joints · '+live.pivot_source;}
+  else document.getElementById('state').textContent='No fresh joint readings · model held';
+ }
+}
+async function poll() {
+ try {
+  const val=id=>Number(document.getElementById(id).value);
+  const qs=new URLSearchParams({hfov:val('hfov'),face_width:val('faceWidth')/100,pivot_fallback:val('pivotFallback'),camera_offset:val('cameraOffset')/100,camera_pitch:val('cameraPitch'),camera_yaw:val('cameraYaw')});
+  const response=await fetch('/spatial?'+qs,{signal:AbortSignal.timeout(3500)});live=await response.json();receivedAt=performance.now();
+  renderSpatial();applyLive();
+  document.getElementById('health').textContent=live.fresh ? (live.camera?'Live encoders · ':'Camera-relative only · encoders unavailable · ')+live.pivot_source : (live.error || 'Live data unavailable');
+  document.getElementById('people').textContent=live.fresh ? (live.people.length ? live.people.map((p,i)=>`Face ${i+1}: ~${p.range_m.toFixed(2)} m away · ${Math.abs(p.camera[0]).toFixed(2)} m ${p.camera[0]>=0?'right':'left'} · ${Math.abs(p.camera[1]).toFixed(2)} m ${p.camera[1]>=0?'above':'below'} camera`).join(' | ') : 'No complete faces detected in this frame.') : 'Waiting for fresh camera data. Old face markers are hidden.';
+  const boxes=document.getElementById('faceBoxes');boxes.replaceChildren();
+  if(live.fresh) live.people.forEach((p,i)=>{const b=document.createElement('div');b.className='faceBox';b.textContent='Face '+(i+1);const [x,y,w,h]=p.bbox;b.style.cssText=`left:${x/live.size[0]*100}%;top:${y/live.size[1]*100}%;width:${w/live.size[0]*100}%;height:${h/live.size[1]*100}%`;boxes.append(b);});
+  const img=document.getElementById('video');
+  if(live.fresh && live.frame_jpeg) {img.src='data:image/jpeg;base64,'+live.frame_jpeg;img.style.opacity=1;} else {img.removeAttribute('src');}
+  document.getElementById('frameInfo').textContent=live.fresh ? `${live.source} · ${Math.round(live.inference_ms)} ms read + inference · frame age ${live.age_s.toFixed(1)} s` : 'Camera unavailable';
+ } catch(e) {
+  live=null;cad.spatial(null);applyLive();document.getElementById('health').textContent='Live connection unavailable';document.getElementById('people').textContent='Old face markers are hidden.';document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();
+ }
+ setTimeout(poll,500);
+}
+// Expire markers even if a request stalls or the browser loses its connection.
+setInterval(()=>{
+ if(live?.fresh && (performance.now()-receivedAt)/1000+live.age_s>=2) {
+  live={...live,fresh:false,people:[],camera:null};cad.spatial(null);applyLive();
+  document.getElementById('health').textContent='Camera data is stale';
+  document.getElementById('people').textContent='Waiting for fresh camera data. Old face markers are hidden.';
+  document.getElementById('video').removeAttribute('src');document.getElementById('faceBoxes').replaceChildren();
+  document.getElementById('frameInfo').textContent='Camera unavailable';
+ }
+},250);
+show(home);cad.fitPeople();requestAnimationFrame(tick);poll();
+</script>
+</html>

@@ -1,0 +1,161 @@
+{
+ "name": "sad_droop",
+ "variant": "lamp",
+ "description": "A sigh: breathes in, then sags and lets the shade hang.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": -0.6,
+  "arousal": 0.2,
+  "source": "tools/animation/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.669,
+   "joints": {
+    "wrist_pitch": -6.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.819,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": -4.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.969,
+   "joints": {
+    "wrist_pitch": -6.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.119,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": -4.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.866,
+   "joints": {
+    "wrist_pitch": 26.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 4.016,
+   "joints": {
+    "shoulder_pitch": -4.0,
+    "elbow_pitch": 12.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.266,
+   "joints": {
+    "wrist_pitch": 26.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 5.416,
+   "joints": {
+    "shoulder_pitch": -4.0,
+    "elbow_pitch": 12.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.101,
+   "joints": {
+    "wrist_pitch": 18.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.251,
+   "joints": {
+    "shoulder_pitch": -2.0,
+    "elbow_pitch": 8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.701,
+   "joints": {
+    "wrist_pitch": 18.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 6.851,
+   "joints": {
+    "shoulder_pitch": -2.0,
+    "elbow_pitch": 8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 7.955,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 8.105,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": false,
+ "duration_nominal": 8.105
+}

@@ -119,6 +119,19 @@ static std::vector<int> armRollStatus(){
         int(std::lround(headRoll.current*1000)),int(headRoll.pulseUs()),rollFault};
     k_mutex_unlock(&lock);return r;
 }
+// Lamp LED (version 4): [] or [-1] reads; [level 0-1000, fade ms] sets. No owner needed, and the
+// level survives the session ending. Reply: v, enabled, target, current, fade ms left, PWM
+// error (-ENODEV when built with LIGHT_ENABLED 0), refused (-EINVAL for a bad request).
+static std::vector<int> armLight(std::vector<int> args){
+    k_mutex_lock(&lock,K_FOREVER);
+    uint32_t now=millis();int refused=0;
+    if(args.size()==2&&!lightFault)refused=lamp.set(args[0],args[1],now);
+    else if(args.size()==2)refused=lightFault;
+    else if(!(args.empty()||(args.size()==1&&args[0]==-1)))refused=-EINVAL;
+    lightTick(now);
+    std::vector<int> r={4,int(LIGHT_ENABLED&&!lightFault),lamp.to,lamp.current,int(lamp.remaining(now)),lightFault,refused};
+    k_mutex_unlock(&lock);return r;
+}
 // Read-only closed-loop telemetry (38 integers, version 2). See servoStatus().
 static std::vector<int> armServoStatus(){
     k_mutex_lock(&lock,K_FOREVER);auto result=servoStatus();k_mutex_unlock(&lock);return result;
@@ -130,7 +143,6 @@ static std::vector<int> armServoStatus(){
 // 14 servo hold/tuck config; 15 live speed scale. Angles are millidegrees, motor order.
 // Head tilt: 16 roll to angle (mdeg) at speed (mdeg/s, 0 = max); 17 roll config (center us,
 // us/deg x1000, lower/upper mdeg, sign, max mdeg/s); 18 roll limp. Release and lock also go limp.
-// Light: 19 lamp brightness 0-1000 (0 off). Independent of motor power; it stays as set on release.
 static std::vector<int> armCommand(std::vector<int> args){
     k_mutex_lock(&lock,K_FOREVER);
     int err=0;uint32_t now=millis();
@@ -199,7 +211,6 @@ static std::vector<int> armCommand(std::vector<int> args){
             }else if(op==17&&args.size()==8)
                 err=headRoll.configure(args[2],args[3]/1000.0,args[4]/1000.0,args[5]/1000.0,args[6],args[7]/1000.0);
             else if(op==18&&args.size()==2)headRoll.release();
-            else if(op==19&&args.size()==3)err=args[2]<0||args[2]>1000?-EINVAL:setLight(args[2]);
             else if(op==5&&args.size()==3)err=servoCtl.everStarted&&!armMotion.running()?servoCtl.renew(args[2],now):armMotion.hold(args[2],now);
             else if(op==9&&args.size()==3){
                 err=armMotion.pause(args[2],now);

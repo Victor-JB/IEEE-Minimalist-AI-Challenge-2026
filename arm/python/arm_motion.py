@@ -18,6 +18,7 @@ shoulder first folds the elbow to cut its load) and reports an obstruction
 instead of pushing again. Every call is recorded in the session JSONL.
 """
 from __future__ import annotations
+from errno import EBUSY
 import json
 
 from arm_client import ArmError, ArmSession, JOINTS, LIMITS, MOTOR, angles, finite, healthy
@@ -27,6 +28,12 @@ REASONS = {0:'none', 1:'complete', 2:'unsettled', 3:'lease', 4:'sensor', 5:'limi
            7:'stall', 8:'obstruction', 9:'halted', 10:'relaxed', 11:'hold_timeout'}
 ACTIVE = (13, 15)
 MARGIN = 2.0                       # firmware keeps targets this far inside hard limits
+# Streaming guard (stream_point): halt and raise when a joint is measured past a hard limit and still
+# going outward, or keeps running away from its setpoint (a DIR line on the wrong pin, a slipped
+# magnet): the firmware's stall check only catches a joint that doesn't move at all.
+LIMIT_SLACK = 1.0                  # deg past a hard limit before the outward check applies
+RUNAWAY_DEG = 15.0                 # deg from the setpoint ...
+RUNAWAY_SAMPLES = 4                # ... and further away on this many points in a row
 # Feedforward hints only, from the commissioning profile (shoulder, elbow, head).
 DEFAULT_PPD = (146.0, 140.0, 143.1)
 
@@ -41,7 +48,7 @@ class ArmMotion(ArmSession):
         self.roll_config = roll
         self.roll_supported = False
         self.roll_range = None
-        self.light_level = 0.0            # as last commanded (0-1); the firmware boots dark
+        self.light_supported = None          # None: not asked yet (light() asks once)
         self.limits_speed = None
 
     def __enter__(self):
@@ -120,14 +127,31 @@ class ArmMotion(ArmSession):
             s = dict(s, target=s['target']/1000, current=s['current']/1000)
         return s
 
-    # Lamp light (D7, PWM) --------------------------------------------------------
-    def light(self, level):
-        """Set the lamp brightness: 0-1 (True = full, False = off). It is independent of motor
-        power and stays as set after the session; the firmware boots dark."""
-        level = finite(float(level), 0, 1, 'Light level')
-        r = self._request(f'LIGHT {round(level*1000)}')
-        self.light_level = level
-        return r
+    # Lamp LED ------------------------------------------------------------------
+    def light(self, level, fade_ms=0):
+        """Lamp LED duty, 0-1000 per mille (already gamma-corrected by the caller), reached by a
+        linear fade over fade_ms on the MCU. No-op (None) on firmware without the lamp. The level
+        stays after the session ends."""
+        if self.light_supported is None:
+            self.light_status()
+        if not self.light_supported:
+            return None
+        level = min(1000, max(0, round(finite(level, -1e9, 1e9, 'Light level'))))
+        fade = min(60000, max(0, round(finite(fade_ms, -1e9, 1e9, 'Light fade'))))
+        return self._light_request(f'LIGHT {level} {fade}')
+
+    def light_status(self):
+        """{'supported', 'enabled', 'target', 'current' (per mille), 'remaining' (ms), 'fault'}."""
+        s = self._light_request('LIGHTSTAT')
+        self.light_supported = bool(s.get('supported'))
+        return s
+
+    def _light_request(self, command):
+        # Not _request(): a light reply must not replace self.sample (the arm status).
+        self._event('command', text=command)
+        s = self.transport.request(command)
+        self._event('light', sample=s)
+        return s
 
     # Reads -----------------------------------------------------------------
     def servo_status(self):
@@ -219,10 +243,39 @@ class ArmMotion(ArmSession):
         self.motion_id += 1
         values = ' '.join(str(round(pose[j]*1000)) for j in MOTOR)
         speeds = ' '.join(str(round(vel[j]*1000)) for j in MOTOR)
-        s = self._request(f'STREAM {self.motion_id} {values} {speeds} {h} {generation}')
+        # A stall is only reported by refusing the next point (-EBUSY, state stalled): return it
+        # so the caller can halt() to acknowledge, instead of losing the session.
+        s = self._request(f'STREAM {self.motion_id} {values} {speeds} {h} {generation}', allow=(-EBUSY,))
+        if s['error'] == -EBUSY and s['state'] != 16:
+            raise ArmError(f"Firmware rejected command: {s['error']}")
         if s['state'] == 18:
             self._outcome(s, None)
+        if s['state'] != 16:
+            self._guard_limits(s, pose)
         return {'state': STATES.get(s['state'], s['state']), 'angles': angles(s)}
+
+    def _guard_limits(self, s, pose):
+        """Halt and raise if a joint leaves its hard limits outward or runs away (see LIMIT_SLACK)."""
+        if not healthy(s):
+            return
+        now = angles(s)
+        prev, runs = getattr(self, '_guard_prev', None), getattr(self, '_guard_runs', [0]*3)
+        why = None
+        for j, (a, target) in enumerate(zip(now, pose)):
+            lo, hi = LIMITS[j]
+            if prev and ((a < lo-LIMIT_SLACK and a < prev[j][0]-0.5) or (a > hi+LIMIT_SLACK and a > prev[j][0]+0.5)):
+                why = f'{JOINTS[j]} at {a:.1f} deg is past its limit {lo}..{hi} and still going outward'
+            err = abs(a-target)
+            fleeing = prev and (a-prev[j][0])*(a-target) > 0 and abs(a-prev[j][0]) > 0.2   # moving away itself,
+            runs[j] = runs[j]+1 if fleeing and err > RUNAWAY_DEG else 0                      # not just left behind
+            if runs[j] >= RUNAWAY_SAMPLES:
+                why = f'{JOINTS[j]} is running away from its setpoint ({a:.1f} deg, wanted {target:.1f})'
+        self._guard_prev = [(a, abs(a-t)) for a, t in zip(now, pose)]
+        self._guard_runs = runs
+        if why:
+            self._guard_prev, self._guard_runs = None, [0]*3
+            self.halt()                    # hold powered where it is: a stepper holding can't run away
+            raise ArmError(f'Stopped: {why}. Check its wiring (DIR pin) and sensor before moving again.')
 
     def scale(self, factor):
         """Live shared slowdown for the running move (0.05-1); path unchanged.
@@ -231,6 +284,7 @@ class ArmMotion(ArmSession):
 
     def halt(self):
         """Stop where it is and hold that pose powered."""
+        self._guard_prev = None
         return self._outcome(self._request('HALT'), None)
 
     def relax(self):

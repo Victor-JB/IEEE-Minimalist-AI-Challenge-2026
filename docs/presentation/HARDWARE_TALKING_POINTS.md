@@ -1,3 +1,5 @@
+> Historical engineering notes and measurements. The current steppers are broken; do not present these as current live performance. The original render script is archived at `sim/archive/lamp_show_legacy.py`; `sim/lamp_show.py` now starts the full-model browser preview.
+
 # Hardware talking points
 
 For the System Design slide (20 pts) and the Edge Performance / power story (20 pts). Sources are linked so
@@ -23,7 +25,7 @@ Design choices worth saying out loud:
   one I²C bus through a PCA9548A mux (they all have the same address). (`arm_mujoco/README.md` "Sensing")
 - **Closed loop on the microcontroller.** Every 1 ms the STM32 corrects each joint toward the trajectory using
   the encoder. Result: worst endpoint error **0.30° at 60 °/s**, 54/54 bench moves with 0 stalls.
-  (`apps/stepper_desk/CLOSED_LOOP.md`)
+  (`tools/animation/CLOSED_LOOP.md`)
 - **Safety lives in firmware, not Python.** Joint limits, stale-sensor stop, stall detection, and a 300 ms
   lease: if Linux crashes or the link drops, the arm stops on its own.
 
@@ -67,7 +69,7 @@ Honest caveats (have answers ready):
 **Mechanism.** All three DRV8825 SLEEP inputs share one GPIO (D8). The firmware boots asleep and wakes the
 drivers only for an accepted move (3 ms wake delay before any step). When the last joint stops, for any reason
 (done, limit, watchdog, fault), it sleeps all three. Encoder polling continues while asleep, so the robot still
-knows its pose. (`apps/stepper_desk/README.md` "Automatic driver sleep on D8", `sketch/power.hpp`)
+knows its pose. (`tools/animation/README.md` "Automatic driver sleep on D8", `sketch/power.hpp`)
 
 **Why it saves power.** A stepper holding position burns full coil current (I²R) while doing no work. Asleep,
 the DRV8825 cuts coil current to zero and draws µA.

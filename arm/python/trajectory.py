@@ -1,6 +1,6 @@
 """Clip -> real-arm trajectory (shoulder, elbow, head), slowed until it respects the arm's caps.
 
-Used by both Lumen and emote.py. Clips are authored for the 6-joint concept robot, so their
+Used by both luxoiii and emote.py. Clips are authored for the 6-joint concept robot, so their
 shoulder/elbow/wrist-pitch offsets are applied around `home` on the real 3-joint arm; the clip is
 slowed until every joint is under its speed cap and the acceleration cap, and the result is
 clamped to arm_config.SAFE_RANGES.

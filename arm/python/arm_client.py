@@ -27,31 +27,31 @@ def ssh_target():
     """SSH arguments for the board and the per-request timeout.
 
     On the Arduino Q itself (the router socket exists) the gateway runs as a local
-    process. Otherwise STEPPER_LINK=auto (default) uses USB (ADB forward to localhost:2222) when the board
-    is plugged in, else Tailscale (STEPPER_HOST, default luxo3). Tailscale round trips
+    process. Otherwise LUXOIII_LINK=auto (default) uses USB (ADB forward to localhost:2222) when the board
+    is plugged in, else Tailscale (LUXOIII_HOST, default luxo3 = 100.78.199.105). Tailscale round trips
     are ~13 ms with occasional ~250 ms spikes, so requests there get a longer deadline;
     the MCU's 300 ms lease still halts and holds the arm if renewals stop.
     """
-    link=os.environ.get('STEPPER_LINK','auto')
-    if link not in ('auto','usb','tailscale','local'): raise ValueError('STEPPER_LINK must be auto, usb, tailscale or local')
+    link=os.environ.get('LUXOIII_LINK',os.environ.get('STEPPER_LINK','auto'))
+    if link not in ('auto','usb','tailscale','local'): raise ValueError('LUXOIII_LINK must be auto, usb, tailscale or local')
     if link=='local' or (link=='auto' and os.path.exists(ROUTER_SOCKET)):
         return None,.25   # running on the Arduino Q itself: no SSH hop
     if link!='tailscale':
         adb=shutil.which('adb') or '/opt/homebrew/bin/adb'
         try:
-            subprocess.run([adb,'-s',os.environ.get('ARDUINO_Q_SERIAL','634018433'),'forward','tcp:2222','tcp:22'],check=True,timeout=4,
+            subprocess.run([adb,'-s','2709356903','forward','tcp:2222','tcp:22'],check=True,timeout=4,
                            stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
             return ['-p','2222','arduino@localhost'],.25
         except (OSError,subprocess.SubprocessError):
             if link=='usb': raise ArmError('Arduino Q not found over USB')
-    return ['arduino@'+os.environ.get('STEPPER_HOST','luxo3')],.6
+    return ['arduino@'+os.environ.get('LUXOIII_HOST',os.environ.get('STEPPER_HOST','100.78.199.105'))],.6
 
 def gateway_python():
     """Interpreter for a local gateway: this one if it has the router bridge, else the deploy venv."""
     import importlib.util
     if importlib.util.find_spec('arduino') is not None:
         return sys.executable
-    for venv in (os.environ.get('STEPPER_VENV'),'/home/arduino/IEEE-Minimalist-AI-Challenge-2026/arm/.venv'):
+    for venv in (os.environ.get('LUXOIII_VENV',os.environ.get('STEPPER_VENV')),'/home/arduino/IEEE-Minimalist-AI-Challenge-2026/arm/.venv'):
         if venv and os.path.exists(venv+'/bin/python'): return venv+'/bin/python'
     raise ArmError('arduino-router-bridge not installed: run bash arm/scripts/deploy.sh or pip install -r arm/requirements.txt')
 
@@ -64,7 +64,7 @@ class Transport:
         if target is None:
             command=[gateway_python(),'-u',str(ROOT/'python/script_gateway.py'),*mode]
         else:
-            remote=' '.join(['/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/.venv/bin/python -u /home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/stepper_desk/python/script_gateway.py',*mode])
+            remote=' '.join(['/home/arduino/IEEE-Minimalist-AI-Challenge-2026/arm/.venv/bin/python -u /home/arduino/IEEE-Minimalist-AI-Challenge-2026/arm/python/script_gateway.py',*mode])
             command=['ssh','-T','-o','BatchMode=yes','-o','ConnectTimeout=5',
                      '-o','ServerAliveInterval=5','-o','ServerAliveCountMax=2',*target,remote]
         self.process=subprocess.Popen(command,
@@ -198,12 +198,12 @@ class ArmSession:
     def _event(self,kind,**values):
         if self.file:
             self.file.write(json.dumps(dict(type=kind,version=1,time=self.clock()-self.started,**values),allow_nan=False)+'\n');self.file.flush()
-    def _request(self,command):
+    def _request(self,command,allow=()):
         self._event('command',text=command)
         s=self.transport.request(command)
         if s is not None:
             self.sample=s;self._event('sample',sample=s)
-            if s.get('error',0):raise ArmError(f"Firmware rejected command: {s['error']}")
+            if s.get('error',0) and s['error'] not in allow:raise ArmError(f"Firmware rejected command: {s['error']}")
         return s
     def status(self):return self._request('STATUS')
     def stop(self):return self._request('STOP')

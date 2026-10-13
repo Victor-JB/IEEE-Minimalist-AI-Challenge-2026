@@ -1,8 +1,8 @@
-# Lumen behavior state machine
+# luxoiii behavior state machine
 
 Owner: Victor (software). Status: v0 = the agreed happy path; v1 = the version to build for the demo.
 
-Implemented in [apps/lumen](../apps/lumen/README.md): the tables below live in `apps/lumen/lumen/machine.py` (states, transitions) and `apps/lumen/lumen/behavior/pools.py` (animation pools).
+Implemented in [apps/luxoiii](../apps/luxoiii/README.md): the tables below live in `apps/luxoiii/luxoiii/machine.py` (states, transitions) and `apps/luxoiii/luxoiii/behavior/pools.py` (animation pools).
 
 Every state answers three questions:
 

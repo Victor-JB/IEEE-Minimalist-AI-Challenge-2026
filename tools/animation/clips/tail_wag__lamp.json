@@ -1,0 +1,131 @@
+{
+ "name": "tail_wag",
+ "variant": "lamp",
+ "description": "Happy little head bobs, like a wag.",
+ "tags": {
+  "category": "emotion",
+  "family": "lamp_style",
+  "valence": 0.6,
+  "arousal": 0.6,
+  "source": "tools/animation/scripts/make-lamp-style-clips.py"
+ },
+ "mode": "additive",
+ "joint_mask": [
+  "shoulder_pitch",
+  "elbow_pitch",
+  "wrist_pitch"
+ ],
+ "keyframes": [
+  {
+   "t": 0.0,
+   "joints": {
+    "wrist_pitch": 0.0,
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.557,
+   "joints": {
+    "wrist_pitch": -8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 0.707,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 3.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.532,
+   "joints": {
+    "wrist_pitch": 6.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 1.682,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.507,
+   "joints": {
+    "wrist_pitch": -8.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 2.657,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 3.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.343,
+   "joints": {
+    "wrist_pitch": 4.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.493,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.632,
+   "joints": {
+    "wrist_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  },
+  {
+   "t": 3.782,
+   "joints": {
+    "shoulder_pitch": 0.0,
+    "elbow_pitch": 0.0
+   },
+   "ease": "ease_in_out"
+  }
+ ],
+ "events": [],
+ "params": {
+  "amplitude": {
+   "default": 1.0,
+   "range": [
+    0.5,
+    1.5
+   ]
+  },
+  "time_scale": {
+   "default": 1.0,
+   "range": [
+    1.0,
+    3.0
+   ]
+  },
+  "hold": {
+   "default": 0.0,
+   "range": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "returns_to_start": true,
+ "loopable": true,
+ "duration_nominal": 3.782
+}

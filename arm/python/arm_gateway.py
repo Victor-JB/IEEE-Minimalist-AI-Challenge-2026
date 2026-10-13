@@ -12,6 +12,20 @@ def decode_roll(raw):
         raise ValueError('Roll servo firmware required')
     result=dict(zip(ROLL_FIELDS,raw)); result.update(kind='roll',supported=True)
     return result
+LIGHT_FIELDS = ['v','enabled','target','current','remaining','fault','refused']
+LIGHT_MAX_FADE_MS = 60000
+def decode_light(raw):
+    if not isinstance(raw,(list,tuple)) or len(raw)!=7 or raw[0]!=4 or any(type(v)!=int for v in raw):
+        raise ValueError('Lamp light firmware required')
+    result=dict(zip(LIGHT_FIELDS,raw)); result.update(kind='light',supported=bool(raw[1]))
+    return result
+def light_args(args):
+    """'LIGHT <0-1000> [fade ms]' arguments -> [level, fade]; ValueError if malformed."""
+    if len(args) not in (1,2) or any(not w.isascii() or not w.isdecimal() or len(w)>6 for w in args):
+        raise ValueError('Malformed light command: LIGHT <0-1000> [fade ms]')
+    level,fade=int(args[0]),int(args[1]) if len(args)==2 else 0
+    if level>1000 or fade>LIGHT_MAX_FADE_MS: raise ValueError('Light level or fade out of range')
+    return [level,fade]
 def decode_servo(raw):
     if not isinstance(raw,(list,tuple)) or len(raw)!=38 or raw[0]!=2 or any(type(v)!=int for v in raw):
         raise ValueError('Closed-loop servo firmware required')
@@ -46,11 +60,13 @@ class ArmGateway:
         if not self.claimed: raise ValueError('HELLO required')
         if name=='SERVOSTAT' and not args: return self.servo_status()
         if name=='ROLLSTAT' and not args: return self.roll_status()
+        if name=='LIGHTSTAT' and not args: return self.light([-1])
+        if name=='LIGHT': return self.light(light_args(args))
         # 10-15: closed-loop MOVE, STREAM setpoint, HALT, SERVO axis config, SERVOTIME, SCALE.
-        # 16-18: head-tilt ROLL angle, ROLLCONFIG, ROLLOFF (limp). 19: lamp LIGHT brightness 0-1000.
+        # 16-18: head-tilt ROLL angle, ROLLCONFIG, ROLLOFF (limp).
         commands={'CONFIG':(1,6),'POSE':(2,5),'JOG':(3,4),'STATUS':(4,0),'HOLD':(5,1),'STOP':(6,0),'POWER':(8,2),'PAUSE':(9,1),
                   'MOVE':(10,7),'STREAM':(11,9),'HALT':(12,0),'SERVO':(13,4),'SERVOTIME':(14,3),'SCALE':(15,1),
-                  'ROLL':(16,2),'ROLLCONFIG':(17,6),'ROLLOFF':(18,0),'LIGHT':(19,1)}
+                  'ROLL':(16,2),'ROLLCONFIG':(17,6),'ROLLOFF':(18,0)}
         if name not in commands: raise ValueError('Unknown arm command')
         op,n=commands[name]
         if (len(args)!=n and not (name=='JOG' and len(args) in (5,6))) or any(not w.isascii() or not w.lstrip('-').isdecimal() or len(w)>11 or '-' in w[1:] for w in args):
@@ -77,6 +93,18 @@ class ArmGateway:
             return decode_roll(raw)
         except ValueError:
             return {'kind':'roll','supported':False}
+    def light(self, args):
+        # Like ROLLSTAT: firmware without the lamp (or built with LIGHT_ENABLED 0) reports
+        # supported False instead of failing, so the session keeps running in the dark. Never
+        # carries an 'error' key: script_gateway would end the session on it.
+        try:
+            raw = self.bridge.call('arm_light', list(args), timeout=0.2)
+        except Exception:
+            return {'kind':'light','supported':False}
+        try:
+            return decode_light(raw)
+        except ValueError:
+            return {'kind':'light','supported':False}
     def stop(self):
         if self.claimed:
             try: self.rpc(6)

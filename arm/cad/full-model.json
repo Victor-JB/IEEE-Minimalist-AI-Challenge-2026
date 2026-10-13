@@ -1,0 +1,3138 @@
+{
+  "model": "luxoiii \u00b7 ARM v29 \u00b7 complete assembly",
+  "source": "full-model-animations@ef1b0d2057c5e449a0e02638a1ff7d5b58dd3cbd",
+  "units": "cm (mesh vertices in mm)",
+  "bodies": [
+    {
+      "name": "base",
+      "parent": -1,
+      "position": [
+        0.0,
+        0.0,
+        4.9
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        -0.7071068,
+        0.7071068
+      ],
+      "joint": null
+    },
+    {
+      "name": "base_pinion",
+      "parent": 0,
+      "position": [
+        -7.5,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "base_motor_shaft",
+        "axis": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "yaw_spindle",
+      "parent": 0,
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "yaw",
+        "axis": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "first_link",
+      "parent": 2,
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "shoulder",
+        "axis": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "shoulder_cam",
+      "parent": 3,
+      "position": [
+        0.0,
+        -7.049999999999999,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "shoulder_motor_shaft",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "shoulder_plate_a",
+      "parent": 4,
+      "position": [
+        -0.0278,
+        -0.075,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "shoulder_plate_a",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "shoulder_plate_b",
+      "parent": 4,
+      "position": [
+        -0.051000000000000004,
+        0.0616,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "shoulder_plate_b",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "shoulder_plate_c",
+      "parent": 4,
+      "position": [
+        0.0789,
+        0.0134,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "shoulder_plate_c",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "elbow_cam",
+      "parent": 3,
+      "position": [
+        0.0,
+        -11.450000000000001,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "elbow_motor_shaft",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "elbow_plate_a",
+      "parent": 8,
+      "position": [
+        -0.0278,
+        0.075,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "elbow_plate_a",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "elbow_plate_b",
+      "parent": 8,
+      "position": [
+        -0.051000000000000004,
+        -0.0616,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "elbow_plate_b",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "elbow_plate_c",
+      "parent": 8,
+      "position": [
+        0.0789,
+        -0.0134,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "elbow_plate_c",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "second_link",
+      "parent": 3,
+      "position": [
+        0.0,
+        -18.5,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "elbow",
+        "axis": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "wrist_cam",
+      "parent": 12,
+      "position": [
+        0.0,
+        -5.25,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "wrist_motor_shaft",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "wrist_plate_a",
+      "parent": 13,
+      "position": [
+        0.0278,
+        0.075,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "wrist_plate_a",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "wrist_plate_b",
+      "parent": 13,
+      "position": [
+        0.051000000000000004,
+        -0.0616,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "wrist_plate_b",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "wrist_plate_c",
+      "parent": 13,
+      "position": [
+        -0.0789,
+        -0.0134,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "wrist_plate_c",
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "head",
+      "parent": 12,
+      "position": [
+        0.0,
+        -18.5,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "wrist",
+        "axis": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "head_tilt",
+      "parent": 17,
+      "position": [
+        0.0,
+        -4.5,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint": {
+        "name": "head_tilt",
+        "axis": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  ],
+  "parts": [
+    {
+      "body": 0,
+      "file": "base_base_plate_underside_motor_bracket.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.25,
+        0.29,
+        0.62,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 0,
+      "file": "bearing_body1.stl",
+      "position": [
+        0.0,
+        4.1000000000000005,
+        0.0
+      ],
+      "quaternion": [
+        0.7071068,
+        -0.7071068,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 0,
+      "file": "bearing_body1.stl",
+      "position": [
+        0.0,
+        7.1,
+        0.0
+      ],
+      "quaternion": [
+        0.7071068,
+        -0.7071068,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 0,
+      "file": "stepper_body1.stl",
+      "position": [
+        -7.5,
+        7.8,
+        0.0
+      ],
+      "quaternion": [
+        0.7071068,
+        0.7071068,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.12,
+        0.12,
+        0.13,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 0,
+      "file": "stepper_body2.stl",
+      "position": [
+        -7.5,
+        7.8,
+        0.0
+      ],
+      "quaternion": [
+        0.7071068,
+        0.7071068,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.12,
+        0.12,
+        0.13,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 1,
+      "file": "base_drive_20t_pinion_20t_pinion_with_d_shaft_hub.stl",
+      "position": [
+        0.0,
+        6.0,
+        0.0
+      ],
+      "quaternion": [
+        0.7071068,
+        -0.7071068,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.95,
+        0.65,
+        0.25,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "yaw_spindle_base_spindle_100t_drive_wheel.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.86,
+        0.8,
+        0.25,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "yaw_spindle_base_spindle_100t_drive_wheel_1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.86,
+        0.8,
+        0.25,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "yaw_spindle_body205.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.86,
+        0.8,
+        0.25,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.9785591,
+        0.0,
+        0.0,
+        0.2059662
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.9999384,
+        0.0,
+        0.0,
+        0.0111012
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.5647663,
+        0.0,
+        0.0,
+        -0.8252509
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.5463057,
+        0.0,
+        0.0,
+        0.8375859
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.8375859,
+        0.0,
+        0.0,
+        -0.5463057
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.9828906,
+        0.0,
+        0.0,
+        -0.1841904
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.9195744,
+        0.0,
+        0.0,
+        0.392916
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        -0.0111012,
+        0.0,
+        0.0,
+        0.9999384
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        -0.392916,
+        0.0,
+        0.0,
+        0.9195744
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.6992135,
+        0.0,
+        0.0,
+        0.7149129
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.8252509,
+        0.0,
+        0.0,
+        0.5647663
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.9280708,
+        0.0,
+        0.0,
+        -0.3724037
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.3724037,
+        0.0,
+        0.0,
+        0.9280708
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.1841904,
+        0.0,
+        0.0,
+        0.9828906
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        -0.2059662,
+        0.0,
+        0.0,
+        0.9785591
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 2,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.7149129,
+        0.0,
+        0.0,
+        -0.6992135
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 3,
+      "file": "enclosuretop_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.4,
+        0.75,
+        0.85,
+        0.25
+      ],
+      "shell": true
+    },
+    {
+      "body": 3,
+      "file": "enclosurebottom_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.4,
+        0.75,
+        0.85,
+        0.25
+      ],
+      "shell": true
+    },
+    {
+      "body": 3,
+      "file": "stepper_body1.stl",
+      "position": [
+        0.0,
+        -7.049999999999999,
+        1.5
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "color": [
+        0.12,
+        0.12,
+        0.13,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 3,
+      "file": "stepper_body2.stl",
+      "position": [
+        0.0,
+        -7.049999999999999,
+        1.5
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "color": [
+        0.12,
+        0.12,
+        0.13,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 3,
+      "file": "stepper_body1.stl",
+      "position": [
+        0.0,
+        -11.450000000000001,
+        1.5
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "color": [
+        0.12,
+        0.12,
+        0.13,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 3,
+      "file": "stepper_body2.stl",
+      "position": [
+        0.0,
+        -11.450000000000001,
+        1.5
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "color": [
+        0.12,
+        0.12,
+        0.13,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 3,
+      "file": "bearing_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -1.6
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 3,
+      "file": "bearing_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        1.0999999999999999
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 3,
+      "file": "bearing_body1.stl",
+      "position": [
+        0.0,
+        -18.5,
+        -1.6
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 3,
+      "file": "bearing_body1.stl",
+      "position": [
+        0.0,
+        -18.5,
+        1.0999999999999999
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 4,
+      "file": "cam_a_b_body1.stl",
+      "position": [
+        2.4521,
+        6.609800000000001,
+        0.0
+      ],
+      "quaternion": [
+        0.8209204,
+        0.0,
+        0.0,
+        0.5710427
+      ],
+      "color": [
+        0.55,
+        0.85,
+        0.55,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 4,
+      "file": "cam_a_c_body1.stl",
+      "position": [
+        2.4521,
+        6.609800000000001,
+        0.0
+      ],
+      "quaternion": [
+        0.8209204,
+        0.0,
+        0.0,
+        0.5710427
+      ],
+      "color": [
+        0.55,
+        0.85,
+        0.55,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 4,
+      "file": "cam_bearing_body1.stl",
+      "position": [
+        0.0789,
+        7.1434,
+        -0.65
+      ],
+      "quaternion": [
+        0.7071068,
+        0.0,
+        0.0,
+        0.7071068
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 4,
+      "file": "cam_bearing_body1.stl",
+      "position": [
+        -0.0278,
+        7.055,
+        0.0
+      ],
+      "quaternion": [
+        0.7071068,
+        0.0,
+        0.0,
+        0.7071068
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 4,
+      "file": "cam_bearing_body1.stl",
+      "position": [
+        -0.051000000000000004,
+        7.191599999999999,
+        0.65
+      ],
+      "quaternion": [
+        0.0,
+        0.7071068,
+        0.7071068,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 5,
+      "file": "ring_a_body1.stl",
+      "position": [
+        0.0,
+        7.13,
+        0.0
+      ],
+      "quaternion": [
+        0.7071068,
+        0.0,
+        0.0,
+        0.7071068
+      ],
+      "color": [
+        0.85,
+        0.55,
+        0.75,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 6,
+      "file": "ring_b_body1.stl",
+      "position": [
+        0.0693,
+        7.01,
+        0.0
+      ],
+      "quaternion": [
+        0.7071068,
+        0.0,
+        0.0,
+        0.7071068
+      ],
+      "color": [
+        0.85,
+        0.55,
+        0.75,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 7,
+      "file": "ring_c_body1.stl",
+      "position": [
+        -0.0693,
+        7.01,
+        0.0
+      ],
+      "quaternion": [
+        0.7071068,
+        0.0,
+        0.0,
+        0.7071068
+      ],
+      "color": [
+        0.85,
+        0.55,
+        0.75,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 8,
+      "file": "cam_a_b_mirror_body1.stl",
+      "position": [
+        2.4521,
+        -6.609800000000001,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.8209204,
+        -0.5710427,
+        0.0
+      ],
+      "color": [
+        0.55,
+        0.85,
+        0.55,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 8,
+      "file": "cam_a_c_mirror_body1.stl",
+      "position": [
+        2.4521,
+        -6.609800000000001,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.8209204,
+        -0.5710427,
+        0.0
+      ],
+      "color": [
+        0.55,
+        0.85,
+        0.55,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 8,
+      "file": "cam_bearing_mirror_body1.stl",
+      "position": [
+        0.0789,
+        -7.1434,
+        -0.65
+      ],
+      "quaternion": [
+        0.0,
+        -0.7071068,
+        0.7071068,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 8,
+      "file": "cam_bearing_mirror_body1.stl",
+      "position": [
+        -0.0278,
+        -7.055,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        -0.7071068,
+        0.7071068,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 8,
+      "file": "cam_bearing_mirror_body1.stl",
+      "position": [
+        -0.051000000000000004,
+        -7.191599999999999,
+        0.65
+      ],
+      "quaternion": [
+        0.7071068,
+        0.0,
+        0.0,
+        -0.7071068
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 9,
+      "file": "ring_a_mirror_body1.stl",
+      "position": [
+        0.0,
+        -7.13,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        -0.7071068,
+        0.7071068,
+        0.0
+      ],
+      "color": [
+        0.85,
+        0.55,
+        0.75,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 10,
+      "file": "ring_b_mirror_body1.stl",
+      "position": [
+        0.0693,
+        -7.01,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        -0.7071068,
+        0.7071068,
+        0.0
+      ],
+      "color": [
+        0.85,
+        0.55,
+        0.75,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 11,
+      "file": "ring_c_mirror_body1.stl",
+      "position": [
+        -0.0693,
+        -7.01,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        -0.7071068,
+        0.7071068,
+        0.0
+      ],
+      "color": [
+        0.85,
+        0.55,
+        0.75,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "shelltop_body9.stl",
+      "position": [
+        0.0,
+        -18.5,
+        -0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.93,
+        0.45,
+        0.3,
+        0.25
+      ],
+      "shell": true
+    },
+    {
+      "body": 12,
+      "file": "shelltop_body11.stl",
+      "position": [
+        0.0,
+        -18.5,
+        -0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.93,
+        0.45,
+        0.3,
+        0.25
+      ],
+      "shell": true
+    },
+    {
+      "body": 12,
+      "file": "17hs4023_stepper_42x23_front_end_cap.stl",
+      "position": [
+        0.0,
+        -5.25,
+        0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.12,
+        0.12,
+        0.13,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "17hs4023_stepper_42x23_stator.stl",
+      "position": [
+        0.0,
+        -5.25,
+        0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.12,
+        0.12,
+        0.13,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "17hs4023_stepper_42x23_rear_end_cap.stl",
+      "position": [
+        0.0,
+        -5.25,
+        0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.12,
+        0.12,
+        0.13,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "17hs4023_stepper_42x23_shaft.stl",
+      "position": [
+        0.0,
+        -5.25,
+        0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.12,
+        0.12,
+        0.13,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "17hs4023_stepper_42x23_connector.stl",
+      "position": [
+        0.0,
+        -5.25,
+        0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.12,
+        0.12,
+        0.13,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.9785591,
+        -0.2059662,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.9999384,
+        -0.0111012,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.5647663,
+        0.8252509,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        -0.5463057,
+        0.8375859,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.8375859,
+        0.5463057,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.9828906,
+        0.1841904,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.9195744,
+        -0.392916,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.0111012,
+        0.9999384,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.392916,
+        0.9195744,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        -0.6992135,
+        0.7149129,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.8252509,
+        -0.5647663,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.9280708,
+        0.3724037,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        -0.3724037,
+        0.9280708,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        -0.1841904,
+        0.9828906,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.2059662,
+        0.9785591,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 12,
+      "file": "pin_mirror_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quaternion": [
+        0.0,
+        0.7149129,
+        0.6992135,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 13,
+      "file": "cam_a_b_body1_2.stl",
+      "position": [
+        -4.6086,
+        -12.4227,
+        -0.75
+      ],
+      "quaternion": [
+        0.5710427,
+        0.0,
+        0.0,
+        -0.8209204
+      ],
+      "color": [
+        0.55,
+        0.85,
+        0.55,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 13,
+      "file": "cam_a_c_body1_2.stl",
+      "position": [
+        -4.6086,
+        -12.4227,
+        -0.75
+      ],
+      "quaternion": [
+        0.5710427,
+        0.0,
+        0.0,
+        -0.8209204
+      ],
+      "color": [
+        0.55,
+        0.85,
+        0.55,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 13,
+      "file": "cam_bearing_body1_2.stl",
+      "position": [
+        -0.0789,
+        -13.343399999999999,
+        -1.4000000000000001
+      ],
+      "quaternion": [
+        0.7071068,
+        0.0,
+        0.0,
+        -0.7071068
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 13,
+      "file": "cam_bearing_body1_2.stl",
+      "position": [
+        0.0278,
+        -13.255,
+        -0.75
+      ],
+      "quaternion": [
+        0.7071068,
+        0.0,
+        0.0,
+        -0.7071068
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 13,
+      "file": "cam_bearing_body1_2.stl",
+      "position": [
+        0.051000000000000004,
+        -13.3916,
+        -0.1
+      ],
+      "quaternion": [
+        0.0,
+        0.7071068,
+        -0.7071068,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 14,
+      "file": "ring_a_body1_2.stl",
+      "position": [
+        0.0,
+        -13.33,
+        -0.75
+      ],
+      "quaternion": [
+        0.7071068,
+        0.0,
+        0.0,
+        -0.7071068
+      ],
+      "color": [
+        0.85,
+        0.55,
+        0.75,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 15,
+      "file": "ring_b_body1_2.stl",
+      "position": [
+        -0.0693,
+        -13.209999999999999,
+        -0.75
+      ],
+      "quaternion": [
+        0.7071068,
+        0.0,
+        0.0,
+        -0.7071068
+      ],
+      "color": [
+        0.85,
+        0.55,
+        0.75,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 16,
+      "file": "ring_c_body1_2.stl",
+      "position": [
+        0.0693,
+        -13.209999999999999,
+        -0.75
+      ],
+      "quaternion": [
+        0.7071068,
+        0.0,
+        0.0,
+        -0.7071068
+      ],
+      "color": [
+        0.85,
+        0.55,
+        0.75,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "1stsegment_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.3,
+        0.45,
+        0.8,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "1stsegment_body2.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.3,
+        0.45,
+        0.8,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "bearing_1_body1.stl",
+      "position": [
+        -2.35,
+        -4.5,
+        0.0
+      ],
+      "quaternion": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "01_housing_lower_cover_black_polymer.stl",
+      "position": [
+        -1.7107,
+        -4.5,
+        -1.0
+      ],
+      "quaternion": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "color": [
+        0.75,
+        0.12,
+        0.12,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "01_housing_center_housing_red.stl",
+      "position": [
+        -1.7107,
+        -4.5,
+        -1.0
+      ],
+      "quaternion": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "color": [
+        0.75,
+        0.12,
+        0.12,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "01_housing_upper_gearbox_and_mounting_tabs_black.stl",
+      "position": [
+        -1.7107,
+        -4.5,
+        -1.0
+      ],
+      "quaternion": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "color": [
+        0.75,
+        0.12,
+        0.12,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "01_housing_cable_strain_relief_rubber.stl",
+      "position": [
+        -1.7107,
+        -4.5,
+        -1.0
+      ],
+      "quaternion": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "color": [
+        0.75,
+        0.12,
+        0.12,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        -0.2059662,
+        0.0,
+        0.0,
+        0.9785591
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        -0.0111012,
+        0.0,
+        0.0,
+        0.9999384
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.8252509,
+        0.0,
+        0.0,
+        0.5647663
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.8375859,
+        0.0,
+        0.0,
+        -0.5463057
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.5463057,
+        0.0,
+        0.0,
+        0.8375859
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.1841904,
+        0.0,
+        0.0,
+        0.9828906
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        -0.392916,
+        0.0,
+        0.0,
+        0.9195744
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.9999384,
+        0.0,
+        0.0,
+        0.0111012
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.9195744,
+        0.0,
+        0.0,
+        0.392916
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.7149129,
+        0.0,
+        0.0,
+        -0.6992135
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.5647663,
+        0.0,
+        0.0,
+        -0.8252509
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.3724037,
+        0.0,
+        0.0,
+        0.9280708
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.9280708,
+        0.0,
+        0.0,
+        -0.3724037
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.9828906,
+        0.0,
+        0.0,
+        -0.1841904
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.9785591,
+        0.0,
+        0.0,
+        0.2059662
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 17,
+      "file": "pin_body1.stl",
+      "position": [
+        0.0,
+        0.0,
+        -0.75
+      ],
+      "quaternion": [
+        0.6992135,
+        0.0,
+        0.0,
+        0.7149129
+      ],
+      "color": [
+        0.72,
+        0.73,
+        0.76,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 18,
+      "file": "2nd_segments_body4.stl",
+      "position": [
+        -0.05,
+        4.5,
+        -0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.96,
+        0.65,
+        0.3,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 18,
+      "file": "2nd_segments_body8.stl",
+      "position": [
+        -0.05,
+        4.5,
+        -0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.96,
+        0.65,
+        0.3,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 18,
+      "file": "2nd_segments_body10.stl",
+      "position": [
+        -0.05,
+        4.5,
+        -0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.96,
+        0.65,
+        0.3,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 18,
+      "file": "2nd_segments_body9.stl",
+      "position": [
+        -0.05,
+        4.5,
+        -0.75
+      ],
+      "quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "color": [
+        0.96,
+        0.65,
+        0.3,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 18,
+      "file": "02_output_shaft_and_horn_output_shaft_brass_spline_envelope.stl",
+      "position": [
+        -1.7107,
+        0.0,
+        -1.0
+      ],
+      "quaternion": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "color": [
+        0.75,
+        0.12,
+        0.12,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 18,
+      "file": "02_output_shaft_and_horn_single_arm_horn_aluminum.stl",
+      "position": [
+        -1.7107,
+        0.0,
+        -1.0
+      ],
+      "quaternion": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "color": [
+        0.75,
+        0.12,
+        0.12,
+        1.0
+      ],
+      "shell": false
+    },
+    {
+      "body": 18,
+      "file": "02_output_shaft_and_horn_retaining_screw_black_steel.stl",
+      "position": [
+        -1.7107,
+        0.0,
+        -1.0
+      ],
+      "quaternion": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "color": [
+        0.75,
+        0.12,
+        0.12,
+        1.0
+      ],
+      "shell": false
+    }
+  ],
+  "couplings": [
+    {
+      "joint": "base_motor_shaft",
+      "source": "yaw",
+      "coefficients": [
+        0.0,
+        -5.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "shoulder_motor_shaft",
+      "source": "shoulder",
+      "coefficients": [
+        0.0,
+        -16.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "elbow_motor_shaft",
+      "source": "elbow",
+      "coefficients": [
+        0.0,
+        16.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "wrist_motor_shaft",
+      "source": "wrist",
+      "coefficients": [
+        0.0,
+        16.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "shoulder_plate_a",
+      "source": "shoulder_motor_shaft",
+      "coefficients": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "shoulder_plate_b",
+      "source": "shoulder_motor_shaft",
+      "coefficients": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "shoulder_plate_c",
+      "source": "shoulder_motor_shaft",
+      "coefficients": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "elbow_plate_a",
+      "source": "elbow_motor_shaft",
+      "coefficients": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "elbow_plate_b",
+      "source": "elbow_motor_shaft",
+      "coefficients": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "elbow_plate_c",
+      "source": "elbow_motor_shaft",
+      "coefficients": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "wrist_plate_a",
+      "source": "wrist_motor_shaft",
+      "coefficients": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "wrist_plate_b",
+      "source": "wrist_motor_shaft",
+      "coefficients": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "joint": "wrist_plate_c",
+      "source": "wrist_motor_shaft",
+      "coefficients": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ]
+}
