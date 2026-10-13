@@ -37,6 +37,8 @@ class Director:
         spec = STATES[state]
         if spec.light is not None:
             self.light.set(spec.light)
+        if state == "CHECKIN":              # LightCoupling: dim while looking at the user
+            self.light.couple(C.LIGHT_CHECKIN_SCALE)
         if state in INITIAL_CHILD:          # composite (ILLUMINATE): its child does the work
             return
         if state not in LOOK_AT:            # NOTICE -> STANDBY -> LOST keep the face centered
@@ -79,7 +81,8 @@ class Director:
             self._play(spec.pool, tok)
 
     def on_exit(self, state, m):
-        pass
+        if state == "CHECKIN":
+            self.light.couple(1.0)
 
     # -- per frame ---------------------------------------------------------------
     def tick(self, now, m, perception, frame_shape):

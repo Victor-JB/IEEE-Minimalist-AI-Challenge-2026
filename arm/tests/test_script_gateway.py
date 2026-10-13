@@ -19,6 +19,7 @@ class FakeBridge:
         self.reject_error = -errno.EPERM
         self.observe_response = None
         self.roll_response = [3, 1, 10000, 9500, 1570, 0]
+        self.light_response = [4, 1, 700, 650, 40, 0, 0]
 
     def call(self, method, *args, timeout):
         self.calls.append((method, args, timeout))
@@ -30,6 +31,10 @@ class FakeBridge:
             if self.roll_response is None:
                 raise ValueError('Unknown method arm_roll_status')   # firmware without the servo
             return self.roll_response
+        if method == 'arm_light':
+            if self.light_response is None:
+                raise ValueError('Unknown method arm_light')         # firmware without the lamp
+            return self.light_response
         values = args[0]
         op = values[0]
         if op == self.fail_op:
@@ -215,6 +220,33 @@ class ScriptGatewayTests(unittest.TestCase):
         self.assertEqual(gateway.command('ROLLSTAT'), {'kind': 'roll', 'supported': False})
         bridge.roll_response = [2, 0, 0]               # wrong shape: treated as no servo
         self.assertFalse(gateway.command('ROLLSTAT')['supported'])
+
+    def test_light_formats_and_routes_to_arm_light(self):
+        gateway = ArmGateway(self.bridge)
+        gateway.command('HELLO')
+        status = gateway.command('LIGHT 700 80')
+        gateway.command('LIGHT 0')                       # fade defaults to 0 (jump)
+        gateway.command('LIGHTSTAT')
+        calls = [c[1] for c in self.bridge.calls if c[0] == 'arm_light']
+        self.assertEqual(calls, [([700, 80],), ([0, 0],), ([-1],)])
+        self.assertEqual((status['kind'], status['supported'], status['target'], status['current'],
+                          status['remaining']), ('light', True, 700, 650, 40))
+        self.assertNotIn('error', status)                # script_gateway would end the session on it
+        for bad in ('LIGHT', 'LIGHT 1001', 'LIGHT -1', 'LIGHT 5 60001', 'LIGHT 5 5 5', 'LIGHT 0x10', 'LIGHT 5.5'):
+            with self.assertRaises(ValueError, msg=bad):
+                gateway.command(bad)
+
+    def test_light_on_firmware_without_the_lamp_keeps_the_session(self):
+        self.bridge.light_response = None
+        result, replies = self.run_server(request(1, 'HELLO') + request(2, 'LIGHT 500 80') +
+                                          request(3, 'LIGHTSTAT') + request(4, 'STATUS'))
+        self.assertEqual(result, 0)
+        self.assertEqual([r['ok'] for r in replies], [True] * 4)
+        self.assertEqual(replies[1]['status'], {'kind': 'light', 'supported': False})
+        self.bridge.light_response = [4, 0, 0, 0, 0, -errno.ENODEV, 0]   # built with LIGHT_ENABLED 0
+        gateway = ArmGateway(self.bridge); gateway.command('HELLO')
+        status = gateway.command('LIGHTSTAT')
+        self.assertEqual((status['supported'], status['fault']), (False, -errno.ENODEV))
 
     def test_response_is_flushed_for_each_request(self):
         class Output(io.StringIO):

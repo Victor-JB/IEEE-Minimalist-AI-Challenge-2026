@@ -18,6 +18,10 @@ measured angles are within SETTLE_TOL_DEG of the pause pose and at least SETTLE_
 (or SETTLE_MAX_S, if backlash keeps a joint from closing in), so inference never sees motion blur.
 The pause holds exactly there: no hold drift, no look-at offset.
 
+Lamp light (FirmwareBackend in io/light.py): set_light() just stores a per-mille target; this thread
+sends it as `LIGHT n fade` between setpoints, at most every LIGHT_FIRMWARE_EVERY_S, faded on the MCU
+over that interval so the 25 Hz stream never waits on more than one extra RPC. A reconnect resends it.
+
 Every command carries a token; finished-events come back as (event, token) so the director can
 ignore a CLIP_DONE from a clip that a state change already interrupted.
 
@@ -78,6 +82,8 @@ class MotionWorker(threading.Thread):
         self.relaxed = False
         self.arm = None
         self.give_ups = []                  # times commands were abandoned after failed retries
+        self.light_cmd = None               # lamp per mille wanted (main thread writes, we read)
+        self.light_sent, self.light_at = None, -1e9
         self._stop = threading.Event()
 
     # -- commands (call from the main thread) ------------------------------------
@@ -109,6 +115,10 @@ class MotionWorker(threading.Thread):
         """Pose holds and clips are relative to; a 4th value sets the base roll (else ROLL_HOME)."""
         self.base = list(pose[:3])
         self.base_roll = pose[3] if len(pose) > 3 else A.ROLL_HOME
+
+    def set_light(self, permille):
+        """Lamp duty 0-1000 (gamma already applied). Thread-safe: one attribute store."""
+        self.light_cmd = max(0, min(1000, int(permille)))
 
     def set_offset(self, offset):
         self.offset = list(offset)
@@ -154,6 +164,7 @@ class MotionWorker(threading.Thread):
                                      roll=A.ROLL if A.ROLL_ENABLED else None).__enter__()
                 self.current = self.arm.angles()       # start every move from where the arm really is
                 self.give_ups, self.roll = [], None
+                self.light_sent = None              # resend the lamp level on the new session
                 tilt = "head tilt on" if self.arm.roll_supported else "no head tilt"
                 print(f"Arm connected at {[round(a, 1) for a in self.current]} ({tilt})")
                 return True
@@ -292,6 +303,7 @@ class MotionWorker(threading.Thread):
             if s["state"] == "stalled":
                 self._push_through(pose)
         self.current = pose
+        self._light_tick()
 
     def _push_through(self, pose):
         """A stall: acknowledge, pause powered, then push to pose again, slower each time."""
@@ -333,6 +345,20 @@ class MotionWorker(threading.Thread):
             time.sleep(DT)
         return True
 
+    def _light_tick(self):
+        """Send the lamp target if it changed, rate limited. Arms without light() (old ArmMotion,
+        test fakes) and the fake arm are skipped."""
+        want = self.light_cmd
+        if want is None or want == self.light_sent or self.arm is None:
+            return
+        now = time.monotonic()
+        if now - self.light_at < C.LIGHT_FIRMWARE_EVERY_S:
+            return
+        send = getattr(self.arm, "light", None)
+        self.light_sent, self.light_at = want, now
+        if send:
+            send(want, fade_ms=round(C.LIGHT_FIRMWARE_EVERY_S * 1000))
+
     def _roll(self, angle, speed=None):
         """Head tilt to angle; the firmware slews it (speed None = its cap) and the servo holds it."""
         if self.roll is not None and abs(angle - self.roll) < ROLL_DEADBAND:
@@ -360,6 +386,7 @@ class MotionWorker(threading.Thread):
 
     def _hold_tick(self, still=False):
         if self.relaxed:
+            self._light_tick()                 # the lamp still works while the drivers sleep
             time.sleep(DT)
             return
         self._roll(self.base_roll, ROLL_RETURN_SPEED)
