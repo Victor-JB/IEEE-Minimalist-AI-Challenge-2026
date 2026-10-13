@@ -22,6 +22,8 @@ LIMITS = ((-45,38),(-72,79),(-80,87))
 ROUTER_SOCKET='/var/run/arduino-router.sock'
 
 class ArmError(RuntimeError): pass
+class SensorStale(ArmError):
+    """Encoder feedback is stale or invalid (age > 100 ms, I2C error, magnet); the MCU stops itself."""
 
 def ssh_target():
     """SSH arguments for the board and the per-request timeout.
@@ -86,7 +88,9 @@ class Transport:
                     line,self.buffer=self.buffer.split(b'\n',1);result=json.loads(line)
                     if result.get('id')!=self.serial: raise ArmError('Mismatched response ID')
                     self.first=False
-                    if result.get('ok') is not True: raise ArmError(result.get('error','Scripting request failed'))
+                    if result.get('ok') is not True:
+                        kind=SensorStale if result.get('kind')=='sensor_stale' else ArmError
+                        raise kind(result.get('error','Scripting request failed'))
                     return result.get('status')
                 left=deadline-time.monotonic()
                 if left<=0: raise TimeoutError('Arm response timed out; MCU watchdog will stop motion')
@@ -159,6 +163,20 @@ def validate_ratio_data(data,fingerprint):
 def healthy(s):
     axes=s.get('axes',[])
     return len(axes)==3 and all(a['angle']!=-2147483648 and 0<=a['age']<=100 and a['sensor_error']==0 and a['magnet']&0x28==0x20 for a in axes)
+
+def stale_joints(s):
+    """The joints failing healthy(), with why, e.g. ['head (age 250 ms)']."""
+    axes=s.get('axes',[])
+    if len(axes)!=3:return ['all (no axis data)']
+    out=[]
+    for j,name in enumerate(JOINTS):
+        a=axes[MOTOR[j]];why=[]
+        if a['angle']==-2147483648:why.append('no angle')
+        if not 0<=a['age']<=100:why.append(f"age {a['age']} ms")
+        if a['sensor_error']!=0:why.append(f"sensor error {a['sensor_error']}")
+        if a['magnet']&0x28!=0x20:why.append(f"magnet 0x{a['magnet']:02x}")
+        if why:out.append(f"{name} ({', '.join(why)})")
+    return out
 
 def angles(s):return [s['axes'][a]['angle']/1000 for a in MOTOR]
 

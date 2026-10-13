@@ -21,7 +21,8 @@ from __future__ import annotations
 from errno import EBUSY
 import json
 
-from arm_client import ArmError, ArmSession, JOINTS, LIMITS, MOTOR, angles, finite, healthy
+from arm_client import (ArmError, ArmSession, JOINTS, LIMITS, MOTOR, SensorStale, angles, finite,
+                        healthy, stale_joints)
 
 STATES = {0:'idle', 13:'moving', 14:'holding', 15:'recovering', 16:'stalled', 17:'streaming', 18:'fault'}
 REASONS = {0:'none', 1:'complete', 2:'unsettled', 3:'lease', 4:'sensor', 5:'limit', 6:'timing',
@@ -140,7 +141,14 @@ class ArmMotion(ArmSession):
         }
 
     def angles(self):
-        return angles(self.status())
+        s = self.status()
+        if not healthy(s):
+            raise SensorStale(self._stale(s))
+        return angles(s)
+
+    @staticmethod
+    def _stale(s):
+        return 'Encoder feedback stale: ' + ', '.join(stale_joints(s))
 
     # Motion ----------------------------------------------------------------
     def _pose(self, pose, what):
@@ -150,7 +158,9 @@ class ArmMotion(ArmSession):
 
     def _movable(self):
         s = self.status()
-        if not healthy(s) or s['configured'] != 7:
+        if not healthy(s):
+            raise SensorStale('Fresh calibrated feedback required. ' + self._stale(s))
+        if s['configured'] != 7:
             raise ArmError('Fresh calibrated feedback required')
         if not s['enabled']:
             raise ArmError('Movement is locked; enable it first')
@@ -177,7 +187,7 @@ class ArmMotion(ArmSession):
         try:
             while s['state'] in ACTIVE:
                 if not healthy(s):
-                    raise ArmError('Sensor feedback unavailable')
+                    raise SensorStale('Sensor feedback unavailable. ' + self._stale(s))
                 if self.clock()-began > limit:
                     raise ArmError('Move exceeded its deadline')
                 self.sleep(.025)
@@ -213,6 +223,8 @@ class ArmMotion(ArmSession):
         # A stall is only reported by refusing the next point (-EBUSY, state stalled): return it
         # so the caller can halt() to acknowledge, instead of losing the session.
         s = self._request(f'STREAM {self.motion_id} {values} {speeds} {h} {generation}', allow=(-EBUSY,))
+        if not healthy(s):                     # the MCU stops on stale encoders by itself
+            raise SensorStale(self._stale(s))
         if s['error'] == -EBUSY and s['state'] != 16:
             raise ArmError(f"Firmware rejected command: {s['error']}")
         if s['state'] == 18:
@@ -256,5 +268,8 @@ class ArmMotion(ArmSession):
         }
         self._event('result', text=json.dumps(result, allow_nan=False))
         if servo['state'] == 'fault':
+            if servo['reason'] == 'sensor':    # stale or invalid encoder: the MCU stopped; not a stall
+                detail = self._stale(s) if not healthy(s) else 'encoder feedback was stale'
+                raise SensorStale(f"Closed-loop fault: sensor ({detail})")
             raise ArmError(f"Closed-loop fault: {servo['reason']}")
         return result

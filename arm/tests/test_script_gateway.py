@@ -19,6 +19,7 @@ class FakeBridge:
         self.reject_error = -errno.EPERM
         self.observe_response = None
         self.roll_response = [3, 1, 10000, 9500, 1570, 0]
+        self.stale_head = False          # motor axis 2: no angle, sample 250 ms old
 
     def call(self, method, *args, timeout):
         self.calls.append((method, args, timeout))
@@ -37,7 +38,8 @@ class FakeBridge:
         error = self.reject_error if op == self.reject_op else 0
         if method == 'stepper_command':
             return [7, values[1], 0, error, 0, 0, 0, 0, 0, 0, 400, 0, 2400, values[2]] + [0]*17
-        return [1, error, values[1], 0, 7, 1000, 0, 0, 1, 9, 7, 0, 5000, 0] + [123, 124, 125, 0, 1, 10, 0x30, 0]*3
+        head = [-2**31, 124, 125, 0, 1, 250, 0x30, 0] if self.stale_head else [123, 124, 125, 0, 1, 10, 0x30, 0]
+        return [1, error, values[1], 0, 7, 1000, 0, 0, 1, 9, 7, 0, 5000, 0] + [123, 124, 125, 0, 1, 10, 0x30, 0]*2 + head
 
 
 def request(number, command):
@@ -179,6 +181,20 @@ class ScriptGatewayTests(unittest.TestCase):
         code, replies = self.run_server(request(1, 'HELLO') + request(2, 'STREAM 2 1 2 3 0 0 0 100 1'))
         self.assertEqual(code, 1)
         self.assertEqual(self.ops(), [0, 11, 6, 7])
+
+    def test_rejection_with_stale_encoder_is_marked_sensor_stale(self):
+        self.bridge.reject_op, self.bridge.reject_error = 11, -errno.EINVAL   # NaN angle refused
+        self.bridge.stale_head = True
+        code, replies = self.run_server(request(1, 'HELLO') + request(2, 'STREAM 2 1 2 3 0 0 0 100 1'))
+        self.assertEqual(code, 1)
+        self.assertEqual(replies[-1]['kind'], 'sensor_stale')
+        self.assertIn('stale on motor axis 2', replies[-1]['error'])
+        self.assertEqual(self.ops(), [0, 11, 6, 7])
+
+    def test_plain_rejection_has_no_kind(self):
+        self.bridge.reject_op = 3
+        code, replies = self.run_server(request(1, 'HELLO') + request(2, 'JOG 1 0 0 9'))
+        self.assertNotIn('kind', replies[-1])
 
     def test_rpc_failure_still_releases(self):
         self.bridge.fail_op = 4

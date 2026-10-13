@@ -21,6 +21,30 @@ MAX_LINE = 2048  # Bytes excluding the final newline.
 NONFATAL = {('STREAM', -errno.EBUSY)}
 
 
+class Failure(RuntimeError):
+    """An error reply with a machine-readable kind for the client ('sensor_stale', ...)."""
+    def __init__(self, message, kind=None):
+        super().__init__(message)
+        self.kind = kind
+
+
+def stale_axes(status):
+    """Motor axes whose encoder sample fails the client's healthy() test (stale/invalid)."""
+    return [i for i, a in enumerate(status.get('axes') or [])
+            if a.get('angle') == -2**31 or not 0 <= a.get('age', -1) <= 100
+            or a.get('sensor_error') or (a.get('magnet', 0) & 0x28) != 0x20]
+
+
+def rejection(status):
+    """A firmware rejection; stale encoders (e.g. STREAM -EINVAL on a NaN angle) say so."""
+    message = 'Firmware rejected command: %s' % status['error']
+    stale = stale_axes(status) if status.get('kind') == 'arm' else []
+    if stale:
+        return Failure(message + '; encoder feedback stale on motor axis %s'
+                       % ','.join(map(str, stale)), 'sensor_stale')
+    return Failure(message)
+
+
 def snapshot(bridge, method):
     """Decode an explicit group RPC without claiming ownership."""
     raw = bridge.call(method, timeout=0.2)
@@ -98,7 +122,7 @@ def serve(gateway, source=None, destination=None):
                 if not isinstance(status, dict):
                     raise ValueError('Command returned no status')
                 if status.get('error', 0) and (command.split()[0], status['error']) not in NONFATAL:
-                    raise RuntimeError('Firmware rejected command: %s' % status['error'])
+                    raise rejection(status)
                 reply({'id': request_id, 'ok': True, 'status': status})
             except Exception as exc:
                 # Cleanup precedes the error reply, so a receiving client can
@@ -107,7 +131,10 @@ def serve(gateway, source=None, destination=None):
                     cleanup()
                 except Exception:
                     pass
-                reply({'id': request_id, 'ok': False, 'error': str(exc)})
+                failed = {'id': request_id, 'ok': False, 'error': str(exc)}
+                if getattr(exc, 'kind', None):
+                    failed['kind'] = exc.kind
+                reply(failed)
                 return 1
     finally:
         try:

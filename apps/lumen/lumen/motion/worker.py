@@ -31,6 +31,7 @@ from .. import config as C
 from .. import events as E
 from .. import paths  # noqa: F401  (puts arm/python on sys.path)
 import arm_config as A                     # arm/python/arm_config.py (roll servo settings)
+from arm_client import ArmError, SensorStale  # arm/python/arm_client.py (no hardware imports)
 from trajectory import trajectory_with_roll  # arm/python/trajectory.py (shared with emote.py)
 
 DT = 1.0 / C.STREAM_HZ
@@ -47,6 +48,26 @@ ROLL_DEADBAND = 0.3                       # deg: smaller roll changes aren't sen
 
 class Stalled(Exception):
     """Every retry of a stalled setpoint failed; the arm holds where it stopped."""
+
+
+class Jammed(RuntimeError):
+    """GIVE_UP_LIMIT stalls could not be pushed through within GIVE_UP_WINDOW_S."""
+
+
+def fault_reason(e, context=""):
+    """'CODE: detail' for the FAULT event, HUD and transitions log. Codes follow
+    docs/STATE_MACHINE.md: STALL, SENSOR_STALE, OVERTEMP, LINK_LOST; ARM = another firmware
+    fault (limit, timing), ERROR = a bug."""
+    if isinstance(e, SensorStale):
+        code = "SENSOR_STALE"           # encoder age > 100 ms / I2C error / magnet: the MCU stopped
+    elif isinstance(e, Jammed):
+        code = "STALL"
+    elif isinstance(e, ArmError):
+        code = "ARM"
+    else:
+        code = "ERROR"
+        context += type(e).__name__ + " "
+    return f"{code}: {context}{e}"
 
 
 def _minjerk(s):
@@ -117,7 +138,7 @@ class MotionWorker(threading.Thread):
             except Exception as e:                    # ArmError, link loss, closed-loop fault
                 traceback.print_exc()
                 self._disconnect()
-                self.events.put((E.FAULT, None, repr(e)))
+                self.events.put((E.FAULT, None, fault_reason(e)))
                 connected = False
         self._disconnect()
 
@@ -143,7 +164,7 @@ class MotionWorker(threading.Thread):
                 self.arm = None
                 time.sleep(1.5)
         traceback.print_exception(last)
-        self.events.put((E.FAULT, None, f"connect failed: {last!r}"))
+        self.events.put((E.FAULT, None, fault_reason(last, "connect failed: ")))
         return False
 
     def _disconnect(self):
@@ -208,8 +229,8 @@ class MotionWorker(threading.Thread):
             print(f"Arm: gave up after {STALL_RETRIES} retries ({e}); holding. "
                   f"{len(self.give_ups)} in the last {GIVE_UP_WINDOW_S:.0f} s")
             if len(self.give_ups) >= GIVE_UP_LIMIT:
-                raise RuntimeError(f"arm jammed: {len(self.give_ups)} stalls could not be pushed "
-                                   f"through in {GIVE_UP_WINDOW_S:.0f} s; last: {e}")
+                raise Jammed(f"arm jammed: {len(self.give_ups)} stalls could not be pushed "
+                             f"through in {GIVE_UP_WINDOW_S:.0f} s; last: {e}")
             return None
 
     def _sweep(self, poses, dwell, token):
