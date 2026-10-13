@@ -32,7 +32,7 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
       vec3 color = col * l;
       if(surface > 0.5 && surface < 1.5) {
         // A diffuse wood surface lit per fragment by the animated shade's cone.
-        float grain = 0.018 * sin(wp.x * 1.9 + 1.8 * sin(wp.z * 0.075)) + 0.009 * sin(wp.x * 8.0 + wp.z * 0.12);
+        float grain = 0.009 * sin(wp.x * 1.9 + 1.8 * sin(wp.z * 0.075)) + 0.004 * sin(wp.x * 8.0 + wp.z * 0.12);
         vec3 wood = col + vec3(grain,grain * 0.7,grain * 0.45);
         vec3 ray = wp - lampPosition; float distanceToLamp = max(length(ray),0.01);
         vec3 direction = ray / distanceToLamp;
@@ -99,7 +99,9 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
        }
       }));
       bodies = man.bodies.map((b) => ({ ...b, local: M.mul(M.T(...b.position), M.Q(...b.quaternion)) }));
-      parts = man.parts.map((p) => ({ ...p, m: cache[p.file], col: p.color.slice(0, 3),
+      // Charcoal exterior, with the internal cams retaining their identifying colors.
+      const exterior = p => p.shell || /^(base_base_plate_|1stsegment_|2nd_segments_)/.test(p.file);
+      parts = man.parts.map((p) => ({ ...p, m: cache[p.file], col: exterior(p) ? [.23,.22,.20] : p.color.slice(0, 3),
         local: M.mul(M.T(...p.position), M.Q(...p.quaternion)) }));
       ready = true;
       cv.dataset.parts = String(parts.length);
@@ -114,7 +116,7 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
     const W = cv.width = cv.clientWidth * devicePixelRatio, H = cv.height = cv.clientHeight * devicePixelRatio;
     gl.viewport(0, 0, W, H); gl.enable(gl.DEPTH_TEST);
     const bg = getComputedStyle(document.documentElement).getPropertyValue("--panel2").trim();
-    const m = bg.match(/\w\w/g) || ["1e", "23", "2b"]; gl.clearColor(...m.slice(0, 3).map((h) => parseInt(h, 16) / 255), 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    const m = bg.match(/\w\w/g) || ["1e", "23", "2b"]; gl.clearColor(...m.slice(0, 3).map((h) => parseInt(h, 16) / 255), 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     // orthographic camera orbiting (0, 22, 0); zoom = half the visible height (cm), like SceneKit's orthographicScale
     const scenePoints = spatial && spatial.camera ? [worldPoint(spatial.camera.position),
       ...spatial.people.filter(p=>p.world).map(p=>worldPoint(p.world)),
@@ -144,7 +146,7 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
     const power=lightPreview?.55:spatial?.fresh&&spatial.demo?.state==='ILLUMINATE'&&spatial.demo.light_requested?spatial.demo.brightness||0:0;
     gl.uniform3fv(U('lampPosition'),lamp.position);gl.uniform3fv(U('lampDirection'),lamp.direction);
     gl.uniform1f(U('lampPower'),power);gl.disable(gl.BLEND);gl.depthMask(true);
-    drawGeometry(deskTop,[.25,.19,.13],1);drawGeometry(deskEdges,[.15,.10,.065],0);
+    drawGeometry(deskTop,[.86,.77,.62],1);drawGeometry(deskEdges,[.49,.42,.32],0);
     cv.dataset.lightPower=String(power);cv.dataset.lightMode=lightPreview?'preview':'live';
 
     // Preserve the branch's complete hierarchy, then map MuJoCo Z-up into browser Y-up.
