@@ -20,6 +20,10 @@ ADJUST_STEP = (3.0, -4.0, 1.0)   # (shoulder, elbow, head) deg per CLOSER; TODO:
 SLEEP_ENTRY = "go_to_sleep/drowsy"     # once on entering SLEEP; the lamp stays slumped after it
 SLEEP_BREATHE = (0.3, 2.0)             # (amplitude, time_scale) of the slow breathe while asleep
 SLEEP_BREATHE_S = 16.0                 # breathing per loop (whole 8 s breaths)
+WAKE_CLIP = "wake_up/slow_groggy"      # NOTICE right after SLEEP -> IDLE, instead of the notice pool
+WAKE_AMPLITUDE = 0.7                   # ~18 s on the real arm (the elbow-lift cap slows it ~4x)
+WAKE_WINDOW_S = 5.0                    # NOTICE this soon after waking counts as "from SLEEP"; also how
+                                       # long IDLE stays slumped before waking up with no one there
 
 
 class Director:
@@ -30,6 +34,8 @@ class Director:
         self.faults, self.last_fault_t, self.fault_reason = 0, -1e9, None
         self.aim_pose = list(C.HOME)
         self.look, self.last_tick = LookAt(), None
+        self.slumped = False                # SLEEP left the arm at go_to_sleep's end pose
+        self.wake_tok = None                # token of a wake-up still playing (it may outlive NOTICE)
 
     # -- state machine callbacks ------------------------------------------------
     def on_enter(self, state, m):
@@ -44,6 +50,8 @@ class Director:
         self.token += 1
         self.busy = True
         tok = self.token
+        if self._enter_behavior(state, m, tok):   # per-state behaviors below, kept out of this chain
+            return
         if state == "BOOT":
             self.w.connect()                # new arm session if a fault closed the last one
             self.w.set_base(C.HOME)
@@ -72,8 +80,6 @@ class Director:
         elif state in CENTER_FIRST:         # hold still and center the face; tick() starts the clips
             self.w.set_base(C.HOME)
             self.busy = False
-        elif state == "SLEEP":
-            self._enter_sleep(tok)
         elif state == "IDLE":
             self.w.set_base(C.HOME)
             self._play(spec.pool, tok)
@@ -112,6 +118,11 @@ class Director:
                 self.fault_reason = info
                 out.append(E.FAULT)
                 continue
+            if token is not None and token == self.wake_tok:
+                self.wake_tok = None
+                if token != self.token:            # the wake-up outlived NOTICE (now STANDBY): done
+                    self.busy = False
+                    continue
             if token != self.token:
                 continue
             if event == E.STEP:                        # a mark inside one of our plans
@@ -148,11 +159,55 @@ class Director:
 
     def _loop_clip(self, pool, tok):
         """The next clip of a looping pool."""
-        if pool == "asleep":                          # a very slow, shallow breathe (IdleBreathe)
+        if self.slumped and pool == "bored":         # woken by motion, nobody came: get up
+            self._wake_up(tok)
+        elif pool == "asleep":                          # a very slow, shallow breathe (IdleBreathe)
             amp, ts = SLEEP_BREATHE
             self.w.seq(M.idle_breathe(SLEEP_BREATHE_S, self.rng, 0.0, amp, ts), tok)
         else:
             self._play(pool, tok)
+
+    # -- per-state behaviors ------------------------------------------------------------
+    def _enter_behavior(self, state, m, tok):
+        """States (or cases) handled here instead of on_enter's chain. True = handled."""
+        carry = self.wake_tok is not None and state in CENTER_FIRST
+        if not carry:
+            self.wake_tok = None                      # whatever plays next interrupts it
+        if state == "BOOT":
+            self.slumped = False
+        if state == "SLEEP":
+            self._enter_sleep(tok)
+            return True
+        if state == "IDLE":
+            return self._enter_idle(m, tok)
+        if state in CENTER_FIRST and carry:           # let the wake-up finish, then center the face
+            self.w.set_base(C.HOME)
+            return True
+        if state == "NOTICE" and (self.slumped or self._woke_recently(m)):
+            self._wake_up(tok)
+            return True
+        return False
+
+    def _woke_recently(self, m):
+        """SLEEP -> IDLE -> here, with IDLE lasting at most WAKE_WINDOW_S."""
+        idle, sleep = m.came_from(1), m.came_from(2)
+        return (idle is not None and idle[0] == "IDLE" and sleep is not None and sleep[0] == "SLEEP"
+                and idle[2] - idle[1] <= WAKE_WINDOW_S)
+
+    def _enter_idle(self, m, tok):
+        prev = m.came_from()
+        if prev and prev[0] == "SLEEP" and self.slumped:
+            # Motion woke it: stay slumped a moment. A face now gets the groggy wake-up in NOTICE;
+            # nobody by WAKE_WINDOW_S and the IDLE loop wakes up anyway (_loop_clip).
+            self.busy = False
+            self.next_clip_at = m.entered_at + WAKE_WINDOW_S
+            return True
+        return False
+
+    def _wake_up(self, tok):
+        """The groggy wake-up from the slumped pose; rebases on its end (home)."""
+        self.slumped, self.wake_tok = False, tok
+        self.w.seq([("play", WAKE_CLIP, WAKE_AMPLITUDE, 1.0), ("rebase",)], tok)
 
     # -- SLEEP ------------------------------------------------------------------------
     def _enter_sleep(self, tok):
@@ -160,6 +215,7 @@ class Director:
         slowly around the slumped pose (rebase: the hold must not pull the lamp back up)."""
         if self.power:
             self.power.sleep()
+        self.slumped = True
         self.w.seq([("play", SLEEP_ENTRY, 1.0, 1.0), ("rebase",)], tok)
 
     # -- modifier rules (behavior/modifiers.py) ---------------------------------------

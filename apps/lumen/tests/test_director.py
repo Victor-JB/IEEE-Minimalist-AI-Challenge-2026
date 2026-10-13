@@ -179,5 +179,58 @@ class Sleep(unittest.TestCase):
         self.assertEqual(r.power.calls, ["sleep", "wake"])
 
 
+class WakeUp(unittest.TestCase):
+    def slept(self):
+        r = Rig()
+        r.to(E.READY, E.NO_MOTION)
+        r.finish()                                         # slumped
+        return r
+
+    def test_face_soon_after_waking_gets_the_groggy_wake_up(self):
+        r = self.slept()
+        r.ev(E.MOTION)
+        n = len(r.w.cmds)
+        self.assertEqual(r.m.state, "IDLE")
+        self.assertEqual(r.w.cmds[n:], [])                 # stays slumped, no snap back to home
+        r.ev(E.FACE_SEEN, dt=1.0)
+        self.assertEqual(r.m.state, "NOTICE")
+        name, (plan, tok), kw = r.w.last()
+        self.assertEqual(plan, [("play", "wake_up/slow_groggy", 0.7, 1.0), ("rebase",)])
+        self.assertNotIn("double_take", str(r.w.cmds))
+
+    def test_the_wake_up_outlives_notice_and_standby_waits_for_it(self):
+        r = self.slept()
+        r.ev(E.MOTION)
+        r.ev(E.FACE_SEEN, dt=1.0)
+        n = len(r.w.cmds)
+        r.ev(E.FACE_CONFIRMED)
+        self.assertEqual(r.m.state, "STANDBY")
+        self.assertTrue(r.d.busy)
+        r.p.target = Det(320, 400)
+        for _ in range(100):                               # 5 s: past the center timeout
+            r.tick()
+        self.assertEqual([c for c in r.w.cmds[n:] if c[0] in ("play", "seq")], [])
+        self.assertEqual(r.w.offset, [0.0, 0.0, 0.0])      # no look-at while the clip moves the head
+        r.w.events.append((E.CLIP_DONE, r.d.wake_tok, None))
+        r.pump()
+        self.assertFalse(r.d.busy)
+        self.assertEqual(r.m.state, "STANDBY")
+
+    def test_late_face_is_the_normal_notice(self):
+        r = self.slept()
+        r.ev(E.MOTION)
+        for _ in range(140):                               # 7 s, nobody: the IDLE loop gets up
+            r.tick()
+        name, (plan, tok), kw = r.w.last()
+        self.assertEqual(plan[0][1], "wake_up/slow_groggy")
+        r.finish()
+        self.assertFalse(r.d.slumped)
+        n = len(r.w.cmds)
+        r.ev(E.FACE_SEEN, dt=10)
+        self.assertEqual(r.m.state, "NOTICE")
+        self.assertFalse(r.d.busy)                         # centering first, as usual
+        self.assertNotIn("wake_up", str(r.w.cmds[n:]))
+
+
 if __name__ == "__main__":
     unittest.main()
