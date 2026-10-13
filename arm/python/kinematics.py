@@ -39,6 +39,7 @@ Cross-checked against MuJoCo 3.15 on the MJCF (arm/tests/test_kinematics.py MUJO
 import math
 from collections import namedtuple
 
+import arm_config as A
 from arm_config import ROLL_RANGE, SAFE_RANGES
 
 L1 = 0.185
@@ -127,6 +128,9 @@ def ray_plane(origin, direction, plane_z=0.0):
 
 # -- inverse kinematics ----------------------------------------------------------
 def _inside(q, margin=JOINT_MARGIN):
+    if A.SHOULDER_LOCK is not None:               # locked: exactly there, no margin to keep
+        return abs(q[0] - A.SHOULDER_LOCK) < 1e-6 and all(
+            lo + margin <= a <= hi - margin for a, (lo, hi) in zip(q[1:], SAFE_RANGES[1:]))
     return all(lo + margin <= a <= hi - margin for a, (lo, hi) in zip(q, SAFE_RANGES))
 
 
@@ -175,6 +179,43 @@ def _candidate(target, phi, standoff, margin):
     return None if q is None else (q, roll, pivot)
 
 
+def _locked(target, phi, margin, s_lo=0.0, s_hi=1e9):
+    """Locked shoulder: the poses at beam pitch phi whose light axis passes through target.
+
+    The elbow joint is fixed, so the wrist sits on a circle of radius L2 around it. The wrist is
+    target - k * (sin phi, cos phi) in the pitch plane, k = standoff_to_pivot * cos(roll) +
+    HEAD_PIVOT: one quadratic in k, then the standoff and roll in closed form. [(q, roll, pivot,
+    standoff)], up to two."""
+    s0 = A.SHOULDER_LOCK
+    a0, p = math.radians(s0), math.radians(phi)
+    ex, ez = L1 * math.sin(a0), SHOULDER_Z + L1 * math.cos(a0)
+    ux, uz = math.sin(p), math.cos(p)
+    tx, tz = target[0] - ex, target[2] - ez
+    b = ux * tx + uz * tz
+    disc = b * b - (tx * tx + tz * tz - L2 * L2)
+    if disc < 0:
+        return []
+    out = []
+    for k in (b - math.sqrt(disc), b + math.sqrt(disc)):
+        inplane = k - HEAD_PIVOT                     # pivot -> target, in the pitch plane
+        if inplane <= 0:
+            continue
+        s = math.hypot(inplane, target[1])          # pivot -> target along the beam
+        standoff = s - LIGHT_OFFSET
+        if not s_lo <= standoff <= s_hi:
+            continue
+        roll = math.degrees(math.asin(-target[1] / s))
+        if not roll_ok(roll, margin):
+            continue
+        wx, wz = target[0] - k * ux, target[2] - k * uz
+        elbow = math.degrees(math.atan2(wx - ex, wz - ez)) - s0
+        q = (s0, elbow, phi - s0 - elbow)
+        if _inside(q, margin):
+            pivot = (wx + HEAD_PIVOT * ux, 0.0, wz + HEAD_PIVOT * uz)
+            out.append((q, roll, pivot, standoff))
+    return out
+
+
 def _cost(q, roll, pivot, standoff, ref, z_pref, s_pref):
     c = ((pivot[2] - z_pref) / 0.05) ** 2 + ((standoff - s_pref) / 0.05) ** 2 + (roll / 30.0) ** 2
     if ref is not None:
@@ -199,6 +240,15 @@ def aim(target, ref=None, z_pref=COMFORT_Z, standoff=COMFORT_STANDOFF, standoff_
     lo, hi = standoff_range or (s_lo, 0.45)
     lo = max(lo, s_lo)
     best = None
+    if A.SHOULDER_LOCK is not None:                 # elbow + head only: the standoff is not free
+        phi = phi_range[0]
+        while phi <= phi_range[1] + 1e-9:
+            for q, roll, pivot, s in _locked(target, phi, margin, lo, hi):
+                cost = _cost(q, roll, pivot, s, ref, z_pref, standoff)
+                if best is None or cost < best[0]:
+                    best = (cost, Aim(q, roll, target, s, pivot))
+            phi += 0.5
+        return None if best is None else best[1]
     phi = phi_range[0]
     while phi <= phi_range[1] + 1e-9:
         s = lo
@@ -232,6 +282,8 @@ def move_along_beam(q, roll, target, delta, margin=JOINT_MARGIN, tries=8):
     s0 = standoff_of(q, roll, target)
     s_min = SHADE_DEPTH - LIGHT_OFFSET + SHADE_CLEARANCE
     step = min(delta, s0 - s_min)                    # the shade never touches the book
+    if A.SHOULDER_LOCK is not None:
+        return _move_along_beam_locked(q, roll, target, phi, s0, step, margin, tries)
     for _ in range(tries):
         if abs(step) < 0.002:
             break
@@ -240,5 +292,24 @@ def move_along_beam(q, roll, target, delta, margin=JOINT_MARGIN, tries=8):
             c = _candidate(target, phi + dphi, s, margin)
             if c is not None:
                 return Aim(c[0], c[1], tuple(target), s, c[2]), step
+        step /= 2.0
+    return Aim(tuple(q), roll, tuple(target), s0, fk(q, roll).pivot), 0.0
+
+
+def _move_along_beam_locked(q, roll, target, phi, s0, step, margin, tries):
+    """move_along_beam with the shoulder locked: the standoff follows from the beam pitch, so
+    search the pitch (near the current one) for the pose closest to the wanted standoff."""
+    for _ in range(tries):
+        if abs(step) < 0.002:
+            break
+        want, best = s0 - step, None
+        for i in range(-60, 61):                     # +-30 deg around the current pitch, 0.5 deg
+            for c in _locked(target, phi + 0.5 * i, margin):
+                err = abs(c[3] - want)
+                if best is None or err < best[0]:
+                    best = (err, c)
+        if best is not None and best[0] < 0.005:
+            qq, rr, pivot, s = best[1]
+            return Aim(qq, rr, tuple(target), s, pivot), s0 - s
         step /= 2.0
     return Aim(tuple(q), roll, tuple(target), s0, fk(q, roll).pivot), 0.0

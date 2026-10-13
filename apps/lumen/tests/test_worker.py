@@ -141,5 +141,23 @@ class WorkerFaults(unittest.TestCase):
         w._loop()
 
 
+# These tests exercise the general machinery with a driven shoulder (arm_config.SHOULDER_LOCK is
+# set on the real arm while its motor is out); the locked behavior has its own tests.
+_lock = None
+
+
+def setUpModule():
+    global _lock
+    import arm_config
+    _lock = arm_config.SHOULDER_LOCK
+    arm_config.unlock_shoulder()
+
+
+def tearDownModule():
+    import arm_config
+    if _lock is not None:
+        arm_config.lock_shoulder(_lock)
+
+
 if __name__ == "__main__":
     unittest.main()

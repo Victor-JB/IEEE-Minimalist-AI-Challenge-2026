@@ -56,6 +56,21 @@ from .config import (EASE_SPEED, GIVE_UP_LIMIT, GIVE_UP_WINDOW_S, KEEPALIVE_S,  
 DOING = {"relax": "relaxed (drivers asleep)", "goto": "move", "path": "move (adjust)",
          "seq": "plan", "sweep": "sweep"}         # HUD text per command; "play" shows the clip
 
+
+def relock_shoulder(measured):
+    """Locked shoulder (arm_config.SHOULDER_LOCK): hold it at the angle it really is at. A setpoint
+    off it would make the firmware push the dead motor and stall. Returns the angle, or None."""
+    if A.SHOULDER_LOCK is None or measured is None:
+        return None
+    lo, hi = A.SHOULDER_FREE_RANGE
+    if not lo - 5 <= measured <= hi + 5:
+        print(f"Shoulder reads {measured:.1f} deg, outside its range: check the encoder")
+        return None
+    if abs(measured - A.SHOULDER_LOCK) > 0.05:
+        print(f"Shoulder locked at {measured:.2f} deg (measured; config said {A.SHOULDER_LOCK:.2f})")
+    A.lock_shoulder(measured)
+    return measured
+
 class Stalled(Exception):
     """Every retry of a stalled setpoint failed; the arm holds where it stopped."""
 
@@ -203,6 +218,7 @@ class MotionWorker(threading.Thread):
                                      max_accel=move_cfg.FIRMWARE_MAX_ACCEL, tuck=False,
                                      roll=A.ROLL if A.ROLL_ENABLED else None).__enter__()
                 self.current = self.arm.angles()       # start every move from where the arm really is
+                relock_shoulder(self.current[0])
                 self.give_ups, self.roll = [], None
                 self.light_sent = None              # resend the lamp level on the new session
                 tilt = "head tilt on" if self.arm.roll_supported else "no head tilt"

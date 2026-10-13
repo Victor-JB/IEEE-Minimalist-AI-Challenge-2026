@@ -7,13 +7,41 @@ Values measured on the real arm on 2026-10-11 (CLOSED_LOOP.md on the dev branch)
 from arm_client import JOINTS, LIMITS, MOTOR   # noqa: F401  protocol-level limits the client validates
 from arm_motion import MARGIN                  # noqa: F401  firmware keeps targets this far inside LIMITS
 
-# Joint order everywhere: shoulder, elbow, head (degrees).
-HOME = (-12.04, 63.46, 5.27)
+# Joint order everywhere: shoulder, elbow, head (degrees). HOME and SAFE_RANGES are lists so
+# lock_shoulder() can update them in place for every module that imported them.
+HOME = [-12.04, 63.46, 5.27]
 
 # Where streamed motion (clips, look-at, holds) is clamped. The shoulder stays in -30..+10:
 # below about -36 it can't lift itself back, and leaning forward past ~+21 it stalled.
 # The firmware's own hard floor for the shoulder is -34 (sketch/limits.hpp).
-SAFE_RANGES = ((-30.0, 10.0), (-70.0, 77.0), (-78.0, 85.0))
+SAFE_RANGES = [(-30.0, 10.0), (-70.0, 77.0), (-78.0, 85.0)]
+SHOULDER_FREE_RANGE = SAFE_RANGES[0]
+
+# --- Locked shoulder (2026-10-13) -----------------------------------------------------------------
+# The shoulder motor is gone; the joint is locked mechanically and its encoder still reads. While
+# SHOULDER_LOCK is set, the shoulder is never moved: SAFE_RANGES[0] is (lock, lock), so every clamp
+# (clips, holds, look-at, desk jog) pins it; clips fold their shoulder motion into the elbow
+# (trajectory.py); kinematics aims with elbow + head only. Lumen and the desk re-lock it at the
+# MEASURED angle on connect (a setpoint off the real angle would make the firmware push the dead
+# motor and FAULT), so this value only matters until then. None = a working shoulder motor.
+SHOULDER_LOCK = HOME[0]
+
+
+def lock_shoulder(angle):
+    """Hold the shoulder at angle (deg) from now on, everywhere."""
+    global SHOULDER_LOCK
+    angle = float(angle)
+    SHOULDER_LOCK, HOME[0], SAFE_RANGES[0] = angle, angle, (angle, angle)
+
+
+def unlock_shoulder():
+    """Back to a driven shoulder (tests, or once the motor is replaced)."""
+    global SHOULDER_LOCK
+    SHOULDER_LOCK, SAFE_RANGES[0] = None, SHOULDER_FREE_RANGE
+
+
+if SHOULDER_LOCK is not None:
+    lock_shoulder(SHOULDER_LOCK)
 SHOULDER_STOP = -36.0          # abort streaming if the measured shoulder drops below this
 
 # Speed and acceleration caps for expressive motion (after the evening slowdown; heat-limited).

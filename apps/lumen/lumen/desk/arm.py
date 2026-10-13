@@ -168,6 +168,10 @@ class DeskArm(threading.Thread):
             self.jog = self.motion = self.setpoint = self.roll_sent = None
             self.notice = "Connected. Drivers asleep; they wake for each move."
         self._poll(force=True)
+        here = self._here()
+        if here and A.SHOULDER_LOCK is not None:
+            from ..movement.worker import relock_shoulder
+            relock_shoulder(here[0])                  # hold the locked shoulder where it really is
         try:
             arm.light(round(self.light * 1000))       # the firmware keeps its own state; match the page
         except Exception:
