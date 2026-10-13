@@ -76,7 +76,7 @@ class Director:
             # TODO(victor): pose that points the light at the book, from the book's position in
             # the image + the camera-to-head offset. For now: lean the head down over the desk.
             self.aim_pose = [C.HOME[0] + 5, C.HOME[1] - 5, C.HOME[2] + 25]
-            self._expressive_goto(self.aim_pose, 1.5, tok, E.AT_POSE, "aim")
+            self.w.goto(self.aim_pose, 1.5, tok, done=E.AT_POSE)
         elif state == "HOLD":
             self.w.set_base(self.aim_pose)
             self.busy = False
@@ -84,7 +84,7 @@ class Director:
             sign = 1 if m.ctx.get("adjust") == E.CLOSER else -1
             self.light.step(0.15 * sign)
             self.aim_pose = [a + sign * d for a, d in zip(self.aim_pose, ADJUST_STEP)]
-            self._expressive_goto(self.aim_pose, 0.8, tok, E.MOVE_DONE, "adjust")
+            self.w.goto(self.aim_pose, 0.8, tok)
         elif state == "CHECKIN":
             self._enter_checkin(tok)
         elif state == "REACQUIRE":
@@ -317,12 +317,6 @@ class Director:
         """A plan reached one of its marks (see the per-state plans below)."""
         if m.state == "CHECKIN":
             self._checkin_step(index)
-
-    def _expressive_goto(self, pose, duration, tok, done, style):
-        """goto dressed by the modifier rules (glance / windup / hesitation), inside the caps."""
-        plan = M.expressive_move(self._arm_pose(), pose, duration, self.rng,
-                                 M.gamma_for(self.x.energy), style)
-        self.w.seq(plan, tok, done=done)
 
     def _play_ref(self, ref, tok):
         """One named clip with the usual amplitude / speed noise (not drawn from a pool)."""

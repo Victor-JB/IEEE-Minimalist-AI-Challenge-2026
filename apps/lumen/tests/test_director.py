@@ -113,33 +113,6 @@ def goto_steps(plan):
     return [s for s in plan if s[0] == "goto"]
 
 
-class ModifierWiring(unittest.TestCase):
-    def test_aim_plan_glances_and_stays_in_caps(self):
-        r = Rig()
-        r.to(*TO_HOLD)
-        self.assertEqual(r.m.state, "AIM")
-        name, (plan, tok), kw = r.w.last("seq")
-        self.assertEqual(kw["done"], E.AT_POSE)
-        self.assertGreaterEqual(len(goto_steps(plan)), 2)              # glance and/or windup first
-        self.assertEqual(goto_steps(plan)[-1][1], r.d.aim_pose)
-        r.finish(E.AT_POSE)
-        self.assertEqual(r.m.state, "HOLD")
-
-    def test_adjust_winds_up_then_steps(self):
-        r = Rig()
-        r.to(*TO_HOLD)
-        r.finish(E.AT_POSE)
-        before = list(r.d.aim_pose)
-        r.w.current = list(before)
-        r.ev(E.CLOSER)
-        name, (plan, tok), kw = r.w.last("seq")
-        self.assertEqual(kw["done"], E.MOVE_DONE)
-        self.assertEqual(len(goto_steps(plan)), 2)
-        self.assertEqual(plan[-1][1], r.d.aim_pose)
-        r.finish(E.MOVE_DONE)
-        self.assertEqual(r.m.state, "HOLD")
-
-
 class Sleep(unittest.TestCase):
     def asleep(self):
         r = Rig()
