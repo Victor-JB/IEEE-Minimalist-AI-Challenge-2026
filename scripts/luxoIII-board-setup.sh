@@ -93,10 +93,11 @@ restore() {
     arduino-cli compile --profile default --build-path $REPO/arm/build sketch | tail -2
     bash scripts/flash-local.sh 2>&1 | grep -iE 'error|verified|wrote' | tail -4"
 
-  echo '== Lumen boot service (enabled, not started)'
+  echo '== Boot services: the desk web page (on at boot); Lumen installed but off (they conflict)'
   board "set -e; cd $REPO/apps/lumen; mkdir -p ~/.config/systemd/user logs
-    cp lumen.service ~/.config/systemd/user/
-    systemctl --user daemon-reload && systemctl --user enable lumen >/dev/null && systemctl --user is-enabled lumen"
+    cp lumen.service lumen-desk.service ~/.config/systemd/user/
+    systemctl --user daemon-reload && systemctl --user enable --now lumen-desk >/dev/null
+    echo \"desk: \$(systemctl --user is-enabled lumen-desk); lumen: \$(systemctl --user is-enabled lumen)\""
 
   echo '== Notes'
   "${A[@]}" push "$(ls "$REPO_LOCAL"/docs/CHANGES-board-*.md | tail -1)" /home/arduino/CHANGES.md >/dev/null
