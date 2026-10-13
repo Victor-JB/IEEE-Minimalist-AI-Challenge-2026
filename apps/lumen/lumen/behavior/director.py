@@ -122,6 +122,8 @@ class Director:
         return out
 
     def note_events(self, events, now):
+        if E.RESET in events:
+            self.faults = 0                 # the user cleared a latched fault
         if any(e in INTERACTIONS for e in events):
             self.x.bump(now)
 

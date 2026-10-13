@@ -10,6 +10,7 @@ BOOK_FOUND, BOOK_LOST = "BOOK_FOUND", "BOOK_LOST"
 CLIP_DONE, MOVE_DONE, SWEEP_DONE, AT_POSE = "CLIP_DONE", "MOVE_DONE", "SWEEP_DONE", "AT_POSE"
 # Timers and system
 TIMEOUT, CHECKIN_DUE, READY, FAULT, RECOVERED = "TIMEOUT", "CHECKIN_DUE", "READY", "FAULT", "RECOVERED"
+RESET = "RESET"                          # long open palm in FAULT: clear a latched fault and reboot
 
 
 class KofN:
