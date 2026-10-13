@@ -189,7 +189,12 @@ When several faces are visible, pick the largest (closest) one. Switch targets o
 - High energy biases pools toward the bigger variants (`__big`, `excited_bounce`, `celebrate__big`) and slightly faster time scales. Low energy biases toward `__calm`, `__subtle` and slower ones.
 - This is one number, cheap to implement, and it makes the lamp feel like it remembers the last minute.
 
-**Reuse the existing modifier rules** in `tools/motion_lib/modifiers/rules.py` (port the ones you use into the app): `LookBackAtUser` (CHECK-IN), `LightCoupling` (dim while looking at the user), `IdleBreathe` (any hold ≥ 2 s), `GlanceBeforeMove` + `AnticipationWindup` (AIM, ADJUST), `Hesitation` (NOTICE false alarm, NOT FOUND).
+**Reuse the existing modifier rules** in `tools/motion_lib/modifiers/rules.py` (dev branch). Ported to the 3-joint arm as small plan-building functions in `apps/lumen/lumen/behavior/modifiers.py`; a plan is a list of worker steps (goto / wait / play / mark / rebase) played as one `MotionWorker.seq` command, and every plan goes through `respect_caps()` (min-jerk peaks inside `SPEED_CAPS`, the elbow-lift cap and `ACCEL_CAP`):
+- `GlanceBeforeMove` (AIM): the head pitches toward the book first, holds 0.15–0.4 s, then the body follows. On this arm the glance is pitch, not yaw (no yaw joint yet).
+- `AnticipationWindup` (AIM, ADJUST): a counter-motion of 10–20 % of the move first, at least 2.5° so it isn't swallowed by the gear backlash.
+- `IdleBreathe` (any hold ≥ 2 s): whole `idle_breathe__calm` breaths that fill the hold (used by SLEEP).
+- `Hesitation` (uncertain moves: the first REACQUIRE peek): pause, micro-retreat, pause, then commit slower. The NOTICE false alarm uses the `hesitate__subtle` clip instead.
+- `LookBackAtUser` is the CHECK-IN plan in the director (it needs the face); `LightCoupling` is the light's job.
 
 ---
 

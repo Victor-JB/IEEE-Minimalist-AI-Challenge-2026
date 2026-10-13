@@ -6,6 +6,7 @@ import random
 from .. import config as C
 from .. import events as E
 from ..machine import INITIAL_CHILD, STATES
+from . import modifiers as M
 from .look_at import LookAt, face_error
 
 ONE_SHOT = {"NOTICE", "ACK", "NOT_FOUND", "CHECKIN", "GOODBYE", "FAULT"}   # CLIP_DONE ends the state
@@ -50,7 +51,7 @@ class Director:
             # TODO(victor): pose that points the light at the book, from the book's position in
             # the image + the camera-to-head offset. For now: lean the head down over the desk.
             self.aim_pose = [C.HOME[0] + 5, C.HOME[1] - 5, C.HOME[2] + 25]
-            self.w.goto(self.aim_pose, 1.5, tok, done=E.AT_POSE)
+            self._expressive_goto(self.aim_pose, 1.5, tok, E.AT_POSE, "aim")
         elif state == "HOLD":
             self.w.set_base(self.aim_pose)
             self.busy = False
@@ -58,7 +59,7 @@ class Director:
             sign = 1 if m.ctx.get("adjust") == E.CLOSER else -1
             self.light.step(0.15 * sign)
             self.aim_pose = [a + sign * d for a, d in zip(self.aim_pose, ADJUST_STEP)]
-            self.w.goto(self.aim_pose, 0.8, tok)
+            self._expressive_goto(self.aim_pose, 0.8, tok, E.MOVE_DONE, "adjust")
         elif state == "FAULT":
             if m.entered_at - self.last_fault_t > C.FAULT_FORGET_S:
                 self.faults = 0
@@ -107,6 +108,9 @@ class Director:
                 continue
             if token != self.token:
                 continue
+            if event == E.STEP:                        # a mark inside one of our plans
+                self._on_step(m, info, now)
+                continue
             if event == E.AT_POSE and m.state == "SEARCH":
                 m.ctx["at_pause_pose"] = True          # lets the book model run this frame
                 continue
@@ -133,6 +137,20 @@ class Director:
             return
         ref, amp, ts = choice
         self.w.play(ref, amp, ts, tok)
+
+    # -- modifier rules (behavior/modifiers.py) ---------------------------------------
+    def _arm_pose(self):
+        """Where the arm is now (last streamed setpoint), to plan the next move from."""
+        return list(getattr(self.w, "current", None) or self.w.base)
+
+    def _on_step(self, m, index, now):
+        """A plan reached one of its marks (see the per-state plans below)."""
+
+    def _expressive_goto(self, pose, duration, tok, done, style):
+        """goto dressed by the modifier rules (glance / windup / hesitation), inside the caps."""
+        plan = M.expressive_move(self._arm_pose(), pose, duration, self.rng,
+                                 M.gamma_for(self.x.energy), style)
+        self.w.seq(plan, tok, done=done)
 
     def _sweep_poses(self):
         """3-5 pauses across the desk. TODO: needs the 4th (yaw) joint for a real left-right sweep;
