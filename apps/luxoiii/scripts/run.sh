@@ -1,11 +1,10 @@
 #!/bin/bash
-# ON THE BOARD, for development: stop the boot service and run luxoiii in the foreground.
-#   bash apps/luxoiii/scripts/run.sh                 # real arm, HUD on :8080
-#   bash apps/luxoiii/scripts/run.sh --fake-arm      # camera + AI only, arm untouched
-#   PERF=1 bash apps/luxoiii/scripts/run.sh          # timing report on Ctrl+C
+# Start the main web app at http://127.0.0.1:8082/ on the Mac or board.
+# The board observer supplies AI/tracking; this launcher never starts the legacy arm controller.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-systemctl --user stop luxoiii luxoiii-desk lumen lumen-desk 2>/dev/null || true
-PYTHON="${LUXOIII_PYTHON:-.venv/bin/python}"
-[[ -x "$PYTHON" ]] || PYTHON=../../.venv/bin/python
-exec "$PYTHON" -m luxoiii --headless --stream 8080 "$@"
+LUXOIII_RUN_PYTHON="${LUXOIII_PYTHON:-.venv/bin/python}"
+if [[ ! -x "$LUXOIII_RUN_PYTHON" ]]; then
+  LUXOIII_RUN_PYTHON="$(command -v python3)"
+fi
+exec "$LUXOIII_RUN_PYTHON" -m luxoiii "$@"

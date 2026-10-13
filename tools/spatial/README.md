@@ -1,4 +1,4 @@
-# luxoiii spatial observer
+# luxoiii main app · board observer
 
 The Mac web view at port 8082 combines the full CAD assembly with read-only encoder readings,
 head-pivot command telemetry, a camera frustum and approximate face positions. Detection runs
@@ -14,7 +14,7 @@ one hand can steer the desk light while the other gives Close/Far. The pointer f
 previous wrist position when detector results reorder; a distant replacement needs a fresh hold.
 This is short-term spatial association, not persistent hand/person identity. Crossing or occluding
 hands can confuse it. Two opposite thumbs cancel. Keep both hands fully visible and separated.
-Images and detections are not saved. The observer is a temporary process, not a boot service.
+Images and detections are not saved. The main app deployment installs this as `luxoiii-observer.service`; the foreground command below is also supported.
 
 From the repo on the board, while the standalone desk is running:
 
@@ -35,7 +35,7 @@ ssh -N -L 18083:127.0.0.1:8083 arduino@100.78.199.105
 In another, from the repo root:
 
 ```sh
-PYTHONPATH=apps/luxoiii python3 -m luxoiii.preview --observer-url http://127.0.0.1:18083
+PYTHONPATH=apps/luxoiii python3 -m luxoiii --observer-url http://127.0.0.1:18083
 ```
 
 Open http://127.0.0.1:8082/. Choose **People + robot** to fit face markers into view. **Follow
@@ -95,7 +95,7 @@ A detected face, a failed/skipped/older-than-one-second face check, an unsafe or
 unavailable pose, Stop or stale camera turns D7 off. Every nonzero light command includes an
 800 ms MCU lease; if the observer crashes or its updates stop, the independent MCU tick turns
 the light off. Older firmware without lease support refuses activation. The updated firmware
-is required; its legacy two-argument manual light commands keep their previous behavior.
+is required; its two-argument manual light commands also switch fully on/off, without PWM.
 
 Lighting gestures affect the digital scene only. The hardware motion RPC allowlist contains claim/status/release and pivot config/move/off;
 no stepper configuration, move, stream, jog or power-enable commands are sent. An owned or awake

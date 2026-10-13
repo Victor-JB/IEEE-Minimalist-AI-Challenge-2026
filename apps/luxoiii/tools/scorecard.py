@@ -3,7 +3,7 @@ bench/RESULTS.md (dev branch).
 
 Inputs
   transitions CSV(s)   apps/luxoiii/logs/transitions-<date>.csv (luxoiii/translog.py), or tools/simulate.py --csv
-  --perf PERF_CSV      optional: perfstats long CSV (PERF=1 PERF_CSV=run.csv python -m luxoiii --headless)
+  --perf PERF_CSV      optional: perfstats long CSV (PERF=1 PERF_CSV=run.csv python -m luxoiii.legacy --headless)
   --power METER_CSV    optional: power meter log with a time column and watts (or volts + amps)
   --idle-watts W       board idle baseline (nothing running), for the "above idle" numbers
 

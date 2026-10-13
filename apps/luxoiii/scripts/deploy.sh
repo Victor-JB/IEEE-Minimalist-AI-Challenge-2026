@@ -28,18 +28,18 @@ else SSH=(ssh -p "$PORT" -o BatchMode=yes -o ConnectTimeout=5 "$HOST"); fi
 [[ "$REPO_LOCAL" -ef "$REPO" ]] || ( cd "$REPO_LOCAL" && COPYFILE_DISABLE=1 tar czf - \
     --exclude='.venv' --exclude='__pycache__' --exclude='apps/luxoiii/logs' \
     --exclude='arm/build*' --exclude='arm/recordings' \
-    apps/luxoiii arm ) \
+    apps/luxoiii arm tools/spatial ) \
   | "${SSH[@]}" "tar xzf - -C $REPO"
 
 "${SSH[@]}" "set -e; cd $REPO/apps/luxoiii
   python3 -m venv \"\$(readlink -f .venv)\" && .venv/bin/pip install -q -r requirements.txt
-  mkdir -p ~/.config/systemd/user logs && cp luxoiii.service luxoiii-desk.service ~/.config/systemd/user/
+  mkdir -p ~/.config/systemd/user logs && cp luxoiii.service luxoiii-observer.service luxoiii-desk.service ~/.config/systemd/user/
   systemctl --user daemon-reload
   if [ -z '${LUXOIII_NO_START:-${LUMEN_NO_START:-}}' ]; then
     systemctl --user disable --now lumen lumen-desk 2>/dev/null || true
-    systemctl --user stop luxoiii-desk 2>/dev/null || true
+    systemctl --user stop luxoiii luxoiii-observer luxoiii-desk 2>/dev/null || true
     systemctl --user enable luxoiii >/dev/null
     systemctl --user restart luxoiii
   fi
   sleep 2; systemctl --user --no-pager status luxoiii | head -5 || true"
-echo "HUD: http://${LUXOIII_HOST:-${STEPPER_HOST:-100.78.199.105}}:8080/   logs: ssh $HOST journalctl --user -u luxoiii -f"
+echo "Main app: http://127.0.0.1:8082/ (board loopback; forward with SSH). Logs: ssh $HOST journalctl --user -u luxoiii -f"

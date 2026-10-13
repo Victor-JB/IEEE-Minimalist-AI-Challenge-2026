@@ -1,18 +1,13 @@
-# systemd *user* service: starts luxoiii at boot on the Arduino Q.
-# Installed by scripts/deploy.sh to ~/.config/systemd/user/luxoiii.service.
-# Boot without a login works because linger is enabled for `arduino` (Tailscale uses the same).
+# Main web app. Loopback only; access remotely through an SSH tunnel.
 [Unit]
-Description=luxoiii expressive lamp behavior
-After=default.target
-Conflicts=luxoiii-desk.service lumen.service lumen-desk.service
+Description=luxoiii live web app (port 8082)
+Requires=luxoiii-observer.service
+After=luxoiii-observer.service
+Conflicts=lumen.service
 
 [Service]
 WorkingDirectory=/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/luxoiii
-# Wait for the Arduino router (it owns the MCU serial link) before starting.
-ExecStartPre=/bin/sh -c 'for i in $(seq 30); do [ -S /var/run/arduino-router.sock ] && exit 0; sleep 1; done; exit 1'
-ExecStart=/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/luxoiii/.venv/bin/python -m luxoiii --headless --stream 8080
-Environment=PYTHONUNBUFFERED=1
-Environment=LUXOIII_LIGHT=firmware
+ExecStart=/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/luxoiii/.venv/bin/python -u -m luxoiii --port 8082 --observer-url http://127.0.0.1:8083
 Restart=on-failure
 RestartSec=3
 

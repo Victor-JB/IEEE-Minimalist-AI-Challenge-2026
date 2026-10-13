@@ -23,13 +23,14 @@ The deployment default is the known board address, `100.78.199.105`, with `LUXOI
 
 ## Safe deployment transition
 
-The repo contains the board's newer source plus the Mac's desk light controls. The standalone desk's
-0–1 brightness UI is converted to the board API's 0–1000 per-mille duty units.
+The repo contains the board's newer source plus the Mac's desk light controls. The main app is now the live 8082 web experience (`python -m luxoiii`). The older full-arm
+controller requires `python -m luxoiii.legacy`; it is not started by the main service.
 
 The running board was left unchanged. Before deploying, preserve any additional board edits made since
 this snapshot. `LUXOIII_NO_START=1 bash apps/luxoiii/scripts/deploy.sh` installs the new app and units
 without stopping or enabling services. A normal deployment stops/disables legacy units and starts
-`luxoiii.service`. The new units also conflict with old units to prevent competing arm/camera owners.
+`luxoiii.service`. The main service starts `luxoiii-observer` and `luxoiii-desk` as dependencies. Stop any
+standalone observer on 8083 before this migration; the new units conflict with the old camera/arm services.
 Application deployment does not flash firmware. `arm/scripts/deploy.sh` does flash unless
 `ARM_NO_FLASH=1` is specified; avoid reflashing the verified hardware just for naming changes.
 
@@ -43,4 +44,4 @@ preview. The old reduced `model.json` remains for compatibility but is no longer
 X-ray is the default, with solid and hidden-case options. The preview animates base yaw, shoulder, elbow,
 head pitch and head pivot. Internal drive motion is derived kinematically; it is not measured telemetry.
 The physical pivot, camera and D7 lamp are team-verified. The `tools/spatial` hybrid demo connects live hand/face events to this simulation and optional
-physical subject tracking; see its README for the separate, non-service deployment.
+physical subject tracking; see its README for the main app service chain and foreground setup.

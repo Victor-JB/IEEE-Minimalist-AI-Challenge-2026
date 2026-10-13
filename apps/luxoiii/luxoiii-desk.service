@@ -1,10 +1,9 @@
 # systemd *user* service: the luxoiii Desk web page (http://luxo3:8081/) at boot on the luxoiii board.
 # Install: cp luxoiii-desk.service ~/.config/systemd/user/ && systemctl --user enable --now luxoiii-desk
-# The desk and luxoiii both need the arm and the camera, so starting one stops the other.
+# Supplies camera frames to the main observer. Manual arm controls remain a separate tool.
 [Unit]
 Description=luxoiii Desk web page (arm, camera, light)
-After=default.target
-Conflicts=luxoiii.service lumen.service lumen-desk.service
+Conflicts=lumen.service lumen-desk.service
 
 [Service]
 WorkingDirectory=/home/arduino/IEEE-Minimalist-AI-Challenge-2026/apps/luxoiii

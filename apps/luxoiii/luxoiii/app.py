@@ -1,4 +1,4 @@
-"""Main loop: camera -> perception -> events -> state machine -> director -> arm + light.
+"""Legacy full-arm loop (python -m luxoiii.legacy): camera -> state machine -> arm + light.
 
     camera frame ─► Perception.step(rates of the current state) ─► events
                                                                     │

@@ -1,1 +1,1 @@
-"""luxoiii: the behavior app for the expressive lamp (camera -> perception -> state machine -> motion)."""
+"""luxoiii: the live web app, expressive digital lamp and board perception."""

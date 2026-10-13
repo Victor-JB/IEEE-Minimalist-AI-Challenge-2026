@@ -5,10 +5,10 @@ The Arduino UNO Q runs camera perception and behavior on Linux, with light and m
 
 ## Start here
 
-- **Full model / X-ray preview:** `python3 sim/lamp_show.py`, then open `http://127.0.0.1:8082/`.
-  Includes the complete base, 112 CAD parts and mechanically coupled internal cams from `full-model-animations`.
-  Without an observer it is a mechanical preview. Connect the observer for live faces, hands and gesture-driven simulation.
-- **Live 3D people view:** [tools/spatial/README.md](tools/spatial/README.md), with on-board hand/face inference, gesture-driven simulation, and independent real-head subject tracking.
+- **Main app:** `bash apps/luxoiii/scripts/run.sh`, then open `http://127.0.0.1:8082/`.
+  Live camera, two-hand gestures, expressive full X-ray model, subject tracking and digital D7 On/Off.
+- **Board connection:** [tools/spatial/README.md](tools/spatial/README.md) covers the observer and SSH tunnel.
+- **Offline model:** `PYTHONPATH=apps/luxoiii python3 -m luxoiii --offline`.
 - **App and board commands:** [apps/luxoiii/README.md](apps/luxoiii/README.md).
 - **Hardware/API:** [arm/README.md](arm/README.md).
 - **Naming and deployment migration:** [docs/NAMING.md](docs/NAMING.md).
@@ -31,9 +31,9 @@ The Arduino UNO Q runs camera perception and behavior on Linux, with light and m
 As confirmed by the team on October 13: the pivot, camera and lamp on **D7** work; the arm steppers are broken.
 The D7 lamp configuration uses D12 for the head stepper DIR signal. Do not revert that pin assignment.
 Keep the physical arm supported. The hybrid demo in `tools/spatial` uses the physical pivot for subject tracking and the simulated arm for expressive motion and gesture lighting. D7 can turn on only with fresh face-free observations and the entire estimated physical beam below horizontal; it uses an 800 ms firmware expiry.
-The preview automatically enables subject tracking with fresh data; its switch saves an explicit off preference, and Stop remains latched. Pointing selects an estimated desk
+The main app automatically enables subject tracking with fresh data; its switch saves an explicit off preference, and Stop remains latched. Pointing selects an estimated desk
 spot in the simulated scene; the real light has a separate face/physical-orientation gate.
-The regular app’s `--fake-arm` still skips the hardware connection entirely. Book detection remains
+The older controller is now explicitly `python -m luxoiii.legacy`; its `--fake-arm` skips the hardware connection entirely. Book detection remains
 unimplemented; this demo does not claim to detect a book.
 
 The app and arm source include the newer board-side behavior and hand tracking work recovered before

@@ -3,7 +3,7 @@
 Off by default, and free when off: @timed returns the original function unchanged.
 Turn it on with an environment variable; a report prints at exit (Ctrl+C included):
 
-    PERF=1 python -m luxoiii --headless
+    PERF=1 python -m luxoiii.legacy --headless
 
 Usage:
     from luxoiii.perfstats import timed, count
