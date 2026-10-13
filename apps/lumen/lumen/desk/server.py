@@ -25,7 +25,7 @@ RECORDING_DIRS = (paths.LOGS, paths.ARM / "recordings")
 NAME = re.compile(r"^[A-Za-z0-9_.-]+\.jsonl$")
 CAD = paths.ARM / "cad"
 CAD_NAME = re.compile(r"^[A-Za-z0-9_.-]+\.(stl|json)$")
-COMMANDS = {"connect", "disconnect", "power", "relax", "stop", "jog", "goto", "clip", "roll", "roll_off"}
+COMMANDS = {"connect", "disconnect", "power", "relax", "stop", "jog", "goto", "clip", "roll", "roll_off", "light"}
 REPLAY_POINTS = 1500
 
 

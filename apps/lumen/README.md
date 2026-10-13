@@ -5,9 +5,15 @@ expressive motion and light. The behavior spec is [docs/STATE_MACHINE.md](../../
 this folder implements it.
 
 Lumen is Python on the Linux side only. Everything about the arm (firmware, API, parameters,
-clips) comes from the shared [arm/](../../arm/README.md) module, and Lumen starts at boot as a
-systemd service. [apps/README.md](../README.md) explains why it is not
-an App Lab app and how boot is decided.
+clips) comes from the shared [arm/](../../arm/README.md) module. It and the Lumen Desk page are
+systemd user services, and exactly one starts at boot (they share the arm and camera):
+[apps/README.md](../README.md) explains why it is not an App Lab app.
+
+**What boots (board `luxo3`, the luxoIII board):** the **desk page** (`lumen-desk.service`,
+`http://luxo3:8081/`), with Lumen installed but off. `LUMEN_BOOT=lumen bash apps/lumen/scripts/deploy.sh`
+switches the boot service to **Lumen and its HUD** (`lumen.service`, `http://luxo3:8080/`);
+plain `deploy.sh` switches back. By hand: `systemctl --user start lumen` (stops the desk) or
+`systemctl --user start lumen-desk`. A fresh board is set up with `scripts/luxoIII-board-setup.sh`.
 
 ## Run it
 
@@ -22,21 +28,22 @@ python3 -m unittest discover -s apps/lumen/tests
 
 # Board, first time
 bash arm/scripts/deploy.sh                       # flash the arm firmware + arm venv (skip if done)
-bash apps/lumen/scripts/deploy.sh                # copy apps/lumen + arm/, venv, boot service, start
+bash apps/lumen/scripts/deploy.sh                # copy apps/lumen + arm/, venv, boot service (desk page), start
+LUMEN_BOOT=lumen bash apps/lumen/scripts/deploy.sh   # ...or boot into Lumen + HUD instead
 #   then in App Lab: make sure no app shows the DEFAULT badge
 
 # Board, every change
 bash apps/lumen/scripts/deploy.sh
-ssh arduino@daboard journalctl --user -u lumen -f                                       # live logs
-ssh arduino@daboard bash IEEE-Minimalist-AI-Challenge-2026/apps/lumen/scripts/run.sh   # foreground
+ssh arduino@luxo3 journalctl --user -u lumen -f                                       # live logs
+ssh arduino@luxo3 bash IEEE-Minimalist-AI-Challenge-2026/apps/lumen/scripts/run.sh   # foreground
 ```
 
-Manual control: `python -m lumen.desk` (stop Lumen first; one arm owner), then
-`http://daboard:8081/`. It has the camera, live joints and sensors, enable/lock, arm/disarm,
-hold-to-jog, pose targets, taught poses, clips, head tilt, the measured-vs-commanded plot, and
-recordings with replay. It's the Stepper Desk Mac app's job, on the closed-loop firmware.
+Manual control: the desk page, `http://luxo3:8081/` (the boot service; by hand
+`python -m lumen.desk` with Lumen stopped: one arm owner). It has the camera, live joints and
+sensors, enable/lock, arm/disarm, hold-to-jog, pose targets, taught poses, clips, head tilt, the
+lamp light (D7), the measured-vs-commanded plot, and recordings with replay. It's the Stepper Desk Mac app's job, on the closed-loop firmware.
 
-HUD stream: `http://daboard:8080/` (state, active models, light, energy, detections).
+HUD stream: `http://luxo3:8080/` (state, active models, light, energy, detections).
 Transition log: `apps/lumen/logs/transitions-<date>.csv` on the board. Every state change with
 the models running and the cumulative inference counts, which is your scorecard data. Transitions
 into FAULT also have a `reason` (`STALL`, `SENSOR_STALE`, `LINK_LOST`, `OVERTEMP`, `ARM`, `ERROR`,

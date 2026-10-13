@@ -32,7 +32,7 @@ def ssh_target():
 
     On the Arduino Q itself (the router socket exists) the gateway runs as a local
     process. Otherwise STEPPER_LINK=auto (default) uses USB (ADB forward to localhost:2222) when the board
-    is plugged in, else Tailscale (STEPPER_HOST, default daboard). Tailscale round trips
+    is plugged in, else Tailscale (STEPPER_HOST, default luxo3). Tailscale round trips
     are ~13 ms with occasional ~250 ms spikes, so requests there get a longer deadline;
     the MCU's 300 ms lease still halts and holds the arm if renewals stop.
     """
@@ -43,12 +43,12 @@ def ssh_target():
     if link!='tailscale':
         adb=shutil.which('adb') or '/opt/homebrew/bin/adb'
         try:
-            subprocess.run([adb,'-s','2709356903','forward','tcp:2222','tcp:22'],check=True,timeout=4,
+            subprocess.run([adb,'-s',os.environ.get('ARDUINO_Q_SERIAL','634018433'),'forward','tcp:2222','tcp:22'],check=True,timeout=4,
                            stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
             return ['-p','2222','arduino@localhost'],.25
         except (OSError,subprocess.SubprocessError):
             if link=='usb': raise ArmError('Arduino Q not found over USB')
-    return ['arduino@'+os.environ.get('STEPPER_HOST','daboard')],.6
+    return ['arduino@'+os.environ.get('STEPPER_HOST','luxo3')],.6
 
 def gateway_python():
     """Interpreter for a local gateway: this one if it has the router bridge, else the deploy venv."""
