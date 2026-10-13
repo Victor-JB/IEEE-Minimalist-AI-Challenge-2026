@@ -8,6 +8,7 @@ POINT, CLOSER, FURTHER, PALM = "POINT", "CLOSER", "FURTHER", "PALM"   # PALM = S
 BOOK_FOUND, BOOK_LOST = "BOOK_FOUND", "BOOK_LOST"
 # Behavior / motion
 CLIP_DONE, MOVE_DONE, SWEEP_DONE, AT_POSE = "CLIP_DONE", "MOVE_DONE", "SWEEP_DONE", "AT_POSE"
+STEP = "STEP"     # a "mark" inside a worker plan; the director consumes it, the machine never sees it
 # Timers and system
 TIMEOUT, CHECKIN_DUE, READY, FAULT, RECOVERED = "TIMEOUT", "CHECKIN_DUE", "READY", "FAULT", "RECOVERED"
 

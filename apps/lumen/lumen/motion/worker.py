@@ -81,6 +81,15 @@ class MotionWorker(threading.Thread):
         """Visit each pose, pausing `dwell` s; emits AT_PAUSE per pose, then SWEEP_DONE."""
         self.cmds.put(("sweep", [list(p) for p in poses], dwell, token))
 
+    def seq(self, steps, token, done=E.CLIP_DONE):
+        """Play a plan (behavior/modifiers.py) as one command; emits `done` once at the end.
+
+        Steps: ("goto", pose, s[, clear_offset]) · ("wait", s) · ("play", ref, amplitude, time_scale)
+        · ("mark", i) emits (STEP, token, i) · ("rebase",) makes the pose the arm is at the new base
+        (for clips that end somewhere else, like go_to_sleep, so the hold doesn't pull it back).
+        """
+        self.cmds.put(("seq", [tuple(s) for s in steps], token, done))
+
     def relax(self):
         self.cmds.put(("relax",))
 
@@ -193,6 +202,10 @@ class MotionWorker(threading.Thread):
                 if self._guard(self._goto, pose, dur) is not False:
                     self.base = list(pose)
                     self.events.put((done, token, None))
+            elif kind == "seq":
+                _, steps, token, done = cmd
+                if self._guard(self._seq, steps, token) is not False:
+                    self.events.put((done, token, None))
             elif kind == "sweep":
                 _, poses, dwell, token = cmd
                 if self._guard(self._sweep, poses, dwell, token) is None:
@@ -220,6 +233,29 @@ class MotionWorker(threading.Thread):
             if not self._wait(dwell):
                 return False
         self.events.put((E.SWEEP_DONE, token, None))
+        return True
+
+    def _seq(self, steps, token):
+        for step in steps:
+            kind = step[0]
+            if kind == "goto":
+                if len(step) > 3 and step[3]:         # glide back from wherever the offset left the head
+                    self.offset, self._off = [0.0] * 3, [0.0] * 3
+                if not self._goto(step[1], step[2]):
+                    return False
+                self.base = list(step[1])
+            elif kind == "wait":
+                if not self._wait(step[1]):
+                    return False
+            elif kind == "play":
+                if not self._play(*step[1:4]):
+                    return False
+            elif kind == "mark":
+                self.events.put((E.STEP, token, step[1]))
+            elif kind == "rebase":
+                self.base = [c - o for c, o in zip(self.current, self._off)]
+            else:
+                raise ValueError(f"unknown plan step {step!r}")
         return True
 
     # -- motion primitives (return False if interrupted by a new command) ----------
