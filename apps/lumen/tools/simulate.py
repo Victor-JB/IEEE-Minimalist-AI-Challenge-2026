@@ -55,7 +55,7 @@ SCENARIO = [
     (56.0,  "thumbs down: further", dict(gesture=G.THUMBS_DOWN)),
     (56.8,  "hand down", dict(gesture=None)),
     (70.0,  "cover the book with a hand", dict(book=False)),
-    (76.0,  "uncover it (long enough to be lost even if a check-in interrupts)", dict(book=True)),
+    (85.0,  "uncover it (after the ~11 s check-in that interrupts; REACQUIRE has 4 s)", dict(book=True)),
     (95.0,  "open palm 1 s: done", dict(gesture=G.OPEN_PALM)),
     (96.5,  "hand down", dict(gesture=None)),
     (105.0, "walk away", dict(face=False, motion=False, book=False)),
@@ -173,6 +173,19 @@ class FakeWorker:
 
     def goto(self, pose, duration, token, done=E.MOVE_DONE):
         self._replace("goto", [(self.clock.t + duration, done, token, None)])
+
+    def seq(self, steps, token, done=E.CLIP_DONE):
+        """A behavior plan: gotos/waits take their time, clips CLIP_S, marks report STEP."""
+        t, evs = self.clock.t, []
+        for step in steps:
+            kind = step[0]
+            if kind in ("goto", "wait"):
+                t += step[2] if kind == "goto" else step[1]
+            elif kind == "play":
+                t += CLIP_S / step[3]
+            elif kind == "mark":
+                evs.append((t, E.STEP, token, step[1]))
+        self._replace("seq", evs + [(t, done, token, None)])
 
     def path(self, segments, token, done=E.MOVE_DONE):
         self._replace("path", [(self.clock.t + sum(d for _, d in segments), done, token, None)])

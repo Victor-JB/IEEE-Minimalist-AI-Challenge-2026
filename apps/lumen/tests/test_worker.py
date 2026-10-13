@@ -105,6 +105,30 @@ class WorkerFaults(unittest.TestCase):
         w.stop()
         self.assertEqual(len(connects), 2)
 
+    def test_seq_runs_steps_marks_and_reports_once(self):
+        w = self.w
+        w.arm = FakeArm()
+        w.offset = w._off = [0.0, 0.0, 3.0]
+        w.cmds.put(("seq", [("goto", [1.0, 61.0, 6.0], 0.1), ("mark", 0),
+                            ("goto", [2.0, 62.0, 7.0], 0.1, True), ("rebase",)], 9, E.CLIP_DONE))
+        self._run_loop_briefly()                              # (its hold tick stops the loop: no waits here)
+        events = w.poll_events()
+        self.assertEqual(events, [(E.STEP, 9, 0), (E.CLIP_DONE, 9, None)])
+        self.assertEqual(w._off, [0.0, 0.0, 0.0])           # cleared by the return goto
+        self.assertEqual(w.base, [2.0, 62.0, 7.0])
+
+    def test_seq_wait_holds_at_the_last_goto(self):
+        w = self.w
+        w.arm = FakeArm()
+        self.assertTrue(w._seq([("goto", [1.0, 61.0, 6.0], 0.1), ("wait", 0.1)], 1))
+        self.assertEqual(w.current, [1.0, 61.0, 6.0])
+
+    def test_rebase_keeps_the_pose_a_clip_ended_at(self):
+        w = self.w
+        w.current, w._off = [-20.0, 80.0, 30.0], [0.0, 0.0, 2.0]
+        self.assertTrue(w._seq([("rebase",)], 1))
+        self.assertEqual(w.base, [-20.0, 80.0, 28.0])
+
     def _run_loop_briefly(self):
         """Run _loop until the command queue is empty and one hold tick passed."""
         w = self.w

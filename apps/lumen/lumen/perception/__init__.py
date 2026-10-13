@@ -1,7 +1,7 @@
 """Perception: frames in, debounced events out. The state machine never sees raw detections."""
 from .. import config as C
 from .. import events as E
-from .gestures import classify, POINT as G_POINT, THUMBS_UP, THUMBS_DOWN, OPEN_PALM
+from .gestures import classify, hand_size, WaveDetector, POINT as G_POINT, THUMBS_UP, THUMBS_DOWN, OPEN_PALM
 from .scheduler import ModelScheduler
 
 # Crops, as multiples of the box they grow from: (left, top, right, bottom) margins.
@@ -37,6 +37,8 @@ class Perception:
                      THUMBS_DOWN: E.HeldFor(C.GESTURE_HOLD_S, C.GESTURE_REPEAT_S),
                      OPEN_PALM: E.HeldFor(C.PALM_HOLD_S)}
         self.reset_palm = E.HeldFor(C.RESET_HOLD_S)
+        self.wave = WaveDetector(C.WAVE_REVERSALS, C.WAVE_WINDOW_S, C.WAVE_SWING)
+        self.wave_t = None                  # when the last wave was detected
         self.gesture_event = {G_POINT: E.POINT, THUMBS_UP: E.CLOSER, THUMBS_DOWN: E.FURTHER, OPEN_PALM: E.PALM}
 
     def step(self, frame, now, rates, ctx):
@@ -77,6 +79,10 @@ class Perception:
                     out.append(self.gesture_event[g])
             if self.reset_palm.update(self.gesture == OPEN_PALM, now):
                 out.append(E.RESET)
+            lm = self.hand_lm[0] if self.hand_lm and len(self.hand_lm[0]) == 21 else None
+            if self.wave.update(lm[0][0] if lm else None, hand_size(lm) if lm else 0.0, now):
+                self.wave_t = now
+                out.append(E.WAVE)
 
         if "book" in ran and self.book:
             self.books = self.book.detect(frame, ctx.get("book_roi"))
@@ -117,6 +123,7 @@ class Perception:
         if ctx is not None:
             ctx["face_visible"] = False      # stale: only the new state's own face runs count
         self.face_confirm.reset()
+        self.wave.reset()
         self.faces, self.hand_lm, self.books, self.book_hits, self.book_misses = [], [], [], 0, 0
         for deb in (*self.held.values(), self.reset_palm):
             deb.update(False, 0)

@@ -15,6 +15,8 @@ FACE_CONFIRM_K, FACE_CONFIRM_N = 3, 5    # NOTICE -> STANDBY
 FACE_LOST_S = 4.0                        # STANDBY -> LOST USER
 GESTURE_HOLD_S = 0.4                     # POINT / CLOSER / FURTHER must be held this long
 GESTURE_REPEAT_S = 1.0                   # CLOSER / FURTHER repeat while held
+WAVE_REVERSALS, WAVE_WINDOW_S = 2, 1.2   # wave = this many wrist direction reversals within this long
+WAVE_SWING = 0.5                         # ...each swing at least this many hand sizes
 PALM_HOLD_S = 1.0                        # open palm = STOP / EXIT
 BOOK_FOUND_CONSECUTIVE = 2
 BOOK_LOST_S = 2.0
@@ -23,6 +25,9 @@ BOOK_LOST_MISSES = 3                     # ...and only call it lost after this m
 RESET_HOLD_S = 3.0                       # open palm this long in FAULT clears a latched fault
 MOTION_THRESHOLD = 6.0                   # mean abs diff (0-255) on the 80x60 gray frame
 NO_MOTION_SLEEP_S = 300.0                # IDLE -> SLEEP
+SLEEP_CAMERA_FPS = 2.0                   # camera frames per second in SLEEP (the gate runs on each)
+SLEEP_CPU_GOVERNOR = None                # e.g. "powersave" while asleep; needs write access to
+                                         # cpufreq/scaling_governor (udev rule), skipped otherwise
 NOBODY_S = 180.0                         # ILLUMINATE -> GOODBYE: no face, hand or motion
 
 # --- Camera and desk geometry (behavior/aim.py; the arm's own geometry is arm/python/kinematics.py)

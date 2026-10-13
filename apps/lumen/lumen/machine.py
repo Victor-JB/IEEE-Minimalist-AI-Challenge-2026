@@ -44,6 +44,7 @@ STATES = {
     "FAULT":     State({"hand": 2}, "fault", light=0.2),     # hand only for the RESET palm
 }
 INITIAL_CHILD = {"ILLUMINATE": "HOLD"}
+PREV_KEEP = 4      # previous states kept in ctx["prev"] (e.g. NOTICE checks for SLEEP -> IDLE -> NOTICE)
 
 
 def _face_or_idle(m):
@@ -101,7 +102,7 @@ class Machine:
     def __init__(self, on_enter=None, on_exit=None, start="BOOT", now=0.0, rng=None):
         self.on_enter, self.on_exit = on_enter, on_exit
         self.rng = rng or random.Random()
-        self.ctx = {"face_visible": False, "adjust": None}
+        self.ctx = {"face_visible": False, "adjust": None, "prev": []}
         self.history = []
         self.state, self.entered_at, self.timer_at = None, now, None
         self._enter(start, now)
@@ -114,6 +115,12 @@ class Machine:
     @property
     def models(self):
         return self.spec.models
+
+    def came_from(self, back=1):
+        """The (state, entered_at, left_at, event) `back` states ago, or None. ctx["prev"] holds the
+        last PREV_KEEP of them, newest last; it is already updated when on_enter runs."""
+        prev = self.ctx["prev"]
+        return prev[-back] if len(prev) >= back else None
 
     @property
     def path(self):
@@ -156,6 +163,7 @@ class Machine:
             if old_parent and old_parent != new_parent:
                 self.on_exit(old_parent, self)
         entering_parent = new_parent if new_parent and new_parent != old_parent else None
+        self.ctx["prev"] = (self.ctx["prev"] + [(src, self.entered_at, now, event)])[-PREV_KEEP:]
         self._enter(target, now, entering_parent)
         tr = Transition(now, src, target, event)
         self.history.append(tr)
