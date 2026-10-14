@@ -1,4 +1,5 @@
 # Lumen: an expressive edge-AI desk lamp
+## 2nd Place 🏆 in Hardware Track @ IEEE Minimalist Edge AI Challenge 2026  
 
 Team repo for the IEEE SEC 2026 Minimalist Edge AI Challenge, hardware track (Arduino UNO Q).
 
