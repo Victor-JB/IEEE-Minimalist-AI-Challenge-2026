@@ -49,6 +49,14 @@ class Emotions {
   this.until=now+entry+clip.duration+2+this.random()*2;
   this.label=labels[ref]||ref;this.returning=null;
  }
+ nowPlaying(now) {
+  // What the model is playing right now, for the page's "Playing" pill: the full-body clip (its
+  // library ref, label and progress 0-1) and any additive overlay layers still running.
+  const c=this.current,layers=this.layers.filter(l=>now>=l.started&&now-l.started<=l.spec.duration).map(l=>l.ref);
+  if(!c)return {clip:null,label:this.label,progress:null,layers,returning:!!this.returning,state:this.state};
+  const total=c.entry+c.clip.duration;
+  return {clip:c.ref,label:labels[c.ref]||c.ref,progress:total>0?Math.max(0,Math.min(1,(now-c.started)/total)):null,layers,returning:false,state:this.state};
+ }
  layer(ref,now,weight=1) {
   const spec=this.clips.overlays?.[ref];if(!spec)return;
   this.layers.push({ref,spec,started:now,weight});
@@ -113,9 +121,9 @@ class Emotions {
      if(event.startsWith('Hello'))this.play('polite_greet',now);
      else if(event.startsWith('More company')){this.play('look_around',now);this.layer('nod',now+.8,.5);}
      else if(event.startsWith('Open palm')) {
-      if(!task)this.play(this.cycle++%2?'joy':'greet',now);
-      this.layer('shake',now+.2,task?.35:1);
-      this.layer('bounce',now+.65,task?.12:.6);
+      this.play('greet',now);
+      this.layer('shake',now+.2,1);
+      this.layer('bounce',now+.65,.6);
       this.label='Hello back!';
      } else if(event.startsWith('Point accepted')) {
       this.layer('nod',now,.6);this.label='That spot? Got it';
@@ -128,7 +136,7 @@ class Emotions {
   }
   // Active pointing owns the beam. The outer frame-rate smoother handles pose
   // continuity; no acknowledgment or return blend can pull it off the finger.
-  if(following){this.current=null;this.returning=null;this.layers=[];}
+  if(following && this.current?.ref!=='greet'){this.current=null;this.returning=null;this.layers=[];}
   if(showcase && now>=this.until) {
    const choices=['wake','curious','peek','nod','shake','joy','look_around','sleep'];
    const ref=choices[this.cycle++%choices.length];this.play(ref,now);

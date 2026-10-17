@@ -52,7 +52,14 @@ def encoder(raw, joint, calibration):
     count, magnet, error, age = raw[14:18]
     good = 0 <= count < 4096 and magnet & 0x28 == 0x20 and error == 0 and 0 <= age <= 100
     angle = ((count*360/4096-calibration['zero'])*(-1 if calibration['reversed'] else 1)+180)%360-180
-    return dict(angle=angle if good else None, healthy=good, age_ms=age,
+    name = ('Shoulder', 'Elbow', 'Head pitch')[joint]
+    reason = None
+    if error: reason = name + ' sensor read failed'
+    elif not 0 <= age <= 100: reason = name + ' reading is stale'
+    elif not magnet & 0x20: reason = name + ' magnet not detected'
+    elif magnet & 0x08: reason = name + ' magnet field too strong'
+    elif not 0 <= count < 4096: reason = name + ' angle is invalid'
+    return dict(angle=angle if good else None, healthy=good, age_ms=age, reason=reason,
                 source='raw encoder + saved calibration')
 
 
@@ -95,7 +102,7 @@ def main():
     # preprocessing stays single-threaded to avoid another competing worker pool.
     cv2.setNumThreads(1)
     detector=FaceDetector(num_threads=args.inference_threads)
-    hands=hands_module.HandLandmarker(num_threads=args.inference_threads,max_hands=2,landmark_threshold=.65)
+    hands=hands_module.HandLandmarker(num_threads=args.inference_threads,max_hands=2,landmark_threshold=.65,prioritize_largest=True)
     gesture_model='landmark-mlp-v1' if getattr(gestures,'_classifier',lambda:None)() is not None else 'legacy-rules'
     inference=Inference(detector,hands,parallel=args.parallel_inference)
     tracker=SubjectTracker();demo=Demo(simulated_aim);gate=MotionGate(4.0)
@@ -203,7 +210,7 @@ def main():
                 length=int(self.headers.get('Content-Length','0'))
                 if not 0<length<=256:raise ValueError('Invalid command length')
                 request=json.loads(self.rfile.read(length));action=request.get('action')
-                if action not in ('enable','disable','heartbeat','stop','resume'):raise ValueError('Unknown control')
+                if action not in ('enable','disable','heartbeat','stop','resume','manual','auto'):raise ValueError('Unknown control')
                 now=time.monotonic()
                 if action in ('stop','resume'):
                     with demo_lock:
@@ -214,6 +221,11 @@ def main():
                         if not output:raise ValueError('Hybrid outputs are not configured')
                         output.requested=True;output.heartbeat=now
                     elif action=='heartbeat' and output:output.heartbeat=now
+                    elif action=='manual':
+                        if not output:raise ValueError('Hybrid outputs are not configured')
+                        output.set_manual(request.get('swivel'),request.get('lamp'))
+                        output.requested=True;output.heartbeat=now
+                    elif action=='auto' and output:output.manual=None
                     elif action in ('disable','stop') and output:
                         output.disable(force_light=action=='stop');output.reason='Physical outputs disabled'
                 body=json.dumps(dict(ok=True)).encode()

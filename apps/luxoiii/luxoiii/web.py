@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 from urllib.parse import unquote, urlparse, parse_qs
 from .spatial import read_observer
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 DESK = Path(__file__).parent / "desk"
@@ -28,11 +29,15 @@ class Handler(BaseHTTPRequestHandler):
             n=int(self.headers.get('Content-Length','0'))
             if not 0<n<=256:raise ValueError('Invalid control request')
             data=json.loads(self.rfile.read(n));action=data.get('action')
-            if action not in ('enable','disable','heartbeat','stop','resume'):raise ValueError('Unknown control')
+            if action not in ('enable','disable','heartbeat','stop','resume','manual','auto'):raise ValueError('Unknown control')
             if not self.server.observer_url:raise ConnectionError('Board observer unavailable')
-            req=Request(self.server.observer_url+'/control',data=json.dumps({k:v for k,v in data.items() if k == 'action'}).encode(),headers={'Content-Type':'application/json'})
-            with urlopen(req,timeout=2) as response:body=response.read(4096)
-            self.send_response(200)
+            req=Request(self.server.observer_url+'/control',data=json.dumps({k:v for k,v in data.items() if k in ('action','swivel','lamp')}).encode(),headers={'Content-Type':'application/json'})
+            try:
+                with urlopen(req,timeout=2) as response:body=response.read(4096)
+            except HTTPError as e:                       # the observer refused: pass its reason on
+                body=e.read(4096);self.send_response(400)
+            else:
+                self.send_response(200)
         except Exception as exc:
             body=json.dumps(dict(ok=False,error=str(exc))).encode();self.send_response(400)
         self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)))

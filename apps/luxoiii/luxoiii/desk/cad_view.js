@@ -120,8 +120,8 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
     // orthographic camera orbiting (0, 22, 0); zoom = half the visible height (cm), like SceneKit's orthographicScale
     const scenePoints = spatial && spatial.camera ? [worldPoint(spatial.camera.position),
       ...spatial.people.filter(p=>p.world).map(p=>worldPoint(p.world)),
-      ...(spatial.hands_3d||[]).flatMap(h=>(h.world_points||[]).map(worldPoint)),
-      ...(spatial.demo?.desk_target ? [worldPoint(spatial.demo.desk_target)] : [])] : [];
+      ...(spatial.hands_3d||[]).flatMap(h=>(h.world_points||[]).map(worldPoint))] : [];
+    if(spatial?.fresh && spatial.demo?.desk_target) scenePoints.push(worldPoint(spatial.demo.desk_target));
     if(spatial?.camera) {
       const c=spatial.camera, depth=Math.min(1.5,Math.max(.5,...spatial.people.map(p=>p.depth_m)));
       const fw=depth*Math.tan(spatial.hfov*Math.PI/360),fh=depth*Math.tan(spatial.vfov*Math.PI/360);
@@ -205,47 +205,58 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
   function drawSpatial(VP,W,H) {
     const ctx=labels?.getContext('2d');
     if(ctx) { labels.width=W; labels.height=H; ctx.clearRect(0,0,W,H); }
-    if(!spatial?.fresh || !spatial.camera) return;
-    const c=spatial.camera, origin=worldPoint(c.position), lines=[];
+    if(!spatial?.fresh) return;
+    const lines=[];
     const add=(a,b,color)=>lines.push({a,b,color});
     const amber=[1,.7,.3], teal=[.25,1,.82], muted=[.32,.58,.65];
-    const camPoint=(x,y,z)=>worldPoint(c.position.map((v,i)=>v+x*c.right[i]+y*c.up[i]+z*c.forward[i]));
     const ring=(center,r,color)=> {
       for(let axis=0;axis<3;axis++) for(let j=0;j<24;j++) {
         const point=t=>center.map((v,i)=>v+(i===axis?0:r*(i===(axis+1)%3?Math.cos(t):Math.sin(t))));
         add(point(j*Math.PI/12),point((j+1)*Math.PI/12),color);
       }
     };
-    for(let i=1;i<c.chain.length;i++) add(worldPoint(c.chain[i-1]),worldPoint(c.chain[i]),amber);
-    ring(origin,2.5,amber);
-    const depth=Math.min(1.5,Math.max(.5,...spatial.people.map(p=>p.depth_m)));
-    const fw=depth*Math.tan(spatial.hfov*Math.PI/360), fh=depth*Math.tan(spatial.vfov*Math.PI/360);
-    const corners=[[-fw,-fh],[fw,-fh],[fw,fh],[-fw,fh]].map(p=>camPoint(...p,depth));
-    corners.forEach((p,i)=>{add(origin,p,muted);add(p,corners[(i+1)%4],muted);});
-    const text=(p,label,color)=> {
+    const screenText=(x,y,label,color)=> {
       if(!ctx) return;
-      const clip=[0,1,2,3].map(i=>VP[i]*p[0]+VP[4+i]*p[1]+VP[8+i]*p[2]+VP[12+i]);
-      const x=(clip[0]/clip[3]+1)*W/2,y=(1-clip[1]/clip[3])*H/2;
       ctx.font=`${12*devicePixelRatio}px system-ui`; const tw=ctx.measureText(label).width;
       ctx.fillStyle='rgba(10,18,28,.86)'; ctx.fillRect(x+5,y-19*devicePixelRatio,tw+10,20*devicePixelRatio);
       ctx.fillStyle=color; ctx.fillText(label,x+10,y-5*devicePixelRatio);
     };
-    text(origin,'Physical camera','#ffbc65');
-    spatial.people.forEach((p,i)=> {
-      if(!p.world) return;
-      const point=worldPoint(p.world);ring(point,8,teal);add(origin,point,teal);
-      // A head-and-shoulders symbol, not estimated body joints.
-      const center=point.map((v,j)=>v-14*c.up[[0,2,1][j]]*(j===2?-1:1));
-      const right=worldPoint(c.right).map(v=>v*.18);
-      add(center.map((v,j)=>v-right[j]),center.map((v,j)=>v+right[j]),teal);
-      text(point,`${spatial.example ? "EXAMPLE" : "Face "+(i+1)} · ~${p.range_m.toFixed(2)} m`,'#80f9d8');
-    });
-    const fingers=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[0,17],[17,18],[18,19],[19,20]];
-    (spatial.hands_3d||[]).forEach((h,i)=>{
-      if(!h.world_points)return;const p=h.world_points.map(worldPoint),color=[.7,.55,1];
-      fingers.forEach(([a,b])=>add(p[a],p[b],color));
-      text(p[0],`Hand ${i+1} · ${(h.gesture||'tracking').replaceAll('_',' ')} · ~${h.depth_m.toFixed(2)} m`,'#c5a5ff');
-    });
+    const text=(p,label,color)=> {
+      const clip=[0,1,2,3].map(i=>VP[i]*p[0]+VP[4+i]*p[1]+VP[8+i]*p[2]+VP[12+i]);
+      screenText((clip[0]/clip[3]+1)*W/2,(1-clip[1]/clip[3])*H/2,label,color);
+    };
+    // Physical world markers require the current encoder transform. Digital desk
+    // interaction remains visible when a pitch sensor cannot locate the real camera.
+    if(spatial.camera) {
+      const c=spatial.camera, origin=worldPoint(c.position);
+      const camPoint=(x,y,z)=>worldPoint(c.position.map((v,i)=>v+x*c.right[i]+y*c.up[i]+z*c.forward[i]));
+      for(let i=1;i<c.chain.length;i++) add(worldPoint(c.chain[i-1]),worldPoint(c.chain[i]),amber);
+      ring(origin,2.5,amber);
+      const depth=Math.min(1.5,Math.max(.5,...spatial.people.map(p=>p.depth_m)));
+      const fw=depth*Math.tan(spatial.hfov*Math.PI/360), fh=depth*Math.tan(spatial.vfov*Math.PI/360);
+      const corners=[[-fw,-fh],[fw,-fh],[fw,fh],[-fw,fh]].map(p=>camPoint(...p,depth));
+      corners.forEach((p,i)=>{add(origin,p,muted);add(p,corners[(i+1)%4],muted);});
+      text(origin,'Physical camera','#ffbc65');
+      spatial.people.forEach((p,i)=> {
+        if(!p.world) return;
+        const point=worldPoint(p.world);ring(point,8,teal);add(origin,point,teal);
+        // A head-and-shoulders symbol, not estimated body joints.
+        const center=point.map((v,j)=>v-14*c.up[[0,2,1][j]]*(j===2?-1:1));
+        const right=worldPoint(c.right).map(v=>v*.18);
+        add(center.map((v,j)=>v-right[j]),center.map((v,j)=>v+right[j]),teal);
+        text(point,`${spatial.example ? "EXAMPLE" : "Face "+(i+1)} · ~${p.range_m.toFixed(2)} m`,'#80f9d8');
+      });
+      const fingers=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[0,17],[17,18],[18,19],[19,20]];
+      (spatial.hands_3d||[]).forEach((h,i)=>{
+        if(!h.world_points)return;const p=h.world_points.map(worldPoint),color=[.7,.55,1];
+        fingers.forEach(([a,b])=>add(p[a],p[b],color));
+        text(p[0],`Hand ${i+1} · ${(h.gesture||'tracking').replaceAll('_',' ')} · ~${h.depth_m.toFixed(2)} m`,'#c5a5ff');
+      });
+    } else {
+      const reason=(spatial.joints||[]).find(j=>j?.reason)?.reason || 'Waiting for joint angles';
+      screenText(8*devicePixelRatio,28*devicePixelRatio,'3D camera pose unavailable','#ffbc65');
+      screenText(8*devicePixelRatio,50*devicePixelRatio,reason,'#fff0ac');
+    }
     const preview=lightPreview?null:spatial.demo?.point_preview;
     if(!lightPreview && (preview || spatial.demo?.desk_target)) {
       const desk=[[.20,-.30,0],[.65,-.30,0],[.65,.30,0],[.20,.30,0]].map(worldPoint);
@@ -261,10 +272,10 @@ function createLuxoiiiCAD({ canvas, status, controls = document, assetBase = "/c
       for(let j=0;j<32;j++){const p=t=>[target[0]+6*Math.cos(t),.3,target[2]+6*Math.sin(t)];add(p(j*Math.PI/16),p((j+1)*Math.PI/16),amber);}
       text(target,spatial.demo.point_following?'Following your finger':spatial.demo.target_mode==='virtual_pointer'?'Selected virtual desk spot':'Estimated desk target','#ffbc65');
       if(spatial.demo.state==='ILLUMINATE' && lamp) {
-        text(lamp.position,`Desk light · ${Math.round((spatial.demo.brightness||0)*100)}%`,'#fff0ac');
+        text(lamp.position,`Simulated light · ${Math.round((spatial.demo.brightness||0)*100)}%`,'#fff0ac');
       }
     }
-    if(lightPreview && lamp)text(lamp.position,'Desk light preview · digital only','#fff0ac');
+    if(lightPreview && lamp)text(lamp.position,'Simulated light preview','#fff0ac');
     const values=new Float32Array(lines.flatMap(l=>[...l.a,0,1,0,...l.b,0,1,0]));
     gl.bindBuffer(gl.ARRAY_BUFFER,lineBuffer);gl.bufferData(gl.ARRAY_BUFFER,values,gl.DYNAMIC_DRAW);
     gl.vertexAttribPointer(aP,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(aN,3,gl.FLOAT,false,24,12);

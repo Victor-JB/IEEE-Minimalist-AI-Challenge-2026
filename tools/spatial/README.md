@@ -3,7 +3,7 @@
 The main web view at the UNO Q's port 8082 combines the full CAD assembly with read-only encoder readings,
 head-pivot command telemetry, a camera frustum and approximate face positions. Detection runs
 on the UNO Q using the existing quantized face model. The default observer is read-only. With `--hybrid`, the UI can explicitly activate only the physical
-head pivot for subject tracking and D7 under a face/downward-beam gate. Failed stepper joints are animated in the browser. The observer starts with outputs disabled; the preview enables tracking and automatic lighting once camera and encoders are fresh.
+head pivot for subject tracking and D7 under a face/downward-beam gate. Failed stepper joints are animated in the browser. The observer starts with outputs disabled; the preview enables tracking and arms automatic lighting once the camera is fresh. Missing pitch encoder readings block the physical lamp, while image-based swivel tracking can continue with valid servo telemetry.
 
 The observer owns the USB camera directly, with no separate 8080/8081 app. It holds one frame in
 memory and runs face detection with four threads at a bounded active loop. In hybrid mode, every processed frame runs face detection, including quiet scenes: an unchecked frame never counts as face-free. A motion gate can still skip the hand model, with a three-second
@@ -69,8 +69,9 @@ physical-output heartbeat expire. The old desk process is no longer part of the 
 ## Social behavior, gestures and subject tracking
 
 The real swivel is exclusively an image-based subject tracker. The preview grants
-it a quiet-arm session by default once observations are fresh. Faces take priority over hands; among multiple faces it follows the nearest
-previous image-space subject. After a one-second face-loss grace period, a visible palm can become
+it a quiet-arm session by default once observations are fresh. Faces take priority over hands;
+among multiple faces it follows the largest bounding box in each frame. A clear change of subject
+resets the controller's motion history. After a one-second face-loss grace period, a visible palm can become
 the target. It corrects horizontal camera error using current servo command telemetry and a 100°
 HFOV assumption. The middle 40% of the image is a hold zone; tracking resumes outside the
 middle 52% after two consistent observations. PD velocity control (Kp 1.8, Kd 0.35) brakes
@@ -101,7 +102,10 @@ is required; its two-argument manual light commands also switch fully on/off, wi
 
 Lighting gestures affect the digital scene only. The hardware motion RPC allowlist contains claim/status/release and pivot config/move/off;
 no stepper configuration, move, stream, jog or power-enable commands are sent. An owned or awake
-arm is refused. Browser heartbeat expiry (3 s), stale camera/encoders and Stop disable outputs.
+arm is refused. Browser heartbeat expiry (3 s), stale camera, invalid swivel telemetry and Stop
+disable outputs. Missing or stale pitch readings switch D7 off before any swivel command,
+without cancelling tracking. Automatic lighting stays armed and can recover only after fresh
+physical angles, face checks and the downward-beam gate all pass.
 
 The digital arm uses the full-model branch’s absolute choreography with blended additive expressions. Gestures take priority over social loops:
 
@@ -131,7 +135,14 @@ The digital arm uses the full-model branch’s absolute choreography with blende
   subsequent pointing. Lamp power stays constant, with natural distance falloff in the rendering.
 - Show an open palm for 0.4 s (at least two detections): the simulated arm greets back, in any
   active state. No lateral movement is required. A held palm triggers once; lower and show it again
-  to repeat, with a three-second cooldown. Palm detections never pause gestures or tracking.
+  to repeat, with a three-second cooldown. This releases the selected desk spot and its simulated
+  light, giving the welcome animation five seconds to finish. A held palm takes priority over a
+  second pointing hand; after the welcome, pointing needs a fresh hold. Physical tracking continues.
+- We prioritize the two largest qualifying palm detections as a proxy for proximity. Confidence
+  thresholds and duplicate suppression still apply. Occupied tracks are rediscovered once per
+  second so background hands cannot keep both slots indefinitely; intervening frames reuse ROIs.
+  Within a gesture channel, a palm more than 25% larger takes over after a fresh hold. Similar
+  palm sizes retain the current hand to reduce switching. This is apparent size, not measured depth.
 - Gestures stay active by default. Only the on-screen **Stop & lamp off** button latches Stop;
   **Resume gestures** restores social interaction and the saved tracking preference.
 
@@ -188,11 +199,13 @@ These previews are digital only; **AI-driven simulated arm** returns to interact
 
 Camera capture now retries after USB disconnection while a viewer remains connected. A capture
 error clears its cached image and FPS; a timeout never retransmits the previous JPEG. The observer
-also refuses to timestamp repeated identical JPEGs as fresh, covering older desk deployments.
+uses the direct capture sequence to prove freshness. A stationary scene can produce identical
+JPEGs, but only a successful new capture refreshes its timestamp.
 
 
 Automatic defaults: the preview opens in AI animation mode and enables subject tracking and gated lighting after
-fresh camera and encoder data arrive. A manual tracking-off selection is saved in this browser.
+fresh camera data arrive. The physical light still requires healthy measured angles.
+A manual tracking-off selection is saved in this browser.
 Reloading never clears a latched Stop; **Resume gestures** resumes the social loops and restores
 tracking when the saved preference is on. Stale data or heartbeat expiry still disables hardware;
 a failed activation is not retried repeatedly. The camera image shows the center hold zone.

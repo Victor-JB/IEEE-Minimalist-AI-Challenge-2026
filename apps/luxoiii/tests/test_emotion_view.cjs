@@ -40,10 +40,20 @@ a.sample(data('ACK','Point accepted · estimated desk spot selected',3,{pose:aim
 assert.equal(a.current,null);assert.deepEqual(a.layers.map(l=>l.ref),['nod']);
 a.sample(data('ILLUMINATE','Point accepted',3,{pose:aim}),2.2);
 nearly(a.sample(data('ILLUMINATE','Point accepted',3,{pose:aim}),4),aim);
-a.sample(data('ILLUMINATE','Open palm · hello back',4,{pose:aim}),5);
-assert.equal(a.current,null);assert(a.layers.length===2);
-nearly(a.sample(data('ILLUMINATE','Open palm · hello back',4,{pose:aim}),9),aim);
+a.sample(data('ATTENTIVE','Open palm · hello back',4,{light_requested:false,desk_target:null}),5);
+assert.equal(a.current.ref,'greet');assert(a.layers.length===2);
+const welcome=a.sample(data('ATTENTIVE','Open palm · hello back',4),7);
+assert(welcome.some((v,i)=>Math.abs(v-aim[i])>5));
+const welcomeStarted=a.current.started;
+a.sample(data('ATTENTIVE','Open palm · hello back',4),7.2);
+assert.equal(a.current.started,welcomeStarted);
 assert.equal(a.sample(data('STOPPED'),10),null);assert.equal(a.current,null);assert.equal(a.layers.length,0);
+// Even a transitional snapshot that still says following must not erase the
+// fresh palm welcome in the same animation frame.
+const interrupt=engine();
+interrupt.sample(data('ILLUMINATE','Point accepted',8,{pose:aim,point_following:true}),0);
+interrupt.sample(data('ILLUMINATE','Open palm · hello back',9,{pose:aim,point_following:true}),1);
+assert.equal(interrupt.current.ref,'greet');assert.equal(interrupt.layers.length,2);
 // A pointing drag takes over immediately after acquisition, without nods or a
 // fresh return blend on each observation. The page smooths these goals at 60 Hz.
 const follower=engine();

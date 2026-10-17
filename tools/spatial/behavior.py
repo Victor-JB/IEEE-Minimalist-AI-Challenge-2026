@@ -6,23 +6,46 @@ All inputs are fresh, actual inference results. No UI example can generate event
 import math
 
 
+def palm_footprint(hand):
+    """Apparent palm area proxy in image pixels, independent of finger spread.
+
+    It favors larger/usually nearer hands without claiming metric depth. Both
+    dimensions use Euclidean distances, so rotating the image preserves rank.
+    """
+    try:
+        p=hand['points']
+        area=math.dist(p[5][:2],p[17][:2])*math.dist(p[0][:2],p[9][:2])
+        return area if math.isfinite(area) and area>0 else 0.
+    except (KeyError,IndexError,TypeError,ValueError):
+        return 0.
+
+
 class GestureHold:
     """One gesture channel, stable across changes in detector result order."""
+    TAKEOVER_RATIO=1.25
+
     def __init__(self):
         self.gesture=None;self.since=0.;self.frames=0;self.previous=-1e9
         self.fired=-1e9;self.wrist=None;self.seen=-1e9
+        self.selection_changed=False
 
     def select(self,now,hands):
         if not hands:return None
+        largest=max(hands,key=lambda h:(palm_footprint(h),h.get('score',0)))
         if self.wrist is not None and now-self.seen<=.9:
-            return min(hands,key=lambda h:math.dist(h['points'][0][:2],self.wrist))
-        return max(hands,key=lambda h:h.get('score',0))
+            previous=min(hands,key=lambda h:math.dist(h['points'][0][:2],self.wrist))
+            if largest is not previous and palm_footprint(largest)>self.TAKEOVER_RATIO*palm_footprint(previous):
+                self.selection_changed=True
+                return largest
+            return previous
+        return largest
 
     def update(self,now,hand):
         gesture=hand.get('gesture') if hand else None
         wrist=hand['points'][0][:2] if hand else None
         size=math.dist(hand['points'][0][:2],hand['points'][9][:2]) if hand else 0
-        changed=wrist is not None and self.wrist is not None and math.dist(wrist,self.wrist)>max(80,2*size)
+        changed=self.selection_changed or (wrist is not None and self.wrist is not None and math.dist(wrist,self.wrist)>max(80,2*size))
+        self.selection_changed=False
         if gesture!=self.gesture or now-self.previous>.9 or changed:
             self.gesture=gesture;self.since=now;self.frames=0;self.fired=-1e9
         self.previous=now;self.frames+=1
@@ -34,6 +57,9 @@ class GestureHold:
 
 
 class Demo:
+    # The existing browser greet clip is 4.12 s plus its 0.65 s entry blend.
+    GREETING_FOCUS_S=5.
+
     def __init__(self,aim):
         self.state='IDLE';self.entered=0.;self.last_seen=0.;self.level=.4
         self.pointer=GestureHold();self.command=GestureHold()
@@ -44,6 +70,7 @@ class Demo:
         self.point_x=.5;self.target=None;self.aim_pose=None
         self.point_preview=None;self.target_source=None;self.target_mode=None
         self.point_following=False;self.point_at=-1e9
+        self.greeting_until=-1e9
 
     def emit(self,event,now):
         self.event=event;self.serial+=1;self.event_at=now
@@ -59,6 +86,7 @@ class Demo:
     def resume(self,now):
         self.transition('IDLE',now);self.emit('Ready for gestures',now)
         self.pointer=GestureHold();self.command=GestureHold();self.point_following=False
+        self.greeting_until=-1e9
 
     def select_pointing_hand(self,now,hands):
         return self.pointer.select(now,[h for h in hands if h.get('gesture')=='point'])
@@ -72,7 +100,12 @@ class Demo:
         conflict={h['gesture'] for h in commands}>={'thumbs_up','thumbs_down'}
         command_hand=self.command.select(now,palms or ([] if conflict else commands))
         command_ready=self.command.update(now,command_hand)
-        self.point_preview=target if hand and self.state!='STOPPED' else None
+        greeting_priority=(command_ready and self.command.gesture=='open_palm') or now<self.greeting_until
+        if greeting_priority:
+            # Do not let the other hand or a stale held point immediately take
+            # focus back. A new point needs its normal hold after the welcome.
+            self.pointer=GestureHold();point_ready=False
+        self.point_preview=target if hand and self.state!='STOPPED' and not greeting_priority else None
         self.point_following=False
         if faces or hands:self.last_seen=now
         if self.state!='STOPPED':
@@ -86,8 +119,10 @@ class Demo:
             count=len(faces)
             if count!=self.count_candidate:self.count_candidate=count;self.count_since=now
             if self.state=='ATTENTIVE' and now-self.count_since>=.8:
-                if count>self.group_count:
+                if count>self.group_count and now>=self.greeting_until:
                     self.emit('More company · hello everyone',now);self.last_interaction=now
+                # Observe arrivals during a palm welcome without interrupting
+                # it or queuing a redundant group greeting afterward.
                 self.group_count=count
         # Acquire once, then follow EVERY valid observation. Only the first selection
         # acknowledges; dragging must not restart a nod or wait for a repeat timer.
@@ -114,7 +149,12 @@ class Demo:
         if self.state!='STOPPED' and command_ready and greeting_ready and (self.command.fired<self.command.since or repeat and now-self.command.fired>=1):
             self.command.fired=now;self.last_interaction=now
             if gesture=='open_palm':
-                self.wave_at=now;self.emit('Open palm · hello back',now)
+                self.wave_at=now;self.greeting_until=now+self.GREETING_FOCUS_S
+                self.transition('ATTENTIVE',now)
+                self.target=None;self.aim_pose=None;self.target_source=None;self.target_mode=None
+                self.point_preview=None;self.point_following=False;self.point_at=-1e9
+                self.pointer=GestureHold()
+                self.emit('Open palm · hello back',now)
             elif self.state=='ILLUMINATE' and repeat and self.target:
                 # Up = farther, down = closer. Keep lamp power fixed; distance
                 # changes the illuminated footprint naturally in the renderer.
